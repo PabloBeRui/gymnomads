@@ -5,12 +5,14 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "test:connection": "node scripts/db-connection-test.js"
   },
   "keywords": [],
   "author": "Pablo Bellon",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^17.2.3",
     "express": "^5.1.0"
   },
   "devDependencies": {
