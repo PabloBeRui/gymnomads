@@ -1,29 +1,44 @@
-// Creating Server test
-// Creando un servidor de prueba
+// Server
+// servidor
 
-// 1. Import Express framework
-// 1. Importar el framework Express
+// Importar / Imports
 
+//Express framework
 const express = require("express");
+//Rutas /Routes
+const gymRoutes = require("./src/routes/gym-routes");
 
-// 2. Create an instance of an Express application
-// 2. Crear una instancia de la aplicación de Express
+// dotenv
+// This line loads environment variables from the .env file
+// Esta línea carga las variables de entorno del archivo .env
+require("dotenv").config();
+
+//  Create an instance of an Express application
+// Crear una instancia de la aplicación de Express
 const app = express();
 
-// 3. Define the port the server will listen on
-// 3. Definir el puerto en el que el servidor va a escuchar
-const port = 3000;
+// Define the port the server will listen on
+//  Definir el puerto en el que el servidor va a escuchar
+const PORT = process.env.PORT || 3000;
 
-// 4. Create a basic route for the homepage ('/')
-// 4. Crear una ruta básica para la página de inicio ('/')
+// Middleware para que Express entienda peticiones  JSON
+// Middleware for Express to understand JSON requests
+app.use(express.json());
+
+// Create a basic route for the homepage ('/')
+// Crear una ruta básica para la página de inicio ('/')
 
 app.get("/", (req, res) => {
-  res.send("Hola ILERNA! Backend de prueba funcionando");
+  res.send("Backend funcionando");
 });
 
-// 5. Start the server and listen for requests on the defined port
-// 5. Iniciar el servidor y escuchar peticiones en el puerto definido
+//Ruta de gimnasios / Gyms routes
 
-app.listen(port, () => {
-  console.log(`ILERNA: Servidor de prueba con puerto ${port} funcionando`);
+app.use("/api/gyms", gymRoutes);
+
+// Start the server and listen for requests on the defined port
+// Iniciar el servidor y escuchar peticiones en el puerto definido
+
+app.listen(PORT, () => {
+  console.log(`ILERNA: Servidor con puerto ${PORT} funcionando`);
 });
