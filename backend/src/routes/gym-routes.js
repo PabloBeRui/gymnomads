@@ -1,19 +1,22 @@
 //Imports
 //Router express & controller
 const { Router } = require("express");
-const { getAllGyms } = require("../controllers/gym-controller");
+const { getAllGyms, getGymById } = require("../controllers/gym-controller");
 
 // Crear una instancia del enrutador de Express
 // Create an instance of the Express router
 
 const router = Router();
 
-// Define la ruta. Cuando llegue una petición GET a la raíz ('/'),
-// se ejecutará la función 'getAllGyms' que importamos del controlador.
-// Define the route. When a GET request arrives at the root ('/'),
-// the 'getAllGyms' function we imported from the controller will be executed.
+// Rutas / Routes
 
-router.get('/', getAllGyms)
+// GET /api/gyms - Obtener todos los gimnasios
+// GET /api/gyms - Get all gyms
+router.get('/', getAllGyms);
 
+// GET /api/gyms/:id - Obtener un gimnasio por ID
+// GET /api/gyms/:id - Get a gym by ID
 
-module.exports=router;
+router.get("/:id", getGymById);
+
+module.exports = router;
