@@ -10,12 +10,11 @@ const router = Router();
 
 // Rutas / Routes
 
-// GET /api/gyms - Obtener todos los gimnasios
-// GET /api/gyms - Get all gyms
-router.get('/', getAllGyms);
+// GET /api/gyms - Obtener todos los gimnasios /Get all gyms
 
-// GET /api/gyms/:id - Obtener un gimnasio por ID
-// GET /api/gyms/:id - Get a gym by ID
+router.get("/", getAllGyms);
+
+// GET /api/gyms/:id - Obtener un gimnasio por ID / Get a gym by ID
 
 router.get("/:id", getGymById);
 

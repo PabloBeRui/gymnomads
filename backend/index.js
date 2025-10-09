@@ -7,6 +7,7 @@
 const express = require("express");
 //Rutas /Routes
 const gymRoutes = require("./src/routes/gym-routes");
+const userRoutes = require("./src/routes/user-routes");
 
 // dotenv
 // This line loads environment variables from the .env file
@@ -32,9 +33,15 @@ app.get("/", (req, res) => {
   res.send("Backend funcionando");
 });
 
+//Montar / Mount
+
 //Ruta de gimnasios / Gyms routes
 
 app.use("/api/gyms", gymRoutes);
+
+//Ruta de usuarioss / User routes
+
+app.use("/api/users", userRoutes);
 
 // Start the server and listen for requests on the defined port
 // Iniciar el servidor y escuchar peticiones en el puerto definido
