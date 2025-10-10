@@ -1,6 +1,8 @@
 const db = require("../../config/db");
 
 const bcrypt = require("bcrypt"); //hash passwords
+ 
+const jwt= require('jsonwebtoken')  //json web token
 
 // Registrar un nuevo usuario
 // Register a new user
@@ -55,6 +57,60 @@ const registerUser = async (req, res) => {
   }
 };
 
+const loginUser = async (req, res) => {
+  try {
+    // Obtener email y contraseña del cuerpo de la petición
+    // Get email and password from the request body
+
+    const { email, password } = req.body;
+
+    // Buscar al usuario por su email
+    // Find the user by their email
+
+    const [users] = await db.query("SELECT * FROM users WHERE email = ?", [
+      email,
+    ]);
+
+    // Comprobar si el usuario existe
+    // Check if the user exists
+
+    if (users.length === 0) {
+      console.error('usuario incorrecto')
+      // 401 Unauthorized: no autorizado (credenciales incorrectas)
+      return res.status(401).json({ message: "credenciales incorrectas" });
+    }
+
+    const user = users[0];
+
+    // Comparar la contraseña enviada con la contraseña hasheada en la BBDD y comprobar si la contraseña coincide
+    // Compare the submitted password with the hashed password in the DB and check if the password matches
+
+    const isEqual = await bcrypt.compare(password, user.password);
+
+    if (!isEqual) {
+      console.error('contraseña incorrecta')
+      return res.status(401).json({ message: "credenciales incorrectas" });
+    }
+
+    // Si todo está correcto, crear el token (JWT) y enviarlo al cliente
+    // If everything is correct, create the token (JWT) and send it to the client
+
+    const payload = { userId: user.id };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "2h",
+    });
+
+    res.status(200).json({
+      message: "Login correcto",
+      token: token,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
 module.exports = {
   registerUser,
+  loginUser,
 };
