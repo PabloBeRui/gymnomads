@@ -46,4 +46,65 @@ const createVisit = async (req, res) => {
   }
 };
 
-module.exports = { createVisit };
+// Obtener todas las visitas de un usuario específico
+// Get all visits for a specific user
+
+const getVisitsByUser = async (req, res) => {
+  try {
+    // Obtener el ID del usuario de los parámetros de la URL
+    // Get the user ID from the URL parameters
+    const { userId } = req.params;
+
+    // Medida de seguridad: un usuario solo puede ver su propio historial
+    // Security measure: a user can only view their own history
+    if (req.user.userId !== parseInt(userId)) {
+      // 403 Forbidden: tienes un token válido, pero no tienes permiso para ver esto
+      return res.status(403).json({ message: "Acceso prohibido" });
+    }
+
+    // Une la tabla 'visits' con 'gyms' para obtener también el nombre del gimnasio
+    //  join the 'visits' table with 'gyms' to also get the gym's name
+
+    const [visits] = await db.query(
+      `SELECT visits.id, visits.visited_at, gyms.name AS gym_name, gyms.city 
+       FROM visits 
+       JOIN gyms ON visits.gym_id = gyms.id 
+       WHERE visits.user_id = ? 
+       ORDER BY visits.visited_at DESC`,
+      [userId]
+    );
+
+    res.status(200).json(visits);
+  } catch (error) {
+    console.error(`error:${error}`);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+// Obtener todos los visitantes de un gimnasio específico
+// Get all visitors for a specific gym
+
+const getVisitsByGym = async (req, res) => {
+  try {
+    const { gymId } = req.params;
+
+    // Unir 'visits' con 'users' para obtener el nombre del visitante
+    // join 'visits' with 'users' to get the visitor's name
+
+    const [visits] = await db.query(
+      `SELECT visits.id, visits.visited_at, users.first_name, users.last_name 
+       FROM visits 
+       JOIN users ON visits.user_id = users.id 
+       WHERE visits.gym_id = ? 
+       ORDER BY visits.visited_at DESC`,
+      [gymId]
+    );
+
+    res.status(200).json(visits);
+  } catch (error) {
+    console.error(`error:${error}`);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+module.exports = { createVisit, getVisitsByUser, getVisitsByGym };
