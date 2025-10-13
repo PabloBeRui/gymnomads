@@ -1,8 +1,8 @@
 const db = require("../../config/db");
 
 const bcrypt = require("bcrypt"); //hash passwords
- 
-const jwt= require('jsonwebtoken')  //json web token
+
+const jwt = require("jsonwebtoken"); //json web token
 
 // Registrar un nuevo usuario
 // Register a new user
@@ -57,6 +57,9 @@ const registerUser = async (req, res) => {
   }
 };
 
+//Loguear usuario
+// Login user
+
 const loginUser = async (req, res) => {
   try {
     // Obtener email y contraseña del cuerpo de la petición
@@ -67,15 +70,16 @@ const loginUser = async (req, res) => {
     // Buscar al usuario por su email
     // Find the user by their email
 
-    const [users] = await db.query("SELECT * FROM users WHERE email = ?", [
-      email,
-    ]);
+    const [users] = await db.query(
+      "SELECT id, password FROM users WHERE email = ?",
+      [email]
+    );
 
     // Comprobar si el usuario existe
     // Check if the user exists
 
     if (users.length === 0) {
-      console.error('usuario incorrecto')
+      console.error("usuario incorrecto");
       // 401 Unauthorized: no autorizado (credenciales incorrectas)
       return res.status(401).json({ message: "credenciales incorrectas" });
     }
@@ -88,7 +92,7 @@ const loginUser = async (req, res) => {
     const isEqual = await bcrypt.compare(password, user.password);
 
     if (!isEqual) {
-      console.error('contraseña incorrecta')
+      console.error("contraseña incorrecta");
       return res.status(401).json({ message: "credenciales incorrectas" });
     }
 
@@ -110,7 +114,42 @@ const loginUser = async (req, res) => {
   }
 };
 
+// Obtener perfil de usuario identificado
+// Get authenticated user profile
+
+const getProfile = async (req, res) => {
+  try {
+    // Obtener el ID del usuario desde el objeto 'req.user' que añade el middleware
+    // Get the user ID from the 'req.user' object added by the middleware
+
+    const userId = req.user.userId;
+
+    // Buscar al usuario en la BBDD, seleccionando solo los campos necesarios
+    // Find the user in the DB, selecting only the necessary fields
+
+    const [users] = await db.query(
+      "SELECT id, first_name, last_name, email, home_gym_id, profile_picture FROM users WHERE id = ?",
+      [userId]
+    );
+
+    // Comprobar si el usuario todavía existe en la BBDD
+    // Check if the user still exists in the DB
+    if (users.length === 0) {
+      console.log("No existe el usuario");
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+    // Devolver los datos del perfil
+    // Return the profile data
+    res.status(200).json(users[0]);
+  } catch (error) {
+    console.error(`Error a la hora de obtener el profile, error ${error}`);
+
+    res.status(500).json({ message: "Error interno en el servidor" });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
+  getProfile,
 };
