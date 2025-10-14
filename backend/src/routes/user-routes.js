@@ -5,6 +5,7 @@ const {
   loginUser,
   getProfile,
   updateProfile,
+  deleteProfilebyUser,
 } = require("../controllers/user-controller");
 
 //Importar middleware de autentificación
@@ -35,8 +36,11 @@ router.post("/login", loginUser);
 router.get("/profile", authMiddleware, getProfile);
 
 // PUT /api/users/profile - Actualizar el perfil del usuario / Update user profile
- 
+
 router.put("/profile", authMiddleware, updateProfile);
 
-module.exports = router;
+// DELETE /api/users/profile - Eliminar el perfil del usuario / Delete user profile
 
+router.delete("/profile", authMiddleware, deleteProfilebyUser);
+
+module.exports = router;

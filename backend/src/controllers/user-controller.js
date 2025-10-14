@@ -186,9 +186,45 @@ const updateProfile = async (req, res) => {
   }
 };
 
+// Eliminar el perfil del usuario autenticado
+// Delete authenticated user profile
+
+const deleteProfilebyUser = async (req, res) => {
+  try {
+    // Obtener el ID del usuario desde el token (vía middleware)
+    // Get the user ID from the token (via middleware)
+
+    const userId = req.user.userId;
+
+    // Ejecutar la consulta SQL para eliminar el usuario
+    // Execute the SQL query to delete the user
+
+    const [result] = await db.query("DELETE FROM users WHERE id = ?", [userId]);
+
+    // Comprobar si alguna fila fue eliminada
+    // Check if any row was deleted
+
+    if (result.affectedRows === 0) {
+      console.error("Usuario no encontrado");
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    console.log(`Usuario con ID: ${userId} ha sido eliminado con éxito.`);
+
+    // Enviar una respuesta de éxito sin contenido 204 No content
+    // Send a success response with no content 204 No content
+
+    res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getProfile,
   updateProfile,
+  deleteProfilebyUser,
 };
