@@ -135,7 +135,7 @@ const getProfile = async (req, res) => {
     // Comprobar si el usuario todavía existe en la BBDD
     // Check if the user still exists in the DB
     if (users.length === 0) {
-      console.log("No existe el usuario");
+      console.error("No existe el usuario");
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
     // Devolver los datos del perfil
@@ -148,8 +148,47 @@ const getProfile = async (req, res) => {
   }
 };
 
+// Actualizar el perfil del usuario autenticado
+// Update authenticated user profile
+
+const updateProfile = async (req, res) => {
+  try {
+    // Obtener el ID del usuario desde el token (vía middleware)
+    // Get the user ID from the token (via middleware)
+    const userId = req.user.userId;
+
+    // Obtener los datos a actualizar del cuerpo de la petición
+    // Get the data to update from the request body
+    const { first_name, last_name, phone } = req.body;
+
+    // Construir la consulta SQL para actualizar el usuario
+    // Build the SQL query to update the user
+    const [result] = await db.query(
+      "UPDATE users SET first_name = ?, last_name = ?, phone = ? WHERE id = ?",
+      [first_name, last_name, phone, userId]
+    );
+
+    // Comprobar si alguna fila fue realmente actualizada
+    // Check if any row was actually updated
+
+    if (result.affectedRows === 0) {
+      console.error("Usuario no encontrado");
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    // Enviar una respuesta de éxito
+    // Send a success response
+
+    res.status(200).json({ message: "Perfil actualizado con éxito" });
+  } catch (error) {
+    console.error(`Error:  ${error}`);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getProfile,
+  updateProfile,
 };
