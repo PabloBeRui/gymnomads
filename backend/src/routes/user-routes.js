@@ -6,22 +6,23 @@ const {
   getProfile,
   updateProfile,
   deleteProfilebyUser,
-  updateProfilePicture
+  updateProfilePicture,
 } = require("../controllers/user-controller");
 
 //Importar middleware de autentificación
 // Import auth middleware
 const authMiddleware = require("../middleware/auth-middleware");
 
-//multer
-const upload = require("../utils/multer-config");
 
+//manejador de subidas / upload handler
+const {
+  handleProfilePictureUpload,
+} = require("../middleware/upload-middleware");
 
 // Crear una instancia del enrutador de Express
 // Create an instance of the Express router
 
 const router = Router();
-
 
 // --- RUTAS PÚBLICAS (no requieren token) ---
 // --- PUBLIC ROUTES (do not require a token) ---
@@ -54,7 +55,7 @@ router.delete("/profile", authMiddleware, deleteProfilebyUser);
 router.post(
   "/profile/picture",
   authMiddleware, // Obtener perfil del usuario autenticado / Obtain auth user profile
-  upload.single("profilePicture"), //  Multer procesa el archivo / multer process the files
+  handleProfilePictureUpload, //manejador de subidas / upload handler
   updateProfilePicture
 );
 

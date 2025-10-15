@@ -50,12 +50,17 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// Se inicializa Multer con las configuraciones de almacenamiento y filtro.
-// Multer is initialized with the storage and fileFilter configurations.
+// Se inicializa Multer con las configuraciones de almacenamiento, filtro y limite de tamaño de archivo.
+// Multer is initialized with the storage, fileFilter and filesize limits configurations.
 
 const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
+  limits: {
+    // establezco un límite de 5 megabytes para el tamaño del archivo
+    // i set a 5 megabyte limit for the file size
+    fileSize: 1024 * 1024 * 5, // 5 MB
+  },
 });
 
 module.exports = upload;
