@@ -285,6 +285,45 @@ const updateProfilePicture = async (req, res) => {
   }
 };
 
+// eliminar un usuario por su id (solo para administradores)
+// delete a user by their id (admin only)
+const deleteUserByAdmin = async (req, res) => {
+  try {
+    // obtengo el id del usuario a borrar de la url (es un string)
+    // I get the id of the user to delete from the url (it's a string)
+    const targetUserId = parseInt(req.params.id, 10);
+
+    // obtengo el id del administrador que está haciendo la petición (del token)
+    // I get the id of the admin making the request (from the token)
+    const adminUserId = req.user.userId;
+
+    // compruebo si el admin está intentando borrarse a sí mismo
+    // I check if the admin is trying to delete themselves
+    if (targetUserId === adminUserId) {
+      // 403 forbidden: no tienes permiso para realizar esta acción específica
+      // 403 forbidden: you don't have permission to perform this specific action
+      return res
+        .status(403)
+        .json({ message: "un administrador no puede eliminarse a sí mismo." });
+    }
+
+    // si no se está borrando a sí mismo, procedo con la eliminación
+    // if they are not deleting themselves, i proceed with the deletion
+    const [result] = await db.query("DELETE FROM users WHERE id = ?", [
+      targetUserId,
+    ]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "usuario no encontrado" });
+    }
+
+    res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "error interno del servidor" });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -292,4 +331,5 @@ module.exports = {
   updateProfile,
   deleteProfilebyUser,
   updateProfilePicture,
+  deleteUserByAdmin
 };

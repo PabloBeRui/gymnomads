@@ -7,17 +7,18 @@ const {
   updateProfile,
   deleteProfilebyUser,
   updateProfilePicture,
+  deleteUserByAdmin,
 } = require("../controllers/user-controller");
 
 //Importar middleware de autentificación
 // Import auth middleware
 const authMiddleware = require("../middleware/auth-middleware");
 
-
 //manejador de subidas / upload handler
 const {
   handleProfilePictureUpload,
 } = require("../middleware/upload-middleware");
+const adminMiddleware = require("../middleware/admin-middleware");
 
 // Crear una instancia del enrutador de Express
 // Create an instance of the Express router
@@ -50,13 +51,25 @@ router.put("/profile", authMiddleware, updateProfile);
 
 router.delete("/profile", authMiddleware, deleteProfilebyUser);
 
-// POST /api/users/profile/picture - Subir/actualizar foto de perfil
-// POST /api/users/profile/picture - Upload/update profile picture
+// POST /api/users/profile/picture - Subir/actualizar foto de perfil / Upload/update profile picture
+
 router.post(
   "/profile/picture",
   authMiddleware, // Obtener perfil del usuario autenticado / Obtain auth user profile
   handleProfilePictureUpload, //manejador de subidas / upload handler
   updateProfilePicture
+);
+
+// --- RUTAS PROTEGIDAS (solo para administradores) ---
+// --- PROTECTED ROUTES (admin only) ---
+
+// DELETE /api/users/:id - eliminar un usuario por su id (admin)
+// DELETE /api/users/:id - delete a user by their id (admin)
+router.delete(
+  "/:id",
+  authMiddleware, // 1. ¿estás logueado? / is loged?
+  adminMiddleware, // 2. ¿eres admin? / is admin?
+  deleteUserByAdmin // 3. si sí a ambas, ejecuta la acción / if true both, execute
 );
 
 module.exports = router;
