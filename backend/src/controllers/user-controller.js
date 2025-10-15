@@ -4,6 +4,8 @@ const bcrypt = require("bcrypt"); //hash passwords
 
 const jwt = require("jsonwebtoken"); //json web token
 
+const fs = require("fs/promises"); // módulo 'fs' de Node.js para  interactuar con el sistema de archivos  / Node.js's 'fs' module to interact with the file system
+
 // Registrar un nuevo usuario
 // Register a new user
 
@@ -221,10 +223,73 @@ const deleteProfilebyUser = async (req, res) => {
   }
 };
 
+// Actualizar la foto de perfil del usuario
+// Update user profile picture
+const updateProfilePicture = async (req, res) => {
+  try {
+    // Multer proporciona la información del archivo en req.file
+    // Multer provides us with file information in req.file
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ message: "No se ha subido ningún archivo" });
+    }
+
+    const userId = req.user.userId;
+
+    // La ruta del archivo guardado por multer
+    // The path of the file saved by multer
+
+    const filePath = req.file.path;
+
+    // Actualizar la base de datos con la nueva ruta de la imagen
+    // Update the database with the new image path
+
+    // 1. obtengo la ruta de la foto antigua
+    // 1. get the old picture's path
+
+    const [users] = await db.query(
+      "SELECT profile_picture FROM users WHERE id = ?",
+      [userId]
+    );
+    const oldFilePath = users[0]?.profile_picture;
+
+    // 2. actualiza la base de datos con la nueva ruta
+    // 2. update the database with the new path
+
+    await db.query("UPDATE users SET profile_picture = ? WHERE id = ?", [
+      filePath,
+      userId,
+    ]);
+
+    // 3. borra el archivo antiguo (si existía)
+    // 3. delete the old file (if it existed)
+
+    if (oldFilePath) {
+      try {
+        await fs.unlink(oldFilePath); // fs.unlink es el comando para borrar un archivo / fs.unlink is the command to delete a file
+      } catch (err) {
+        console.error("Error al borrar la anterior imagen:", err);
+        // no detengo el proceso, ya que la subida fue exitosa, pero lo registro
+        // I don't stop the process, since the upload was successful, but i log it
+      }
+    }
+
+    res.status(200).json({
+      message: "Foto de perfil actualizada con éxito",
+      filePath: filePath,
+    });
+  } catch (error) {
+    console.error(`Error en la actualización de la imagen de perfil: ${error}`);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getProfile,
   updateProfile,
   deleteProfilebyUser,
+  updateProfilePicture,
 };
