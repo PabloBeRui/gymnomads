@@ -324,6 +324,27 @@ const deleteUserByAdmin = async (req, res) => {
   }
 };
 
+// obtener todos los usuarios (solo para administradores)
+// get all users (admin only)
+const getAllUsers = async (req, res) => {
+  try {
+    // ejecutar la consulta para obtener los datos esenciales de todos los usuarios
+    // execute the query to get essential data from all users
+
+    const [users] = await db.query(
+      "SELECT id, first_name, last_name, email, role, registered_at FROM users"
+    );
+
+    // enviar la lista de usuarios
+    // send the list of users
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "error interno del servidor" });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -332,4 +353,5 @@ module.exports = {
   deleteProfilebyUser,
   updateProfilePicture,
   deleteUserByAdmin,
+  getAllUsers,
 };
