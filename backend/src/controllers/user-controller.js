@@ -331,5 +331,5 @@ module.exports = {
   updateProfile,
   deleteProfilebyUser,
   updateProfilePicture,
-  deleteUserByAdmin
+  deleteUserByAdmin,
 };
