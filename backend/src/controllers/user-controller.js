@@ -345,6 +345,68 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+// backend/src/controllers/user-controller.js
+
+// ... (mis imports y las funciones anteriores) ...
+
+// cambiar la contraseña del usuario autenticado
+// change the authenticated user's password
+
+const changePassword = async (req, res) => {
+  try {
+    // 1. obtener el id del usuario del token
+    // 1. get the user id from the token
+
+    const userId = req.user.userId;
+
+    // 2. obtener las contraseñas del cuerpo de la petición
+    // 2. get the passwords from the request body
+
+    const { currentPassword, newPassword } = req.body;
+
+    // 3. buscar al usuario en la bbdd para obtener su hash actual
+    // 3. find the user in the db to get their current hash
+
+    const [users] = await db.query("SELECT password FROM users WHERE id = ?", [
+      userId,
+    ]);
+
+    if (users.length === 0) {
+      return res.status(404).json({ message: "usuario no encontrado" });
+    }
+
+    const user = users[0];
+
+    // 4. verificar que la contraseña actual es correcta
+    // 4. verify that the current password is correct
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res
+        .status(401)
+        .json({ message: "la contraseña actual es incorrecta" });
+    }
+
+    // 5. hashear la nueva contraseña
+    // 5. hash the new password
+
+    const saltRounds = 10; //algoritmo de hasheo 2^10 / has algoritm 2^10
+    const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    // 6. actualizar la contraseña en la base de datos
+    // 6. update the password in the database
+
+    await db.query("UPDATE users SET password = ? WHERE id = ?", [
+      hashedNewPassword,
+      userId,
+    ]);
+
+    res.status(200).json({ message: "contraseña actualizada con éxito" });
+  } catch (error) {
+    console.error(`Fallo al actualizar la contraseña, error: ${error}`);
+    res.status(500).json({ message: "error interno del servidor" });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -354,4 +416,5 @@ module.exports = {
   updateProfilePicture,
   deleteUserByAdmin,
   getAllUsers,
+  changePassword,
 };

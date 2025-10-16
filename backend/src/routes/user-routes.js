@@ -8,7 +8,8 @@ const {
   deleteProfilebyUser,
   updateProfilePicture,
   deleteUserByAdmin,
-  getAllUsers
+  getAllUsers,
+  changePassword,
 } = require("../controllers/user-controller");
 
 //Importar middleware de autentificación
@@ -61,19 +62,21 @@ router.post(
   updateProfilePicture
 );
 
+// PUT /api/users/password - cambiar la contraseña del usuario / change the user's password
+
+router.put("/password", authMiddleware, changePassword);
+
 // --- RUTAS PROTEGIDAS (solo para administradores) ---
 // --- PROTECTED ROUTES (admin only) ---
 
 // GET /api/users - obtener todos los usuarios (admin) - get all users (admin)
 
-
 router.get(
   "/",
-  authMiddleware,  // 1. ¿estás logueado? / is loged?
-  adminMiddleware,   // 2. ¿eres admin? / is admin?
-  getAllUsers      // 3. si sí a ambas, ejecuta la acción / if true both, execute
+  authMiddleware, // 1. ¿estás logueado? / is loged?
+  adminMiddleware, // 2. ¿eres admin? / is admin?
+  getAllUsers // 3. si sí a ambas, ejecuta la acción / if true both, execute
 );
-
 
 // DELETE /api/users/:id - eliminar un usuario por su id (admin)
 // DELETE /api/users/:id - delete a user by their id (admin)
