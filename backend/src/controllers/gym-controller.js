@@ -173,10 +173,39 @@ const deleteGym = async (req, res) => {
   }
 };
 
+// obtener todos los usuarios de un gimnasio específico (solo para administradores)
+// get all users for a specific gym (admin only)
+
+const getUsersByGym = async (req, res) => {
+  try {
+    // obtener el id del gimnasio de los parámetros de la url
+    // get the gym id from the url parameters
+
+    const { gymId } = req.params;
+
+    // ejecutar la consulta para obtener los datos de los usuarios de ese gimnasio
+    // execute the query to get the user data for that gym
+
+    const [users] = await db.query(
+      "SELECT id, first_name, last_name, email, role FROM users WHERE home_gym_id = ?",
+      [gymId]
+    );
+
+    // si no se encuentran usuarios para ese gimnasio, devuelvo un array vacío, lo cual es correcto
+    // if no users are found for that gym, i return an empty array, which is correct
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error(`Error al obtener todos los usuarios del gimansio: ${error}`);
+    res.status(500).json({ message: "error interno del servidor" });
+  }
+};
+
 module.exports = {
   getAllGyms,
   getGymById,
   createGym,
   updateGym,
   deleteGym,
+  getUsersByGym,
 };

@@ -7,6 +7,7 @@ const {
   createGym,
   updateGym,
   deleteGym,
+  getUsersByGym,
 } = require("../controllers/gym-controller");
 
 // Middlewares de seguridad / ecurity middlewares
@@ -58,6 +59,15 @@ router.delete(
   authMiddleware, // 1. verificar si el usuario está logueado / verify if the user is logged in
   adminMiddleware, // 2. verificar si el usuario es admin / verify if the user is admin
   deleteGym // 3. si ambas son correctas, ejecutar la acción / if both are correct, execute the action
+);
+
+// GET /api/gyms/:gymId/users - obtener los usuarios de un gimnasio (protegido) / get users for a gym (protected)
+
+router.get(
+  "/:gymId/users",
+  authMiddleware, // 1. verificar si el usuario está logueado / verify if the user is logged in
+  adminMiddleware, // 2. verificar si el usuario es admin / verify if the user is admin
+  getUsersByGym // 3. si ambas son correctas, ejecutar la acción / if both are correct, execute the action
 );
 
 module.exports = router;
