@@ -1,0 +1,42 @@
+-- Crear la tabla para los gimnasios
+-- Create table for gyms
+
+CREATE TABLE `gyms` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(100) NOT NULL,
+  `address` VARCHAR(255) NOT NULL,
+  `city` VARCHAR(100) NOT NULL,
+  `latitude` DECIMAL(10, 8) NOT NULL,
+  `longitude` DECIMAL(11, 8) NOT NULL,
+  `logo_url` VARCHAR(255) NULL,        -- <-- COLUMNA NUEVA
+  `main_image_url` VARCHAR(255) NULL   -- <-- COLUMNA NUEVA
+) ENGINE=InnoDB;
+
+-- Crear la tabla para los usuarios
+-- Create table for users
+
+CREATE TABLE `users` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `first_name` VARCHAR(50) NOT NULL,
+  `last_name` VARCHAR(100) NOT NULL,
+  `email` VARCHAR(100) NOT NULL UNIQUE,
+  `password` VARCHAR(255) NOT NULL,
+  `phone` VARCHAR(20) NULL,
+  `profile_picture` VARCHAR(255) NULL,
+  `home_gym_id` INT NOT NULL,
+  `role` ENUM('user','manager','admin') NOT NULL DEFAULT 'user',
+  `registered_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`home_gym_id`) REFERENCES `gyms`(`id`)
+) ENGINE=InnoDB;
+
+-- Crear la tabla para las visitas
+-- Create table for visits
+
+CREATE TABLE `visits` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT NOT NULL,
+  `gym_id` INT NOT NULL,
+  `visited_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`gym_id`) REFERENCES `gyms`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB;
