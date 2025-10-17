@@ -1,10 +1,21 @@
 const multer = require("multer");
-const upload = require("../utils/multer-config");
+//  importar la fábrica en lugar de la instancia de multer
+//  import the factory instead of the multer instance
+const createUploader = require('../utils/multer-config');
 
-// manejo los errores de multer para la subida de la foto de perfil
-// i handle multer errors for the profile picture upload
+// crear un uploader específico para las fotos de perfil, carpeta específica
+// create a specific uploader for profile pictures, specific folder
+const profilePictureUploader = createUploader('profile_pictures');
+
+
+// manejar los errores de multer para la subida de la foto de perfil
+// handle multer errors for the profile picture upload
 const handleProfilePictureUpload = (req, res, next) => {
-  const uploader = upload.single("profilePicture");
+
+  // uploader específico
+  // specific uploader
+  const uploader = profilePictureUploader.single('profilePicture');
+  
 
   uploader(req, res, function (err) {
     if (err instanceof multer.MulterError) {
