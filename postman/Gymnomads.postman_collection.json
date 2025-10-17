@@ -396,6 +396,14 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Get gym by city",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
 		}
 	]
 }
