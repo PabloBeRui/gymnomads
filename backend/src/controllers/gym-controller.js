@@ -1,5 +1,6 @@
 const db = require("../../config/db");
 
+const fs = require('fs/promises');
 // Función para obtener todos los gimnasios o filtrar gimansio por ciudad
 // Function to get all gyms or filter by city
 

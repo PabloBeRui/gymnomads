@@ -17,10 +17,17 @@ const {
 const authMiddleware = require("../middleware/auth-middleware");
 
 //manejador de subidas / upload handler
-const {
-  handleProfilePictureUpload,
-} = require("../middleware/upload-middleware");
+
+const createUploader = require("../utils/multer-config");
+const createUploadHandler = require("../middleware/upload-middleware");
+
+//admin midddleware
 const adminMiddleware = require("../middleware/admin-middleware");
+
+// crear el uploader específico para fotos de perfil
+// create the specific uploader for profile pictures
+
+const profilePictureUploader = createUploader("profile_pictures");
 
 // Crear una instancia del enrutador de Express
 // Create an instance of the Express router
@@ -58,7 +65,7 @@ router.delete("/profile", authMiddleware, deleteProfilebyUser);
 router.post(
   "/profile/picture",
   authMiddleware, // Obtener perfil del usuario autenticado / Obtain auth user profile
-  handleProfilePictureUpload, //manejador de subidas / upload handler
+  createUploadHandler(profilePictureUploader, "profilePicture"), //manejador de subidas / upload handler
   updateProfilePicture
 );
 
