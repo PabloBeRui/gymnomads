@@ -6,7 +6,10 @@ node_modules/
 # Variables de entorno
 .env
 
-# Ignorar el contenido de la carpeta de subidas, pero no la carpeta en sí
-# Ignore the contents of the uploads folder, but not the folder itself
-backend/uploads/*
+# Ignorar todos los archivos dentro de uploads y sus subcarpetas
+# Ignore all files inside uploads and its subdirectories
+backend/uploads/**
+
+# Pero no ignorar los archivos .gitkeep, para mantener la estructura de carpetas
+# But do not ignore .gitkeep files, to keep the folder structure
 !backend/uploads/**/.gitkeep
