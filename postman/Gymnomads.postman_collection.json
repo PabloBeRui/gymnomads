@@ -404,6 +404,90 @@
 				"header": []
 			},
 			"response": []
+		},
+		{
+			"name": "Update  gym logo by manager",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInJvbGUiOiJtYW5hZ2VyIiwiaG9tZV9neW1faWQiOjIsImlhdCI6MTc2MDc3NjI4OCwiZXhwIjoxNzYwNzgzNDg4fQ.GUVlU9vY0IQaVA_UGqzZLBwqnroWR2y4gw02QdCZOWU",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "logo",
+							"type": "file",
+							"src": "/C:/Users/Work/Downloads/LEGO_logo.svg.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/gyms/2/logo",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"gyms",
+						"2",
+						"logo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update gym image by manager",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInJvbGUiOiJtYW5hZ2VyIiwiaG9tZV9neW1faWQiOjIsImlhdCI6MTc2MDc3NjI4OCwiZXhwIjoxNzYwNzgzNDg4fQ.GUVlU9vY0IQaVA_UGqzZLBwqnroWR2y4gw02QdCZOWU",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "mainImage",
+							"type": "file",
+							"src": "/C:/Users/Work/Downloads/foto_gym.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/gyms/2/image",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"gyms",
+						"2",
+						"image"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }

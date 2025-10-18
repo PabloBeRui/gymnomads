@@ -199,6 +199,75 @@ const getUsersByGym = async (req, res) => {
   }
 };
 
+// --- LÓGICA PARA SUBIDA DE IMÁGENES / UPLOAD IMAGE LOGIC ---
+
+// Función genérica para actualizar una imagen de un gimnasio (logo o principal)
+// Generic function to update a gym image (logo or main)
+
+const updateGymImage = async (req, res, imageColumnName) => {
+  try {
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ message: "no se ha subido ningún archivo" });
+    }
+
+    const { id } = req.params;
+    const newFilePath = req.file.path;
+
+    // 1. obtener la ruta de la imagen antigua
+    const [gyms] = await db.query(
+      `SELECT ${imageColumnName} FROM gyms WHERE id = ?`,
+      [id]
+    );
+
+    if (gyms.length === 0) {
+      return res.status(404).json({ message: "gimnasio no encontrado" });
+    }
+    const oldFilePath = gyms[0]?.[imageColumnName];
+
+    // 2. actualizo la base de datos con la nueva ruta
+    await db.query(`UPDATE gyms SET ${imageColumnName} = ? WHERE id = ?`, [
+      newFilePath,
+      id,
+    ]);
+
+    // 3. borro el archivo antiguo si existía
+    if (oldFilePath) {
+      try {
+        await fs.unlink(oldFilePath);
+      } catch (err) {
+        console.error(
+          `error al borrar la imagen antigua (${imageColumnName}):`,
+          err
+        );
+      }
+    }
+
+    res.status(200).json({
+      message: `imagen (${imageColumnName}) actualizada con éxito`,
+      filePath: newFilePath,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "error interno del servidor" });
+  }
+};
+
+// controlador específico para subir el logo
+// specific controller to upload the logo
+
+const uploadLogo = (req, res) => {
+  updateGymImage(req, res, "logo_url");
+};
+
+// controlador específico para subir la imagen principal
+// specific controller to upload the main image
+
+const uploadMainImage = (req, res) => {
+  updateGymImage(req, res, "main_image_url");
+};
+
 module.exports = {
   getAllGyms,
   getGymById,
@@ -206,4 +275,6 @@ module.exports = {
   updateGym,
   deleteGym,
   getUsersByGym,
+  uploadLogo,
+  uploadMainImage,
 };

@@ -73,7 +73,7 @@ const loginUser = async (req, res) => {
     // Find the user by their email
 
     const [users] = await db.query(
-      "SELECT id, password, role FROM users WHERE email = ?",
+      "SELECT id, password, role, home_gym_id FROM users WHERE email = ?",
       [email]
     );
 
@@ -101,7 +101,11 @@ const loginUser = async (req, res) => {
     // Si todo está correcto, crear el token (JWT) y enviarlo al cliente
     // If everything is correct, create the token (JWT) and send it to the client
 
-    const payload = { userId: user.id, role: user.role };
+    const payload = {
+      userId: user.id,
+      role: user.role,
+      home_gym_id: user.home_gym_id,
+    };
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
       expiresIn: "2h",
     });
