@@ -2,6 +2,9 @@
 
 // Importar / Imports
 
+// Importar el paquete `cors` para gestionar el Intercambio de Recursos de Origen Cruzado.
+// Import the `cors` package to manage Cross-Origin Resource Sharing.
+const cors = require("cors");
 //Express framework
 const express = require("express");
 //Rutas /Routes
@@ -21,6 +24,11 @@ const app = express();
 // Define the port the server will listen on
 //  Definir el puerto en el que el servidor va a escuchar
 const PORT = process.env.PORT || 3000;
+
+// Habilitar el middleware de CORS para permitir peticiones desde otros orígenes (ej. frontend).
+// Enable the CORS middleware to allow requests from other origins (e.g., frontend).
+
+app.use(cors());
 
 // Middleware para que Express entienda peticiones  JSON
 // Middleware for Express to understand JSON requests
