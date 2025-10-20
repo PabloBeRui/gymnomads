@@ -411,6 +411,69 @@ const changePassword = async (req, res) => {
   }
 };
 
+// Crear un nuevo usuario (solo para administradores)
+// Create a new user (admin only)
+const createUserByAdmin = async (req, res) => {
+  try {
+    // 1. obtener los datos del cuerpo de la petición, incluyendo el rol
+    // 1. get data from the request body, including the role
+
+    const { first_name, last_name, email, password, home_gym_id, role } =
+      req.body;
+
+    // 2. validar que el rol enviado sea uno de los permitidos
+    // 2. validate that the submitted role is one of the allowed ones
+
+    const allowedRoles = ["user", "manager", "admin"];
+    if (!role || !allowedRoles.includes(role)) {
+      return res
+        .status(400)
+        .json({
+          message:
+            "rol no válido. los roles permitidos son: user, manager, admin.",
+        });
+    }
+
+    // 3. comprobar si el email ya existe
+    // 3. check if the email already exists
+
+    const [existingUser] = await db.query(
+      "SELECT id FROM users WHERE email = ?",
+      [email]
+    );
+
+    if (existingUser.length > 0) {
+      console.log("El mail ya está registrado");
+      return res.status(409).json({ message: "el email ya está registrado" });
+    }
+
+    // 4. hashear la contraseña
+    // 4. hash the password
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // 5. insertar el nuevo usuario en la base de datos con su rol específico
+    // 5. insert the new user into the database with their specific role
+
+    const [result] = await db.query(
+      "INSERT INTO users (first_name, last_name, email, password, home_gym_id, role) VALUES (?, ?, ?, ?, ?, ?)",
+      [first_name, last_name, email, hashedPassword, home_gym_id, role]
+    );
+
+    // 6. enviar una respuesta de éxito
+    // 6. send a success response
+
+    res.status(201).json({
+      message: `usuario con rol '${role}' creado con éxito`,
+      userId: result.insertId,
+    });
+  } catch (error) {
+    console.error(`error: ${error}`);
+    res.status(500).json({ message: "error interno del servidor" });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -421,4 +484,5 @@ module.exports = {
   deleteUserByAdmin,
   getAllUsers,
   changePassword,
+  createUserByAdmin,
 };

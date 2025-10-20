@@ -10,6 +10,7 @@ const {
   deleteUserByAdmin,
   getAllUsers,
   changePassword,
+  createUserByAdmin,
 } = require("../controllers/user-controller");
 
 //Importar middleware de autentificación
@@ -85,14 +86,22 @@ router.get(
   getAllUsers // 3. si sí a ambas, ejecuta la acción / if true both, execute
 );
 
-// DELETE /api/users/:id - eliminar un usuario por su id (admin)
-// DELETE /api/users/:id - delete a user by their id (admin)
+// DELETE /api/users/:id - eliminar un usuario por su id (admin) / delete a user by their id (admin)
 
 router.delete(
   "/:id",
   authMiddleware, // 1. ¿estás logueado? / is loged?
   adminMiddleware, // 2. ¿eres admin? / is admin?
   deleteUserByAdmin // 3. si sí a ambas, ejecuta la acción / if true both, execute
+);
+
+// POST /api/users/admin/create - crear un usuario con un rol específico (admin) / create a user with a specific role (admin)
+
+router.post(
+  "/admin/create",
+  authMiddleware, // 1. ¿estás logueado? / is loged?
+  adminMiddleware, // 2. ¿eres admin? / is admin?
+  createUserByAdmin // 3. si sí a ambas, ejecuta la acción / if true both, execute
 );
 
 module.exports = router;
