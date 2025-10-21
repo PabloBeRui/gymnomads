@@ -4,12 +4,7 @@ import { Routes, Route, Link } from "react-router-dom";
 
 //Componentes / Components
 import { ApiTest } from "./components/ApiTest";
-
-// Crear un componente simple temporal para la página de registro
-// Create a simple temporary component for the registration page
-const RegisterPagePlaceholder = () => (
-  <h2>Página de Registro (Formulario irá aquí)</h2>
-);
+import { RegisterForm } from "./components/RegisterForm";
 
 function App() {
   return (
@@ -32,7 +27,7 @@ function App() {
 
         {/* Ruta para la página de registro ('/register') */}
         {/* Route for the registration page ('/register') */}
-        <Route path="/register" element={<RegisterPagePlaceholder />} />
+        <Route path="/register" element={<RegisterForm />} />
 
         {/* Ruta para páginas no encontradas (404) */}
         {/* Route for not-found pages (404)  */}
