@@ -10,5 +10,16 @@ export interface RegisterData {
   password: string;
   phone?: string | null; // Opcional / Optional
   home_gym_id: number;
-  profile_picture?: File | null; 
+  profile_picture?: File | null;
+}
+
+/* ========================================
+ * Interfaz para la Respuesta del Registro
+ * Interface for Registration Response
+ * ======================================== */
+// Exportar interfaz para la respuesta recibida al registrar un usuario con éxito.
+// Export interface for the response received upon successful user registration.
+export interface RegisterResponse {
+  message: string;
+  userId: number;
 }

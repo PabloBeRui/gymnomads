@@ -6,6 +6,7 @@ import axios from "axios";
 // Registration data interface
 
 import type { RegisterData } from "../interfaces/user-interfaces";
+import type { RegisterResponse } from "../interfaces/user-interfaces";
 
 // Definir la URL base de la API.
 // Define the base API URL.
@@ -22,7 +23,7 @@ const API_URL = "http://localhost:3000/api";
 
 export const registerUser = async (
   userData: RegisterData
-): Promise<any> => /*//TODO cambiar any */ {
+): Promise<RegisterResponse> => {
   try {
     // petición POST al endpoint '/users/register' enviando los datos.
     //  POST request to the '/users/register' endpoint sending the data.
