@@ -1,14 +1,9 @@
 import { useEffect, useState } from "react";
-//Importar la biblioteca Axios para realizar solicitudes HTTP.
-// Import the Axios library for making HTTP requests
-import axios from "axios";
 
-interface Gym {
-  id: number;
-  name: string;
-  address: string;
-  city: string;
-}
+// Interfaz Gym
+// Gym interface
+import type { Gym } from "../interfaces/gym-interfaces";
+import { getAllGyms } from "../services/gym-services";
 
 export const ApiTest = () => {
   // Crear useState para almacenar la lista de gimnasios.
@@ -26,11 +21,11 @@ export const ApiTest = () => {
   useEffect(() => {
     // Definir función asíncrona para obtener los gimnasios.
     // Define an async function to fetch the gyms.
-    const fetchGyms = async () => {
+    const loadGyms = async () => {
       try {
         setError(null); // Limpiar errores previos. // Clear previous errors.
-        const response = await axios.get("http://localhost:3000/api/gyms");
-        setGyms(response.data);
+        const data = await getAllGyms();
+        setGyms(data);
       } catch (err) {
         // Mostrar error en consola y en el estado si la petición falla.
         // Log the error and set it in the state if the request fails.
@@ -40,7 +35,7 @@ export const ApiTest = () => {
         );
       }
     };
-    fetchGyms();
+    loadGyms();
   }, []); // El array vacío asegura una única ejecución. // The empty array ensures a single execution.
 
   return (
