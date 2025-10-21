@@ -9,6 +9,11 @@ import type { Gym } from "../interfaces/gym-interfaces";
 import { getAllGyms } from "../services/gym-services";
 import { registerUser } from "../services/user-services";
 
+// Hooks de React Router para navegación / React Router hooks for navigation
+import { useNavigate } from "react-router-dom";
+
+
+
 export const RegisterForm = () => {
   // Crear useStates para cada campo del formulario.
   // Create useStates for each form field.
@@ -31,7 +36,10 @@ export const RegisterForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   // UseState para errores específicos de la carga de gimnasios
   // useState for errors specific to loading gyms
-  const [gymLoadError, setGymLoadError] = useState<string | null>(null);
+    const [gymLoadError, setGymLoadError] = useState<string | null>(null);
+    
+    // Obtener la función de navegación / Get the navigation function
+  const navigate = useNavigate();
 
   //  useEffect para cargar la lista de gimnasios al usar select.
   //  useEffect to load the list of gyms using select.
@@ -91,7 +99,13 @@ export const RegisterForm = () => {
 
       // Mostrar notificacion  de éxito
       // Show success notification.
-      toast.success("¡Usuario registrado con éxito!");
+        toast.success("¡Usuario registrado con éxito!");
+        
+        // Redirigir al usuario a la página principal después de un breve retraso
+  // Redirect the user to the main page after a short delay
+  setTimeout(() => {
+      navigate('/'); 
+  }, 2000); //  1.5 segundos para que el usuario vea el toast  / 1.5 seconds for the user to see the toast
 
       // TODO: Redirigir al usuario al inicio.
     } catch (apiError) {
