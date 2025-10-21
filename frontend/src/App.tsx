@@ -1,15 +1,44 @@
+// Componentes necesarios de react-router-dom / Necessary components from react-router-dom
 
-import { ApiTest } from "./components/Apitest";
+import { Routes, Route, Link } from "react-router-dom";
+
+//Componentes / Components
+import { ApiTest } from "./components/ApiTest";
+
+// Crear un componente simple temporal para la página de registro
+// Create a simple temporary component for the registration page
+const RegisterPagePlaceholder = () => (
+  <h2>Página de Registro (Formulario irá aquí)</h2>
+);
 
 function App() {
   return (
-    <>
-      <h1>Gymnomads Fronted Ilerna Project</h1>
+    <div>
+      <h1>GymNomads Frontend</h1>
+      {/* Crear enlaces de navegación simples */}
+      {/* Create simple navigation links */}
+      <nav>
+        <Link to="/">Home (Test API)</Link> |{" "}
+        <Link to="/register">Registro</Link>
+      </nav>
       <hr />
-      {/* Renderizar el componente de prueba para validar la conexión. */}
-      {/* Render the test component to validate the connection. */}
-      <ApiTest />
-    </>
+
+      {/* Definir las rutas de la aplicación */}
+      {/* Define the application routes */}
+      <Routes>
+        {/* Ruta para la página principal ('/') */}
+        {/* Route for the main page ('/') */}
+        <Route path="/" element={<ApiTest />} />
+
+        {/* Ruta para la página de registro ('/register') */}
+        {/* Route for the registration page ('/register') */}
+        <Route path="/register" element={<RegisterPagePlaceholder />} />
+
+        {/* Ruta para páginas no encontradas (404) */}
+        {/* Route for not-found pages (404)  */}
+        <Route path="*" element={<h2>Página no encontrada</h2>} />
+      </Routes>
+    </div>
   );
 }
 
