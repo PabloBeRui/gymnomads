@@ -1,5 +1,8 @@
-// Componentes necesarios de react-router-dom / Necessary components from react-router-dom
+// Importar Toaster de sonner
+// Import Toaster from sonner
+import { Toaster } from "sonner";
 
+// Componentes necesarios de react-router-dom / Necessary components from react-router-dom
 import { Routes, Route, Link } from "react-router-dom";
 
 //Componentes / Components
@@ -33,6 +36,9 @@ function App() {
         {/* Route for not-found pages (404)  */}
         <Route path="*" element={<h2>Página no encontrada</h2>} />
       </Routes>
+      {/* Añadir el contenedor de notificaciones Sonner */}
+      {/* Add the Sonner notification container */}
+      <Toaster position="bottom-left" richColors closeButton />
     </div>
   );
 }

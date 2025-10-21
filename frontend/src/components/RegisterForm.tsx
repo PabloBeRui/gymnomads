@@ -1,4 +1,8 @@
 import { useEffect, useState } from "react";
+
+// Notificaciones sonner / sonner notifications
+import { toast } from "sonner";
+
 // Importar la interfaz Gym para el desplegable (¡necesitaremos obtener los gimnasios!)
 // Import the Gym interface for the dropdown (we'll need to fetch gyms!)
 import type { Gym } from "../interfaces/gym-interfaces";
@@ -83,18 +87,17 @@ export const RegisterForm = () => {
     try {
       // Llamar a la función registerUser del servicio con los datos del formulario.
       // Call the registerUser function from the service with the form data.
-      const result = await registerUser(formData);
+      await registerUser(formData);
 
-      // Mostrar mensaje de éxito (temporalmente con alert).
-      // Show success message (temporarily with alert).
-      console.log("Registro exitoso:", result); //?ver en consola qué resultado manda / show result in console
-      alert("¡Usuario registrado con éxito!");
+      // Mostrar notificacion  de éxito
+      // Show success notification.
+      toast.success("¡Usuario registrado con éxito!");
 
-      // TODO: mostrar mensaje de éxito con toastify
-      // TODO: show  success message with  toastify.
       // TODO: Redirigir al usuario al inicio.
     } catch (apiError) {
       console.error("Error en registro:", apiError);
+
+      toast.error("Error al registrar el usuario");
       // Establecer useState de error con el mensaje del error de la API o un mensaje por defecto.
       // Set error useState with the API error message or a default message.
       if (apiError instanceof Error) {
