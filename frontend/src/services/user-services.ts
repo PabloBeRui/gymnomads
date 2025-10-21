@@ -11,7 +11,7 @@ import type { RegisterResponse } from "../interfaces/user-interfaces";
 // Definir la URL base de la API.
 // Define the base API URL.
 
-const API_URL = "http://localhost:3000/api";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 /* ========================================
  * API CALL: Registrar un nuevo usuario

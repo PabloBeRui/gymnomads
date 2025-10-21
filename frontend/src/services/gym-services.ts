@@ -9,7 +9,7 @@ import type { Gym } from "../interfaces/gym-interfaces";
 
 // Definir la URL base de la API para evitar repetirla.
 // Define the base API URL to avoid repetition.
-const API_URL = "http://localhost:3000/api";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 /* ========================================
  * API CALL: Obtener todos los gimnasios
