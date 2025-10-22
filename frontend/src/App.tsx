@@ -8,6 +8,8 @@ import { Routes, Route, Link } from "react-router-dom";
 //Componentes / Components
 import { ApiTest } from "./components/ApiTest";
 import { RegisterForm } from "./components/RegisterForm";
+import { LoginForm } from "./components/LoginForm";
+
 
 function App() {
   return (
@@ -17,7 +19,7 @@ function App() {
       {/* Create simple navigation links */}
       <nav>
         <Link to="/">Home (Test API)</Link> |{" "}
-        <Link to="/register">Registro</Link>
+        <Link to="/register">Registro</Link> | <Link to="/login">Login</Link>
       </nav>
       <hr />
 
@@ -32,6 +34,9 @@ function App() {
         {/* Route for the registration page ('/register') */}
         <Route path="/register" element={<RegisterForm />} />
 
+        {/* Ruta para la página de login ('/login') */}
+        {/* Route for the login page ('/login') */}
+        <Route path="/login" element={<LoginForm />} />
         {/* Ruta para páginas no encontradas (404) */}
         {/* Route for not-found pages (404)  */}
         <Route path="*" element={<h2>Página no encontrada</h2>} />

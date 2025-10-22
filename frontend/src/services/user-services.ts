@@ -7,6 +7,7 @@ import axios from "axios";
 
 import type { RegisterData } from "../interfaces/user-interfaces";
 import type { RegisterResponse } from "../interfaces/user-interfaces";
+import type { LoginData, LoginResponse } from "../interfaces/user-interfaces";
 
 // Definir la URL base de la API.
 // Define the base API URL.
@@ -53,6 +54,52 @@ export const registerUser = async (
 
     // Lanzar un nuevo error con el mensaje procesado para que el componente lo capture.
     // Throw a new error with the processed message for the component to catch.
+    throw new Error(errorMessage);
+  }
+};
+
+/* ========================================
+ * API CALL: Iniciar sesión de usuario
+ * API CALL: Log in user
+ * ======================================== */
+
+// Recibe credenciales (LoginData) y devuelve la respuesta del backend (LoginResponse).
+// Receives credentials (LoginData) and returns the backend response (LoginResponse).
+export const loginUser = async (
+  credentials: LoginData
+): Promise<LoginResponse> => {
+  try {
+    // Realizar petición POST al endpoint '/users/login' enviando las credenciales.
+    // Perform a POST request to the '/users/login' endpoint sending the credentials.
+    const response = await axios.post<LoginResponse>(
+      `${API_URL}/users/login`,
+      credentials
+    );
+
+    // Devolver los datos recibidos (mensaje y token).
+    // Return the received data (message and token).
+    return response.data;
+  } catch (error) {
+    // Mostrar error detallado en consola para depuración.
+    // Log detailed error to console for debugging.
+    console.error("Error logging in user:", error);
+
+    // Intentar obtener un mensaje de error más específico de la respuesta del backend.
+    // Try to get a more specific error message from the backend response.
+
+    let errorMessage = "Error al iniciar sesión. Comprueba tus credenciales."; // Mensaje por defecto más específico para login
+    if (axios.isAxiosError(error) && error.response?.data?.message) {
+      // Usar el mensaje de error proporcionado por la API si está disponible.
+      // Use the error message provided by the API if available.
+      errorMessage = error.response.data.message; // Usar mensaje de la API (ej. "Credenciales incorrectas") / Use API message
+    } else if (error instanceof Error) {
+      // Usar el mensaje del objeto Error estándar si existe.
+      // Use the standard Error object message if it exists
+      errorMessage = error.message;
+    }
+
+    // Lanzar un nuevo error con el mensaje procesado.
+    // Throw a new error with the processed message.
     throw new Error(errorMessage);
   }
 };
