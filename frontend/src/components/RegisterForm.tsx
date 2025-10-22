@@ -190,7 +190,7 @@ export const RegisterForm = () => {
             //  Disable if gyms haven't loaded yet
             disabled={gymList.length === 0 && !gymLoadError}>
             <option value="">-- Selecciona un gimnasio --</option>
-            {/* TODO: Mapear gymList para crear las opciones */}
+            {/* Mapear gymList para crear las opciones */}
             {/* Map gymList to create the options */}
             {gymList.map((gym) => (
               <option key={gym.id} value={gym.id}>

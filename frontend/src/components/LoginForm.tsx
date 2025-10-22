@@ -55,9 +55,11 @@ export const LoginForm = () => {
       // Call the loginUser function from the service.
       const response = await loginUser(credentials);
 
-      // TODO: Guardar el token JWT recibido de forma segura (ej. localStorage).
-      // TODO: Securely save the received JWT token (e.g., localStorage).
-      console.log("Login exitoso, token:", response.token); // Mostrar token en consola por ahora / show token in console
+      // Guardar el token JWT recibido en localStorage.
+      // Save the received JWT token in localStorage.
+      localStorage.setItem("authToken", response.token);
+
+      console.log("Login correcto, token:", response.token); // Mostrar token en consola por ahora / show token in console
       // localStorage.setItem('authToken', response.token); // Ejemplo de guardado
 
       toast.success("¡Login correcto!");
