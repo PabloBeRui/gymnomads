@@ -9,9 +9,14 @@ import { handleApiError } from "../utils/error-handler";
 // Interfaz para los datos de registro .
 // Registration data interface
 
-import type { RegisterData } from "../interfaces/user-interfaces";
-import type { RegisterResponse } from "../interfaces/user-interfaces";
-import type { LoginData, LoginResponse } from "../interfaces/user-interfaces";
+// Importar interfaces necesarias / Import necessary interfaces
+import type {
+  RegisterData,
+  RegisterResponse,
+  LoginData,
+  LoginResponse,
+  User,
+} from "../interfaces/user-interfaces";
 
 // Definir la URL base de la API.
 // Define the base API URL.
@@ -94,7 +99,7 @@ export const loginUser = async (
 // Recibe el token JWT y devuelve los datos del usuario (respuesta del backend).
 // Receives the JWT token and returns the user data (backend response).
 
-export const getUserProfile = async (token: string): Promise<any> => {
+export const getUserProfile = async (token: string): Promise<User> => {
   try {
     // Realizar petición GET al endpoint '/users/profile'.
     // Perform a GET request to the '/users/profile' endpoint.
