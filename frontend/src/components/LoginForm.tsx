@@ -9,7 +9,7 @@ import { loginUser } from "../services/user-services";
 // Importar interfaz para datos de login
 // Import interface for login data
 import type { LoginData } from "../interfaces/user-interfaces";
-// Contexto de Autenticación / Authentication Context
+// Importar el hook de autenticación / Import the authentication hook
 import { useAuth } from "../context/AuthContext";
 
 export const LoginForm = () => {
@@ -63,7 +63,7 @@ export const LoginForm = () => {
 
       // Llamar a la función login del contexto para guardar token y actualizar estado global.
       // Call the login function from the context to save token and update global state.
-      
+
       login(response.token);
 
       console.log("Login correcto, token:", response.token); // Mostrar token en consola por ahora / show token in console
