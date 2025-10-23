@@ -17,7 +17,7 @@ function App() {
   // Obtener el estado de autenticación y la función logout del contexto.
   // Get authentication state and logout function from the context.
 
-  const { token, logout, isLoading } = useAuth();
+  const { token, logout, isLoading, user } = useAuth();
 
   // Mostrar "Cargando..." mientras el AuthProvider verifica el token inicial.
   // Show "Loading..." while AuthProvider checks the initial token.
@@ -30,18 +30,24 @@ function App() {
       {/* Crear enlaces de navegación simples */}
       {/* Create simple navigation links */}
       <nav>
-        <Link to="/">Home </Link> |{" | "}
-        {/* Renderizado condicional basado en la existencia del token */}
-        {/* Conditional rendering based on token existence */}
-        {/* Si hay token (usuario logueado) / If token exists (user logged in)*/}
-        {token ? (
+        <Link to="/">Home</Link>
+        {" | "}
+
+        {/*// Si hay token Y datos de usuario / If token AND user data exist*/}
+        {token && user ? (
           <>
-            {/* //TODO: Añadir enlace a Perfil/Dashboard aquí . desde imagen perfil */}
-            {/* <Link to="/profile">Perfil</Link> |{' '} */}
+            {/* Mostrar nombre del usuario / Show user name */}
+            <span style={{ color: "green", fontWeight: "bolder" }}>
+              {user.first_name}
+            </span>
+            {" | "}
+            {/* //TODO: Añadir enlace a Perfil a traves de profile_picture aqui */}
+
             <button onClick={logout}>Logout</button>
           </>
         ) : (
-          // Si no hay token (usuario no logueado) / If no token (user not logged in)
+          // Si no hay token o no hay datos de usuario (o aún están cargando implícitamente por isLoading)
+          // If no token or no user data (or implicitly still loading via isLoading)
           <>
             <Link to="/register">Registro</Link> |{" "}
             <Link to="/login">Login</Link>
