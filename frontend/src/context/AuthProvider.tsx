@@ -13,8 +13,12 @@ import type { User } from "../interfaces/user-interfaces";
 // Notificaciones / Notifications
 import { toast } from "sonner";
 
-// TODO Importar la función del servicio para obtener el perfil / Import service function to get profile
-// import { getUserProfile } from '../services/user-services';
+//Importar la función del servicio para obtener el profile / Import service function to get profile
+import { getUserProfile } from "../services/user-services";
+
+// Importar la utilidad centralizada para manejar errores de API.
+// Import the centralized utility for handling API errors.
+import { handleApiError } from "../utils/error-handler";
 
 // Definir las props que recibirá el componente Provider (los componentes hijos).
 // Define the props for the Provider component (children components).
@@ -53,16 +57,34 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       // El token ya se leyó en el useState inicial.
       // The token was already read in the initial useState.
       if (token) {
-        // TODO: Verificar token con API ('/api/users/profile') y obtener datos de usuario.
-        // TODO: Verify token with API ('/api/users/profile') and get user data.
-        // Por ahora, solo registrar que se encontró.
-        // For now, just log that it was found.
-        console.log(
-          "AuthProvider: Token encontrado en localStorage al inicio."
-        );
-        // Si la verificación fuera exitosa, aquí llamaríamos a:
-        // If verification were successful, we would call:
-        // setUser(datosDelUsuarioDeLaApi);
+        try {
+          // Llamar a la API para obtener los datos del usuario usando el token.
+          // Call the API to get user data using the token.
+          console.log("AuthProvider: Verificando token y obteniendo perfil...");
+          const userData = await getUserProfile(token); // <--- LLAMADA REAL / ACTUAL CALL
+          setUser(userData); // Guardar los datos del usuario en el estado / Save user data in state
+          console.log(
+            "AuthProvider: Token verificado, datos de usuario cargados:",
+            userData
+          );
+        } catch (error) {
+          // Si getUserProfile falla (ej. token expirado), handleApiError limpiará el token.
+          // If getUserProfile fails (e.g., expired token), handleApiError will clear the token.
+          console.error(
+            "AuthProvider: Error al verificar token/obtener perfil:",
+            error
+          );
+          handleApiError(error); // Procesar error (limpia token si es 401/403)
+          // Asegurarse de limpiar estados locales si handleApiError limpió el token.
+          // Ensure local states are cleared if handleApiError cleared the token.
+          if (!localStorage.getItem("authToken")) {
+            setToken(null);
+            setUser(null);
+          }
+          // redirigir a login si falla la verificación inicial del token
+          // redirect to login if the initial token verification fails
+          navigate("/login");
+        }
       } else {
         // Registrar que no se encontró token.
         // Log that no token was found.
