@@ -9,6 +9,8 @@ import { loginUser } from "../services/user-services";
 // Importar interfaz para datos de login
 // Import interface for login data
 import type { LoginData } from "../interfaces/user-interfaces";
+// Contexto de Autenticación / Authentication Context
+import { useAuth } from "../context/AuthContext";
 
 export const LoginForm = () => {
   // Crear useState para los campos del formulario.
@@ -26,6 +28,10 @@ export const LoginForm = () => {
 
   // Obtener la función de navegación / Get the navigation function
   const navigate = useNavigate();
+
+  // Obtener la función login del contexto de autenticación.
+  // Get the login function from the authentication context.
+  const { login } = useAuth(); // <-- AÑADIR ESTA LÍNEA
 
   // Crear manejador para el envío del formulario.
   // Create handler for form submission.
@@ -55,9 +61,10 @@ export const LoginForm = () => {
       // Call the loginUser function from the service.
       const response = await loginUser(credentials);
 
-      // Guardar el token JWT recibido en localStorage.
-      // Save the received JWT token in localStorage.
-      localStorage.setItem("authToken", response.token);
+      // Llamar a la función login del contexto para guardar token y actualizar estado global.
+      // Call the login function from the context to save token and update global state.
+      
+      login(response.token);
 
       console.log("Login correcto, token:", response.token); // Mostrar token en consola por ahora / show token in console
       // localStorage.setItem('authToken', response.token); // Ejemplo de guardado
