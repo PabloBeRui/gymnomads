@@ -2,6 +2,10 @@
 // Import axios for making HTTP requests.
 import axios from "axios";
 
+// Importar el manejador de errores centralizado.
+// Import the centralized error handler.
+import { handleApiError } from "../utils/error-handler";
+
 // Interfaz para los datos de registro .
 // Registration data interface
 
@@ -27,33 +31,23 @@ export const registerUser = async (
 ): Promise<RegisterResponse> => {
   try {
     // petición POST al endpoint '/users/register' enviando los datos.
-    //  POST request to the '/users/register' endpoint sending the data.
-    const response = await axios.post(`${API_URL}/users/register`, userData);
-
+    // POST request to the '/users/register' endpoint sending the data.
+    const response = await axios.post<RegisterResponse>(
+      `${API_URL}/users/register`,
+      userData
+    );
     // Devolver los datos recibidos en la respuesta del servidor.
     // Return the data received in the server response.
     return response.data;
   } catch (error) {
-    // Mostrar error detallado en consola para depuración.
-    // Log detailed error to console for debugging.
-    console.error("Error registrando user:", error);
-
-    // Intentar obtener un mensaje de error más específico de la respuesta del backend.
-    // Try to get a more specific error message from the backend response.
-    let errorMessage = "Error al registrar. Inténtalo de nuevo.";
-
-    if (axios.isAxiosError(error) && error.response?.data?.message) {
-      // Usar el mensaje de error proporcionado por la API si está disponible.
-      // Use the error message provided by the API if available.
-      errorMessage = error.response.data.message;
-    } else if (error instanceof Error) {
-      // Usar el mensaje del objeto Error estándar si existe.
-      // Use the standard Error object message if it exists.
-      errorMessage = error.message;
-    }
-
-    // Lanzar un nuevo error con el mensaje procesado para que el componente lo capture.
-    // Throw a new error with the processed message for the component to catch.
+    // Usar el manejador centralizado con un mensaje por defecto específico para registro.
+    // Use the centralized handler with a default message specific to registration.
+    const errorMessage = handleApiError(
+      error,
+      "Error al intentar registrar el usuario. Inténtalo de nuevo"
+    );
+    // Lanzar un nuevo error con el mensaje procesado.
+    // Throw a new error with the processed message.
     throw new Error(errorMessage);
   }
 };
@@ -80,24 +74,50 @@ export const loginUser = async (
     // Return the received data (message and token).
     return response.data;
   } catch (error) {
-    // Mostrar error detallado en consola para depuración.
-    // Log detailed error to console for debugging.
-    console.error("Error logging in user:", error);
+    // Usar el manejador centralizado con un mensaje por defecto específico para login.
+    // Use the centralized handler with a default message specific to login.
+    const errorMessage = handleApiError(
+      error,
+      "Error al iniciar sesión. Comprueba tus credenciales."
+    );
+    // Lanzar un nuevo error con el mensaje procesado.
+    // Throw a new error with the processed message.
+    throw new Error(errorMessage);
+  }
+};
 
-    // Intentar obtener un mensaje de error más específico de la respuesta del backend.
-    // Try to get a more specific error message from the backend response.
+/* ========================================
+ * API CALL: Obtener perfil del usuario autenticado
+ * API CALL: Get authenticated user profile
+ * ======================================== */
 
-    let errorMessage = "Error al iniciar sesión. Comprueba tus credenciales."; // Mensaje por defecto más específico para login
-    if (axios.isAxiosError(error) && error.response?.data?.message) {
-      // Usar el mensaje de error proporcionado por la API si está disponible.
-      // Use the error message provided by the API if available.
-      errorMessage = error.response.data.message; // Usar mensaje de la API (ej. "Credenciales incorrectas") / Use API message
-    } else if (error instanceof Error) {
-      // Usar el mensaje del objeto Error estándar si existe.
-      // Use the standard Error object message if it exists
-      errorMessage = error.message;
-    }
+// Recibe el token JWT y devuelve los datos del usuario (respuesta del backend).
+// Receives the JWT token and returns the user data (backend response).
 
+export const getUserProfile = async (token: string): Promise<any> => {
+  try {
+    // Realizar petición GET al endpoint '/users/profile'.
+    // Perform a GET request to the '/users/profile' endpoint.
+
+    // Incluir el token en la cabecera 'Authorization' para rutas protegidas.
+    // Include the token in the 'Authorization' header for protected routes.
+
+    const response = await axios.get(`${API_URL}/users/profile`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Formato estándar Bearer token
+      },
+    });
+
+    // Devolver los datos del usuario recibidos en la respuesta.
+    // Return the user data received in the response.
+    return response.data;
+  } catch (error) {
+    // Usar el manejador centralizado con un mensaje por defecto específico para obtener perfil.
+    // Use the centralized handler with a default message specific to getting the profile.
+    const errorMessage = handleApiError(
+      error,
+      "Error al obtener el perfil del usuario."
+    );
     // Lanzar un nuevo error con el mensaje procesado.
     // Throw a new error with the processed message.
     throw new Error(errorMessage);

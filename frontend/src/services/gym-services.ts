@@ -2,6 +2,10 @@
 // Import axios for making HTTP requests.
 import axios from "axios";
 
+// Importar el manejador de errores centralizado.
+// Import the centralized error handler.
+import { handleApiError } from "../utils/error-handler";
+
 // Interfaz Gym
 // Gym interface
 
@@ -28,14 +32,14 @@ export const getAllGyms = async (): Promise<Gym[]> => {
 
     return response.data;
   } catch (error) {
-    // Mostrar error detallado en consola si la petición falla.
-    // Log a detailed error to the console if the request fails.
-
-    console.error("Error fetching gyms:", error);
-
-    // Lanzar un nuevo error para que el componente que llama pueda manejarlo.
-    // Throw a new error so the calling component can handle it.
-
-    throw new Error("No se pudieron cargar los gimnasios.");
+    // Usar el manejador centralizado con un mensaje por defecto específico para obtener gimnasios.
+    // Use the centralized handler with a default message specific to fetching gyms.
+    const errorMessage = handleApiError(
+      error,
+      "No se pudieron cargar los gimnasios."
+    );
+    // Lanzar un nuevo error con el mensaje procesado.
+    // Throw a new error with the processed message.
+    throw new Error(errorMessage);
   }
 };
