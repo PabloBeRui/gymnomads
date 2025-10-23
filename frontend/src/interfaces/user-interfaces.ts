@@ -44,7 +44,22 @@ export interface LoginData {
 export interface LoginResponse {
   message: string;
   token: string; // Asumimos que el backend devuelve un token JWT
-  // Podría incluir también datos del usuario si el backend los devuelve
-  // Could also include user data if the backend returns it
-  // user?: User;
+}
+
+/* ========================================
+ * Interfaz para el objeto Usuario
+ * Interface for the User object
+ * ======================================== */
+// Exportar interfaz para representar un usuario autenticado.
+// Export interface to represent an authenticated user.
+export interface User {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone?: string | null;
+  profile_picture?: string | null; // Asumimos URL de la imagen / Assume image URL
+  home_gym_id: number;
+  registered_at: string; // O Date / Or Date
+  role: string;
 }

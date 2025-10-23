@@ -1,10 +1,20 @@
 import { useState, useEffect } from "react";
 import type { ReactNode } from "react";
+
+// Importar hook de navegación / Import navigation hook
+import { useNavigate } from "react-router-dom"; //
+
 // Importar el contexto desde el archivo separado.
 // Import the context from the separate file.
 import { AuthContext } from "./AuthContext";
-// TODO: Importar la interfaz User cuando se defina / Import the User interface when defined
-// import type { User } from '../interfaces/user-interfaces';
+// Importar la interfaz User / Import the User interface
+import type { User } from "../interfaces/user-interfaces";
+
+// Notificaciones / Notifications
+import { toast } from "sonner";
+
+// TODO Importar la función del servicio para obtener el perfil / Import service function to get profile
+// import { getUserProfile } from '../services/user-services';
 
 // Definir las props que recibirá el componente Provider (los componentes hijos).
 // Define the props for the Provider component (children components).
@@ -12,9 +22,12 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-// Exportar el componente AuthProvider.
-// Export the AuthProvider component.
+//  AuthProvider component.
+
 export const AuthProvider = ({ children }: AuthProviderProps) => {
+  // Obtener función para navegar / Get function to navigate
+  const navigate = useNavigate();
+
   // --- Estados Internos del Provider ---
 
   // Crear useState para el token, leyendo valor inicial de localStorage.
@@ -24,7 +37,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   );
   // Crear useState para los datos del usuario.
   // Create useState for the user data.
-  const [user, setUser] = useState<any | null>(null); // TODO: Cambiar 'any' por 'User' / Change 'any' to 'User'
+  const [user, setUser] = useState<User | null>(null);
   // Crear useState para indicar si se está comprobando el token inicial.
   // Create useState to indicate if the initial token check is in progress.
   const [isLoading, setIsLoading] = useState<boolean>(true); // Empezar en true / Start as true
@@ -65,13 +78,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Invocar la función de comprobación.
     // Invoke the check function.
     checkAuthStatus();
+    // Deshabilitar regla exhaustive-deps: Este efecto solo debe ejecutarse al montar para la comprobación inicial del token no si cambia.
+    // Disable exhaustive-deps rule: This effect should only run on mount for the initial token check not if change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Array vacío asegura una única ejecución al montar. / Empty array ensures single execution on mount.
 
   // --- Funciones de Autenticación (Proporcionadas por el Contexto) ---
 
   // Definir función para manejar el login.
   // Define function to handle login.
-  const login = (newToken: string, userData?: any /* //TODO: User */) => {
+  const login = (newToken: string, userData?: User) => {
     // Guardar token en localStorage.
     // Save token in localStorage.
     localStorage.setItem("authToken", newToken);
@@ -97,11 +113,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Clear user useState.
     setUser(null);
     console.log("AuthProvider: Usuario deslogueado, token eliminado.");
-    // TODO: Redirigir a /login ( logout?).
-    // TODO: Redirect to /login ( logout?).
+    // Mostrar notificación de éxito / Show success notification
+    toast.success("Sesión cerrada correctamente."); //
+    // Redirigir a la página de inicio. / Redirect to the home page.
+    navigate("/"); //
   };
-
-  // --- Valor a Proveer por el Contexto / Context Value ---
 
   // Crear el objeto 'value' que agrupa estado y funciones.
   // Create the 'value' object grouping state and functions.
@@ -115,9 +131,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // --- Renderizado del Provider ---
 
-  // Devolver el Provider del contexto, pasando el 'value' y renderizando los hijos.
-  // Return the context Provider, passing the 'value' and rendering children.
+  // Devolver el Provider del contexto, pasando el 'value'.
+  // Return the context Provider, passing the 'value'.
+  // Renderizar hijos solo cuando la carga inicial haya terminado para evitar parpadeos.
+  // Render children only when initial loading is finished to avoid flickering.
   return (
-    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>
+      {
+        !isLoading ? (
+          children
+        ) : (
+          <div>Cargando sesión...</div>
+        ) /* //TODO futuro Spinner */
+      }
+    </AuthContext.Provider>
   );
 };

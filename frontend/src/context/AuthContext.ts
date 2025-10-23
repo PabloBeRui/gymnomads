@@ -1,18 +1,30 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext } from "react";
 
-// TODO: Importar la interfaz User cuando se defina / Import the User interface when defined
-// import type { User } from '../interfaces/user-interfaces';
+// Importar la interfaz User / Import the User interface
+import type { User } from "../interfaces/user-interfaces"; //
 
 // Definir la forma/estructura de los datos que contendrá el contexto.
 // Define the shape/structure of the data the context will hold.
 export interface AuthContextType {
-  token: string | null; // El token JWT o null / The JWT token or null
-  user: any | null;     // TODO: Cambiar 'any' por 'User' / Change 'any' to 'User'
-  isLoading: boolean;   // ¿Comprobando token inicial? / Checking initial token?
-  // Función para iniciar sesión / Function to log in
-  login: (token: string, userData?: any /* TODO: User */) => void; 
-  // Función para cerrar sesión / Function to log out
-  logout: () => void;   
+  // Almacenar el token JWT si el usuario está autenticado, o null si no.
+  // Store the JWT token if the user is authenticated, or null otherwise.
+  token: string | null;
+
+  // Almacenar los datos del usuario autenticado, o null si no.
+  // Store the data of the authenticated user, or null otherwise.
+  user: User | null;
+
+  // Indicar si el estado de autenticación inicial aún se está determinando (al cargar la app).
+  // Indicate if the initial authentication status is still being determined (on app load).
+  isLoading: boolean;
+
+  // Función para actualizar el estado tras un inicio de sesión exitoso.
+  // Function to update state after a successful login.
+  login: (token: string, userData?: User) => void;
+
+  // Función para limpiar el estado de autenticación al cerrar sesión.
+  // Function to clear authentication state on logout.
+  logout: () => void;
 }
 
 // Crear el contexto con un valor inicial nulo (será provisto por AuthProvider).
