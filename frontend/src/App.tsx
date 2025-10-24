@@ -9,6 +9,7 @@ import { Routes, Route, Link } from "react-router-dom";
 import { ApiTest } from "./components/ApiTest";
 import { RegisterForm } from "./components/RegisterForm";
 import { LoginForm } from "./components/LoginForm";
+import { ProfilePage } from "./components/ProfilePage";
 
 // Importar el hook de autenticación / Import the authentication hook
 import { useAuth } from "./context/AuthContext";
@@ -17,10 +18,6 @@ import { useAuth } from "./context/AuthContext";
 import { ProtectedRoute } from "./router/ProtectedRoute";
 
 function App() {
-  // componente simple temporal para la página de perfil (protegida)
-  //  simple temporary component for the protected profile page
-  const ProfilePagePlaceholder = () => <h2>Mi Perfil (Ruta Protegida)</h2>;
-
   // Obtener el estado de autenticación y la función logout del contexto.
   // Get authentication state and logout function from the context.
 
@@ -50,10 +47,18 @@ function App() {
             {" | "}
             {/* Mostrar foto de perfil si existe / Show profile picture if exists */}
             {console.log(user)}
-            {user.profile_picture && (
+
+            <Link to="/profile">
+              {" "}
               <img
-                src={user.profile_picture} // Usar la URL del contexto / Use URL from context  user.profile_picture
-                alt={`${user.first_name} ${user.last_name}`} // Texto alternativo / Alt text
+                // Usar la URL del usuario o avatar url por defecto si no existe
+                //  Use user URL or default avatar url if not exists
+                src={
+                  user.profile_picture
+                    ? user.profile_picture
+                    : "/images/profile/default_avatar.png"
+                }
+                alt={user.first_name} // Texto alternativo / Alt text
                 style={{
                   width: "30px",
                   height: "30px",
@@ -62,10 +67,10 @@ function App() {
                   marginRight: "5px",
                 }}
               />
-            )}
+            </Link>
+
             {" | "}
 
-            <Link to="/profile">Mi Perfil</Link>
             {" | "}
             <button onClick={logout}>Logout</button>
           </>
@@ -105,7 +110,7 @@ function App() {
           {/* <-- Ruta Padre Protectora */}
           {/* Todas las rutas aquí dentro estarán protegidas */}
           {/* All routes inside here will be protected */}
-          <Route path="/profile" element={<ProfilePagePlaceholder />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
       </Routes>
       {/* Añadir el contenedor de notificaciones Sonner */}
