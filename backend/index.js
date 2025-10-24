@@ -34,6 +34,11 @@ app.use(cors());
 // Middleware for Express to understand JSON requests
 app.use(express.json());
 
+// Servir archivos estáticos desde la carpeta 'uploads' en la ruta URL '/uploads'
+// Serve static files from the 'uploads' folder at the URL path '/uploads'
+
+app.use("/uploads", express.static("uploads"));
+
 // Create a basic route for the homepage ('/')
 // Crear una ruta básica para la página de inicio ('/')
 

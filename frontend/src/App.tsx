@@ -41,7 +41,21 @@ function App() {
               {user.first_name}
             </span>
             {" | "}
-            {/* //TODO: Añadir enlace a Perfil a traves de profile_picture aqui */}
+            {/* Mostrar foto de perfil si existe / Show profile picture if exists */}
+            {console.log(user)}
+            {user.profile_picture && (
+              <img
+                src={user.profile_picture} // Usar la URL del contexto / Use URL from context  user.profile_picture
+                alt={`${user.first_name} ${user.last_name}`} // Texto alternativo / Alt text
+                style={{
+                  width: "30px",
+                  height: "30px",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  marginRight: "5px",
+                }}
+              />
+            )}
 
             <button onClick={logout}>Logout</button>
           </>

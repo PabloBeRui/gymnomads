@@ -20,7 +20,7 @@ export interface AuthContextType {
 
   // Función para actualizar el estado tras un inicio de sesión exitoso.
   // Function to update state after a successful login.
-  login: (token: string, userData?: User) => void;
+  login: (token: string) => Promise<void>;
 
   // Función para limpiar el estado de autenticación al cerrar sesión.
   // Function to clear authentication state on logout.

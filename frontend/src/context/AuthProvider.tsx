@@ -107,19 +107,49 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // --- Funciones de Autenticación (Proporcionadas por el Contexto) ---
 
-  // Definir función para manejar el login.
-  // Define function to handle login.
-  const login = (newToken: string, userData?: User) => {
+  // Definir función asíncrona para manejar el login.
+  // Define async function to handle login.
+  const login = async (newToken: string): Promise<void> => {
     // Guardar token en localStorage.
     // Save token in localStorage.
     localStorage.setItem("authToken", newToken);
     // Actualizar useState del token.
     // Update token useState.
     setToken(newToken);
-    // Actualizar useState del usuario (si se proporcionan datos).
-    // Update user useState (if data is provided).
-    setUser(userData || null);
-    console.log("AuthProvider: Usuario logueado, token guardado.");
+    // Limpiar estado user previo (para evitar mostrar datos incorrectos brevemente).
+    // Clear previous user state (to avoid briefly showing incorrect data).
+    setUser(null);
+
+    try {
+      // Esperar a obtener los datos del perfil del usuario usando el nuevo token.
+      // Wait to get user profile data using the new token.
+      const userData = await getUserProfile(newToken);
+      // Actualizar useState user con los datos reales obtenidos.
+      // Update user useState with the actual fetched data.
+      setUser(userData);
+      // log éxito y datos cargados en consola para depuración.
+      // Log success and loaded data in console for debugging.
+      console.log("AuthProvider: Usuario logueado, token guardado.", userData);
+    } catch (error) {
+      // Si falla la carga del perfil justo después del login, log error
+      // If loading the profile right after login fails, log error
+      console.error("AuthProvider: Error al obtener perfil tras login:", error);
+
+      // Procesar error (puede limpiar token si es 401/403).
+      // Process error (may clear token if 401/403).
+      handleApiError(error);
+      // Forzar logout si no se pudieron cargar los datos esenciales del usuario al comprobar si handleApiError limpió el token
+      // Force logout if essential user data couldn't be loaded? It's an option to Check if handleApiError cleared the token
+      if (!localStorage.getItem("authToken")) {
+        setToken(null);
+      }
+      // Asegurar que user quede null si falla la carga.
+      // Ensure user remains null if loading fails.
+      setUser(null);
+      // Mostrar notificación de error al usuario.
+      // Show error notification to the user.
+      toast.error("Error al cargar los datos del usuario después del login.");
+    }
   };
 
   // Definir función para manejar el logout.

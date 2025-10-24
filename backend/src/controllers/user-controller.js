@@ -134,19 +134,57 @@ const getProfile = async (req, res) => {
     // Find the user in the DB, selecting only the necessary fields
 
     const [users] = await db.query(
-      "SELECT id, first_name, last_name, email, home_gym_id, profile_picture FROM users WHERE id = ?",
+     "SELECT id, first_name, last_name, email, phone, home_gym_id, profile_picture, role, registered_at FROM users WHERE id = ?",
       [userId]
     );
 
     // Comprobar si el usuario todavía existe en la BBDD
     // Check if the user still exists in the DB
     if (users.length === 0) {
-      console.error("No existe el usuario");
+      // log error si no se encuentra el usuario.
+      // Log error if user is not found.
+      console.error(`Usuario no encontrado con id: ${userId}`);
+      // Devolver respuesta 404 Not Found.
+      // Return 404 Not Found response
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
-    // Devolver los datos del perfil
-    // Return the profile data
-    res.status(200).json(users[0]);
+
+    // --- LÓGICA PARA CONSTRUIR URL DE IMAGEN ---
+    // --- LOGIC TO BUILD IMAGE URL ---
+    // Crear una copia del objeto usuario para modificarla.
+    // Create a copy of the user object to modify it.
+
+    const userProfile = { ...users[0] }; // Crear una copia para modificar
+
+    // Construir URL completa SOLO si hay ruta de imagen
+    // Build full URL ONLY if image path exists
+    if (userProfile.profile_picture) {
+
+      // Reemplazar barras invertidas (si las hubiera) por barras inclinadas
+      // Replace backslashes (if any) with forward slashes
+      const imagePath = userProfile.profile_picture.replace(/\\/g, '/');
+
+      // Comprobar si la variable BASE_URL está definida en el entorno.
+      // Check if the BASE_URL variable is defined in the environment.
+      if (!process.env.BASE_URL) {
+
+        // Advertir en consola si BASE_URL falta en .env del backend.
+        // Warn in console if BASE_URL is missing in backend .env.
+        console.warn("ADVERTENCIA: La variable de entorno BASE_URL no está definida en el backend .env");
+      }
+      
+      // Construir la URL completa concatenando BASE_URL y la ruta de la imagen.
+      // Build the full URL by concatenating BASE_URL and the image path.
+      // Usar fallback a string vacío si BASE_URL no está definida para evitar 'undefined/' en la URL.
+      // Use empty string fallback if BASE_URL is not defined to avoid 'undefined/' in the URL.
+      userProfile.profile_picture = `${process.env.BASE_URL || ''}/${imagePath}`; //  fallback  BASE_URL 
+      console.log("URL de imagen construida para enviar:", userProfile.profile_picture); // debugging log
+    }
+    // --- FIN LÓGICA URL IMAGEN ---
+
+    // Devolver datos del perfil (¡sin contraseña!)
+    // Return profile data (no password!)
+    res.status(200).json(userProfile);
   } catch (error) {
     console.error(`Error a la hora de obtener el profile, error ${error}`);
 
