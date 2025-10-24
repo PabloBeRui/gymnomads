@@ -13,7 +13,14 @@ import { LoginForm } from "./components/LoginForm";
 // Importar el hook de autenticación / Import the authentication hook
 import { useAuth } from "./context/AuthContext";
 
+// Importar el protector de rutas / Import the route protector
+import { ProtectedRoute } from "./router/ProtectedRoute";
+
 function App() {
+  // componente simple temporal para la página de perfil (protegida)
+  //  simple temporary component for the protected profile page
+  const ProfilePagePlaceholder = () => <h2>Mi Perfil (Ruta Protegida)</h2>;
+
   // Obtener el estado de autenticación y la función logout del contexto.
   // Get authentication state and logout function from the context.
 
@@ -56,7 +63,10 @@ function App() {
                 }}
               />
             )}
+            {" | "}
 
+            <Link to="/profile">Mi Perfil</Link>
+            {" | "}
             <button onClick={logout}>Logout</button>
           </>
         ) : (
@@ -87,6 +97,16 @@ function App() {
         {/* Ruta para páginas no encontradas (404) */}
         {/* Route for not-found pages (404)  */}
         <Route path="*" element={<h2>Página no encontrada</h2>} />
+
+        {/* --- Rutas Protegidas (Anidadas bajo ProtectedRoute) --- */}
+        {/* --- Protected Routes (Nested under ProtectedRoute) --- */}
+        <Route element={<ProtectedRoute />}>
+          {" "}
+          {/* <-- Ruta Padre Protectora */}
+          {/* Todas las rutas aquí dentro estarán protegidas */}
+          {/* All routes inside here will be protected */}
+          <Route path="/profile" element={<ProfilePagePlaceholder />} />
+        </Route>
       </Routes>
       {/* Añadir el contenedor de notificaciones Sonner */}
       {/* Add the Sonner notification container */}
