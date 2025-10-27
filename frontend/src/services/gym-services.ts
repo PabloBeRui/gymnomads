@@ -43,3 +43,42 @@ export const getAllGyms = async (): Promise<Gym[]> => {
     throw new Error(errorMessage);
   }
 };
+
+/* ========================================
+ * API CALL: Obtener un gimnasio por ID
+ * API CALL: Get gym by ID
+ * ======================================== */
+// Obtener un gimnasio específico por ID.
+// Get a specific gym by ID.
+
+export const getGymById = async (gymId: number): Promise<Gym> => {
+  // Comprobar si se proporcionó un ID válido.
+  // Check if a valid ID was provided.
+
+  if (!gymId) {
+    // Lanzar error si el ID no es válido o no se proporcionó.
+    // Throw an error if the ID is invalid or not provided.
+
+    throw new Error("Se requiere un ID de gimnasio válido.");
+  }
+  try {
+    // Realizar petición GET al endpoint específico del gimnasio (ej. /api/gyms/123).
+    // Perform a GET request to the specific gym endpoint (e.g., /api/gyms/123).
+
+    const response = await axios.get<Gym>(`${API_URL}/gyms/${gymId}`);
+
+    // Devolver los datos del gimnasio recibidos.
+    // Return the received gym data.
+    return response.data;
+  } catch (error) {
+    // Usar el manejador centralizado con un mensaje por defecto específico.
+    // Use the centralized handler with a specific default message.
+    const errorMessage = handleApiError(
+      error,
+      `Error al obtener el gimnasio con ID ${gymId}.`
+    );
+    // Lanzar un nuevo error con el mensaje procesado.
+    // Throw a new error with the processed message.
+    throw new Error(errorMessage);
+  }
+};
