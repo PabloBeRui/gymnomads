@@ -46,8 +46,8 @@ export const ProfilePage = () => {
       </p>
       <p>
         <strong>Gimnasio Asociado (ID):</strong> {user.home_gym_id}
-        {/* TODO: Obtener y mostrar el nombre del gimnasio en lugar del ID */}
-        {/* TODO: Fetch and display gym name instead of ID */}
+        {/* //TODO: Obtener y mostrar el nombre del gimnasio en lugar del ID */}
+        {/* //TODO: Fetch and display gym name instead of ID */}
       </p>
       <p>
         <strong>Rol:</strong> {user.role}

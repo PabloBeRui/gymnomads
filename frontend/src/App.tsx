@@ -9,7 +9,7 @@ import { Routes, Route, Link } from "react-router-dom";
 import { ApiTest } from "./components/ApiTest";
 import { RegisterForm } from "./components/RegisterForm";
 import { LoginForm } from "./components/LoginForm";
-import { ProfilePage } from "./components/ProfilePage";
+import { ProfilePage } from "./pages/ProfilePage";
 
 // Importar el hook de autenticación / Import the authentication hook
 import { useAuth } from "./context/AuthContext";
