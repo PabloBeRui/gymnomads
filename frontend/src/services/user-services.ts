@@ -175,3 +175,75 @@ export const updateUserProfile = async (
     throw new Error(errorMessage);
   }
 };
+
+
+
+/* ========================================
+ * API CALL: Subir/Actualizar foto de perfil
+ * API CALL: Upload/Update profile picture
+ * ======================================== */
+// Subir la foto de perfil.
+// Upload the profile picture.
+// Recibe el token y el archivo (File). Devuelve la respuesta del backend.
+// Receives the token and the file (File). Returns the backend response.
+export const uploadProfilePicture = async (
+  token: string,
+  file: File
+): Promise<{ message: string; filePath: string }> => {
+  // Comprobar si hay token.
+  // Check if token exists.
+  if (!token) {
+    throw new Error('No se proporcionó token de autenticación.');
+  }
+  // Comprobar si hay archivo.
+  // Check if file exists.
+  if (!file) {
+    throw new Error('No se seleccionó ningún archivo.');
+  }
+
+  // 1. Crear un objeto FormData.
+  // 1. Create a FormData object.
+  // FormData es necesario para enviar archivos (multipart/form-data).
+  // FormData is necessary to send files (multipart/form-data).
+  const formData = new FormData();
+  
+  // 2. Añadir el archivo al FormData.
+  // 2. Add the file to the FormData.
+  // El nombre del campo ("profilePicture") DEBE coincidir con el esperado por Multer en el backend.
+  // The field name ("profilePicture") MUST match the one expected by Multer in the backend.
+  // En tu 'user-routes.js', usas: createUploadHandler(profilePictureUploader, "profilePicture")
+  formData.append('profilePicture', file); 
+  
+
+  try {
+    // 3. Realizar petición POST al endpoint '/users/profile/picture'.
+    // 3. Perform POST request to the '/users/profile/picture' endpoint.
+    const response = await axios.post<{ message: string; filePath: string }>(
+      `${API_URL}/users/profile/picture`,
+      formData, // Enviar formData como cuerpo de la petición / Send formData as the request body
+      {
+        headers: {
+          // 4. Enviar el token de autenticación.
+          // 4. Send the authentication token.
+          Authorization: `Bearer ${token}`,
+          // 5. IMPORTANTE: Indicar el tipo de contenido.
+          // 5. IMPORTANT: Indicate the content type.
+          // Axios suele hacer esto automáticamente al enviar FormData, pero es bueno saberlo.
+          // Axios usually does this automatically when sending FormData, but it's good to know.
+          'Content-Type': 'multipart/form-data', 
+        },
+      }
+    );
+
+    // Devolver la respuesta del servidor (ej. mensaje y nueva ruta del archivo).
+    // Return the server response (e.g., message and new file path).
+    return response.data;
+  } catch (error) {
+    // Usar el manejador centralizado.
+    // Use the centralized handler.
+    const errorMessage = handleApiError(error, 'Error al subir la foto de perfil.');
+    // Lanzar error procesado.
+    // Throw processed error.
+    throw new Error(errorMessage);
+  }
+};
