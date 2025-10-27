@@ -16,6 +16,7 @@ import type {
   LoginData,
   LoginResponse,
   User,
+  UpdateUserData,
 } from "../interfaces/user-interfaces";
 
 // Definir la URL base de la API.
@@ -125,6 +126,52 @@ export const getUserProfile = async (token: string): Promise<User> => {
     );
     // Lanzar un nuevo error con el mensaje procesado.
     // Throw a new error with the processed message.
+    throw new Error(errorMessage);
+  }
+};
+
+/* ========================================
+ * API CALL: Actualizar perfil de usuario autenticado
+ * API CALL: Update authenticated user profile
+ * ======================================== */
+
+// Recibe el token y los datos a actualizar (UpdateUserData). Devuelve un mensaje de éxito.
+// Receives the token and the data to update (UpdateUserData). Returns a success message.
+export const updateUserProfile = async (
+  token: string,
+  userData: UpdateUserData
+): Promise<{ message: string }> => {
+  // Comprobar si hay token.
+  // Check if token exists.
+  if (!token) {
+    throw new Error("No se proporcionó token de autenticación.");
+  }
+  try {
+    // Realizar petición PUT al endpoint '/users/profile'.
+    // Perform a PUT request to the '/users/profile' endpoint.
+    // Incluir token en cabecera y datos en el cuerpo.
+    // Include token in header and data in the body.
+    const response = await axios.put<{ message: string }>(
+      `${API_URL}/users/profile`,
+      userData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    // Devolver la respuesta del servidor (ej. mensaje de éxito).
+    // Return the server response (e.g., success message).
+    return response.data;
+  } catch (error) {
+    // Usar el manejador centralizado.
+    // Use the centralized handler.
+    const errorMessage = handleApiError(
+      error,
+      "Error al actualizar el perfil."
+    );
+    // Lanzar error procesado.
+    // Throw processed error.
     throw new Error(errorMessage);
   }
 };

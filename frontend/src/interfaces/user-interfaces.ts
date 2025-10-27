@@ -63,3 +63,17 @@ export interface User {
   registered_at: string; // O Date / Or Date
   role: string;
 }
+
+
+
+/* ========================================
+ * Interfaz para Datos de Actualización de Perfil
+ * Interface for Profile Update Data
+ * ======================================== */
+// Exportar interfaz para los datos enviados al actualizar el perfil.
+// Export interface for the data sent when updating the profile.
+export interface UpdateUserData {
+  first_name: string;
+  last_name: string;
+  phone?: string | null; // Opcional / Optional
+}

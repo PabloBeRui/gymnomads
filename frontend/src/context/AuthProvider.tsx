@@ -179,6 +179,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     isLoading,
     login,
     logout,
+    setUser
   };
 
   // --- Renderizado del Provider ---

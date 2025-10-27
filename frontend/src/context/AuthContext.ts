@@ -25,6 +25,10 @@ export interface AuthContextType {
   // Función para limpiar el estado de autenticación al cerrar sesión.
   // Function to clear authentication state on logout.
   logout: () => void;
+
+  // Función para actualizar el objeto 'user' en el estado
+  // Function to update the 'user' object in the state
+  setUser: (user: User) => void;
 }
 
 // Crear el contexto con un valor inicial nulo (será provisto por AuthProvider).
