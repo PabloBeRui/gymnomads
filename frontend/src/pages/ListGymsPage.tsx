@@ -2,14 +2,24 @@
 import { useState, useEffect } from "react";
 import { getAllGyms } from "../services/gym-services"; // Servicio para obtener gimnasios
 import { useAuth } from "../context/AuthContext"; // Hook para obtener el usuario
-// import { Link } from 'react-router-dom'; // Para futuros enlaces
+import { Link } from "react-router-dom";
 import type { Gym } from "../interfaces/gym-interfaces";
 
 // Estilos temporales inline
 // Temporary inline styles
 const styles: { [key: string]: React.CSSProperties } = {
   container: { padding: "20px", maxWidth: "1200px", margin: "0 auto" },
-
+  addGymButton: {
+    display: "inline-block",
+    marginBottom: "20px",
+    padding: "10px 15px",
+    backgroundColor: "#007bff",
+    color: "white",
+    textDecoration: "none",
+    borderRadius: "5px",
+    border: "none",
+    cursor: "pointer",
+  },
   searchInput: {
     width: "100%",
     padding: "10px",
@@ -60,7 +70,7 @@ const styles: { [key: string]: React.CSSProperties } = {
  *  shows options to edit or delete.
  */
 
-export const GymsPage = () => {
+export const ListGymsPage = () => {
   // Hook de autenticación para obtener el usuario actual y su rol
   // Auth hook to get the current user and their role
   const { user } = useAuth();
@@ -82,8 +92,7 @@ export const GymsPage = () => {
 
   // Obtengo la URL base del backend desde las variables de entorno o uso un valor por defecto
   // I get the backend base URL from environment variables or use a default value
-  const backendBaseUrl =
-    import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:3000";
+  const backendBaseUrl = import.meta.env.VITE_BACKEND_BASE_URL;
 
   // useEffect para cargar los gimnasios cuando el componente se monta
   // useEffect to load gyms when the component mounts
@@ -157,6 +166,15 @@ export const GymsPage = () => {
       {/* ... (Título, párrafo e input sin cambios) ... */}
       <h2>Gimnasios Asociados</h2>
       <p>Descubre los gimnasios a los que puedes acceder con GymNomads.</p>
+      {/* Botón para añadir gimnasio (solo visible para admin) */}
+      {/* Button to add gym (only visible for admin) */}
+      {user?.role === "admin" && (
+        <Link to="/gyms/add" style={styles.addGymButton}>
+          {" "}
+          {/* Enlace a la nueva ruta */}
+          Añadir Gimnasio
+        </Link>
+      )}
       <input
         type="text"
         placeholder="Buscar por nombre o ciudad..."

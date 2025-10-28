@@ -10,10 +10,11 @@ import { ApiTest } from "./components/ApiTest";
 import { RegisterForm } from "./components/RegisterForm";
 import { LoginForm } from "./components/LoginForm";
 import { ProfilePage } from "./pages/ProfilePage";
-import { GymsPage } from "./pages/GymPages";
+import { ListGymsPage } from "./pages/ListGymsPage";
 
 // Importar el hook de autenticación / Import the authentication hook
 import { useAuth } from "./context/AuthContext";
+import { AddGymPage } from "./pages/AddGymPage";
 
 // Importar el protector de rutas / Import the route protector
 import { ProtectedRoute } from "./router/ProtectedRoute";
@@ -145,7 +146,7 @@ function App() {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/" element={<ApiTest />} />
         {/* ApiTest sigue en Home por ahora */}
-        <Route path="/gyms" element={<GymsPage />} />
+        <Route path="/gyms" element={<ListGymsPage />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />{" "}
         {/* <-- RUTA PARA 403 */}
         {/* --- Rutas Protegidas (Solo requieren estar logueado) --- */}
@@ -160,6 +161,9 @@ function App() {
         {/* --- Rutas Protegidas (Requieren Rol 'admin') --- */}
         <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
           <Route path="/panel-admin" element={<AdminDashboard />} />
+          {/* Ruta para añadir gimnasio (solo admin) */}
+          {/* Route to add gym (admin only) */}
+          <Route path="/gyms/add" element={<AddGymPage />} />
           {/* <Route path="/gestionar-usuarios" element={<UserManagementPage />} /> */}
         </Route>
         {/* --- Ruta Not Found --- */}
