@@ -32,6 +32,14 @@ const styles: { [key: string]: React.CSSProperties } = {
     flex: "1 1 300px",
     boxSizing: "border-box",
   },
+  gymLogo: {
+    width: "100%",
+    height: "150px",
+    objectFit: "contain",
+    marginBottom: "15px",
+    borderBottom: "1px solid #eee",
+    paddingBottom: "10px",
+  },
   cardBody: { marginBottom: "10px" },
   cardFooter: {
     marginTop: "10px",
@@ -71,6 +79,11 @@ export const GymsPage = () => {
 
   // useState para el término de búsqueda introducido por el usuario
   const [searchTerm, setSearchTerm] = useState<string>("");
+
+  // Obtengo la URL base del backend desde las variables de entorno o uso un valor por defecto
+  // I get the backend base URL from environment variables or use a default value
+  const backendBaseUrl =
+    import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:3000";
 
   // useEffect para cargar los gimnasios cuando el componente se monta
   // useEffect to load gyms when the component mounts
@@ -141,11 +154,9 @@ export const GymsPage = () => {
   // Main rendering of the gym list
   return (
     <div style={styles.container}>
+      {/* ... (Título, párrafo e input sin cambios) ... */}
       <h2>Gimnasios Asociados</h2>
       <p>Descubre los gimnasios a los que puedes acceder con GymNomads.</p>
-
-      {/* Input de búsqueda */}
-      {/* Search input */}
       <input
         type="text"
         placeholder="Buscar por nombre o ciudad..."
@@ -154,46 +165,73 @@ export const GymsPage = () => {
         style={styles.searchInput}
       />
 
-      {/* Lista de gimnasios filtrados */}
-      {/* Filtered gym list */}
       <div style={styles.gymList}>
         {/* Mostrar mensaje si no hay resultados */}
         {filteredGyms.length === 0 && !isLoading && (
-          <p>No se encontraron gimnasios que coincidan con tu búsqueda.</p>
+          <p style={styles.noResultsText}>
+            No se encontraron gimnasios que coincidan con tu búsqueda.
+          </p> // Añadido estilo
         )}
 
         {/* Mapear sobre los gimnasios FILTRADOS */}
-        {/* Map over the FILTERED gyms */}
-        {filteredGyms.map((gym) => (
-          <div key={gym.id} style={styles.gymCard}>
-            {/* //TODO: Imagen del gimnasio */}
-            <div style={styles.cardBody}>
-              <h3>{gym.name}</h3>
-              <p>
-                {gym.address}
-                <br />
-                {gym.city}
-              </p>
-              {/* //TODO: Enlace a detalles */}
-              {/* <Link to={`/gyms/${gym.id}`}>Ver detalles</Link> */}
-            </div>
-            {/* Mostrar botones solo si es admin */}
-            {user?.role === "admin" && (
-              <div style={styles.cardFooter}>
-                {/* //TODO: Enlazar botones */}
-                <button style={styles.button}>Editar</button>
-                <button
-                  style={{
-                    ...styles.button,
-                    color: "red",
-                    borderColor: "red",
-                  }}>
-                  Eliminar
-                </button>
+        {filteredGyms.map((gym) => {
+          // <--- Añadida llave de apertura
+
+          // Construir la URL del logo
+          // build the logo URL
+          const logoSrc = gym.logo_url
+            ? `${backendBaseUrl}/${
+                gym.logo_url.startsWith("/")
+                  ? gym.logo_url.substring(1)
+                  : gym.logo_url
+              }` // Crea URL completa si hay logo // Build full URL if logo exists
+            : "/images/gym-logo/default-gym-logo.png"; // Usar el logo por defecto si no hay // Use default logo if none
+
+          // Se usa un 'return' aquí por llaves en el map
+          // it needs to add a 'return' here because curly braces in the map
+          return (
+            <div key={gym.id} style={styles.gymCard}>
+              {/* Mostrar la imagen del logo */}
+              {/* Display the logo image */}
+              <img
+                src={logoSrc}
+                alt={`Logo de ${gym.name}`}
+                style={styles.gymLogo}
+                // onError por si la imagen del backend falla, para mostrar el default
+                // onError in case the backend image fails, to show the default
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement; // Type assertion needed for TS
+                  target.onerror = null; // Previene bucles si el default también falla // Prevents loops if default also fails
+                  target.src = "/images/gym-logo/default-gym-logo.png"; // Fallback al default // Fallback to default
+                }}
+              />
+
+              <div style={styles.cardBody}>
+                <h3>{gym.name}</h3>
+                <p>
+                  {gym.address}
+                  <br />
+                  {gym.city}
+                </p>
+                {/* //TODO: Enlace a detalles */}
               </div>
-            )}
-          </div>
-        ))}
+              {/* Mostrar botones solo si es admin */}
+              {user?.role === "admin" && (
+                <div style={styles.cardFooter}>
+                  {/* //TODO: Enlazar botones */}
+                  <button style={styles.button}>Editar</button>
+                  <button
+                    style={{
+                      ...styles.button,
+                      ...styles.deleteButton,
+                    }}>
+                    Eliminar
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
