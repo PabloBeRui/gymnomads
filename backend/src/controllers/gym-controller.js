@@ -1,6 +1,6 @@
 const db = require("../../config/db");
 
-const fs = require('fs/promises');
+const fs = require("fs/promises");
 // Función para obtener todos los gimnasios o filtrar gimansio por ciudad
 // Function to get all gyms or filter by city
 
@@ -54,40 +54,105 @@ const getGymById = async (req, res) => {
   }
 };
 
-// Crear un nuevo gimnasio (solo para administradores)
-// Create a new gym (admin only)
-
+// Crear un nuevo gimnasio (solo para administradores) - MANEJA ARCHIVOS
+// Create a new gym (admin only) -  HANDLES FILES
 const createGym = async (req, res) => {
   try {
-    // Obtener los datos del nuevo gimnasio del cuerpo de la petición
-    // Get the new gym's data from the request body
+    // Los campos de texto SÍ están en req.body gracias a Multer
+    // Text fields ARE in req.body thanks to Multer
     const { name, address, city, latitude, longitude } = req.body;
 
-    // Validar que todos los campos necesarios estén presentes
-    // Validate that all required fields are present
+    // Los archivos están en req.files (si se subieron y si Multer usó .fields())
+    // Files are in req.files (if uploaded and if Multer used .fields())
+
+    const files = req.files;
+    const logoFile = files?.logo?.[0]; // Acceder al logo (si existe)
+    const mainImageFile = files?.mainImage?.[0]; // Acceder a la imagen principal (si existe)
+
+    // Validación básica de campos de texto
+    // Basic validation for text fields
     if (!name || !address || !city || !latitude || !longitude) {
-      console.error("El usuario no ha introducido todos los datos requeridos");
+      console.error(
+        "Faltan campos obligatorios: nombre, dirección, ciudad, latitud y longitud"
+      );
       return res
         .status(400)
-        .json({ message: "todos los campos son requeridos" });
+        .json({
+          message:
+            "Nombre, Dirección, Ciudad, latitud y longitud son campos requeridos",
+        });
     }
 
-    // Ejecutar la consulta sql para insertar el nuevo gimnasio
-    // Execute the sql query to insert the new gym
-    const [result] = await db.query(
-      "INSERT INTO gyms (name, address, city, latitude, longitude) VALUES (?, ?, ?, ?, ?)",
-      [name, address, city, latitude, longitude]
+    // Construir rutas de archivo para guardar en la BD (solo si se subieron)
+    // Build file paths to save in the DB (only if uploaded)
+
+    const logoUrl = logoFile ? `uploads/gym_logos/${logoFile.filename}` : null;
+    const mainImageUrl = mainImageFile
+      ? `uploads/gym_images/${mainImageFile.filename}`
+      : null;
+
+    // Convertir lat/lon a número o null (más robusto)
+    // Convert lat/lon to number or null (more robust)
+    const lat = parseFloat(latitude);
+    const lon = parseFloat(longitude);
+
+    if (isNaN(lat) || isNaN(lon)) {
+      return res
+        .status(400)
+        .json({ message: "Latitud y longitud deben ser números válidos" });
+    }
+
+    if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+      return res
+        .status(400)
+        .json({ message: "Coordenadas fuera de rango válido" });
+    }
+
+    // Ejecutar la consulta sql para insertar el nuevo gimnasio CON IMÁGENES
+    // Execute the sql query to insert the new gym WITH IMAGES
+    const query =
+      "INSERT INTO gyms (name, address, city, latitude, longitude, logo_url, main_image_url) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    // Especificar <ResultSetHeader> si usas TS y mysql2/promise
+    // Specify <ResultSetHeader> if using TS and mysql2/promise
+    const [result] /* : [ResultSetHeader, FieldPacket[]] */ = await db.query(
+      query,
+      [name, address, city, lat, lon, logoUrl, mainImageUrl]
     );
 
     // Enviar una respuesta de éxito con el código 201 created
     // Send a success response with the 201 created code
-    res.status(201).json({
-      message: "gimnasio creado con éxito",
-      gymId: result.insertId,
-    });
+    if (result.affectedRows === 1) {
+      // Comprobación más segura // Safer check
+      res.status(201).json({
+        message: "Gimnasio creado con éxito",
+        gymId: result.insertId,
+        // Devolver el objeto completo para posible uso en frontend
+        // Return the full object for potential frontend use
+        newGym: {
+          id: result.insertId,
+          name,
+          address,
+          city,
+          latitude: lat,
+          longitude: lon,
+          logo_url: logoUrl,
+          main_image_url: mainImageUrl,
+        },
+      });
+    } else {
+      // Si por alguna razón no se insertó la fila
+      // If for some reason the row was not inserted
+      throw new Error(
+        "La inserción en la base de datos no afectó ninguna fila."
+      );
+    }
   } catch (error) {
-    console.error(`Error al crear el gimansio: ${error}`);
-    res.status(500).json({ message: "error interno del servidor" });
+    console.error(`Error al crear el gimnasio: ${error}`);
+    // Intentar no borrar el archivo si falla la BD (o implementar rollback)
+    // Try not to delete the file if DB fails (or implement rollback)
+    res
+      .status(500)
+      .json({ message: "Error interno del servidor al crear el gimnasio" });
   }
 };
 

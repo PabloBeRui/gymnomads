@@ -20,7 +20,7 @@ const authMiddleware = require("../middleware/auth-middleware");
 //manejador de subidas / upload handler
 
 const createUploader = require("../utils/multer-config");
-const createUploadHandler = require("../middleware/upload-middleware");
+const { createUploadHandler } = require("../middleware/upload-middleware");
 
 //admin midddleware
 const adminMiddleware = require("../middleware/admin-middleware");
