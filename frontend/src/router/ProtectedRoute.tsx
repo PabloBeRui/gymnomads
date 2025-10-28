@@ -2,17 +2,15 @@ import { Navigate, Outlet } from "react-router-dom";
 // Importar el hook de autenticación / Import the authentication hook
 import { useAuth } from "../context/AuthContext";
 
-// Definir las props que podría recibir (ninguna por ahora)
-// Define the props it might receive (none for now)
-// interface ProtectedRouteProps {
-// TODO  añadir roles permitidos
-//   allowedRoles?: string[];
-// }
+// Definir las props  / Define props
+interface ProtectedRouteProps {
+  allowedRoles?: string[];
+}
 
-export const ProtectedRoute = (/*{ allowedRoles }: ProtectedRouteProps*/) => {
+export const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
   // Obtener el estado de autenticación del contexto.
   // Get the authentication state from the context.
-  const { token, isLoading } = useAuth();
+  const { token, isLoading, user } = useAuth();
 
   // Mostrar estado de carga mientras se verifica el token inicial.
   // Show loading state while the initial token check is in progress.
@@ -34,18 +32,25 @@ export const ProtectedRoute = (/*{ allowedRoles }: ProtectedRouteProps*/) => {
     return <Navigate to="/login" replace />;
   }
 
-  // TODO: Añadir comprobación de roles  'allowedRoles'
-  // TODO: Add role checking 'allowedRoles'
-  // if (allowedRoles && !allowedRoles.includes(user?.role)) {
-  //   return <Navigate to="/unauthorized" replace />; // Redirigir a página "No autorizado"
-  // }
+  // Añadir comprobación de roles  'allowedRoles'
+  //  Add role checking 'allowedRoles'
+
+  // Proteger includes de undefined y user null
+  if (allowedRoles?.length) {
+    const role = user?.role ?? null;
+    if (!role || !allowedRoles.includes(role)) {
+      console.warn(
+        `Acceso denegado: Usuario con rol '${
+          role ?? "desconocido"
+        }' intentó acceder a ruta para '${allowedRoles.join(", ")}'`
+      );
+      return <Navigate to="/unauthorized" replace />;
+    }
+  }
 
   // Si hay token (y pasa la comprobación de roles, si la hubiera), renderizar el contenido anidado.
   // If there is a token (and role check passes, if any), render the nested content.
   // <Outlet /> renderiza el componente hijo definido en la configuración de rutas (en App.tsx).
   // <Outlet /> renders the child component defined in the route configuration (in App.tsx).
   return <Outlet />;
-  // Alternativamente, si no usas rutas anidadas, podrías recibir 'children' como prop:
-  // Alternatively, if not using nested routes, you could receive 'children' as a prop:
-  // export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => { ... return <>{children}</>; }
 };
