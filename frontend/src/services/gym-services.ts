@@ -121,3 +121,40 @@ export const createGym = async (
     throw new Error(errorMessage);
   }
 };
+
+/* ========================================
+ * API CALL: Eliminar un gimnasio (Admin)
+ * API CALL: Delete a gym (Admin)
+ * ======================================== */
+
+export const deleteGym = async (
+  gymId: number,
+  token: string
+): Promise<void> => {
+  // Recibe el ID del gimnasio a borrar y el token
+  // Receives the ID of the gym to delete and the token
+  try {
+    // Realizar petición DELETE al endpoint específico (/api/gyms/:id)
+    // Perform DELETE request to the specific endpoint (/api/gyms/:id)
+    await axios.delete(`${API_URL}/gyms/${gymId}`, {
+      headers: {
+        // Enviar el token de autorización para verificar permisos
+        // Send the authorization token to verify permissions
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // No se devuelve nada en el cuerpo de la respuesta si tiene éxito (espera un 204)
+    // Nothing is returned in the response body on success ( expect a 204)
+  } catch (error) {
+    // Usar el manejador centralizado para procesar el error
+    // Use the centralized handler to process the error
+    const errorMessage = handleApiError(
+      error,
+      "No se pudo eliminar el gimnasio."
+    );
+    // Lanzar un nuevo error con el mensaje procesado para que el componente lo capture
+    // Throw a new error with the processed message for the component to catch
+    throw new Error(errorMessage);
+  }
+};

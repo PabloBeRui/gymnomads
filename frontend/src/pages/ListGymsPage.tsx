@@ -1,9 +1,11 @@
 // frontend/src/pages/GymsPage.tsx
 import { useState, useEffect } from "react";
-import { getAllGyms } from "../services/gym-services"; // Servicio para obtener gimnasios
+import { getAllGyms, deleteGym } from "../services/gym-services";
 import { useAuth } from "../context/AuthContext"; // Hook para obtener el usuario
 import { Link } from "react-router-dom";
 import type { Gym } from "../interfaces/gym-interfaces";
+import { toast } from "sonner"; // sonner toast
+import { handleApiError } from "../utils/error-handler";
 
 // Estilos temporales inline
 // Temporary inline styles
@@ -71,9 +73,9 @@ const styles: { [key: string]: React.CSSProperties } = {
  */
 
 export const ListGymsPage = () => {
-  // Hook de autenticación para obtener el usuario actual y su rol
-  // Auth hook to get the current user and their role
-  const { user } = useAuth();
+  // Extraer 'user' Y 'token' del hook useAuth
+  // Extract 'user' AND 'token' from the useAuth hook
+  const { user, token } = useAuth();
 
   // useState para almacenar la lista de gimnasios
   // useState to store the list of gyms
@@ -137,6 +139,48 @@ export const ListGymsPage = () => {
       gym.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       gym.city.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Definir manejador para eliminar un gimnasio
+  // Define handler to delete a gym
+  const handleDelete = async (gymId: number): Promise<void> => {
+    // Preguntar confirmación al usuario
+    // Ask user for confirmation
+    if (
+      window.confirm(
+        "¿Estás seguro de que quieres eliminar este gimnasio? Esta acción no se puede deshacer."
+      )
+    ) {
+      // Verificar que tenemos el token (necesario para la petición)
+      // Verify we have the token (needed for the request)
+      if (!token) {
+        toast.error("No estás autenticado para realizar esta acción.");
+        return;
+      }
+
+      try {
+        // Llamar al servicio para eliminar el gimnasio
+        // Call the service to delete the gym
+        await deleteGym(gymId, token);
+
+        // Éxito: Eliminar el gimnasio del estado local para actualizar la UI
+        // Success: Remove the gym from local state to update the UI
+        setGyms((prevGyms) => prevGyms.filter((gym) => gym.id !== gymId));
+
+        // Mostrar notificación de éxito
+        // Show success notification
+        toast.success("Gimnasio eliminado con éxito.");
+      } catch (err) {
+        // Error: Mostrar notificación de error usando el manejador
+        // Error: Show error notification using the handler
+        const processedErrorMessage = handleApiError(
+          err,
+          "No se pudo eliminar el gimnasio."
+        );
+        toast.error(processedErrorMessage);
+        console.error("Error deleting gym:", err); // Mantener log para depuración // Keep log for debugging
+      }
+    }
+  };
 
   // Renderizado condicional mientras carga
   // Conditional rendering while loading
@@ -234,32 +278,32 @@ export const ListGymsPage = () => {
                 {/* //TODO: Enlace a detalles */}
               </div>
               {/* Mostrar botones solo si es admin o manager (con condiciones) */}
-                    {/* Show buttons only if admin or manager (with conditions) */}
-                    {(user?.role === 'admin' || (user?.role === 'manager' && user.home_gym_id === gym.id)) && (
-                        <div style={styles.cardFooter}>
+              {/* Show buttons only if admin or manager (with conditions) */}
+              {(user?.role === "admin" ||
+                (user?.role === "manager" && user.home_gym_id === gym.id)) && (
+                <div style={styles.cardFooter}>
+                  {/* El botón 'Editar' se muestra si: */
+                  /* The 'Edit' button is shown if: */}
+                  {/* 1. El usuario es 'admin' (condición externa ya lo permite) */}
+                  {/* 1. The user is 'admin' (outer condition already allows it) */}
+                  {/* 2. El usuario es 'manager' Y el gym.id coincide con su home_gym_id (condición externa) */}
+                  {/* 2. The user is 'manager' AND gym.id matches their home_gym_id (outer condition) */}
+                  <button style={styles.button}>Editar</button>
 
-                            {/* El botón 'Editar' se muestra si: */ /* The 'Edit' button is shown if: */}
-                            {/* 1. El usuario es 'admin' (condición externa ya lo permite) */}
-                            {/* 1. The user is 'admin' (outer condition already allows it) */}
-                            {/* 2. El usuario es 'manager' Y el gym.id coincide con su home_gym_id (condición externa) */}
-                            {/* 2. The user is 'manager' AND gym.id matches their home_gym_id (outer condition) */}
-                            <button style={styles.button}>
-                                Editar
-                            </button>
-
-                            {/* El botón 'Eliminar' se muestra SÓLO si es 'admin' */}
-                            {/* The 'Delete' button is shown ONLY if 'admin' */}
-                            {user.role === 'admin' && (
-                                <button
-                                    style={{
-                                        ...styles.button,
-                                        ...styles.deleteButton,
-                                    }}>
-                                    Eliminar
-                                </button>
-                            )}
-                        </div>
-                    )}
+                  {/* El botón 'Eliminar' se muestra SÓLO si es 'admin' */}
+                  {/* The 'Delete' button is shown ONLY if 'admin' */}
+                  {user.role === "admin" && (
+                    <button
+                      style={{
+                        ...styles.button,
+                        ...styles.deleteButton,
+                      }}
+                      onClick={() => handleDelete(gym.id)}>
+                      Eliminar
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           );
         })}
