@@ -159,4 +159,129 @@ export const deleteGym = async (
   }
 };
 
+/* ========================================
+ * API CALL: Actualizar datos de texto de un gimnasio (Admin)
+ * API CALL: Update text data of a gym (Admin)
+ * ======================================== */
+// Definir la interfaz para los datos de texto a actualizar
+// Define the interface for the text data to update
+interface GymUpdateData {
+  name: string;
+  address: string;
+  city: string;
+  latitude: number | null;
+  longitude: number | null;
+}
+// Definir la función asíncrona updateGymDetails
+// Define the async updateGymDetails function
+export const updateGymDetails = async (
+  gymId: number | string,
+  data: Partial<GymUpdateData>,
+  token: string
+): Promise<Gym> => {
+  // Recibe ID, datos parciales y token // Receives ID, partial data, and token
+  try {
+    // Realizar petición PUT al endpoint específico (/api/gyms/:id)
+    // Perform PUT request to the specific endpoint (/api/gyms/:id)
+    const response = await axios.put(`${API_URL}/gyms/${gymId}`, data, {
+      headers: {
+        "Content-Type": "application/json", // Enviar datos como JSON // Send data as JSON
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    // Devolver los datos actualizados del gimnasio (si la API los devuelve)
+    // Return the updated gym data (if the API returns them)
+    return response.data; // Asumiendo que la API devuelve el gimnasio actualizado o un mensaje
+  } catch (error) {
+    // Usar el manejador centralizado
+    // Use the centralized handler
+    const errorMessage = handleApiError(
+      error,
+      "No se pudieron actualizar los detalles del gimnasio."
+    );
+    throw new Error(errorMessage);
+  }
+};
 
+/* ========================================
+ * API CALL: Actualizar/Subir logo de un gimnasio (Admin/Manager)
+ * API CALL: Update/Upload gym logo (Admin/Manager)
+ * ======================================== */
+
+export const updateGymLogo = async (
+  gymId: number | string,
+  logoFile: File,
+  token: string
+): Promise<{ message: string; filePath: string }> => {
+  // Recibe ID, archivo y token // Receives ID, file, and token
+  const formData = new FormData();
+  formData.append("logo", logoFile); // La clave 'logo' debe coincidir con Multer y createUploadHandler // Key 'logo' must match Multer and createUploadHandler
+
+  try {
+    // Realizar petición POST al endpoint de subida de logo (/api/gyms/:id/logo)
+    // Perform POST request to the logo upload endpoint (/api/gyms/:id/logo)
+    const response = await axios.post(
+      `${API_URL}/gyms/${gymId}/logo`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data", // Necesario para archivos // Necessary for files
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    // Devolver la respuesta (mensaje y ruta del archivo)
+    // Return the response (message and file path)
+    return response.data;
+  } catch (error) {
+    // Usar el manejador centralizado
+    // Use the centralized handler
+    const errorMessage = handleApiError(
+      error,
+      "No se pudo actualizar el logo del gimnasio."
+    );
+    throw new Error(errorMessage);
+  }
+};
+
+/* ========================================
+ * API CALL: Actualizar/Subir imagen principal de un gimnasio (Admin/Manager)
+ * API CALL: Update/Upload gym main image (Admin/Manager)
+ * ======================================== */
+// Definir la función asíncrona updateGymMainImage
+// Define the async updateGymMainImage function
+export const updateGymMainImage = async (
+  gymId: number | string,
+  mainImageFile: File,
+  token: string
+): Promise<{ message: string; filePath: string }> => {
+  // Recibe ID, archivo y token // Receives ID, file, and token
+  const formData = new FormData();
+  formData.append("mainImage", mainImageFile); // La clave 'mainImage' debe coincidir con Multer // Key 'mainImage' must match Multer
+
+  try {
+    // Realizar petición POST al endpoint de subida de imagen principal (/api/gyms/:id/image)
+    // Perform POST request to the main image upload endpoint (/api/gyms/:id/image)
+    const response = await axios.post(
+      `${API_URL}/gyms/${gymId}/image`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    // Devolver la respuesta
+    // Return the response
+    return response.data;
+  } catch (error) {
+    // Usar el manejador centralizado
+    // Use the centralized handler
+    const errorMessage = handleApiError(
+      error,
+      "No se pudo actualizar la imagen principal del gimnasio."
+    );
+    throw new Error(errorMessage);
+  }
+};
