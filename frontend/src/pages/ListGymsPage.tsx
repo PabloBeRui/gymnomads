@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { getAllGyms, deleteGym } from "../services/gym-services";
 import { useAuth } from "../context/AuthContext"; // Hook para obtener el usuario
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import type { Gym } from "../interfaces/gym-interfaces";
 import { toast } from "sonner"; // sonner toast
 import { handleApiError } from "../utils/error-handler";
@@ -76,6 +76,10 @@ export const ListGymsPage = () => {
   // Extraer 'user' Y 'token' del hook useAuth
   // Extract 'user' AND 'token' from the useAuth hook
   const { user, token } = useAuth();
+
+  // Obtener la función de navegación
+  // Get the navigation function
+  const navigate = useNavigate();
 
   // useState para almacenar la lista de gimnasios
   // useState to store the list of gyms
@@ -288,7 +292,11 @@ export const ListGymsPage = () => {
                   {/* 1. The user is 'admin' (outer condition already allows it) */}
                   {/* 2. El usuario es 'manager' Y el gym.id coincide con su home_gym_id (condición externa) */}
                   {/* 2. The user is 'manager' AND gym.id matches their home_gym_id (outer condition) */}
-                  <button style={styles.button}>Editar</button>
+                  <button
+                    style={styles.button}
+                    onClick={() => navigate(`/gyms/edit/${gym.id}`)}>
+                    Editar
+                  </button>
 
                   {/* El botón 'Eliminar' se muestra SÓLO si es 'admin' */}
                   {/* The 'Delete' button is shown ONLY if 'admin' */}

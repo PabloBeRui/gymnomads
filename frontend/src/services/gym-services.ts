@@ -158,3 +158,5 @@ export const deleteGym = async (
     throw new Error(errorMessage);
   }
 };
+
+

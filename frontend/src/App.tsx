@@ -9,12 +9,15 @@ import { Routes, Route, Link } from "react-router-dom";
 import { ApiTest } from "./components/ApiTest";
 import { RegisterForm } from "./components/RegisterForm";
 import { LoginForm } from "./components/LoginForm";
+
+//Pages
 import { ProfilePage } from "./pages/ProfilePage";
 import { ListGymsPage } from "./pages/ListGymsPage";
+import { AddGymPage } from "./pages/AddGymPage";
+import { EditGymPage } from "./pages/EditGymPage";
 
 // Importar el hook de autenticación / Import the authentication hook
 import { useAuth } from "./context/AuthContext";
-import { AddGymPage } from "./pages/AddGymPage";
 
 // Importar el protector de rutas / Import the route protector
 import { ProtectedRoute } from "./router/ProtectedRoute";
@@ -157,6 +160,9 @@ function App() {
         {/* --- Rutas Protegidas (Requieren Rol 'manager' o 'admin') --- */}
         <Route element={<ProtectedRoute allowedRoles={["manager", "admin"]} />}>
           <Route path="/panel-manager" element={<ManagerDashboard />} />
+          {/* Ruta para editar gimnasio (admin y manager) */}
+          {/* Route to edit gym (admin and manager) */}
+          <Route path="/gyms/edit/:id" element={<EditGymPage />} />
         </Route>
         {/* --- Rutas Protegidas (Requieren Rol 'admin') --- */}
         <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
