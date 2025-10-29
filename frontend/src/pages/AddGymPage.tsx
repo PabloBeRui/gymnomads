@@ -280,8 +280,6 @@ export const AddGymPage = () => {
   return (
     <div style={styles.container}>
       <h2>Añadir Nuevo Gimnasio</h2>
-
-      {/* //TODO: Usar <form onSubmit={handleSubmit}> */}
           <form onSubmit={handleSubmit}>
         {/* Campo Nombre */}
         <div style={styles.formGroup}>
@@ -334,7 +332,7 @@ export const AddGymPage = () => {
         {/* Campo Latitud */}
         <div style={styles.formGroup}>
           <label htmlFor="latitude" style={styles.label}>
-            Latitud (opcional):
+            Latitud:
           </label>
           <input
             type="number" // Input de tipo número
@@ -350,7 +348,7 @@ export const AddGymPage = () => {
         {/* Campo Longitud */}
         <div style={styles.formGroup}>
           <label htmlFor="longitude" style={styles.label}>
-            Longitud (opcional):
+            Longitud:
           </label>
           <input
             type="number" // Input de tipo número

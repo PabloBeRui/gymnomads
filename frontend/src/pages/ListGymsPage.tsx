@@ -233,20 +233,33 @@ export const ListGymsPage = () => {
                 </p>
                 {/* //TODO: Enlace a detalles */}
               </div>
-              {/* Mostrar botones solo si es admin */}
-              {user?.role === "admin" && (
-                <div style={styles.cardFooter}>
-                  {/* //TODO: Enlazar botones */}
-                  <button style={styles.button}>Editar</button>
-                  <button
-                    style={{
-                      ...styles.button,
-                      ...styles.deleteButton,
-                    }}>
-                    Eliminar
-                  </button>
-                </div>
-              )}
+              {/* Mostrar botones solo si es admin o manager (con condiciones) */}
+                    {/* Show buttons only if admin or manager (with conditions) */}
+                    {(user?.role === 'admin' || (user?.role === 'manager' && user.home_gym_id === gym.id)) && (
+                        <div style={styles.cardFooter}>
+
+                            {/* El botón 'Editar' se muestra si: */ /* The 'Edit' button is shown if: */}
+                            {/* 1. El usuario es 'admin' (condición externa ya lo permite) */}
+                            {/* 1. The user is 'admin' (outer condition already allows it) */}
+                            {/* 2. El usuario es 'manager' Y el gym.id coincide con su home_gym_id (condición externa) */}
+                            {/* 2. The user is 'manager' AND gym.id matches their home_gym_id (outer condition) */}
+                            <button style={styles.button}>
+                                Editar
+                            </button>
+
+                            {/* El botón 'Eliminar' se muestra SÓLO si es 'admin' */}
+                            {/* The 'Delete' button is shown ONLY if 'admin' */}
+                            {user.role === 'admin' && (
+                                <button
+                                    style={{
+                                        ...styles.button,
+                                        ...styles.deleteButton,
+                                    }}>
+                                    Eliminar
+                                </button>
+                            )}
+                        </div>
+                    )}
             </div>
           );
         })}
