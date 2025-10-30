@@ -64,8 +64,6 @@ export interface User {
   role: string;
 }
 
-
-
 /* ========================================
  * Interfaz para Datos de Actualización de Perfil
  * Interface for Profile Update Data
@@ -76,4 +74,24 @@ export interface UpdateUserData {
   first_name: string;
   last_name: string;
   phone?: string | null; // Opcional / Optional
+}
+
+/* ========================================
+ * Interfaz para la respuesta de subida de imagen
+ * Interface for image upload response
+ * ======================================== */
+//  /
+export interface UploadProfilePictureResponse {
+  message: string;
+  filePath: string;
+}
+
+/* ========================================
+ * Interfaz para la respuesta de actualización de perfil
+ * Interface for profile update response
+ * ======================================== */
+
+export interface UpdateProfileResponse {
+  message: string;
+  user?: User;
 }
