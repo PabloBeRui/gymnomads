@@ -1,135 +1,152 @@
+// Importar hooks de React / Import React hooks
 import { useState } from "react";
-// Hooks de React Router para navegación / React Router hooks for navigation
+// Importar hook de navegación / Import navigation hook
 import { useNavigate } from "react-router-dom";
-// Notificaciones sonner / sonner notifications
-import { toast } from "sonner";
-// Importar la función de login del servicio de usuario
-// Import login function from user service
-import { loginUser } from "../services/user-services";
-// Importar interfaz para datos de login
-// Import interface for login data
-import type { LoginData } from "../interfaces/user-interfaces";
 // Importar el hook de autenticación / Import the authentication hook
 import { useAuth } from "../context/AuthContext";
+// Importar el hook personalizado para manejar llamadas API / Import the custom hook to handle API calls
+import { useApiCall } from "../hooks/useApiCall";
+
+// Importar interfaces / Import interfaces
+import type { LoginData, LoginResponse } from "../interfaces/user-interfaces";
+
+// Importar servicios / Import services
+import { loginUser } from "../services/user-services";
+
+// Importar notificaciones / Import notifications
+import { toast } from "sonner";
 
 export const LoginPage = () => {
-  // Crear useState para los campos del formulario.
-  // Create useState for form fields.
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  // Crear useState para errores del formulario o de la API.
-  // Create useState for form or API errors.
-  const [error, setError] = useState<string | null>(null);
-
-  // Crear useState para indicar estado de carga durante el envío.
-  // Create useState to indicate loading state during submission.
-  const [isLoading, setIsLoading] = useState(false);
-
   // Obtener la función de navegación / Get the navigation function
   const navigate = useNavigate();
+  // Obtener la función login del contexto / Get the login function from context
+  const { login: authLogin } = useAuth();
 
-  // Obtener la función login del contexto de autenticación.
-  // Get the login function from the authentication context.
-  const { login } = useAuth(); // <-- AÑADIR ESTA LÍNEA
+  // --- Estados del Formulario / Form States ---
+  // Crear useState para el email / Create useState for email
+  const [email, setEmail] = useState("");
+  // Crear useState para la contraseña / Create useState for password
+  const [password, setPassword] = useState("");
 
-  // Crear manejador para el envío del formulario.
-  // Create handler for form submission.
+  // Usar el hook personalizado para manejar la llamada API de login / Use the custom hook to handle login API call
+  const { loading, error, execute, resetError } = useApiCall<LoginResponse>(
+    "Error al iniciar sesión."
+  );
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevenir recarga de página. // Prevent page reload.
-    setIsLoading(true); // Indicar que está procesando. // Indicate processing.
-    setError(null); // Limpiar errores previos. // Clear previous errors.
+  // Definir función para manejar el envío del formulario / Define function to handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); // Prevenir recarga de página / Prevent page reload
 
-    // Validar campos del formulario aquí.
-    // Validate form fields here.
+    // Validar campos obligatorios / Validate required fields
     if (!email || !password) {
-      setError("Por favor, introduce tu email y contraseña.");
-      setIsLoading(false);
+      toast.error("Por favor, completa todos los campos.");
       return;
     }
 
-    // Crear objeto con datos del formulario usando la interfaz.
-    // Create object with form data using the interface.
-    const credentials: LoginData = {
-      email,
-      password,
-    };
-
     try {
-      // Llamar a la función loginUser del servicio.
-      // Call the loginUser function from the service.
-      const response = await loginUser(credentials);
+      // Preparar datos de login / Prepare login data
+      const loginData: LoginData = {
+        email: email.trim(),
+        password,
+      };
 
-      // Llamar a la función login del contexto para guardar token y actualizar estado global.
-      // Call the login function from the context to save token and update global state.
+      // Ejecutar llamada API de login / Execute login API call
+      const response = await execute(
+        () => loginUser(loginData),
+        "Error al iniciar sesión"
+      );
 
-      login(response.token);
+      // Llamar a la función login del contexto con el token / Call the context login function with the token
+      await authLogin(response.token);
 
-      console.log("Login correcto, token:", response.token); // Mostrar token en consola por ahora / show token in console
-      // localStorage.setItem('authToken', response.token); // Ejemplo de guardado
+      // Mostrar notificación de éxito / Show success notification
+      toast.success(response.message || "Inicio de sesión exitoso.");
 
-      toast.success("¡Login correcto!");
+      // Redirigir al usuario a la página principal / Redirect user to main page
+      navigate("/");
+    } catch (error) {
+      // El error ya está manejado por useApiCall / Error is already handled by useApiCall
+      // Mostrar notificación de error / Show error notification
+      toast.error("Email o contraseña incorrectos. Inténtalo de nuevo.");
 
-      // Redirigir al usuario a home
-      // Redirect user to home
-      setTimeout(() => {
-        navigate("/"); // Redirigir a Home
-      }, 2000);
-    } catch (apiError) {
-      console.error("Error en login:", apiError);
-
-      let errorMessage = "Error desconocido al iniciar sesión.";
-
-      // Establecer useState de error con el mensaje del error de la API o un mensaje por defecto.
-      // Set error useState with the API error message or a default message.
-      if (apiError instanceof Error) {
-        errorMessage = apiError.message || errorMessage;
+      if (import.meta.env.DEV) {
+        console.error("Error en login:", error);
       }
+    }
+    // Log del error completo solo en desarrollo / Full error log only in development
+  };
 
-      setError(errorMessage);
-
-      toast.error(errorMessage);
-    } finally {
-      setIsLoading(false); // Finalizar estado de carga. // End loading state.
+  // Definir función para limpiar errores al editar campos / Define function to clear errors when editing fields
+  const handleInputChange = () => {
+    if (error) {
+      resetError();
     }
   };
 
+  // Renderizar formulario de login / Render login form
   return (
     <div>
       <h2>Iniciar Sesión</h2>
       <form onSubmit={handleSubmit}>
+        {/* Campo de Email / Email Field */}
         <div>
-          <label htmlFor="loginEmail">Email:</label>
+          <label htmlFor="email">Email:</label>
           <input
             type="email"
-            id="loginEmail" // Usar ID diferente
+            id="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              handleInputChange();
+            }}
             required
+            disabled={loading}
+            placeholder="tu@email.com"
           />
         </div>
+
+        {/* Campo de Contraseña / Password Field */}
         <div>
-          <label htmlFor="loginPassword">Contraseña:</label>
+          <label htmlFor="password">Contraseña:</label>
           <input
             type="password"
-            id="loginPassword" // Usar ID diferente
+            id="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              handleInputChange();
+            }}
             required
+            disabled={loading}
+            placeholder="Tu contraseña"
           />
         </div>
 
-        {/* Mostrar errores del formulario/API */}
-        {/* Show form/API errors */}
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {/* Mostrar mensaje de error si existe / Show error message if it exists */}
+        {error && <p style={{ color: "red", marginTop: "0.5rem" }}>{error}</p>}
 
-        {/* Botón de envío con estado de carga */}
-        {/* Submit button with loading state */}
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
+        {/* Botón de Envío / Submit Button */}
+        <button type="submit" disabled={loading}>
+          {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
         </button>
       </form>
+
+      {/* Enlace a registro / Link to registration */}
+      <p>
+        ¿No tienes cuenta?{" "}
+        <button
+          onClick={() => navigate("/register")}
+          disabled={loading}
+          style={{
+            background: "none",
+            border: "none",
+            color: "blue",
+            textDecoration: "underline",
+            cursor: "pointer",
+          }}>
+          Regístrate aquí
+        </button>
+      </p>
     </div>
   );
 };
