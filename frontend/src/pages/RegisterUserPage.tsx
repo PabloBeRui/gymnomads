@@ -1,215 +1,439 @@
-import { useEffect, useState } from "react";
+// Importar hooks de React / Import React hooks
+import { useState, useRef, useEffect } from "react";
+// Importar hook de navegación / Import navigation hook
+import { useNavigate } from "react-router-dom";
+// Importar el hook de autenticación / Import the authentication hook
+import { useAuth } from "../context/AuthContext";
+// Importar el hook personalizado para manejar llamadas API / Import the custom hook to handle API calls
+import { useApiCall } from "../hooks/useApiCall";
 
-// Notificaciones sonner / sonner notifications
+// Importar interfaces / Import interfaces
+import type {
+  RegisterData,
+  RegisterResponse,
+  UploadProfilePictureResponse,
+} from "../interfaces/user-interfaces";
+
+// Importar servicios / Import services
+import {
+  registerUser,
+  uploadProfilePicture,
+  getUserProfile,
+} from "../services/user-services";
+import { getAllGyms } from "../services/gym-services";
+
+// Importar tipos de gimnasio / Import gym types
+import type { Gym } from "../interfaces/gym-interfaces";
+
+// Importar notificaciones / Import notifications
 import { toast } from "sonner";
 
-// Importar la interfaz Gym para el desplegable (¡necesitaremos obtener los gimnasios!)
-// Import the Gym interface for the dropdown (we'll need to fetch gyms!)
-import type { Gym } from "../interfaces/gym-interfaces";
-import { getAllGyms } from "../services/gym-services";
-import { registerUser } from "../services/user-services";
-
-// Hooks de React Router para navegación / React Router hooks for navigation
-import { useNavigate } from "react-router-dom";
-
 export const RegisterUserPage = () => {
-  // Crear useStates para cada campo del formulario.
-  // Create useStates for each form field.
+  // Obtener la función de navegación / Get the navigation function
+  const navigate = useNavigate();
+  // Obtener funciones del contexto de autenticación / Get functions from authentication context
+  const { login: authLogin, setUser } = useAuth();
+
+  // --- Estados del Formulario / Form States ---
+  // Crear useStates para los campos del formulario / Create useStates for form fields
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [phone, setPhone] = useState("");
-  const [homeGymId, setHomeGymId] = useState<number | "">(""); //"" - false
-  // TODO const [profilePicture, setProfilePicture] = useState<File | null>(null); // Para la subida de archivos / upload files
+  const [homeGymId, setHomeGymId] = useState<number | null>(null);
 
-  // useState para almacenar la lista de gimnasios (para el desplegable).
-  // useState to store the list of gyms (for the dropdown).
-  const [gymList, setGymList] = useState<Gym[]>([]);
-  //  Crear useState para errores del formulario o de la API.
-  //  Create useState for form or API errors.
-  const [error, setError] = useState<string | null>(null);
-  //  Crear useState para indicar estado de carga durante el envío.
-  // Create useState to indicate loading state during submission.
-  const [isLoading, setIsLoading] = useState(false);
-  // UseState para errores específicos de la carga de gimnasios
-  // useState for errors specific to loading gyms
-  const [gymLoadError, setGymLoadError] = useState<string | null>(null);
+  // --- Estados para Subida de Imagen / States for Image Upload ---
+  // Crear useState para el archivo de imagen seleccionado / Create useState for selected image file
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  // Crear useState para la URL de vista previa / Create useState for preview URL
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  // Crear useRef para el input de archivo oculto / Create useRef for hidden file input
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Obtener la función de navegación / Get the navigation function
-  const navigate = useNavigate();
+  // --- Estados para Lista de Gimnasios / States for Gyms List ---
+  // Crear useState para almacenar la lista de gimnasios / Create useState to store gyms list
+  const [gyms, setGyms] = useState<Gym[]>([]);
 
-  //  useEffect para cargar la lista de gimnasios al usar select.
-  //  useEffect to load the list of gyms using select.
+  // Usar el hook personalizado para manejar llamadas API de registro / Use custom hook to handle registration API calls
+  const {
+    loading: isRegistering,
+    error: registerError,
+    execute: executeRegister,
+  } = useApiCall<RegisterResponse>("Error al registrar el usuario.");
 
+  // Usar el hook personalizado para manejar llamadas API de carga de gimnasios / Use custom hook to handle gyms loading API calls
+  const {
+    loading: isLoadingGyms,
+    error: gymsError,
+    execute: executeGetGyms,
+  } = useApiCall<Gym[]>("Error al cargar la lista de gimnasios.");
+
+  // Usar el hook personalizado para manejar llamadas API de subida de imagen / Use custom hook to handle image upload API calls
+  const { loading: isUploadingImage, execute: executeUploadImage } =
+    useApiCall<UploadProfilePictureResponse>("Error al subir la imagen.");
+
+  // --- useEffect para cargar la lista de gimnasios al montar el componente / useEffect to load gyms list on component mount ---
   useEffect(() => {
-    const loadGymsForSelect = async () => {
+    const loadGyms = async () => {
       try {
-        setGymLoadError(null); // Limpiar error previo de carga de gimnasios / clean previous load error
-        const gymData = await getAllGyms();
-        setGymList(gymData);
-      } catch (err) {
-        console.error("Error loading gyms for select:", err);
-        if (err instanceof Error) {
-          setGymLoadError(
-            err.message ||
-              "No se pudieron cargar los gimnasios para el desplegable."
-          );
-        } else {
-          setGymLoadError("Error desconocido al cargar gimnasios.");
+        const gymsList = await executeGetGyms(() => getAllGyms());
+        setGyms(gymsList);
+      } catch (error) {
+        // Log del error completo solo en desarrollo / Full error log only in development
+        if (import.meta.env.DEV) {
+          console.error("Error en la carga de gimnasios:", error);
         }
+        // Mostrar mensaje amigable al usuario / Show user-friendly message
+        toast.error("No se pudieron cargar los gimnasios. Por favor, recarga la página.");
       }
     };
-    loadGymsForSelect();
-  }, []); // Array vacío única ejecución al montar / empty array unique load on mount
+    loadGyms();
+    // No añadir executeGetGyms, loop infinito / Don't add executeGetGyms, infinite loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // Crear manejador para el envío del formulario.
-  // Create handler for form submission.
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevenir recarga de página. // Prevent page reload.
-    setIsLoading(true); // Indicar que estamos procesando. // Indicate processing.
-    setError(null); // Limpiar errores previos. // Clear previous errors.
+  // --- Manejadores de Imagen / Image Handlers ---
 
-    //Validar campos del formulario aquí.
-    // Validate form fields here.
-    if (!firstName || !lastName || !email || !password || !homeGymId) {
-      setError("Por favor, completa todos los campos obligatorios.");
-      setIsLoading(false);
-      return;
-    }
+  // Definir función para manejar clic en el área de imagen / Define function to handle image area click
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
+  };
 
-    // Crear objeto con datos del formulario.
-    //  Create object with form data.
-    const formData = {
-      first_name: firstName,
-      last_name: lastName,
-      email,
-      password,
-      phone: phone || null, // Envia null si está vacío // send null if empty
-      home_gym_id: homeGymId,
-      // profile_picture: lo manejaremos después
-    };
+  // Definir función para manejar la selección de archivo / Define function to handle file selection
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Obtener el archivo seleccionado / Get the selected file
+    const file = e.target.files?.[0];
 
-    try {
-      // Llamar a la función registerUser del servicio con los datos del formulario.
-      // Call the registerUser function from the service with the form data.
-      await registerUser(formData);
-
-      // Mostrar notificacion  de éxito
-      // Show success notification.
-      toast.success("¡Usuario registrado con éxito!");
-
-      // Redirigir al usuario a la página principal después de un breve retraso
-      // Redirect the user to the main page after a short delay
-      setTimeout(() => {
-        navigate("/");
-      }, 2000); //  1.5 segundos para que el usuario vea el toast  / 1.5 seconds for the user to see the toast
-
-      // TODO: Redirigir al usuario al inicio.
-    } catch (apiError) {
-      console.error("Error en registro:", apiError);
-
-      toast.error("Error al registrar el usuario");
-      // Establecer useState de error con el mensaje del error de la API o un mensaje por defecto.
-      // Set error useState with the API error message or a default message.
-      if (apiError instanceof Error) {
-        setError(apiError.message || "Error al registrar. Inténtalo de nuevo.");
-      } else {
-        // Establecer useState de error con un mensaje genérico si el error no es un objeto Error estándar.
-        // Set error useState with a generic message if the error is not a standard Error object.
-        setError("Error desconocido al registrar. Inténtalo de nuevo.");
+    if (file) {
+      // Validar tipo de archivo / Validate file type
+      const validTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+      if (!validTypes.includes(file.type)) {
+        toast.error(
+          "Por favor, selecciona una imagen válida (PNG, JPG, JPEG o WEBP)"
+        );
+        return;
       }
-    } finally {
-      setIsLoading(false); // Finalizar estado de carga. // End loading state.
+
+      // Validar tamaño máximo (5MB) / Validate max size (5MB)
+      const maxSize = 5 * 1024 * 1024; // 5MB en bytes
+      if (file.size > maxSize) {
+        toast.error("La imagen no debe superar los 5MB");
+        return;
+      }
+
+      // Guardar el archivo seleccionado / Save the selected file
+      setSelectedFile(file);
+
+      // Crear URL de vista previa para mostrar la imagen / Create preview URL to display the image
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      // Log en desarrollo / Log in development
+      if (import.meta.env.DEV) {
+        console.log(
+          "📸 Imagen seleccionada:",
+          file.name,
+          `(${(file.size / 1024).toFixed(2)} KB)`
+        );
+      }
     }
   };
 
+  // Definir función para manejar el envío del formulario / Define function to handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validar campos obligatorios / Validate required fields
+    if (!firstName || !lastName || !email || !password || !homeGymId) {
+      toast.error("Por favor, completa todos los campos obligatorios.");
+      return;
+    }
+
+    // Validar que las contraseñas coincidan / Validate passwords match
+    if (password !== confirmPassword) {
+      toast.error("Las contraseñas no coinciden.");
+      return;
+    }
+
+    // Validar longitud mínima de contraseña / Validate minimum password length
+    if (password.length < 6) {
+      toast.error("La contraseña debe tener al menos 6 caracteres.");
+      return;
+    }
+
+    try {
+      // --- 1. Registrar Usuario / Register User ---
+      const registerData: RegisterData = {
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        email: email.trim(),
+        password,
+        phone: phone.trim() || undefined,
+        home_gym_id: homeGymId,
+      };
+
+      const registerResponse = await executeRegister(() =>
+        registerUser(registerData)
+      );
+
+      // Validar que el servidor devolvió un token / Validate that server returned a token
+      if (!registerResponse.token) {
+        // Log técnico solo en desarrollo / Technical log only in development
+        console.error("❌ El servidor no devolvió un token de autenticación.");
+        throw new Error("No se pudo completar el registro. Por favor, inténtalo de nuevo.");
+      }
+
+      console.log("✅ Usuario registrado con ID:", registerResponse.userId);
+
+      // --- 2. Autenticar al usuario / Authenticate user ---
+      await authLogin(registerResponse.token);
+      console.log("✅ Usuario autenticado correctamente");
+
+      // --- 3. Subir Imagen de Perfil (si existe) / Upload Profile Picture (if exists) ---
+      if (selectedFile) {
+        console.log("📸 Subiendo imagen de perfil:", selectedFile.name);
+
+        try {
+          // Pequeño delay para asegurar que el token esté configurado
+          // Small delay to ensure token is configured
+          await new Promise((resolve) => setTimeout(resolve, 500));
+
+          // Subir la imagen de perfil / Upload profile picture
+          const uploadResult = await executeUploadImage(() =>
+            uploadProfilePicture(registerResponse.token, selectedFile)
+          );
+
+          console.log("✅ Imagen de perfil subida:", uploadResult.filePath);
+
+          // Actualizar el estado del usuario con los datos más recientes (incluyendo la foto)
+          // Update user state with the latest data (including the photo)
+          try {
+            const updatedUserData = await getUserProfile(
+              registerResponse.token
+            );
+            setUser(updatedUserData);
+            console.log("✅ Perfil actualizado con la imagen en el estado");
+          } catch (profileError) {
+            // Log técnico solo en desarrollo / Technical log only in development
+            console.warn(
+              "⚠️ No se pudo actualizar el perfil tras subir imagen:",
+              profileError
+            );
+          }
+        } catch (uploadError) {
+          // No bloquear el registro si falla la imagen
+          // Don't block registration if image fails
+          // Log técnico en desarrollo / Technical log in development
+          if (import.meta.env.DEV) {
+            console.error("⚠️ Error al subir la imagen:", uploadError);
+          }
+          // Mensaje amigable al usuario / User-friendly message
+          toast.warning(
+            "Tu cuenta se creó correctamente. Podrás añadir tu foto desde el perfil.",
+            { duration: 4000 }
+          );
+        }
+      }
+
+      // --- 4. Mostrar éxito y redirigir / Show success and redirect ---
+      toast.success("¡Bienvenido a GymNomads! Tu cuenta ha sido creada.");
+
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
+    } catch (error) {
+      // Log técnico solo en desarrollo / Technical log only in development
+      if (import.meta.env.DEV) {
+        console.error("❌ Error en el registro:", error);
+      }
+      // Mensaje amigable para el usuario / User-friendly message
+      toast.error("No se pudo completar el registro. Por favor, inténtalo de nuevo.");
+    }
+  };
+
+  // Determinar qué imagen mostrar / Determine which image to show
+  const displayImageUrl = previewUrl || "/images/profile/default_avatar.png";
+
+  // Renderizar formulario de registro / Render registration form
   return (
     <div>
-      <h2>Formulario de Registro</h2>
+      <h2>Registrar Usuario</h2>
       <form onSubmit={handleSubmit}>
+        {/* --- Imagen de Perfil / Profile Picture --- */}
+        <div style={{ marginBottom: "1rem" }}>
+          <label>Foto de Perfil (Opcional):</label>
+          <div
+            onClick={handleImageClick}
+            style={{
+              width: "150px",
+              height: "150px",
+              borderRadius: "50%",
+              overflow: "hidden",
+              cursor: "pointer",
+              border: "2px dashed #ccc",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: "0.5rem",
+            }}>
+            <img
+              src={displayImageUrl}
+              alt="Vista previa"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
+            />
+          </div>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            style={{ display: "none" }}
+            accept="image/png, image/jpeg, image/webp, image/jpg"
+          />
+          <small>Haz clic en la imagen para seleccionar una foto</small>
+        </div>
+
+        {/* --- Campos del Formulario / Form Fields --- */}
         <div>
-          <label htmlFor="firstName">Nombre:</label>
+          <label htmlFor="firstName">Nombre: *</label>
           <input
             type="text"
             id="firstName"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
-            required // Marcar como obligatorio en HTML5
+            required
+            disabled={isRegistering || isUploadingImage}
+            placeholder="Tu nombre"
           />
         </div>
+
         <div>
-          <label htmlFor="lastName">Apellidos:</label>
+          <label htmlFor="lastName">Apellidos: *</label>
           <input
             type="text"
             id="lastName"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
             required
+            disabled={isRegistering || isUploadingImage}
+            placeholder="Tus apellidos"
           />
         </div>
+
         <div>
-          <label htmlFor="email">Email:</label>
+          <label htmlFor="email">Email: *</label>
           <input
             type="email"
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            disabled={isRegistering || isUploadingImage}
+            placeholder="tu@email.com"
           />
         </div>
+
         <div>
-          <label htmlFor="password">Contraseña:</label>
+          <label htmlFor="password">Contraseña: *</label>
           <input
             type="password"
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            disabled={isRegistering || isUploadingImage}
+            placeholder="Mínimo 6 caracteres"
           />
         </div>
+
         <div>
-          <label htmlFor="phone">Teléfono (Opcional):</label>
+          <label htmlFor="confirmPassword">Confirmar Contraseña: *</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            disabled={isRegistering || isUploadingImage}
+            placeholder="Repite tu contraseña"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="phone">Teléfono:</label>
           <input
             type="tel"
             id="phone"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
+            disabled={isRegistering || isUploadingImage}
+            placeholder="Opcional"
           />
         </div>
+
         <div>
-          <label htmlFor="homeGymId">Gimnasio asociado:</label>
+          <label htmlFor="homeGymId">Gimnasio Principal: *</label>
           <select
             id="homeGymId"
-            value={homeGymId}
-            onChange={(e) => setHomeGymId(Number(e.target.value) || "")} // Convertir a número o '' - false
+            value={homeGymId || ""}
+            onChange={(e) => setHomeGymId(Number(e.target.value))}
             required
-            // Deshabilitar si aún no se han cargado los gimnasios
-            //  Disable if gyms haven't loaded yet
-            disabled={gymList.length === 0 && !gymLoadError}>
-            <option value="">-- Selecciona un gimnasio --</option>
-            {/* Mapear gymList para crear las opciones */}
-            {/* Map gymList to create the options */}
-            {gymList.map((gym) => (
+            disabled={isRegistering || isUploadingImage || isLoadingGyms}>
+            <option value="">
+              {isLoadingGyms
+                ? "Cargando gimnasios..."
+                : "Selecciona un gimnasio"}
+            </option>
+            {gyms.map((gym) => (
               <option key={gym.id} value={gym.id}>
-                {gym.city} - {gym.name}
+                {gym.name}
               </option>
             ))}
           </select>
+          {gymsError && <small style={{ color: "red" }}>{gymsError}</small>}
         </div>
 
-        {/* //TODO: Input para foto de perfil (type="file") */}
-        {/* Mostrar error si la carga de gimnasios falla */}
-        {/* Show error if loading gyms fails */}
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        {/*  Deshabilitar botón si hay error cargando gyms o si está cargando envío */}
-        {/* Disable button if there's a gym load error or if submitting */}
+        {/* --- Mostrar Errores / Show Errors --- */}
+        {registerError && (
+          <p style={{ color: "red", marginTop: "0.5rem" }}>{registerError}</p>
+        )}
+
+        {/* --- Botón de Envío / Submit Button --- */}
         <button
           type="submit"
-          disabled={isLoading || !!gymLoadError || gymList.length === 0}>
-          {isLoading ? "Registrando..." : "Registrarse"}
+          disabled={isRegistering || isUploadingImage || isLoadingGyms}>
+          {isRegistering
+            ? "Registrando..."
+            : isUploadingImage
+            ? "Subiendo imagen..."
+            : "Registrarse"}
         </button>
       </form>
+
+      {/* --- Enlace a Login / Link to Login --- */}
+      <p>
+        ¿Ya tienes cuenta?{" "}
+        <button
+          onClick={() => navigate("/login")}
+          disabled={isRegistering || isUploadingImage}
+          style={{
+            background: "none",
+            border: "none",
+            color: "blue",
+            textDecoration: "underline",
+            cursor: "pointer",
+          }}>
+          Inicia sesión aquí
+        </button>
+      </p>
     </div>
   );
 };

@@ -43,12 +43,20 @@ const registerUser = async (req, res) => {
       [first_name, last_name, email, hashedPassword, home_gym_id]
     );
 
+
+    // Generar token JWT / Generate JWT token
+const token = jwt.sign(
+  { userId: user.insertId, email },
+  process.env.JWT_SECRET,
+  { expiresIn: "7d" }
+);
     // 5. Enviar una respuesta de éxito
     // 5. Send a success response
     // 201-> Creado: El recurso se ha creado con éxito / Created: The resource has been successfully created
     res.status(201).json({
       message: "Usuario registrado con éxito",
       userId: user.insertId,
+      token
     });
 
     //  ? insertId sale del objeto de resultado que la librería mysql2  devuelve después de ejecutar una consulta INSERT con éxito

@@ -21,6 +21,7 @@ export interface RegisterData {
 // Export interface for the response received upon successful user registration.
 export interface RegisterResponse {
   message: string;
+  token: string;
   userId: number;
 }
 

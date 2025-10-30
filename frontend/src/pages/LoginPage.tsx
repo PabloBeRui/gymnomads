@@ -69,11 +69,11 @@ export const LoginPage = () => {
       // Mostrar notificación de error / Show error notification
       toast.error("Email o contraseña incorrectos. Inténtalo de nuevo.");
 
+      // Log del error completo solo en desarrollo / Full error log only in development
       if (import.meta.env.DEV) {
         console.error("Error en login:", error);
       }
     }
-    // Log del error completo solo en desarrollo / Full error log only in development
   };
 
   // Definir función para limpiar errores al editar campos / Define function to clear errors when editing fields

@@ -109,46 +109,33 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Definir función asíncrona para manejar el login.
   // Define async function to handle login.
-  const login = async (newToken: string): Promise<void> => {
-    // Guardar token en localStorage.
-    // Save token in localStorage.
-    localStorage.setItem("authToken", newToken);
-    // Actualizar useState del token.
-    // Update token useState.
-    setToken(newToken);
-    // Limpiar estado user previo (para evitar mostrar datos incorrectos brevemente).
-    // Clear previous user state (to avoid briefly showing incorrect data).
-    setUser(null);
-
+  const login = async (newToken: string) => {
     try {
-      // Esperar a obtener los datos del perfil del usuario usando el nuevo token.
-      // Wait to get user profile data using the new token.
-      const userData = await getUserProfile(newToken);
-      // Actualizar useState user con los datos reales obtenidos.
-      // Update user useState with the actual fetched data.
-      setUser(userData);
-      // log éxito y datos cargados en consola para depuración.
-      // Log success and loaded data in console for debugging.
-      console.log("AuthProvider: Usuario logueado, token guardado.", userData);
-    } catch (error) {
-      // Si falla la carga del perfil justo después del login, log error
-      // If loading the profile right after login fails, log error
-      console.error("AuthProvider: Error al obtener perfil tras login:", error);
+      // PASO 1: Guardar el token en localStorage y estado / STEP 1: Save token in localStorage and state
+      setToken(newToken);
+      localStorage.setItem("authToken", newToken);
 
-      // Procesar error (puede limpiar token si es 401/403).
-      // Process error (may clear token if 401/403).
-      handleApiError(error);
-      // Forzar logout si no se pudieron cargar los datos esenciales del usuario al comprobar si handleApiError limpió el token
-      // Force logout if essential user data couldn't be loaded? It's an option to Check if handleApiError cleared the token
-      if (!localStorage.getItem("authToken")) {
-        setToken(null);
+      // PASO 2: Obtener datos del usuario pasando el token como parámetro / STEP 2: Get user data passing token as parameter
+      const userData = await getUserProfile(newToken);
+
+      // Actualizar estado del usuario / Update user state
+      setUser(userData);
+    } catch (error) {
+      // Registrar error en desarrollo / Log error in development
+      if (import.meta.env.DEV) {
+        console.error(
+          "AuthProvider: Error al obtener perfil tras login:",
+          error
+        );
       }
-      // Asegurar que user quede null si falla la carga.
-      // Ensure user remains null if loading fails.
+
+      // Limpiar todo si falla la autenticación / Clear everything if authentication fails
       setUser(null);
-      // Mostrar notificación de error al usuario.
-      // Show error notification to the user.
-      toast.error("Error al cargar los datos del usuario después del login.");
+      setToken(null);
+      localStorage.removeItem("authToken");
+
+      // Re-lanzar el error para que el componente que llama lo maneje / Re-throw error for calling component to handle
+      throw error;
     }
   };
 
@@ -179,7 +166,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     isLoading,
     login,
     logout,
-    setUser
+    setUser,
   };
 
   // --- Renderizado del Provider ---

@@ -101,6 +101,7 @@ export const loginUser = async (
 // Receives the JWT token and returns the user data (backend response).
 
 export const getUserProfile = async (token: string): Promise<User> => {
+  
   try {
     // Realizar petición GET al endpoint '/users/profile'.
     // Perform a GET request to the '/users/profile' endpoint.
