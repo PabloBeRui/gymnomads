@@ -8,7 +8,7 @@ import { Routes, Route, Link } from "react-router-dom";
 //Componentes / Components
 import { ApiTest } from "./components/ApiTest";
 import { RegisterUserPage } from "./pages/RegisterUserPage";
-import { LoginPage } from "./components/LoginPage";
+import { LoginPage } from "./pages/LoginPage";
 
 //Pages
 import { ProfilePage } from "./pages/ProfilePage";
