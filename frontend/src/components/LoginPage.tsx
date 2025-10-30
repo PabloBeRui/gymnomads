@@ -12,7 +12,7 @@ import type { LoginData } from "../interfaces/user-interfaces";
 // Importar el hook de autenticación / Import the authentication hook
 import { useAuth } from "../context/AuthContext";
 
-export const LoginForm = () => {
+export const LoginPage = () => {
   // Crear useState para los campos del formulario.
   // Create useState for form fields.
   const [email, setEmail] = useState("");

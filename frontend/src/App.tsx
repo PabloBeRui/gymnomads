@@ -7,8 +7,8 @@ import { Routes, Route, Link } from "react-router-dom";
 
 //Componentes / Components
 import { ApiTest } from "./components/ApiTest";
-import { RegisterForm } from "./components/RegisterForm";
-import { LoginForm } from "./components/LoginForm";
+import { RegisterUserPage } from "./pages/RegisterUserPage";
+import { LoginPage } from "./components/LoginPage";
 
 //Pages
 import { ProfilePage } from "./pages/ProfilePage";
@@ -145,8 +145,8 @@ function App() {
       {/* Define the application routes */}
       <Routes>
         {/* --- Rutas Públicas --- */}
-        <Route path="/register" element={<RegisterForm />} />
-        <Route path="/login" element={<LoginForm />} />
+        <Route path="/register" element={<RegisterUserPage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<ApiTest />} />
         {/* ApiTest sigue en Home por ahora */}
         <Route path="/gyms" element={<ListGymsPage />} />
