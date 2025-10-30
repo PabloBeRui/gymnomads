@@ -1,17 +1,46 @@
-// Importar hooks de React / Import React hooks
-import { useEffect, useState, useRef } from "react";
-// Importar el hook de autenticación para acceder a los datos del usuario / Import the authentication hook to access user data
+/**
+ * =============================================================================
+ * PÁGINA: ProfilePage
+ * =============================================================================
+ * 
+ * Página de perfil del usuario con modo visualización/edición.
+ * User profile page with view/edit mode.
+ * 
+ * Funcionalidades / Features:
+ * - Ver datos del perfil (nombre, email, rol, teléfono, gimnasio)
+ * - Editar nombre, apellidos y teléfono
+ * - Cambiar foto de perfil
+ * - Modo edición con validación
+ * 
+ * ✅ REFACTORIZADO usando:
+ * - useImageUpload (para manejo de foto de perfil)
+ * - ImageUploadPreview (componente de preview)
+ * - useApiCall (llamadas API)
+ * - handleApiError (manejo de errores)
+ * =============================================================================
+ */
+
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
+// Importar contexto / Import context
 import { useAuth } from "../context/AuthContext";
-// Importar el hook personalizado para manejar llamadas API / Import the custom hook to handle API calls
+
+// Importar hooks personalizados / Import custom hooks
 import { useApiCall } from "../hooks/useApiCall";
+import { useImageUpload } from "../hooks/useImageUpload";
 
-// Importar la función del servicio para obtener datos del gimnasio / Import the service function to get gym data
+// Importar componente / Import component
+import { ImageUploadPreview } from "../components/ImageUploadPreview";
+
+// Importar servicios / Import services
 import { getGymById } from "../services/gym-services";
+import {
+  updateUserProfile,
+  uploadProfilePicture,
+} from "../services/user-services";
 
-// Importar el manejador centralizado de errores / Import the centralized error handler
-import { handleApiError } from "../utils/error-handler";
-
-// Interfaz / Interface
+// Importar interfaces / Import interfaces
 import type {
   UpdateUserData,
   User,
@@ -19,17 +48,20 @@ import type {
   UpdateProfileResponse,
 } from "../interfaces/user-interfaces";
 
-// Servicios / Services
-import {
-  updateUserProfile,
-  uploadProfilePicture,
-} from "../services/user-services";
+// Importar utilidades / Import utilities
+import { handleApiError } from "../utils/error-handler";
 
-// Sonner notifications
-import { toast } from "sonner";
+/**
+ * =============================================================================
+ * ESTILOS
+ * =============================================================================
+ */
 
-// Estilos para campos "deshabilitados" visualmente durante la edición / Styles for visually "disabled" fields during editing
-const disabledStyle = {
+/**
+ * Estilos para campos "deshabilitados" visualmente durante la edición
+ * Styles for visually "disabled" fields during editing
+ */
+const disabledStyle: React.CSSProperties = {
   color: "grey",
   fontStyle: "italic",
   backgroundColor: "#f8f8f8",
@@ -39,40 +71,50 @@ const disabledStyle = {
   margin: "0",
 };
 
+/**
+ * =============================================================================
+ * COMPONENTE: ProfilePage
+ * =============================================================================
+ */
 export const ProfilePage = () => {
-  // Obtener el objeto 'user', token y setUser del contexto de autenticación / Get the 'user' object, token and setUser from the authentication context
+  // --- Hooks de Contexto / Context Hooks ---
   const { user, token, setUser } = useAuth();
 
-  // Crear useState para almacenar el nombre del gimnasio asociado / Create useState to store the associated gym name
+  // --- Estados de Datos / Data States ---
   const [gymName, setGymName] = useState<string | null>(null);
-
-  // Crear useState para manejar errores específicos de la carga del gimnasio / Create useState to handle specific errors loading the gym
   const [gymFetchError, setGymFetchError] = useState<string | null>(null);
 
-  // --- UseStates para Modo Edición / useStates for Edit Mode ---
-  // Crear useState para saber si estamos en modo edición / Create useState to know if we are in edit mode
+  // --- Estados de Modo Edición / Edit Mode States ---
   const [isEditing, setIsEditing] = useState(false);
-  // Crear useStates para los campos editables del formulario / Create useStates for editable form fields
   const [editFirstName, setEditFirstName] = useState("");
   const [editLastName, setEditLastName] = useState("");
   const [editPhone, setEditPhone] = useState("");
 
-  // Usar el hook personalizado para manejar llamadas API / Use the custom hook to handle API calls
+  // --- Hook de API / API Hook ---
   const {
     loading: isSaving,
     error: editError,
     execute,
   } = useApiCall("Error al guardar el perfil.");
 
-  // --- UseStates para Subida de Imagen / useStates for Image Upload ---
-  // Crear useState para el archivo de imagen seleccionado (tipo File) / Create useState for the selected image file (File type)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  // Crear useState para la URL de vista previa de la imagen seleccionada / Create useState for the preview URL of the selected image
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  // Crear useRef para el input de archivo oculto / Create useRef for the hidden file input
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  // --- ✅ REFACTORIZADO: Hook de Imagen / Image Hook ---
+  const profileImageUpload = useImageUpload({
+    maxSizeMB: 5,
+    allowedTypes: ["image/png", "image/jpeg", "image/jpg", "image/webp"],
+    errorMessages: {
+      invalidType: "La foto de perfil debe ser PNG, JPG, JPEG o WEBP",
+      maxSize: "La foto de perfil no debe superar los 5MB",
+    },
+  });
 
-  // Sincronizar campos editables cuando el usuario se carga / Synchronize editable fields when user loads
+  // --- Efectos / Effects ---
+
+  /**
+   * =============================================================================
+   * EFECTO: Sincronizar campos editables cuando el usuario se carga
+   * EFFECT: Synchronize editable fields when user loads
+   * =============================================================================
+   */
   useEffect(() => {
     if (user) {
       setEditFirstName(user.first_name || "");
@@ -81,82 +123,102 @@ export const ProfilePage = () => {
     }
   }, [user]);
 
-  // Ejecutar useEffect para obtener el nombre del gimnasio cuando 'user' esté disponible / Run useEffect to fetch the gym name when 'user' is available
+  /**
+   * =============================================================================
+   * EFECTO: Obtener el nombre del gimnasio cuando 'user' esté disponible
+   * EFFECT: Fetch the gym name when 'user' is available
+   * =============================================================================
+   */
   useEffect(() => {
-    // Definir función asíncrona para cargar el nombre del gimnasio / Define an async function to load the gym name
     const fetchGymName = async () => {
-      // Asegurarse de que 'user' y 'home_gym_id' existen / Make sure 'user' and 'home_gym_id' exist
       if (user?.home_gym_id) {
         try {
-          setGymFetchError(null); // Limpiar error previo / Clear previous error
-          // Llamar al servicio para obtener los datos del gimnasio por ID / Call the service to get gym data by ID
+          setGymFetchError(null);
           const gymData = await getGymById(user.home_gym_id);
-          // Actualizar estado con el nombre del gimnasio / Update state with the gym name
           setGymName(gymData.name);
         } catch (err) {
-          // Usar el manejador centralizado para obtener el mensaje / Use the centralized handler to get the error message
           const errorMessage = handleApiError(
             err,
             "No se pudo cargar el nombre del gimnasio."
           );
-          // Actualizar el estado de error específico de esta carga / Update the specific error state for this load
           setGymFetchError(errorMessage);
-          setGymName(null); // Asegurar que gymName quede null si falla / Ensure gymName is null on failure
+          setGymName(null);
         }
       }
     };
 
     fetchGymName();
-    // Ejecutar este efecto si 'user' (específicamente su ID de gimnasio) cambia / Run this effect if 'user' (specifically their gym ID) changes
   }, [user?.home_gym_id]);
 
-  // --- Manejadores para Modo Edición / Handlers for Edit Mode ---
+  /**
+   * =============================================================================
+   * EFECTO: Establecer preview de la imagen actual del usuario
+   * EFFECT: Set preview of user's current image
+   * =============================================================================
+   */
+  useEffect(() => {
+    if (user?.profile_picture) {
+      profileImageUpload.setPreviewUrl(user.profile_picture);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.profile_picture]);
 
-  // Definir función para entrar en modo edición / Define function to enter edit mode
+  // --- Manejadores / Handlers ---
+
+  /**
+   * =============================================================================
+   * FUNCIÓN: handleEditClick
+   * =============================================================================
+   * 
+   * Entrar en modo edición.
+   * Enter edit mode.
+   * =============================================================================
+   */
   const handleEditClick = () => {
-    // Reiniciar estados de edición con valores actuales del usuario / Reset edit states with current user values
     setEditFirstName(user?.first_name || "");
     setEditLastName(user?.last_name || "");
     setEditPhone(user?.phone || "");
-    // Activar modo edición / Activate edit mode
     setIsEditing(true);
-    // Limpiar vista previa de imagen al entrar en modo edición / Clear image preview when entering edit mode
-    setSelectedFile(null);
-    setPreviewUrl(null);
+    
+    // ✅ REFACTORIZADO: Limpiar imagen usando el hook
+    profileImageUpload.clearImage();
+    
+    // Restaurar preview de la imagen actual
+    if (user?.profile_picture) {
+      profileImageUpload.setPreviewUrl(user.profile_picture);
+    }
   };
 
-  // Definir función para cancelar la edición / Define function to cancel editing
+  /**
+   * =============================================================================
+   * FUNCIÓN: handleCancelClick
+   * =============================================================================
+   * 
+   * Cancelar la edición.
+   * Cancel editing.
+   * =============================================================================
+   */
   const handleCancelClick = () => {
-    // Desactivar modo edición / Deactivate edit mode
     setIsEditing(false);
-    // Limpiar selección de archivo y vista previa / Clear file selection and preview
-    setSelectedFile(null);
-    setPreviewUrl(null);
-  };
-
-  // --- Manejadores para Subida de Imagen / Handlers for Image Upload ---
-
-  // Definir función para manejar clic en la imagen (solo en modo edición) / Define function to handle image click (edit mode only)
-  const handleImageClick = () => {
-    if (isEditing) {
-      // Activar el input de archivo oculto / Trigger the hidden file input
-      fileInputRef.current?.click();
+    
+    // ✅ REFACTORIZADO: Limpiar imagen usando el hook
+    profileImageUpload.clearImage();
+    
+    // Restaurar preview de la imagen actual
+    if (user?.profile_picture) {
+      profileImageUpload.setPreviewUrl(user.profile_picture);
     }
   };
 
-  // Definir función para manejar la selección de archivo / Define function to handle file selection
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // Obtener el primer archivo / Get the first file
-    const file = event.target.files?.[0];
-    if (file) {
-      // Guardar el archivo en el estado / Save the file in the state
-      setSelectedFile(file);
-      // Crear y guardar una URL de vista previa para mostrar la imagen seleccionada / Create and save a preview URL to display the selected image
-      setPreviewUrl(URL.createObjectURL(file));
-    }
-  };
-
-  // Definir función para guardar los cambios / Define function to save changes
+  /**
+   * =============================================================================
+   * FUNCIÓN: handleSaveClick
+   * =============================================================================
+   * 
+   * Guardar los cambios del perfil.
+   * Save profile changes.
+   * =============================================================================
+   */
   const handleSaveClick = async () => {
     // Validar campos de texto obligatorios / Validate required text fields
     if (!editFirstName || !editLastName) {
@@ -172,16 +234,18 @@ export const ProfilePage = () => {
       if (!token) throw new Error("No autenticado.");
 
       // --- 1. Subir Nueva Imagen (si hay una seleccionada) / Upload New Image (if one is selected) ---
-      if (selectedFile) {
+      // ✅ REFACTORIZADO: Usar selectedFile del hook
+      if (profileImageUpload.selectedFile) {
         console.log("Guardando nueva foto de perfil...");
 
         // Ejecutar llamada API para subir imagen / Execute API call to upload image
         const uploadResponse = await execute<UploadProfilePictureResponse>(
-          () => uploadProfilePicture(token, selectedFile),
+          () => uploadProfilePicture(token, profileImageUpload.selectedFile!),
           "Error al subir la imagen"
         );
 
-        // Construir la URL completa desde el filePath devuelto por el backend / Build the full URL from the filePath returned by the backend
+        // Construir la URL completa desde el filePath devuelto por el backend
+        // Build the full URL from the filePath returned by the backend
         const imagePath = uploadResponse.filePath.replace(/\\/g, "/");
         newImageUrl = `${import.meta.env.VITE_BACKEND_BASE_URL}/${imagePath}`;
 
@@ -191,7 +255,6 @@ export const ProfilePage = () => {
       }
 
       // --- 2. Actualizar Datos de Texto / Update Text Data ---
-      // Preparar datos actualizados / Prepare updated data
       const updatedData: UpdateUserData = {
         first_name: editFirstName,
         last_name: editLastName,
@@ -204,15 +267,13 @@ export const ProfilePage = () => {
         "Error al actualizar el perfil"
       );
 
-      // Mostrar notificación solo si no se cambió la imagen / Show notification only if image wasn't changed
-      if (!selectedFile) {
-        toast.success(
-          updateResponse.message || "Perfil actualizado con éxito."
-        );
+      // Mostrar notificación solo si no se cambió la imagen
+      // Show notification only if image wasn't changed
+      if (!profileImageUpload.selectedFile) {
+        toast.success(updateResponse.message || "Perfil actualizado con éxito.");
       }
 
       // --- 3. Actualizar el Contexto / Update the Context ---
-      // Crear nuevo objeto 'user' con los datos actualizados / Create new 'user' object with updated data
       const updatedUser: User = {
         ...user!,
         first_name: editFirstName,
@@ -221,68 +282,83 @@ export const ProfilePage = () => {
         profile_picture: newImageUrl,
       };
 
-      // Llamar a 'setUser' del contexto para actualizar 'user' globalmente / Call 'setUser' from context to update 'user' globally
       setUser(updatedUser);
 
       // --- 4. Limpiar / Clean up ---
-      // Salir del modo edición / Exit edit mode
       setIsEditing(false);
-      // Limpiar archivo seleccionado / Clear selected file
-      setSelectedFile(null);
-      // Limpiar vista previa / Clear preview
-      setPreviewUrl(null);
+      
+      // ✅ REFACTORIZADO: Limpiar imagen usando el hook
+      profileImageUpload.clearImage();
+      
+      // Establecer el nuevo preview
+      if (newImageUrl) {
+        profileImageUpload.setPreviewUrl(newImageUrl);
+      }
     } catch (err) {
-      // Manejar el error usando handleApiError directamente / Handle error using handleApiError directly
       const errorMessage = handleApiError(err, "Error al guardar el perfil.");
-      // Mostrar notificación de error / Show error notification
       toast.error(errorMessage);
     }
   };
 
-  // Comprobar si los datos del usuario están disponibles (aunque ProtectedRoute ya lo asegura) / Check if user data is available (although ProtectedRoute already ensures this)
+  // --- Renderizado / Rendering ---
+
+  /**
+   * Verificar que el usuario existe
+   * Verify that user exists
+   */
   if (!user) {
     return <div>Error: No se pudieron cargar los datos del usuario.</div>;
   }
 
-  // Determinar qué URL de imagen mostrar / Determine which image URL to show
-  const displayImageUrl = previewUrl
-    ? previewUrl // 1. Mostrar la vista previa si existe / Show preview if it exists
-    : user.profile_picture
-    ? user.profile_picture // 2. Si no, mostrar la imagen actual / If not, show current user image
-    : "/images/profile/default_avatar.png"; // 3. Si no, mostrar el avatar por defecto / If not, show default avatar
+  /**
+   * Determinar qué URL de imagen mostrar
+   * Determine which image URL to show
+   */
+  const displayImageUrl =
+    profileImageUpload.previewUrl || "/images/profile/default_avatar.png";
 
-  // Renderizar la información del perfil del usuario / Render the user's profile information
   return (
     <div>
+      {/* Título / Title */}
       <h2>Mi Perfil</h2>
-      {/* --- Imagen (Siempre visible) / Image (Always visible) --- */}
-      <div>
-        <img
-          src={displayImageUrl} // Usar la URL determinada / Use the determined URL
-          alt={`${user.first_name} ${user.last_name}`}
-          style={{
-            width: "100px",
-            height: "100px",
-            borderRadius: "50%",
-            objectFit: "cover",
-            marginBottom: "1rem",
-            cursor: isEditing ? "pointer" : "default",
-          }}
-          onClick={handleImageClick}
-          title={isEditing ? "Haz clic para cambiar la foto" : "Foto de perfil"}
-        />
 
+      {/* ====================================================================
+       * SECCIÓN: IMAGEN DE PERFIL
+       * SECTION: PROFILE IMAGE
+       * ==================================================================== */}
+      <div>
+        {/* ✅ REFACTORIZADO: Usar componente ImageUploadPreview */}
+        {/* ✅ REFACTORED: Use ImageUploadPreview component */}
+        
         {/* Input de archivo oculto / Hidden file input */}
         <input
           type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
+          ref={profileImageUpload.fileInputRef}
+          onChange={profileImageUpload.handleFileChange}
           style={{ display: "none" }}
           accept="image/png, image/jpeg, image/webp, image/jpg"
         />
+
+        <ImageUploadPreview
+          previewUrl={displayImageUrl}
+          defaultImage="/images/profile/default_avatar.png"
+          onClick={isEditing ? profileImageUpload.handleImageClick : undefined}
+          altText={`${user.first_name} ${user.last_name}`}
+          shape="circle"
+          size={100}
+          showHelpText={isEditing}
+          helpText="Haz clic para cambiar la foto"
+          style={{
+            cursor: isEditing ? "pointer" : "default",
+            marginBottom: "1rem",
+          }}
+        />
       </div>
 
-      {/* --- Campos no editables (siempre visibles) / Non-editable fields (always visible) --- */}
+      {/* ====================================================================
+       * SECCIÓN: CAMPOS NO EDITABLES
+       * SECTION: NON-EDITABLE FIELDS
+       * ==================================================================== */}
       <p>
         <strong>Email:</strong>{" "}
         <span style={isEditing ? disabledStyle : {}}>{user.email}</span>
@@ -292,7 +368,10 @@ export const ProfilePage = () => {
         <span style={isEditing ? disabledStyle : {}}>{user.role}</span>
       </p>
 
-      {/* --- Campos editables / Editable fields --- */}
+      {/* ====================================================================
+       * SECCIÓN: CAMPOS EDITABLES
+       * SECTION: EDITABLE FIELDS
+       * ==================================================================== */}
       {!isEditing ? (
         // --- Modo Visualización / View Mode ---
         <>
@@ -348,7 +427,10 @@ export const ProfilePage = () => {
         </>
       )}
 
-      {/* --- Gimnasio asociado (siempre visible, no editable) / Associated gym (always visible, not editable) --- */}
+      {/* ====================================================================
+       * SECCIÓN: GIMNASIO ASOCIADO
+       * SECTION: ASSOCIATED GYM
+       * ==================================================================== */}
       <p>
         <strong>Gimnasio:</strong>{" "}
         <span style={isEditing ? disabledStyle : {}}>
@@ -362,7 +444,10 @@ export const ProfilePage = () => {
         </span>
       </p>
 
-      {/* --- Botones de Acción / Action Buttons --- */}
+      {/* ====================================================================
+       * SECCIÓN: BOTONES DE ACCIÓN
+       * SECTION: ACTION BUTTONS
+       * ==================================================================== */}
       {!isEditing ? (
         // Botón para entrar en modo edición / Button to enter edit mode
         <button onClick={handleEditClick}>Editar Perfil</button>
@@ -378,12 +463,17 @@ export const ProfilePage = () => {
         </>
       )}
 
-      {/* --- Mostrar errores de edición si existen / Show edit errors if they exist --- */}
+      {/* ====================================================================
+       * SECCIÓN: MENSAJES DE ERROR Y ESTADO
+       * SECTION: ERROR MESSAGES AND STATUS
+       * ==================================================================== */}
+
+      {/* Mostrar errores de edición si existen / Show edit errors if they exist */}
       {isEditing && editError && (
         <p style={{ color: "red", marginTop: "1rem" }}>{editError}</p>
       )}
 
-      {/* --- Indicador de carga durante guardado / Loading indicator during save --- */}
+      {/* Indicador de carga durante guardado / Loading indicator during save */}
       {isSaving && <p>Guardando cambios...</p>}
     </div>
   );
