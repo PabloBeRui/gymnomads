@@ -83,41 +83,38 @@ export const getGymById = async (gymId: number): Promise<Gym> => {
   }
 };
 
-/* ========================================
+/**
+ * ========================================
  * API CALL: Crear un nuevo gimnasio
  * API CALL: Create a new gym
- * ======================================== */
-
-// Recibe FormData y el token // Receives FormData and the token
+ * ========================================
+ *
+ * - Recibe FormData y el token / Receives FormData and the token
+ * - No fijamos 'Content-Type' manualmente para que axios/Browser añada el boundary.
+ * - We don't set 'Content-Type' manually so axios/browser can add the boundary.
+ */
 export const createGym = async (
   gymData: FormData,
   token: string
 ): Promise<Gym> => {
   try {
-    // Realizar petición POST al endpoint de gimnasios (/api/gyms)
-    // Perform POST request to the gyms endpoint (/api/gyms)
     const response = await axios.post(`${API_URL}/gyms`, gymData, {
       headers: {
-        // Importante: 'Content-Type': 'multipart/form-data' es necesario para enviar archivos con FormData
-        // Important: 'Content-Type': 'multipart/form-data' is necessary to send files with FormData
-        "Content-Type": "multipart/form-data",
-        // Enviar el token de autorización para verificar permisos
-        // Send the authorization token to verify permissions
+        // Let axios set Content-Type for FormData (it includes the boundary)
         Authorization: `Bearer ${token}`,
       },
     });
 
-    // Devolver los datos del gimnasio creado (según lo que devuelva la API)
-    // Return the data of the created gym (according to what the API returns)
-    return response.data;
+    // Minimal normalization / fallback:
+    // - If backend returns { newGym: {...} } or { gym: {...} }, prefer that.
+    // - Otherwise return response.data (assumed to be the Gym).
+    const data = response.data;
+    const gym: Gym =
+      data && (data.newGym || data.gym) ? data.newGym || data.gym : data;
+
+    return gym;
   } catch (error) {
-    // Usar el manejador centralizado para procesar el error
-    // Use the centralized handler to process the error
-    const errorMessage = handleApiError(
-      `No se pudo crear el gimnasio. Error ${error}`
-    );
-    // Lanzar un nuevo error con el mensaje procesado para que el componente lo capture
-    // Throw a new error with the processed message for the component to catch
+    const errorMessage = handleApiError(error, "No se pudo crear el gimnasio.");
     throw new Error(errorMessage);
   }
 };
