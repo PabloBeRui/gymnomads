@@ -11,7 +11,7 @@
  * - Manager: Edita SOLO imágenes (logo y main image)
  *
  * ✅ REFACTORIZADO usando:
- * - useImageUpload (para manejo de imágenes)
+ * - useGymImageUpload (para manejo de imágenes)
  * - ImageUploadPreview (componente de preview)
  * - useApiCall (llamadas API)
  * - Validadores centralizados
@@ -27,7 +27,7 @@ import { useAuth } from "../context/AuthContext";
 
 // Importar hooks personalizados / Import custom hooks
 import { useApiCall } from "../hooks/useApiCall";
-import { useImageUpload } from "../hooks/useImageUpload";
+import { useGymImageUpload } from "../hooks/useGymImageUpload";
 
 // Importar componente / Import component
 
@@ -38,11 +38,11 @@ import {
   getGymById,
   updateGymDetails,
   updateGymLogo,
-  updateGymMainImage,
+  
 } from "../services/gym-services";
 
 // Importar interfaces / Import interfaces
-import type { Gym, ImageUploadResponse } from "../interfaces/gym-interfaces";
+import type { Gym} from "../interfaces/gym-interfaces";
 
 // Importar utilidades / Import utilities
 import { handleApiError } from "../utils/error-handler";
@@ -142,20 +142,39 @@ export const EditGymPage = () => {
 
   /**
    * Hook para el Logo / Hook for Logo
+   *
+   * IMPORTANTE:
+   * - Usamos un uploadFn personalizado que llama a updateGymLogo(gymId, file, token)
+   * - Hacemos un casteo rápido para adaptar la firma concreta al tipo genérico del wrapper.
+   * IMPORTANT:
+   * - We pass a custom uploadFn that calls updateGymLogo(gymId, file, token)
+   * - We cast the function to match the generic signature expected by the wrapper.
    */
-  const logoUpload = useImageUpload({
-    maxSizeMB: 5,
-    allowedTypes: ["image/png", "image/jpeg", "image/jpg", "image/webp"],
-    errorMessages: {
-      invalidType: "El logo debe ser una imagen PNG, JPG, JPEG o WEBP",
-      maxSize: "El logo no debe superar los 5MB",
+  const logoUpload = useGymImageUpload(
+    {
+      maxSizeMB: 5,
+      allowedTypes: ["image/png", "image/jpeg", "image/jpg", "image/webp"],
+      errorMessages: {
+        invalidType: "El logo debe ser una imagen PNG, JPG, JPEG o WEBP",
+        maxSize: "El logo no debe superar los 5MB",
+      },
     },
-  });
+    // QUICK FIX: adaptar firma (file, gymId, token) al tipo esperado (...args: unknown[])
+    (async (file: File, gymId: number | string, token: string) =>
+      await updateGymLogo(gymId, file, token)) as unknown as (
+      file: File,
+      ...args: unknown[]
+    ) => Promise<unknown>
+  );
 
   /**
    * Hook para la Imagen Principal / Hook for Main Image
+   *
+   * Nota:
+   * - No pasamos uploadFn aquí porque el wrapper por defecto ya usa updateGymMainImage.
+   * - If you prefer explicitness, you can pass an uploadFn similar to logoUpload but calling updateGymMainImage.
    */
-  const mainImageUpload = useImageUpload({
+  const mainImageUpload = useGymImageUpload({
     maxSizeMB: 5,
     allowedTypes: ["image/png", "image/jpeg", "image/jpg", "image/webp"],
     errorMessages: {
@@ -163,6 +182,8 @@ export const EditGymPage = () => {
       maxSize: "La imagen principal no debe superar los 5MB",
     },
   });
+
+
 
   // --- Determinar Rol / Determine Role ---
   const isManagerEditing = user?.role === "manager";
@@ -399,23 +420,17 @@ export const EditGymPage = () => {
     // LOGIC FOR MANAGER (images only)
     // ==========================================================================
     else if (user?.role === "manager") {
-      const imageUpdatePromises: Promise<ImageUploadResponse>[] = [];
+      const imageUpdatePromises: Promise<unknown>[] = [];
 
-      // ✅ REFACTORIZADO: Usar selectedFile del hook
-      // ✅ REFACTORED: Use selectedFile from hook
       if (logoUpload.selectedFile) {
-        imageUpdatePromises.push(
-          updateGymLogo(id, logoUpload.selectedFile, token)
-        );
+        // Llamada delegada al hook wrapper (usa gymId y token)
+        imageUpdatePromises.push(logoUpload.uploadImage(id, token));
       }
 
       if (mainImageUpload.selectedFile) {
-        imageUpdatePromises.push(
-          updateGymMainImage(id, mainImageUpload.selectedFile, token)
-        );
+        imageUpdatePromises.push(mainImageUpload.uploadImage(id, token));
       }
 
-      // Validar que se hayan seleccionado imágenes / Validate images were selected
       if (imageUpdatePromises.length === 0) {
         toast.info("No seleccionaste nuevas imágenes para guardar.");
         setIsSubmitting(false);
@@ -423,7 +438,6 @@ export const EditGymPage = () => {
       }
 
       try {
-        // Ejecutar actualizaciones de imágenes / Execute image updates
         await Promise.all(imageUpdatePromises);
         toast.success("Imágenes del gimnasio actualizadas.");
         navigate("/gyms");

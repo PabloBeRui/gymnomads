@@ -3,40 +3,73 @@
 // Wrapper: useGymImageUpload
 // Wrapper: useGymImageUpload
 //
-// Propósito: adaptar updateGymMainImage a useImageUpload para imágenes de gimnasio.
-// Purpose: adapt updateGymMainImage to useImageUpload for gym images.
+// Propósito / Purpose:
+// - Adaptar updateGymMainImage (y opcionalmente updateGymLogo) al hook unificado useImageUpload.
+// - Aceptar opcionalmente una configuración personalizada (ImageValidationConfig) y/o
+//   una uploadFn personalizada para evitar errores "Expected 0 arguments, but got 1".
+// - If no config/uploadFn provided, uses sensible defaults and the internal service.
+//
+// Notas:
+// - Esta versión aplica un merge entre la configuración por defecto y la que se pase.
+// - Para mantener compatibilidad rápida con la firma de useImageUpload se aplica un
+//   "quick fix" en caso de necesitar adaptar firmas concretas (siempre documentado).
+// - This version merges default config with the provided one and accepts an optional
+//   upload function. It keeps compatibility with useImageUpload's expected args.
 
 import { useImageUpload } from "./useImageUpload";
-import { updateGymMainImage } from "../services/gym-services";
+import { updateGymMainImage} from "../services/gym-services";
+import {
+  DEFAULT_IMAGE_CONFIG,
+  type ImageValidationConfig,
+} from "../utils/upload-handler";
 
-export const useGymImageUpload = () =>
-  useImageUpload(
-    {
-      maxSizeMB: 5,
-      allowedTypes: ["image/png", "image/jpeg", "image/jpg", "image/webp"],
-      errorMessages: {
-        invalidType:
-          "Por favor, selecciona una imagen válida (PNG, JPG, JPEG o WEBP)",
-        maxSize: "La imagen del gimnasio no debe superar los 5MB",
-      },
+/**
+ * useGymImageUpload
+ *
+ * @param config - (opcional) ImageValidationConfig para sobreescribir defaults
+ * @param uploadFn - (opcional) función que sube: (file: File, ...args) => Promise<unknown>
+ *
+ * Si no pasas uploadFn, el wrapper usa updateGymMainImage como comportamiento por defecto.
+ */
+export const useGymImageUpload = (
+  config?: ImageValidationConfig,
+  uploadFn?: (file: File, ...args: unknown[]) => Promise<unknown>
+) => {
+  // Config por defecto extendida / Default config merged
+  const defaultConfig: ImageValidationConfig = {
+    ...DEFAULT_IMAGE_CONFIG,
+    maxSizeMB: 5,
+    allowedTypes: ["image/png", "image/jpeg", "image/jpg", "image/webp"],
+    errorMessages: {
+      invalidType:
+        "Por favor, selecciona una imagen válida (PNG, JPG, JPEG o WEBP)",
+      maxSize: "La imagen del gimnasio no debe superar los 5MB",
     },
-    // QUICK FIX:
-    // - La función real tiene firma (file: File, gymId: number|string, token: string)
-    // - La función esperada por useImageUpload es (file: File, ...args: unknown[]) => Promise<unknown>
-    // - Aplicamos un doble cast para satisfacer a TS sin perder la implementación concreta.
-    //
-    // QUICK FIX:
-    // - The real function signature is (file: File, gymId: number|string, token: string)
-    // - useImageUpload expects (file: File, ...args: unknown[]) => Promise<unknown>
-    // - We apply a double-cast to satisfy TS while keeping the concrete implementation.
-    (async (file: File, gymId: number | string, token: string) =>
-      await updateGymMainImage(gymId, file, token)) as unknown as (
-      file: File,
-      ...args: unknown[]
-    ) => Promise<unknown>,
-    "Error al subir la imagen del gimnasio."
-  );
+  };
 
+  // Merge shallow; merge explícito de errorMessages para no perder defaults
+  const mergedConfig: ImageValidationConfig = {
+    ...defaultConfig,
+    ...(config ?? {}),
+    errorMessages: {
+      ...(defaultConfig.errorMessages ?? {}),
+      ...(config?.errorMessages ?? {}),
+    },
+  };
+
+  // Si no se pasa uploadFn, usar updateGymMainImage por defecto.
+  // Adaptamos la firma a la esperada por useImageUpload: (file, ...args) => Promise<unknown>
+  const defaultUploadFn = uploadFn
+    ? uploadFn
+    : (async (file: File, gymId: number | string, token: string) =>
+        await updateGymMainImage(gymId, file, token)) as unknown as (
+        file: File,
+        ...args: unknown[]
+      ) => Promise<unknown>;
+
+  // Llamamos al hook unificado pasando la config y la función de subida resultante.
+  return useImageUpload(mergedConfig, defaultUploadFn, "Error al subir la imagen del gimnasio.");
+};
 
 
 
