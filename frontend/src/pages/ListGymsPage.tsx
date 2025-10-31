@@ -1,14 +1,30 @@
-// frontend/src/pages/GymsPage.tsx
+/**
+ * =============================================================================
+ * PÁGINA: ListGymsPage / GymsPage
+ * =============================================================================
+ *
+ * Página para mostrar la lista de todos los gimnasios disponibles con filtro
+ * de búsqueda. Permite ver detalles básicos y, si el usuario tiene permisos
+ * (admin o manager de ese gym), muestra opciones para editar o eliminar.
+ *
+ * Page to display the list of all available gyms with a search filter.
+ * Allows viewing basic details and, if the user has permissions (admin or the
+ * manager of that gym), shows options to edit or delete.
+ *
+ * =============================================================================
+ */
+
 import { useState, useEffect } from "react";
 import { getAllGyms, deleteGym } from "../services/gym-services";
-import { useAuth } from "../context/AuthContext"; // Hook para obtener el usuario
+import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import type { Gym } from "../interfaces/gym-interfaces";
-import { toast } from "sonner"; // sonner toast
+import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
 
-// Estilos temporales inline
-// Temporary inline styles
+/* =============================================================================
+   ESTILOS (inline)
+   ============================================================================= */
 const styles: { [key: string]: React.CSSProperties } = {
   container: { padding: "20px", maxWidth: "1200px", margin: "0 auto" },
   addGymButton: {
@@ -43,6 +59,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: "15px",
     flex: "1 1 300px",
     boxSizing: "border-box",
+    backgroundColor: "white",
   },
   gymLogo: {
     width: "100%",
@@ -60,253 +77,182 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: "#6c757d",
   },
   button: { marginRight: "10px", padding: "5px 10px", cursor: "pointer" },
+  deleteButton: {
+    marginRight: "10px",
+    padding: "5px 10px",
+    cursor: "pointer",
+    backgroundColor: "#dc3545",
+    color: "white",
+    border: "none",
+    borderRadius: "4px",
+  },
+  noResultsText: { color: "#666", fontStyle: "italic" },
 };
 
-/**
- * Página para mostrar la lista de todos los gimnasios disponibles con filtro de búsqueda.
- * Permite ver detalles básicos y, si el usuario tiene permisos (admin),
- * muestra opciones para editar o eliminar.
- *
- * Page to display the list of all available gyms with a search filter.
- * Allows viewing basic details and, if the user has permissions (admin),
- *  shows options to edit or delete.
- */
-
+/* =============================================================================
+   COMPONENTE: ListGymsPage
+   ============================================================================= */
 export const ListGymsPage = () => {
-  // Extraer 'user' Y 'token' del hook useAuth
-  // Extract 'user' AND 'token' from the useAuth hook
   const { user, token } = useAuth();
-
-  // Obtener la función de navegación
-  // Get the navigation function
   const navigate = useNavigate();
 
-  // useState para almacenar la lista de gimnasios
-  // useState to store the list of gyms
   const [gyms, setGyms] = useState<Gym[]>([]);
-
-  // useState para manejar errores durante la carga de datos
-  // useState to handle errors during data loading
   const [error, setError] = useState<string | null>(null);
-
-  // useState para indicar si los datos están cargando
-  // useState to indicate if data is loading
-  const [isLoading, setIsLoading] = useState(true);
-
-  // useState para el término de búsqueda introducido por el usuario
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  // Obtengo la URL base del backend desde las variables de entorno o uso un valor por defecto
-  // I get the backend base URL from environment variables or use a default value
-  const backendBaseUrl = import.meta.env.VITE_BACKEND_BASE_URL;
+  // Fallback para backendBaseUrl
+  const backendBaseUrl =
+    import.meta.env.VITE_BACKEND_BASE_URL || window.location.origin;
 
-  // useEffect para cargar los gimnasios cuando el componente se monta
-  // useEffect to load gyms when the component mounts
+  // Cargar gimnasios al montar
   useEffect(() => {
     const fetchGyms = async () => {
+      setError(null);
+      setIsLoading(true);
       try {
-        // Reiniciar error y poner estado de carga
-        // Reset error and set loading state
-        setError(null);
-        setIsLoading(true);
-        // Llamada a la API para obtener todos los gimnasios
-        // API call to get all gyms
         const data = await getAllGyms();
-        setGyms(data); // Guardar los gimnasios en el estado
+        setGyms(data);
       } catch (err) {
-        // Manejar errores de la petición
-        // Handle request errors
-        console.error("Error fetching gyms:", err);
-        setError(
-          "Hubo un problema al cargar los gimnasios. Inténtalo de nuevo más tarde."
-        );
+        const msg = handleApiError(err, "Hubo un problema al cargar los gimnasios.");
+        setError(msg);
+        toast.error(msg);
+        if (import.meta.env.DEV) console.error("Error fetching gyms:", err);
       } finally {
-        // Quitar estado de carga independientemente del resultado
-        // Remove loading state regardless of the result
         setIsLoading(false);
       }
     };
 
-    fetchGyms(); // Ejecutar la función de carga // Execute the loading function
-  }, []); // El array vacío asegura que se ejecute solo una vez al montar // Empty array ensures it runs only once on mount
+    fetchGyms();
+  }, []);
 
-  // Función para manejar cambios en el input de búsqueda
-  // Function to handle changes in the search input
+  // Manejo de búsqueda
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value); // Actualiza el estado searchTerm
+    setSearchTerm(event.target.value);
   };
 
-  // Filtrar gimnasios basándose en searchTerm (nombre o ciudad)
-  // Filter gyms based on searchTerm (name or city)
-  const filteredGyms = gyms.filter(
-    (gym) =>
-      gym.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      gym.city.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filtrado por nombre o ciudad
+  const filteredGyms = gyms.filter((gym) => {
+    const term = searchTerm.trim().toLowerCase();
+    if (!term) return true;
+    return (
+      (gym.name || "").toLowerCase().includes(term) ||
+      (gym.city || "").toLowerCase().includes(term)
+    );
+  });
 
-  // Definir manejador para eliminar un gimnasio
-  // Define handler to delete a gym
+  // Eliminar gimnasio (solo admin)
   const handleDelete = async (gymId: number): Promise<void> => {
-    // Preguntar confirmación al usuario
-    // Ask user for confirmation
-    if (
-      window.confirm(
-        "¿Estás seguro de que quieres eliminar este gimnasio? Esta acción no se puede deshacer."
-      )
-    ) {
-      // Verificar que tenemos el token (necesario para la petición)
-      // Verify we have the token (needed for the request)
-      if (!token) {
-        toast.error("No estás autenticado para realizar esta acción.");
-        return;
-      }
+    if (!window.confirm("¿Estás seguro de que quieres eliminar este gimnasio? Esta acción no se puede deshacer.")) {
+      return;
+    }
 
-      try {
-        // Llamar al servicio para eliminar el gimnasio
-        // Call the service to delete the gym
-        await deleteGym(gymId, token);
+    if (!token) {
+      toast.error("No estás autenticado para realizar esta acción.");
+      return;
+    }
 
-        // Éxito: Eliminar el gimnasio del estado local para actualizar la UI
-        // Success: Remove the gym from local state to update the UI
-        setGyms((prevGyms) => prevGyms.filter((gym) => gym.id !== gymId));
-
-        // Mostrar notificación de éxito
-        // Show success notification
-        toast.success("Gimnasio eliminado con éxito.");
-      } catch (err) {
-        // Error: Mostrar notificación de error usando el manejador
-        // Error: Show error notification using the handler
-        const processedErrorMessage = handleApiError(
-          err,
-          "No se pudo eliminar el gimnasio."
-        );
-        toast.error(processedErrorMessage);
-        console.error("Error deleting gym:", err); // Mantener log para depuración // Keep log for debugging
-      }
+    try {
+      await deleteGym(gymId, token);
+      setGyms((prev) => prev.filter((g) => g.id !== gymId));
+      toast.success("Gimnasio eliminado con éxito.");
+    } catch (err) {
+      const processedErrorMessage = handleApiError(err, "No se pudo eliminar el gimnasio.");
+      toast.error(processedErrorMessage);
+      if (import.meta.env.DEV) console.error("Error deleting gym:", err);
     }
   };
 
-  // Renderizado condicional mientras carga
-  // Conditional rendering while loading
+  // Render loading
   if (isLoading) {
     return (
-      <div>
+      <div style={styles.container}>
         <p>Cargando gimnasios...</p>
-        {/* //TODO  spinner  */}
+        {/* TODO: Spinner */}
       </div>
     );
   }
 
-  // Renderizado condicional si hay error
-  // Conditional rendering if there is an error
+  // Render error
   if (error) {
     return (
-      <div>
-        <div>{error}</div>
+      <div style={styles.container}>
+        <div style={styles.errorText || { color: "red" }}>{error}</div>
       </div>
     );
   }
 
-  // Renderizado principal de la lista de gimnasios
-  // Main rendering of the gym list
+  // Render principal
   return (
     <div style={styles.container}>
-      {/* ... (Título, párrafo e input sin cambios) ... */}
       <h2>Gimnasios Asociados</h2>
       <p>Descubre los gimnasios a los que puedes acceder con GymNomads.</p>
-      {/* Botón para añadir gimnasio (solo visible para admin) */}
-      {/* Button to add gym (only visible for admin) */}
+
+      {/* Botón para añadir gimnasio (solo admin) */}
       {user?.role === "admin" && (
-        <Link to="/gyms/add" style={styles.addGymButton}>
-          {" "}
-          {/* Enlace a la nueva ruta */}
+        <Link to="/gyms/add" style={styles.addGymButton} aria-label="Añadir gimnasio">
           Añadir Gimnasio
         </Link>
       )}
+
       <input
         type="text"
         placeholder="Buscar por nombre o ciudad..."
         value={searchTerm}
         onChange={handleSearchChange}
         style={styles.searchInput}
+        aria-label="Buscar gimnasios por nombre o ciudad"
       />
 
       <div style={styles.gymList}>
-        {/* Mostrar mensaje si no hay resultados */}
         {filteredGyms.length === 0 && !isLoading && (
-          <p style={styles.noResultsText}>
-            No se encontraron gimnasios que coincidan con tu búsqueda.
-          </p> // Añadido estilo
+          <p style={styles.noResultsText}>No se encontraron gimnasios que coincidan con tu búsqueda.</p>
         )}
 
-        {/* Mapear sobre los gimnasios FILTRADOS */}
         {filteredGyms.map((gym) => {
-          // <--- Añadida llave de apertura
-
-          // Construir la URL del logo
-          // build the logo URL
           const logoSrc = gym.logo_url
-            ? `${backendBaseUrl}/${
-                gym.logo_url.startsWith("/")
-                  ? gym.logo_url.substring(1)
-                  : gym.logo_url
-              }` // Crea URL completa si hay logo // Build full URL if logo exists
-            : "/images/gym-logo/default-gym-logo.png"; // Usar el logo por defecto si no hay // Use default logo if none
+            ? `${backendBaseUrl}/${gym.logo_url.startsWith("/") ? gym.logo_url.substring(1) : gym.logo_url}`
+            : "/images/gym-logo/default-gym-logo.png";
 
-          // Se usa un 'return' aquí por llaves en el map
-          // it needs to add a 'return' here because curly braces in the map
           return (
-            <div key={gym.id} style={styles.gymCard}>
-              {/* Mostrar la imagen del logo */}
-              {/* Display the logo image */}
+            <div key={gym.id} style={styles.gymCard} aria-labelledby={`gym-${gym.id}-name`}>
               <img
                 src={logoSrc}
                 alt={`Logo de ${gym.name}`}
                 style={styles.gymLogo}
-                // onError por si la imagen del backend falla, para mostrar el default
-                // onError in case the backend image fails, to show the default
                 onError={(e) => {
-                  const target = e.target as HTMLImageElement; // Type assertion needed for TS
-                  target.onerror = null; // Previene bucles si el default también falla // Prevents loops if default also fails
-                  target.src = "/images/gym-logo/default-gym-logo.png"; // Fallback al default // Fallback to default
+                  const target = e.target as HTMLImageElement;
+                  target.onerror = null;
+                  target.src = "/images/gym-logo/default-gym-logo.png";
                 }}
               />
 
               <div style={styles.cardBody}>
-                <h3>{gym.name}</h3>
+                <h3 id={`gym-${gym.id}-name`}>{gym.name}</h3>
                 <p>
                   {gym.address}
                   <br />
                   {gym.city}
                 </p>
-                {/* //TODO: Enlace a detalles */}
               </div>
-              {/* Mostrar botones solo si es admin o manager (con condiciones) */}
-              {/* Show buttons only if admin or manager (with conditions) */}
-              {(user?.role === "admin" ||
-                (user?.role === "manager" && user.home_gym_id === gym.id)) && (
+
+              {/* Mostrar acciones solo para admin o manager del gym */}
+              {(user?.role === "admin" || (user?.role === "manager" && user.home_gym_id === gym.id)) && (
                 <div style={styles.cardFooter}>
-                  {/* El botón 'Editar' se muestra si: */
-                  /* The 'Edit' button is shown if: */}
-                  {/* 1. El usuario es 'admin' (condición externa ya lo permite) */}
-                  {/* 1. The user is 'admin' (outer condition already allows it) */}
-                  {/* 2. El usuario es 'manager' Y el gym.id coincide con su home_gym_id (condición externa) */}
-                  {/* 2. The user is 'manager' AND gym.id matches their home_gym_id (outer condition) */}
+                  {/* Edit: usa la ruta definida en App.tsx (ajústala si usas otra) */}
                   <button
                     style={styles.button}
-                    onClick={() => navigate(`/gyms/edit/${gym.id}`)}>
+                    onClick={() => navigate(`/gyms/edit/${gym.id}`)}
+                    aria-label={`Editar gimnasio ${gym.name}`}>
                     Editar
                   </button>
 
-                  {/* El botón 'Eliminar' se muestra SÓLO si es 'admin' */}
-                  {/* The 'Delete' button is shown ONLY if 'admin' */}
-                  {user.role === "admin" && (
+                  {/* Delete solo admin */}
+                  {user?.role === "admin" && (
                     <button
-                      style={{
-                        ...styles.button,
-                        ...styles.deleteButton,
-                      }}
-                      onClick={() => handleDelete(gym.id)}>
+                      style={styles.deleteButton}
+                      onClick={() => handleDelete(gym.id)}
+                      aria-label={`Eliminar gimnasio ${gym.name}`}>
                       Eliminar
                     </button>
                   )}

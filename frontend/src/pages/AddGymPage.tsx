@@ -9,11 +9,6 @@
  * NOTA: El administrador NO puede subir imágenes del gimnasio.
  * NOTE: The administrator CANNOT upload gym images.
  *
- * ✅ REFACTORIZADO usando:
- * - useImageUpload (para manejo de imágenes)
- * - ImageUploadPreview (componente de preview)
- * - useApiCall (llamadas API)
- * - handleApiError (manejo de errores)
  * =============================================================================
  */
 
@@ -32,6 +27,9 @@ import { createGym } from "../services/gym-services";
 
 // Importar utilidades / Import utilities
 import { handleApiError } from "../utils/error-handler";
+
+// Tipos
+import type { Gym } from "../interfaces/gym-interfaces";
 
 /**
  * =============================================================================
@@ -107,24 +105,13 @@ export const AddGymPage = () => {
   const [error, setError] = useState<string | null>(null);
 
   // --- Hook de API / API Hook ---
-  const { loading: isSubmitting, execute: executeCreateGym } = useApiCall(
+  const { loading: isSubmitting, execute: executeCreateGym } = useApiCall<Gym>(
     "Error al crear el gimnasio."
   );
 
   // --- Manejadores / Handlers ---
-
-  /**
-   * =============================================================================
-   * FUNCIÓN: handleChange
-   * =============================================================================
-   *
-   * Manejador de cambios en inputs de texto.
-   * Handler for text input changes.
-   * =============================================================================
-   */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
-
     switch (name) {
       case "name":
         setName(value);
@@ -146,26 +133,13 @@ export const AddGymPage = () => {
     }
   };
 
-  /**
-   * =============================================================================
-   * FUNCIÓN: handleSubmit
-   * =============================================================================
-   *
-   * Manejador de envío del formulario.
-   * Form submission handler.
-   *
-   * Valida todos los campos obligatorios y crea el gimnasio.
-   * Validates all required fields and creates the gym.
-   * =============================================================================
-   */
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
   ): Promise<void> => {
     e.preventDefault();
     setError(null);
 
-    // ✅ VALIDAR TODOS LOS CAMPOS OBLIGATORIOS
-    // ✅ VALIDATE ALL REQUIRED FIELDS
+    // VALIDACIONES
     if (!name || !address || !city || !latitude || !longitude) {
       const errorMsg = "Todos los campos son obligatorios.";
       setError(errorMsg);
@@ -173,27 +147,20 @@ export const AddGymPage = () => {
       return;
     }
 
-    // ✅ VALIDAR QUE LATITUD Y LONGITUD SEAN NÚMEROS VÁLIDOS
-    // ✅ VALIDATE THAT LATITUDE AND LONGITUDE ARE VALID NUMBERS
     const latNum = parseFloat(latitude);
     const lonNum = parseFloat(longitude);
-
     if (isNaN(latNum) || isNaN(lonNum)) {
       const errorMsg = "Latitud y Longitud deben ser números válidos.";
       setError(errorMsg);
       toast.error(errorMsg);
       return;
     }
-
-    // ✅ VALIDAR RANGOS DE COORDENADAS
-    // ✅ VALIDATE COORDINATE RANGES
     if (latNum < -90 || latNum > 90) {
       const errorMsg = "La latitud debe estar entre -90 y 90.";
       setError(errorMsg);
       toast.error(errorMsg);
       return;
     }
-
     if (lonNum < -180 || lonNum > 180) {
       const errorMsg = "La longitud debe estar entre -180 y 180.";
       setError(errorMsg);
@@ -201,7 +168,6 @@ export const AddGymPage = () => {
       return;
     }
 
-    // Validar token / Validate token
     if (!token) {
       const errorMsg =
         "No se está autenticado. Por favor, iniciar sesión de nuevo.";
@@ -210,26 +176,22 @@ export const AddGymPage = () => {
       return;
     }
 
-    // Crear FormData / Create FormData
+    // Crear FormData
     const formData = new FormData();
     formData.append("name", name);
     formData.append("address", address);
     formData.append("city", city);
-    formData.append("latitude", latitude);
-    formData.append("longitude", longitude);
-
-    // ❌ NO SE AÑADEN IMÁGENES - El admin no puede subir imágenes
-    // ❌ NO IMAGES ADDED - Admin cannot upload images
+    formData.append("latitude", String(latNum));
+    formData.append("longitude", String(lonNum));
 
     try {
-      // Ejecutar creación del gimnasio / Execute gym creation
+      // esperar la creación (capturará errores en el catch)
       await executeCreateGym(() => createGym(formData, token));
 
-      // Éxito / Success
+      // éxito: mostrar toast y navegar siempre a /gyms
       toast.success("¡Gimnasio añadido con éxito!");
       navigate("/gyms");
     } catch (err) {
-      // Error / Error
       const processedErrorMessage = handleApiError(
         err,
         "Ocurrió un error al añadir el gimnasio."
@@ -243,36 +205,25 @@ export const AddGymPage = () => {
     }
   };
 
-  // --- Renderizado / Rendering ---
-
   return (
     <div style={styles.container}>
-      {/* Título / Title */}
       <h2>Añadir Nuevo Gimnasio</h2>
 
-      {/* Información / Information */}
       <p style={styles.infoText}>
-        ℹ️ Nota: E administradore no pueden subir imágenes del gimnasio. Las
+        ℹ️ Nota: El administrador no puede subir imágenes del gimnasio. Las
         imágenes (logo e imagen principal) deben ser gestionadas por el manager
-        del gimnasio.
+        del gimnasio desde la página de edición.
       </p>
 
-      {/* Formulario / Form */}
       <form onSubmit={handleSubmit}>
-        {/* ====================================================================
-         * SECCIÓN: CAMPOS OBLIGATORIOS
-         * SECTION: REQUIRED FIELDS
-         * ==================================================================== */}
-
-        {/* Nombre / Name */}
         <div style={styles.formGroup}>
           <label htmlFor="name" style={styles.label}>
             Nombre: <span style={{ color: "red" }}>*</span>
           </label>
           <input
-            type="text"
-            id="name"
             name="name"
+            id="name"
+            type="text"
             value={name}
             onChange={handleChange}
             style={styles.input}
@@ -281,15 +232,14 @@ export const AddGymPage = () => {
           />
         </div>
 
-        {/* Dirección / Address */}
         <div style={styles.formGroup}>
           <label htmlFor="address" style={styles.label}>
             Dirección: <span style={{ color: "red" }}>*</span>
           </label>
           <input
-            type="text"
-            id="address"
             name="address"
+            id="address"
+            type="text"
             value={address}
             onChange={handleChange}
             style={styles.input}
@@ -298,15 +248,14 @@ export const AddGymPage = () => {
           />
         </div>
 
-        {/* Ciudad / City */}
         <div style={styles.formGroup}>
           <label htmlFor="city" style={styles.label}>
             Ciudad: <span style={{ color: "red" }}>*</span>
           </label>
           <input
-            type="text"
-            id="city"
             name="city"
+            id="city"
+            type="text"
             value={city}
             onChange={handleChange}
             style={styles.input}
@@ -315,61 +264,52 @@ export const AddGymPage = () => {
           />
         </div>
 
-        {/* Latitud / Latitude */}
         <div style={styles.formGroup}>
           <label htmlFor="latitude" style={styles.label}>
             Latitud: <span style={{ color: "red" }}>*</span>
           </label>
           <input
+            name="latitude"
+            id="latitude"
             type="number"
             step="any"
-            id="latitude"
-            name="latitude"
             value={latitude}
             onChange={handleChange}
             style={styles.input}
             required
             placeholder="Ej: 40.416775"
-            min="-90"
-            max="90"
+            min={-90}
+            max={90}
           />
           <small style={{ color: "#666", fontSize: "0.85em" }}>
             Debe estar entre -90 y 90
           </small>
         </div>
 
-        {/* Longitud / Longitude */}
         <div style={styles.formGroup}>
           <label htmlFor="longitude" style={styles.label}>
             Longitud: <span style={{ color: "red" }}>*</span>
           </label>
           <input
+            name="longitude"
+            id="longitude"
             type="number"
             step="any"
-            id="longitude"
-            name="longitude"
             value={longitude}
             onChange={handleChange}
             style={styles.input}
             required
             placeholder="Ej: -3.70379"
-            min="-180"
-            max="180"
+            min={-180}
+            max={180}
           />
           <small style={{ color: "#666", fontSize: "0.85em" }}>
             Debe estar entre -180 y 180
           </small>
         </div>
 
-        {/* ====================================================================
-         * SECCIÓN: MENSAJE DE ERROR Y BOTONES
-         * SECTION: ERROR MESSAGE AND BUTTONS
-         * ==================================================================== */}
-
-        {/* Mensaje de Error / Error Message */}
         {error && <p style={styles.errorText}>{error}</p>}
 
-        {/* Botón de Envío / Submit Button */}
         <button type="submit" style={styles.button} disabled={isSubmitting}>
           {isSubmitting ? "Añadiendo..." : "Añadir Gimnasio"}
         </button>

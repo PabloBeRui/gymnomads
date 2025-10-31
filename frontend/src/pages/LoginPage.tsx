@@ -1,95 +1,138 @@
-// Importar hooks de React / Import React hooks
-import { useState } from "react";
-// Importar hook de navegación / Import navigation hook
-import { useNavigate } from "react-router-dom";
-// Importar el hook de autenticación / Import the authentication hook
-import { useAuth } from "../context/AuthContext";
-// Importar el hook personalizado para manejar llamadas API / Import the custom hook to handle API calls
-import { useApiCall } from "../hooks/useApiCall";
+/**
+ * =============================================================================
+ * PÁGINA: LoginPage
+ * =============================================================================
+ *
+ * Página de inicio de sesión.
+ * Login page.
+ *
+ * Flujo / Flow:
+ * - Rellena email y contraseña, pulsa Iniciar Sesión.
+ * - En caso de éxito se llama a authLogin(token) y se redirige al /
+ * - On success we call authLogin(token) and navigate to /
+ *
+ * =============================================================================
+ */
 
-// Importar interfaces / Import interfaces
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { useApiCall } from "../hooks/useApiCall";
+import { loginUser } from "../services/user-services";
+import { toast } from "sonner";
+import { handleApiError } from "../utils/error-handler";
+
+// Types
 import type { LoginData, LoginResponse } from "../interfaces/user-interfaces";
 
-// Importar servicios / Import services
-import { loginUser } from "../services/user-services";
+/* =============================================================================
+   ESTILOS (inline)
+   ============================================================================= */
+const styles: { [key: string]: React.CSSProperties } = {
+  container: { padding: 20, maxWidth: 720, margin: "20px auto" },
+  formGroup: { marginBottom: 12 },
+  label: { display: "block", marginBottom: 6, fontWeight: 600 },
+  input: {
+    width: "100%",
+    padding: "8px 10px",
+    borderRadius: 4,
+    border: "1px solid #ccc",
+    boxSizing: "border-box",
+  },
+  button: {
+    marginTop: 12,
+    padding: "8px 12px",
+    backgroundColor: "#007bff",
+    color: "white",
+    border: "none",
+    borderRadius: 4,
+    cursor: "pointer",
+  },
+  linkButton: {
+    background: "none",
+    border: "none",
+    color: "blue",
+    textDecoration: "underline",
+    cursor: "pointer",
+    padding: 0,
+    margin: 0,
+  },
+  errorText: { color: "red", marginTop: 8 },
+};
 
-// Importar notificaciones / Import notifications
-import { toast } from "sonner";
-
-export const LoginPage = () => {
-  // Obtener la función de navegación / Get the navigation function
+/* =============================================================================
+   COMPONENTE: LoginPage
+   ============================================================================= */
+export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  // Obtener la función login del contexto / Get the login function from context
   const { login: authLogin } = useAuth();
 
-  // --- Estados del Formulario / Form States ---
-  // Crear useState para el email / Create useState for email
-  const [email, setEmail] = useState("");
-  // Crear useState para la contraseña / Create useState for password
-  const [password, setPassword] = useState("");
+  // Form state
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
-  // Usar el hook personalizado para manejar la llamada API de login / Use the custom hook to handle login API call
+  // API hook (typed)
   const { loading, error, execute, resetError } = useApiCall<LoginResponse>(
     "Error al iniciar sesión."
   );
 
-  // Definir función para manejar el envío del formulario / Define function to handle form submission
+  // Handle submit
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // Prevenir recarga de página / Prevent page reload
+    e.preventDefault();
 
-    // Validar campos obligatorios / Validate required fields
     if (!email || !password) {
       toast.error("Por favor, completa todos los campos.");
       return;
     }
 
     try {
-      // Preparar datos de login / Prepare login data
       const loginData: LoginData = {
         email: email.trim(),
         password,
       };
 
-      // Ejecutar llamada API de login / Execute login API call
-      const response = await execute(
-        () => loginUser(loginData),
-        "Error al iniciar sesión"
-      );
+      const response = await execute(() => loginUser(loginData));
 
-      // Llamar a la función login del contexto con el token / Call the context login function with the token
-      await authLogin(response.token);
-
-      // Mostrar notificación de éxito / Show success notification
-      toast.success(response.message || "Inicio de sesión exitoso.");
-
-      // Redirigir al usuario a la página principal / Redirect user to main page
-      navigate("/");
-    } catch (error) {
-      // Log del error completo solo en desarrollo / Full error log only in development
-      if (import.meta.env.DEV) {
-        console.error("Error en login:", error);
+      if (!response || !response.token) {
+        const msg = "Inicio de sesión fallido: token no recibido.";
+        toast.error(msg);
+        return;
       }
+
+      // Call auth login if available
+      if (authLogin) {
+        await authLogin(response.token);
+      }
+
+      toast.success(response.message || "Inicio de sesión exitoso.");
+      navigate("/");
+    } catch (err) {
+      // Use centralized error handler if you want processed message
+      const processed = handleApiError(err, "Error al intentar iniciar sesión.");
+      // execute/useApiCall may already show a toast; avoid double noisy messages
+      if (!loading) toast.error(processed);
+      if (import.meta.env.DEV) console.error("Error en login:", err);
     }
   };
 
-  // Definir función para limpiar errores al editar campos / Define function to clear errors when editing fields
+  // Clear API error when user edits fields
   const handleInputChange = () => {
-    if (error) {
-      resetError();
-    }
+    if (error) resetError();
   };
 
-  // Renderizar formulario de login / Render login form
   return (
-    <div>
+    <div style={styles.container}>
       <h2>Iniciar Sesión</h2>
-      <form onSubmit={handleSubmit}>
-        {/* Campo de Email / Email Field */}
-        <div>
-          <label htmlFor="email">Email:</label>
+      <form onSubmit={handleSubmit} aria-label="Formulario de inicio de sesión">
+        <div style={styles.formGroup}>
+          <label htmlFor="email" style={styles.label}>
+            Email
+          </label>
           <input
-            type="email"
             id="email"
+            aria-label="Email"
+            style={styles.input}
+            type="email"
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
@@ -101,12 +144,15 @@ export const LoginPage = () => {
           />
         </div>
 
-        {/* Campo de Contraseña / Password Field */}
-        <div>
-          <label htmlFor="password">Contraseña:</label>
+        <div style={styles.formGroup}>
+          <label htmlFor="password" style={styles.label}>
+            Contraseña
+          </label>
           <input
-            type="password"
             id="password"
+            aria-label="Contraseña"
+            style={styles.input}
+            type="password"
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
@@ -118,28 +164,20 @@ export const LoginPage = () => {
           />
         </div>
 
-        {/* Mostrar mensaje de error si existe / Show error message if it exists */}
-        {error && <p style={{ color: "red", marginTop: "0.5rem" }}>{error}</p>}
+        {error && <p style={styles.errorText}>{error}</p>}
 
-        {/* Botón de Envío / Submit Button */}
-        <button type="submit" disabled={loading}>
+        <button type="submit" style={styles.button} disabled={loading} aria-busy={loading}>
           {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
         </button>
       </form>
 
-      {/* Enlace a registro / Link to registration */}
-      <p>
+      <p style={{ marginTop: 12 }}>
         ¿No tienes cuenta?{" "}
         <button
           onClick={() => navigate("/register")}
           disabled={loading}
-          style={{
-            background: "none",
-            border: "none",
-            color: "blue",
-            textDecoration: "underline",
-            cursor: "pointer",
-          }}>
+          style={styles.linkButton}
+          aria-disabled={loading}>
           Regístrate aquí
         </button>
       </p>

@@ -1,235 +1,192 @@
 /**
  * =============================================================================
- * CUSTOM HOOK: useImageUpload
+ * HOOK UNIFICADO Y GENÉRICO: useImageUpload
  * =============================================================================
  *
- * Hook genérico para manejar la selección y previsualización de imágenes.
- * Generic hook to handle image selection and preview.
+ * Propósito / Purpose:
+ * - Gestionar selección, validación y preview de imágenes.
+ * - Soportar subida opcional con uploadFn tipado como:
+ *     (file: File, ...args: UploadArgs) => Promise<UploadResult>
  *
- * Este hook encapsula toda la lógica necesaria para:
- * This hook encapsulates all the necessary logic to:
- * - Validar archivos de imagen / Validate image files
- * - Crear previsualizaciones / Create previews
- * - Manejar la selección de archivos / Handle file selection
- * - Resetear la selección / Reset the selection
+ * Ventaja principal / Main benefit:
+ * - Tipado fuerte de los argumentos y resultado de la función de subida,
+ *   evitando casts en páginas y wrappers.
  *
- * Beneficios / Benefits:
- * - Reutilizable en múltiples páginas / Reusable across multiple pages
- * - Validación consistente / Consistent validation
- * - Código limpio y mantenible / Clean and maintainable code
- *
- * Casos de uso / Use cases:
- * - Subir foto de perfil / Upload profile picture
- * - Subir imagen de gimnasio / Upload gym image
- * - Subir imagen de reseña / Upload review image
+ * Nota: mantenemos la API de runtime — sólo añadimos tipado genérico.
+ * Note: runtime API is unchanged — we only add generic typing.
  * =============================================================================
  */
 
-// Importar hooks de React / Import React hooks
-import { useState, useRef } from "react";
-
-// Importar notificaciones / Import notifications
+import { useState, useRef, useCallback } from "react";
 import { toast } from "sonner";
-
-// Importar utilidades de validación / Import validation utilities
+import { useApiCall } from "./useApiCall";
 import {
   validateImageFile,
   createImagePreview,
   formatFileSize,
-  type ImageValidationConfig,
   DEFAULT_IMAGE_CONFIG,
+} from "../utils/upload-handler";
+import type {
+  ImageValidationConfig,
+  ValidationResult,
 } from "../utils/upload-handler";
 
 /**
- * =============================================================================
- * INTERFAZ: UseImageUploadReturn
- * =============================================================================
- * 
- * Valor de retorno del hook / Hook return value
- *
- * Define todos los valores y funciones que el hook expone
- * Defines all values and functions that the hook exposes
- * =============================================================================
+ * INTERFAZ GENÉRICA: UseImageUploadReturn
+ * UploadArgs: tuple de argumentos que pasará uploadImage (ej. [string] para token)
+ * UploadResult: tipo devuelto por la promesa de upload
  */
-export interface UseImageUploadReturn {
-  // Archivo seleccionado (null si no hay selección) / Selected file (null if no selection)
+export interface UseImageUploadReturn<
+  UploadArgs extends unknown[] = unknown[],
+  UploadResult = unknown
+> {
   selectedFile: File | null;
-
-  // URL de previsualización (null si no hay archivo) / Preview URL (null if no file)
   previewUrl: string | null;
-
-  // Referencia al input oculto (puede ser null inicialmente) / Reference to hidden input (can be null initially)
   fileInputRef: React.RefObject<HTMLInputElement | null>;
 
-  // Manejador de cambio de archivo / File change handler
+  // Handlers
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
-
-  // Manejador de clic en el área de imagen / Image area click handler
   handleImageClick: () => void;
-
-  // Función para resetear la selección / Function to reset selection
   resetImage: () => void;
 
-  // Función para establecer URL de preview manualmente / Function to set preview URL manually
+  // Control manual del preview
   setPreviewUrl: (url: string | null) => void;
-
-  // Función para limpiar imagen seleccionada / Function to clear selected image
   clearImage: () => void;
+
+  // Upload (opcional)
+  isUploading: boolean;
+  /**
+   * uploadImage soporta:
+   * - uploadImage(localUploadFn, ...restArgs)
+   * - uploadImage(...restArgs) // si uploadFn fue provisto al crear el hook
+   *
+   * uploadFn local debe ser (file: File, ...a: UploadArgs) => Promise<UploadResult>
+   */
+  uploadImage: (
+    ...args:
+      | [(file: File, ...a: UploadArgs) => Promise<UploadResult>, ...unknown[]]
+      | UploadArgs
+  ) => Promise<UploadResult>;
 }
 
 /**
- * =============================================================================
- * HOOK: useImageUpload
- * =============================================================================
+ * useImageUpload genérico
  *
- * Hook personalizado para manejar subida de imágenes con validación y preview.
- * Custom hook to handle image uploads with validation and preview.
- *
- * @param config - Configuración de validación (opcional) / Validation config (optional)
- * @returns Objeto con estado y funciones / Object with state and functions
- * =============================================================================
+ * @param config - configuración de validación de imagen
+ * @param uploadFn - función opcional de subida: (file, ...args) => Promise<UploadResult>
+ * @param defaultErrorMessage - mensaje por defecto para useApiCall
  */
-export const useImageUpload = (
-  config: ImageValidationConfig = DEFAULT_IMAGE_CONFIG
-): UseImageUploadReturn => {
-  // --- Estados / States ---
-
-  // Estado para almacenar el archivo seleccionado / State to store selected file
+export const useImageUpload = <
+  UploadArgs extends unknown[] = unknown[],
+  UploadResult = unknown
+>(
+  config: ImageValidationConfig = DEFAULT_IMAGE_CONFIG,
+  uploadFn?: (file: File, ...args: UploadArgs) => Promise<UploadResult>,
+  defaultErrorMessage = "Error al subir la imagen."
+): UseImageUploadReturn<UploadArgs, UploadResult> => {
+  // --- Estados / Refs ---
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
-  // Estado para almacenar la URL de previsualización / State to store preview URL
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-
-  // Referencia al input de archivo oculto / Reference to hidden file input
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // --- Funciones / Functions ---
+  // useApiCall maneja loading y errores tipados para UploadResult
+  const { loading: isUploading, execute: executeUpload } =
+    useApiCall<UploadResult>(defaultErrorMessage);
 
-  /**
-   * =============================================================================
-   * FUNCIÓN: handleImageClick
-   * =============================================================================
-   * 
-   * Abre el selector de archivos del navegador / Opens the browser file picker
-   *
-   * Usa el optional chaining (?.) para evitar errores si ref es null
-   * Uses optional chaining (?.) to avoid errors if ref is null
-   * =============================================================================
-   */
-  const handleImageClick = (): void => {
-    fileInputRef.current?.click();
-  };
+  // --- handleFileChange: validar y generar preview ---
+  const handleFileChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0] ?? null;
+      if (!file) return;
 
-  /**
-   * =============================================================================
-   * FUNCIÓN: handleFileChange
-   * =============================================================================
-   * 
-   * Maneja la selección de un archivo / Handles file selection
-   *
-   * Este manejador:
-   * - Valida el tipo y tamaño del archivo
-   * - Crea una previsualización
-   * - Actualiza el estado
-   * - Muestra notificaciones de error si es necesario
-   *
-   * This handler:
-   * - Validates file type and size
-   * - Creates a preview
-   * - Updates the state
-   * - Shows error notifications if needed
-   * =============================================================================
-   */
-  const handleFileChange = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ): Promise<void> => {
-    // Obtener el primer archivo seleccionado / Get the first selected file
-    const file = e.target.files?.[0];
+      const validation = validateImageFile(file, config) as ValidationResult;
 
-    // Si no hay archivo, salir / If no file, exit
-    if (!file) return;
+      if (!validation.isValid) {
+        toast.error(
+          validation.error ||
+            "La imagen no cumple los requisitos. Por favor selecciona otra imagen."
+        );
+        if (import.meta.env.DEV) {
+          console.error("validateImageFile result:", validation);
+        }
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        return;
+      }
 
-    // Validar el archivo / Validate the file
-    const validation = validateImageFile(file, config);
-
-    // Si la validación falla, mostrar error y salir / If validation fails, show error and exit
-    if (!validation.isValid) {
-      toast.error(validation.error || "Archivo no válido");
-      return;
-    }
-
-    // Crear previsualización / Create preview
-    try {
-      const preview = await createImagePreview(file);
-
-      // Actualizar estados / Update states
       setSelectedFile(file);
-      setPreviewUrl(preview);
+      try {
+        const url = await createImagePreview(file);
+        setPreviewUrl(url);
+        if (import.meta.env.DEV) {
+          console.log(
+            "📸 Imagen seleccionada:",
+            file.name,
+            `(${formatFileSize(file.size)})`
+          );
+        }
+      } catch (err) {
+        toast.error("Error al procesar la imagen");
+        if (import.meta.env.DEV) {
+          console.error("No se pudo generar preview:", err);
+        }
+      }
+    },
+    [config]
+  );
 
-      // Log en desarrollo para debugging / Development log for debugging
-      if (import.meta.env.DEV) {
-        console.log(
-          "📸 Imagen seleccionada:",
-          file.name,
-          `(${formatFileSize(file.size)})`
+  const handleImageClick = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const resetImage = useCallback(() => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }, []);
+
+  const clearImage = useCallback(() => {
+    resetImage();
+  }, [resetImage]);
+
+  /**
+   * uploadImage genérico:
+   * - Si el primer arg es función, la usamos como uploadFn local.
+   * - En otro caso usamos uploadFn pasado al crear el hook.
+   */
+  const uploadImage = useCallback(
+    async (...args: unknown[]) => {
+      let fn:
+        | ((file: File, ...a: UploadArgs) => Promise<UploadResult>)
+        | undefined;
+      let restArgs: unknown[] = [];
+
+      if (typeof args[0] === "function") {
+        fn = args[0] as (file: File, ...a: UploadArgs) => Promise<UploadResult>;
+        restArgs = args.slice(1);
+      } else {
+        fn = uploadFn;
+        restArgs = args;
+      }
+
+      if (!fn) {
+        throw new Error(
+          "No se proporcionó ninguna función de subida. Pasa uploadFn al crear el hook o como primer argumento de uploadImage."
         );
       }
-    } catch (error) {
-      // Manejar error al crear preview / Handle preview creation error
-      toast.error("Error al procesar la imagen");
-      if (import.meta.env.DEV) {
-        console.error("Error creating preview:", error);
+
+      if (!selectedFile) {
+        throw new Error("No hay ningún archivo seleccionado para subir.");
       }
-    }
-  };
 
-  /**
-   * =============================================================================
-   * FUNCIÓN: resetImage
-   * =============================================================================
-   * 
-   * Resetea la selección de imagen / Resets image selection
-   *
-   * Útil cuando se quiere limpiar el formulario o cancelar la subida
-   * Useful when you want to clear the form or cancel the upload
-   * =============================================================================
-   */
-  const resetImage = (): void => {
-    setSelectedFile(null);
-    setPreviewUrl(null);
+      // Ejecutar la subida a través de useApiCall (casteamos restArgs a UploadArgs)
+      const result = await executeUpload(() =>
+        fn!(selectedFile, ...(restArgs as UploadArgs))
+      );
+      return result;
+    },
+    [uploadFn, selectedFile, executeUpload]
+  );
 
-    // Limpiar el valor del input para permitir reseleccionar el mismo archivo
-    // Clear the input value to allow reselecting the same file
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
-  /**
-   * =============================================================================
-   * FUNCIÓN: clearImage
-   * =============================================================================
-   * 
-   * Limpiar imagen seleccionada / Clear selected image
-   * 
-   * Similar a resetImage pero también revoca las URLs blob para liberar memoria
-   * Similar to resetImage but also revokes blob URLs to free memory
-   * =============================================================================
-   */
-  const clearImage = (): void => {
-    setSelectedFile(null);
-    
-    // Revocar URL blob si existe para liberar memoria / Revoke blob URL if exists to free memory
-    if (previewUrl && previewUrl.startsWith("blob:")) {
-      URL.revokeObjectURL(previewUrl);
-    }
-    
-    setPreviewUrl(null);
-  };
-
-  // --- Retorno / Return ---
-
-  // Retornar valores y funciones / Return values and functions
   return {
     selectedFile,
     previewUrl,
@@ -239,5 +196,7 @@ export const useImageUpload = (
     resetImage,
     setPreviewUrl,
     clearImage,
+    isUploading,
+    uploadImage,
   };
 };
