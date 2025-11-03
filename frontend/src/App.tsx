@@ -11,12 +11,13 @@ import { ApiTest } from "./components/ApiTest";
 //Pages
 import { ProfilePage } from "./pages/ProfilePage";
 import { ListGymsPage } from "./pages/ListGymsPage";
-import { GymPage } from "./pages/GymPage"; // ⭐ AÑADIR ESTA LÍNEA
+import { GymPage } from "./pages/GymPage";
 import { AddGymPage } from "./pages/AddGymPage";
 import { EditGymPage } from "./pages/EditGymPage";
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterUserPage } from "./pages/RegisterUserPage";
 import { UserVisitGymPage } from "./pages/UserVisitGymPage";
+import { VisitsManagementPage } from "./pages/VisitsManagementPage";
 
 // Importar el hook de autenticación / Import the authentication hook
 import { useAuth } from "./context/AuthContext";
@@ -36,22 +37,6 @@ function App() {
         No tienes permiso para ver esta página.{" "}
         <Link to="/">Volver al inicio</Link>
       </p>
-    </div>
-  );
-
-  // Placeholder for the Manager panel
-  const ManagerDashboard = () => (
-    <div>
-      <h2>Panel de Manager</h2>
-      <p>(Solo visible para roles 'manager' y 'admin')</p>
-    </div>
-  );
-
-  // Placeholder for the Admin panel
-  const AdminDashboard = () => (
-    <div>
-      <h2>Panel de Administrador</h2>
-      <p>(Solo visible para rol 'admin')</p>
     </div>
   );
 
@@ -115,19 +100,10 @@ function App() {
             {/* Show if 'manager' OR 'admin' */}
             {(user.role === "manager" || user.role === "admin") && (
               <>
-                <Link to="/panel-manager">Panel Manager</Link>
+                <Link to="/visits/manage">Visitas</Link>
                 {" | "}
               </>
             )}
-            {/* Mostrar SOLO si es 'admin' */}
-            {/* Show ONLY if 'admin' */}
-            {user.role === "admin" && (
-              <>
-                <Link to="/panel-admin">Panel Admin</Link>
-                {" | "}
-              </>
-            )}
-
             {/* 3. Botón Logout */}
             <button onClick={logout}>Logout</button>
           </>
@@ -146,45 +122,47 @@ function App() {
       {/* Definir las rutas de la aplicación */}
       {/* Define the application routes */}
       <Routes>
-        {/* --- Rutas Públicas --- */}
+        {/* ========================================
+            RUTAS PÚBLICAS
+            PUBLIC ROUTES
+            ======================================== */}
+        <Route path="/" element={<ApiTest />} />
         <Route path="/register" element={<RegisterUserPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/" element={<ApiTest />} />
-        {/* ApiTest sigue en Home por ahora */}
-        
-        {/* Lista de gimnasios (pública) */}
         <Route path="/gyms" element={<ListGymsPage />} />
-        
-        {/* ⭐ Detalle de un gimnasio específico (pública) */}
         <Route path="/gyms/:id" element={<GymPage />} />
-        
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
-        
-        {/* --- Rutas Protegidas (Solo requieren estar logueado) --- */}
+
+        {/* ========================================
+            RUTAS PROTEGIDAS: Autenticación requerida -User
+            PROTECTED ROUTES: Authentication required - User
+            ======================================== */}
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<ProfilePage />} />
-          {/* Página de visita con QR (solo usuarios autenticados) */}
           <Route path="/visits/:visitId/qr" element={<UserVisitGymPage />} />
         </Route>
-        
-        {/* --- Rutas Protegidas (Requieren Rol 'manager' o 'admin') --- */}
-        <Route element={<ProtectedRoute allowedRoles={["manager", "admin"]} />}>
-          <Route path="/panel-manager" element={<ManagerDashboard />} />
-          {/* Ruta para editar gimnasio (admin y manager) */}
-          {/* Route to edit gym (admin and manager) */}
+
+        {/* ========================================
+            RUTAS PROTEGIDAS: Admin y Manager
+            PROTECTED ROUTES: Admin and Manager
+            ======================================== */}
+        <Route element={<ProtectedRoute allowedRoles={["admin", "manager"]} />}>
           <Route path="/gyms/edit/:id" element={<EditGymPage />} />
+          <Route path="/visits/manage" element={<VisitsManagementPage />} />
         </Route>
-        
-        {/* --- Rutas Protegidas (Requieren Rol 'admin') --- */}
+
+        {/* ========================================
+            RUTAS PROTEGIDAS: Solo Admin
+            PROTECTED ROUTES: Admin only
+            ======================================== */}
         <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
-          <Route path="/panel-admin" element={<AdminDashboard />} />
-          {/* Ruta para añadir gimnasio (solo admin) */}
-          {/* Route to add gym (admin only) */}
           <Route path="/gyms/add" element={<AddGymPage />} />
-          {/* <Route path="/gestionar-usuarios" element={<UserManagementPage />} /> */}
         </Route>
-        
-        {/* --- Ruta Not Found --- */}
+
+        {/* ========================================
+            RUTA NOT FOUND
+            NOT FOUND ROUTE
+            ======================================== */}
         <Route path="*" element={<h2>Página no encontrada</h2>} />
       </Routes>
 

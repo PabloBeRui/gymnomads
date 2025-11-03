@@ -1,0 +1,457 @@
+/**
+ * =============================================================================
+ * PÁGINA: VisitsManagementPage
+ * =============================================================================
+ *
+ * Página para gestionar y visualizar visitas a gimnasios.
+ * - Admin: puede ver todas las visitas y filtrar por gimnasio y usuario.
+ * - Manager: solo ve visitas de su gimnasio, puede filtrar por usuario.
+ *
+ * Page to manage and view gym visits.
+ * - Admin: can see all visits and filter by gym and user.
+ * - Manager: only sees visits from their gym, can filter by user.
+ *
+ * =============================================================================
+ */
+
+import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
+import { getAllVisits, getManagerGymVisits } from "../services/visit-services";
+import { getAllGyms } from "../services/gym-services";
+import type { VisitWithDetails } from "../interfaces/visit-interfaces";
+import type { Gym } from "../interfaces/gym-interfaces";
+import { toast } from "sonner";
+import { handleApiError } from "../utils/error-handler";
+
+/* =============================================================================
+   ESTILOS (inline)
+   ============================================================================= */
+const styles: { [key: string]: React.CSSProperties } = {
+  container: {
+    padding: "20px",
+    maxWidth: "1400px",
+    margin: "0 auto",
+  },
+  header: {
+    marginBottom: "30px",
+  },
+  title: {
+    fontSize: "2rem",
+    marginBottom: "10px",
+    color: "#333",
+  },
+  subtitle: {
+    fontSize: "1rem",
+    color: "#666",
+  },
+  filtersContainer: {
+    display: "flex",
+    gap: "15px",
+    marginBottom: "30px",
+    flexWrap: "wrap",
+    alignItems: "flex-end",
+  },
+  filterGroup: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "5px",
+  },
+  label: {
+    fontSize: "0.9rem",
+    fontWeight: "bold",
+    color: "#495057",
+  },
+  input: {
+    padding: "10px",
+    fontSize: "1rem",
+    border: "1px solid #ccc",
+    borderRadius: "4px",
+    minWidth: "200px",
+  },
+  select: {
+    padding: "10px",
+    fontSize: "1rem",
+    border: "1px solid #ccc",
+    borderRadius: "4px",
+    minWidth: "200px",
+    backgroundColor: "white",
+  },
+  applyButton: {
+    padding: "10px 20px",
+    fontSize: "1rem",
+    backgroundColor: "#007bff",
+    color: "white",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontWeight: "bold",
+  },
+  clearButton: {
+    padding: "10px 20px",
+    fontSize: "1rem",
+    backgroundColor: "#6c757d",
+    color: "white",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+  },
+  tableContainer: {
+    overflowX: "auto",
+    backgroundColor: "white",
+    borderRadius: "8px",
+    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+  },
+  table: {
+    width: "100%",
+    borderCollapse: "collapse",
+  },
+  th: {
+    padding: "15px",
+    textAlign: "left",
+    backgroundColor: "#f8f9fa",
+    borderBottom: "2px solid #dee2e6",
+    fontWeight: "bold",
+    color: "#495057",
+  },
+  td: {
+    padding: "12px 15px",
+    borderBottom: "1px solid #dee2e6",
+  },
+  loadingContainer: {
+    padding: "40px",
+    textAlign: "center",
+  },
+  errorText: {
+    color: "red",
+    padding: "20px",
+    textAlign: "center",
+  },
+  emptyState: {
+    padding: "40px",
+    textAlign: "center",
+    color: "#6c757d",
+    fontSize: "1.1rem",
+  },
+  statsContainer: {
+    display: "flex",
+    gap: "20px",
+    marginBottom: "30px",
+    flexWrap: "wrap",
+  },
+  statCard: {
+    flex: "1 1 200px",
+    padding: "20px",
+    backgroundColor: "#f8f9fa",
+    borderRadius: "8px",
+    border: "1px solid #dee2e6",
+  },
+  statNumber: {
+    fontSize: "2rem",
+    fontWeight: "bold",
+    color: "#007bff",
+  },
+  statLabel: {
+    fontSize: "0.9rem",
+    color: "#6c757d",
+    marginTop: "5px",
+  },
+};
+
+/* =============================================================================
+   COMPONENTE: VisitsManagementPage
+   ============================================================================= */
+export const VisitsManagementPage = () => {
+  const { user, token } = useAuth();
+  const isAdmin = user?.role === "admin";
+  const isManager = user?.role === "manager";
+
+  // Estados del componente / Component states
+  const [visits, setVisits] = useState<VisitWithDetails[]>([]);
+  const [gyms, setGyms] = useState<Gym[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Estados de filtros / Filter states
+  const [selectedGymId, setSelectedGymId] = useState<string>("");
+  const [userSearch, setUserSearch] = useState<string>("");
+
+  // Cargar gimnasios (solo para admin) / Load gyms (admin only)
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    const fetchGyms = async () => {
+      try {
+        const gymsData = await getAllGyms();
+        setGyms(gymsData);
+      } catch (err) {
+        const msg = handleApiError(err, "Error al cargar gimnasios.");
+        toast.error("No se pudieron cargar los gimnasios.");
+        if (import.meta.env.DEV) {
+          console.error("Error al cargar gimnasios:", msg);
+        }
+      }
+    };
+
+    fetchGyms();
+  }, [isAdmin]);
+
+  // Cargar visitas / Load visits
+  const fetchVisits = async () => {
+    if (!token) {
+      setError("No estás autenticado.");
+      setIsLoading(false);
+      return;
+    }
+
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      let visitsData: VisitWithDetails[];
+
+      if (isAdmin) {
+        // Admin: obtener todas las visitas con filtros opcionales
+        // Admin: get all visits with optional filters
+        const filters = {
+          gym_id: selectedGymId ? Number(selectedGymId) : undefined,
+          user_search: userSearch.trim() || undefined,
+        };
+        visitsData = await getAllVisits(token, filters);
+      } else if (isManager) {
+        // Manager: obtener solo visitas de su gimnasio
+        // Manager: get only visits from their gym
+        const filters = {
+          user_search: userSearch.trim() || undefined,
+        };
+        visitsData = await getManagerGymVisits(token, filters);
+      } else {
+        throw new Error("No tienes permisos para ver esta página.");
+      }
+
+      setVisits(visitsData);
+    } catch (err) {
+      const msg = handleApiError(err, "Error al cargar las visitas.");
+      setError(msg);
+      toast.error("No se pudieron cargar las visitas.");
+      if (import.meta.env.DEV) {
+        console.error("Error al cargar visitas:", msg);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Cargar visitas al montar y cuando cambien los filtros
+  // Load visits on mount and when filters change
+  useEffect(() => {
+    fetchVisits();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Solo al montar / Only on mount
+
+  // Aplicar filtros / Apply filters
+  const handleApplyFilters = () => {
+    fetchVisits();
+  };
+
+  // Limpiar filtros / Clear filters
+  const handleClearFilters = () => {
+    setSelectedGymId("");
+    setUserSearch("");
+    // Recargar sin filtros / Reload without filters
+    setTimeout(() => fetchVisits(), 0);
+  };
+
+  // Formatear fecha para mostrar / Format date for display
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleString("es-ES", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  // Calcular estadísticas / Calculate statistics
+  const totalVisits = visits.length;
+
+  // Visitas de hoy / Today's visits
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Inicio del día / Start of day
+  const visitsToday = visits.filter((v) => {
+    const visitDate = new Date(v.visit_date);
+    return visitDate >= today;
+  }).length;
+
+  // Gimnasios activos (con al menos una visita) / Active gyms (with at least one visit)
+  const uniqueGyms = new Set(visits.map((v) => v.gym_id)).size;
+
+  // Render loading
+  if (isLoading && visits.length === 0) {
+    return (
+      <div style={styles.loadingContainer}>
+        <p>Cargando visitas...</p>
+        {/* TODO: Spinner */}
+      </div>
+    );
+  }
+
+  // Render error
+  if (error && visits.length === 0) {
+    return (
+      <div style={styles.container}>
+        <div style={styles.errorText}>{error}</div>
+      </div>
+    );
+  }
+
+  // Render principal / Main render
+  return (
+    <div style={styles.container}>
+      {/* Encabezado / Header */}
+      <div style={styles.header}>
+        <h1 style={styles.title}>
+          {isAdmin ? "Gestión de Visitas" : "Visitas a mi Gimnasio"}
+        </h1>
+        <p style={styles.subtitle}>
+          {isAdmin
+            ? "Visualiza y filtra todas las visitas de todos los gimnasios."
+            : "Visualiza y filtra las visitas a tu gimnasio."}
+        </p>
+      </div>
+
+      {/* Estadísticas / Statistics */}
+      <div style={styles.statsContainer}>
+        <div style={styles.statCard}>
+          <div style={styles.statNumber}>{totalVisits}</div>
+          <div style={styles.statLabel}>Total de Visitas</div>
+        </div>
+
+        <div style={styles.statCard}>
+          <div style={styles.statNumber}>{visitsToday}</div>
+          <div style={styles.statLabel}>Visitas Hoy</div>
+        </div>
+
+        {isAdmin && (
+          <div style={styles.statCard}>
+            <div style={styles.statNumber}>{uniqueGyms}</div>
+            <div style={styles.statLabel}>Gimnasios Activos</div>
+          </div>
+        )}
+      </div>
+
+      {/* Filtros / Filters */}
+      <div style={styles.filtersContainer}>
+        {/* Filtro por gimnasio (solo admin) / Gym filter (admin only) */}
+        {isAdmin && (
+          <div style={styles.filterGroup}>
+            <label htmlFor="gymFilter" style={styles.label}>
+              Filtrar por Gimnasio
+            </label>
+            <select
+              id="gymFilter"
+              value={selectedGymId}
+              onChange={(e) => setSelectedGymId(e.target.value)}
+              style={styles.select}>
+              <option value="">Todos los gimnasios</option>
+              {gyms.map((gym) => (
+                <option key={gym.id} value={gym.id}>
+                  {gym.name} - {gym.city}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Filtro por usuario (común para admin y manager) / User filter (common for admin and manager) */}
+        <div style={styles.filterGroup}>
+          <label htmlFor="userFilter" style={styles.label}>
+            Buscar por Usuario
+          </label>
+          <input
+            id="userFilter"
+            type="text"
+            value={userSearch}
+            onChange={(e) => setUserSearch(e.target.value)}
+            placeholder="Nombre o email..."
+            style={styles.input}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") handleApplyFilters();
+            }}
+          />
+        </div>
+
+        {/* Botones de acción / Action buttons */}
+        <button
+          onClick={handleApplyFilters}
+          style={styles.applyButton}
+          disabled={isLoading}>
+          {isLoading ? "Cargando..." : "Aplicar Filtros"}
+        </button>
+
+        <button
+          onClick={handleClearFilters}
+          style={styles.clearButton}
+          disabled={isLoading}>
+          Limpiar
+        </button>
+      </div>
+
+      {/* Tabla de visitas / Visits table */}
+      {visits.length === 0 ? (
+        <div style={styles.emptyState}>
+          {userSearch || selectedGymId ? (
+            // Si hay filtros activos / If filters are active
+            <>
+              <p>🔍 No se encontraron visitas con los filtros aplicados.</p>
+              <button
+                onClick={handleClearFilters}
+                style={{
+                  ...styles.clearButton,
+                  marginTop: "15px",
+                  cursor: "pointer",
+                }}>
+                Limpiar filtros
+              </button>
+            </>
+          ) : (
+            // Si no hay filtros / If no filters
+            <p>📭 Aún no hay visitas registradas.</p>
+          )}
+        </div>
+      ) : (
+        <div style={styles.tableContainer}>
+          <table style={styles.table}>
+            <thead>
+              <tr>
+                <th style={styles.th}>ID</th>
+                <th style={styles.th}>Usuario</th>
+                <th style={styles.th}>Email</th>
+                {isAdmin && <th style={styles.th}>Gimnasio</th>}
+                {isAdmin && <th style={styles.th}>Ciudad</th>}
+                <th style={styles.th}>Fecha de Visita</th>
+              </tr>
+            </thead>
+            <tbody>
+              {visits.map((visit) => (
+                <tr key={visit.id}>
+                  <td style={styles.td}>#{visit.id}</td>
+                  <td style={styles.td}>{visit.user_name || "N/A"}</td>
+                  <td style={styles.td}>{visit.user_email || "N/A"}</td>
+                  {isAdmin && (
+                    <td style={styles.td}>{visit.gym_name || "N/A"}</td>
+                  )}
+                  {isAdmin && (
+                    <td style={styles.td}>{visit.gym_city || "N/A"}</td>
+                  )}
+                  <td style={styles.td}>{formatDate(visit.visit_date)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+};

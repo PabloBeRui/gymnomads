@@ -7,6 +7,8 @@ const {
   createVisit,
   getVisitsByGym,
   getVisitsByUser,
+  getAllVisits,
+  getManagerGymVisits,
 } = require("../controllers/visit-controller");
 const authMiddleware = require("../middleware/auth-middleware");
 
@@ -16,8 +18,13 @@ const authMiddleware = require("../middleware/auth-middleware");
 const router = Router();
 
 // POST /api/visits - Crear una nueva visita (Ruta Protegida) / Create a new visit (Protected Route)
-
 router.post("/", authMiddleware, createVisit);
+
+// GET /api/visits - Obtener todas las visitas con filtros (Admin) / Get all visits with filters (Admin)
+router.get("/", authMiddleware, getAllVisits);
+
+// GET /api/visits/my-gym - Obtener visitas del gimnasio del manager / Get manager's gym visits
+router.get("/my-gym", authMiddleware, getManagerGymVisits);
 
 // GET /api/visits/user/:userId - Obtener historial de un usuario (Ruta Protegida) / Obtain user historial (Protected Route)
 router.get("/user/:userId", authMiddleware, getVisitsByUser);

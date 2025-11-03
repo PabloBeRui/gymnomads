@@ -2,10 +2,10 @@
  * =============================================================================
  * SERVICIO: visit-services
  * =============================================================================
- * 
+ *
  * Funciones para interactuar con el backend relacionadas con visitas a gimnasios.
  * Functions to interact with the backend related to gym visits.
- * 
+ *
  * =============================================================================
  */
 
@@ -19,7 +19,12 @@ import { handleApiError } from "../utils/error-handler";
 
 // Importar interfaces de visitas
 // Import visit interfaces
-import type { Visit, CreateVisitResponse } from "../interfaces/visit-interfaces";
+import type {
+  Visit,
+  CreateVisitResponse,
+  VisitWithDetails,
+  VisitsFilters,
+} from "../interfaces/visit-interfaces";
 
 // Definir la URL base de la API para evitar repetirla.
 // Define the base API URL to avoid repetition.
@@ -94,6 +99,109 @@ export const getUserVisits = async (token: string): Promise<Visit[]> => {
     const errorMessage = handleApiError(
       error,
       "No se pudieron cargar las visitas."
+    );
+    throw new Error(errorMessage);
+  }
+};
+
+/* ========================================
+ * API CALL: Obtener todas las visitas (Admin)
+ * API CALL: Get all visits (Admin)
+ * ======================================== */
+
+export const getAllVisits = async (
+  token: string,
+  filters?: VisitsFilters
+): Promise<VisitWithDetails[]> => {
+  try {
+    // Construir query params si hay filtros
+    // Build query params if there are filters
+    const params = new URLSearchParams();
+
+    if (filters?.gym_id) {
+      params.append("gym_id", filters.gym_id.toString());
+    }
+    if (filters?.user_search) {
+      params.append("user_search", filters.user_search);
+    }
+    if (filters?.start_date) {
+      params.append("start_date", filters.start_date);
+    }
+    if (filters?.end_date) {
+      params.append("end_date", filters.end_date);
+    }
+
+    const queryString = params.toString();
+    const url = `${API_URL}/visits${queryString ? `?${queryString}` : ""}`;
+
+    // Realizar petición GET al endpoint de visitas
+    // Perform GET request to the visits endpoint
+    const response = await axios.get<VisitWithDetails[]>(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // Devolver los datos de las visitas
+    // Return the visits data
+    return response.data;
+  } catch (error) {
+    // Usar el manejador centralizado
+    // Use the centralized handler
+    const errorMessage = handleApiError(
+      error,
+      "No se pudieron cargar las visitas."
+    );
+    throw new Error(errorMessage);
+  }
+};
+
+/* ========================================
+ * API CALL: Obtener visitas del gimnasio del manager
+ * API CALL: Get manager's gym visits
+ * ======================================== */
+
+export const getManagerGymVisits = async (
+  token: string,
+  filters?: Omit<VisitsFilters, "gym_id"> // Manager no puede filtrar por gym_id / Manager cannot filter by gym_id
+): Promise<VisitWithDetails[]> => {
+  try {
+    // Construir query params si hay filtros
+    // Build query params if there are filters
+    const params = new URLSearchParams();
+
+    if (filters?.user_search) {
+      params.append("user_search", filters.user_search);
+    }
+    if (filters?.start_date) {
+      params.append("start_date", filters.start_date);
+    }
+    if (filters?.end_date) {
+      params.append("end_date", filters.end_date);
+    }
+
+    const queryString = params.toString();
+    const url = `${API_URL}/visits/my-gym${
+      queryString ? `?${queryString}` : ""
+    }`;
+
+    // Realizar petición GET al endpoint de visitas del gimnasio del manager
+    // Perform GET request to the manager's gym visits endpoint
+    const response = await axios.get<VisitWithDetails[]>(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // Devolver los datos de las visitas
+    // Return the visits data
+    return response.data;
+  } catch (error) {
+    // Usar el manejador centralizado
+    // Use the centralized handler
+    const errorMessage = handleApiError(
+      error,
+      "No se pudieron cargar las visitas del gimnasio."
     );
     throw new Error(errorMessage);
   }
