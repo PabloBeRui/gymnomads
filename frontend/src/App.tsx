@@ -7,14 +7,16 @@ import { Routes, Route, Link } from "react-router-dom";
 
 //Componentes / Components
 import { ApiTest } from "./components/ApiTest";
-import { RegisterUserPage } from "./pages/RegisterUserPage";
-import { LoginPage } from "./pages/LoginPage";
 
 //Pages
 import { ProfilePage } from "./pages/ProfilePage";
 import { ListGymsPage } from "./pages/ListGymsPage";
+import { GymPage } from "./pages/GymPage"; // ⭐ AÑADIR ESTA LÍNEA
 import { AddGymPage } from "./pages/AddGymPage";
 import { EditGymPage } from "./pages/EditGymPage";
+import { LoginPage } from "./pages/LoginPage";
+import { RegisterUserPage } from "./pages/RegisterUserPage";
+import { UserVisitGymPage } from "./pages/UserVisitGymPage";
 
 // Importar el hook de autenticación / Import the authentication hook
 import { useAuth } from "./context/AuthContext";
@@ -149,14 +151,22 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<ApiTest />} />
         {/* ApiTest sigue en Home por ahora */}
+        
+        {/* Lista de gimnasios (pública) */}
         <Route path="/gyms" element={<ListGymsPage />} />
-        <Route path="/unauthorized" element={<UnauthorizedPage />} />{" "}
-        {/* <-- RUTA PARA 403 */}
+        
+        {/* ⭐ Detalle de un gimnasio específico (pública) */}
+        <Route path="/gyms/:id" element={<GymPage />} />
+        
+        <Route path="/unauthorized" element={<UnauthorizedPage />} />
+        
         {/* --- Rutas Protegidas (Solo requieren estar logueado) --- */}
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<ProfilePage />} />
-          {/* <Route path="/mis-visitas" element={<VisitsPage />} /> */}
+          {/* Página de visita con QR (solo usuarios autenticados) */}
+          <Route path="/visits/:visitId/qr" element={<UserVisitGymPage />} />
         </Route>
+        
         {/* --- Rutas Protegidas (Requieren Rol 'manager' o 'admin') --- */}
         <Route element={<ProtectedRoute allowedRoles={["manager", "admin"]} />}>
           <Route path="/panel-manager" element={<ManagerDashboard />} />
@@ -164,6 +174,7 @@ function App() {
           {/* Route to edit gym (admin and manager) */}
           <Route path="/gyms/edit/:id" element={<EditGymPage />} />
         </Route>
+        
         {/* --- Rutas Protegidas (Requieren Rol 'admin') --- */}
         <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
           <Route path="/panel-admin" element={<AdminDashboard />} />
@@ -172,6 +183,7 @@ function App() {
           <Route path="/gyms/add" element={<AddGymPage />} />
           {/* <Route path="/gestionar-usuarios" element={<UserManagementPage />} /> */}
         </Route>
+        
         {/* --- Ruta Not Found --- */}
         <Route path="*" element={<h2>Página no encontrada</h2>} />
       </Routes>

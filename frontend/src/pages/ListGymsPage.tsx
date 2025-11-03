@@ -215,7 +215,34 @@ export const ListGymsPage = () => {
             : "/images/gym-logo/default-gym-logo.png";
 
           return (
-            <div key={gym.id} style={styles.gymCard} aria-labelledby={`gym-${gym.id}-name`}>
+            <div 
+  key={gym.id} 
+  style={{
+    ...styles.gymCard,
+    cursor: "pointer",  // Mostrar cursor de mano
+    transition: "transform 0.2s, box-shadow 0.2s",  // Animación suave / smooth animation
+  }} 
+  aria-labelledby={`gym-${gym.id}-name`}
+  onClick={() => navigate(`/gyms/${gym.id}`)}  // Navegar al hacer click / navigate on click
+  onMouseEnter={(e) => {
+    // Efecto hover: elevar la tarjeta / hover effect 
+    e.currentTarget.style.transform = "translateY(-5px)";
+    e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+  }}
+  onMouseLeave={(e) => {
+    // Volver al estado normal / back normal state
+    e.currentTarget.style.transform = "translateY(0)";
+    e.currentTarget.style.boxShadow = "none";
+  }}
+  role="button"  // Accesibilidad / accesibility
+  tabIndex={0}  // Permitir navegación con teclado / allow keyboard navigation
+  onKeyPress={(e) => {
+    // Permitir Enter o Space para activar / enter or space to activate
+    if (e.key === "Enter" || e.key === " ") {
+      navigate(`/gyms/${gym.id}`);
+    }
+  }}
+>
               <img
                 src={logoSrc}
                 alt={`Logo de ${gym.name}`}
