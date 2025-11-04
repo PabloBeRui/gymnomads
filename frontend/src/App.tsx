@@ -18,7 +18,8 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterUserPage } from "./pages/RegisterUserPage";
 import { UserVisitGymPage } from "./pages/UserVisitGymPage";
 import { VisitsManagementPage } from "./pages/VisitsManagementPage";
-import { UsersManagementPage } from "./pages/UsersManagementPage"; // ← AÑADIR
+import { UsersManagementPage } from "./pages/UsersManagementPage";
+import { ManagersManagementPage } from "./pages/ManagersManagementPage";
 
 // Importar el hook de autenticación / Import the authentication hook
 import { useAuth } from "./context/AuthContext";
@@ -107,6 +108,16 @@ function App() {
                 {" | "}
               </>
             )}
+
+            {/* Mostrar solo si es 'admin' */}
+            {/* Show only if 'admin' */}
+            {user.role === "admin" && (
+              <>
+                <Link to="/managers/manage">Managers</Link>
+                {" | "}
+              </>
+            )}
+
             {/* 3. Botón Logout */}
             <button onClick={logout}>Logout</button>
           </>
@@ -152,8 +163,7 @@ function App() {
         <Route element={<ProtectedRoute allowedRoles={["admin", "manager"]} />}>
           <Route path="/gyms/edit/:id" element={<EditGymPage />} />
           <Route path="/visits/manage" element={<VisitsManagementPage />} />
-          <Route path="/users/manage" element={<UsersManagementPage />} />{" "}
-          {/* ← AÑADIR */}
+          <Route path="/users/manage" element={<UsersManagementPage />} />
         </Route>
 
         {/* ========================================
@@ -162,6 +172,7 @@ function App() {
             ======================================== */}
         <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
           <Route path="/gyms/add" element={<AddGymPage />} />
+          <Route path="/managers/manage" element={<ManagersManagementPage />} />
         </Route>
 
         {/* ========================================
