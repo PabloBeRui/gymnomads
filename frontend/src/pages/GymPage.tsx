@@ -289,7 +289,7 @@ export const GymPage = () => {
         onError={(e) => {
           const target = e.target as HTMLImageElement;
           target.onerror = null;
-          target.src = "/images/gym-image/default-gym-image.png";
+          target.src = "/images/gym-image/default-gym-image.jpg";
         }}
       />
 

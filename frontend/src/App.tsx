@@ -78,7 +78,7 @@ function App() {
                 src={
                   user.profile_picture
                     ? user.profile_picture
-                    : "/images/profile/default_avatar.png"
+                    : "/images/profile/default-avatar.png"
                 }
                 alt={`Perfil de ${user.first_name}`}
                 style={{

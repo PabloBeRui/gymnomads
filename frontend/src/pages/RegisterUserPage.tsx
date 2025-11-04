@@ -279,7 +279,7 @@ export const RegisterUserPage: React.FC = () => {
           />
           <ImageUploadPreview
             previewUrl={previewUrl}
-            defaultImage="/images/profile/default_avatar.png"
+            defaultImage="/images/profile/default-avatar.png"
             onClick={handleImageClick}
             altText="Foto de perfil"
             shape="circle"

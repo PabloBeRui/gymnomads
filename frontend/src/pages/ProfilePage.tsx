@@ -2,16 +2,16 @@
  * =============================================================================
  * PÁGINA: ProfilePage
  * =============================================================================
- * 
+ *
  * Página de perfil del usuario con modo visualización/edición.
  * User profile page with view/edit mode.
- * 
+ *
  * Funcionalidades / Features:
  * - Ver datos del perfil (nombre, email, rol, teléfono, gimnasio)
  * - Editar nombre, apellidos y teléfono
  * - Cambiar foto de perfil
  * - Modo edición con validación
- * 
+ *
  * ✅ Usando / USING:
  * - useImageUpload (para manejo de foto de perfil) / useImageUpload (for profile picture handling)
  * - ImageUploadPreview (componente de preview) / ImageUploadPreview (preview component)
@@ -114,9 +114,11 @@ export const ProfilePage: React.FC = () => {
 
   // API hook for save/update actions (handles loading + errors)
   // Hook para acciones de guardado/actualización (gestiona loading y errores)
-  const { loading: isSaving, error: editError, execute } = useApiCall(
-    "Error al guardar el perfil."
-  );
+  const {
+    loading: isSaving,
+    error: editError,
+    execute,
+  } = useApiCall("Error al guardar el perfil.");
 
   // useImageUpload hook (no extra typing here; hook API used below)
   // Hook useImageUpload para manejar selección/preview/subida de imagen de perfil
@@ -131,7 +133,8 @@ export const ProfilePage: React.FC = () => {
 
   // Backend base URL fallback (para construir URLs si la API devuelve rutas relativas)
   // Fallback de la URL base del backend (to build absolute URLs if API returns relative paths)
-  const backendBaseUrl = import.meta.env.VITE_BACKEND_BASE_URL || window.location.origin;
+  const backendBaseUrl =
+    import.meta.env.VITE_BACKEND_BASE_URL || window.location.origin;
 
   /* ===========================================================================
      Sync editable fields when user data changes
@@ -159,7 +162,10 @@ export const ProfilePage: React.FC = () => {
         const g = await getGymById(user.home_gym_id);
         setGymName(g.name || null);
       } catch (err) {
-        const msg = handleApiError(err, "No se pudo cargar el nombre del gimnasio.");
+        const msg = handleApiError(
+          err,
+          "No se pudo cargar el nombre del gimnasio."
+        );
         setGymFetchError(msg);
         setGymName(null);
       }
@@ -179,7 +185,9 @@ export const ProfilePage: React.FC = () => {
     // Si profile_picture es una ruta relativa, añado backendBaseUrl al principio
     const pic = user.profile_picture;
     const normalized =
-      typeof pic === "string" && !/^https?:\/\//i.test(pic) ? `${backendBaseUrl}/${pic.replace(/^\/+/, "")}` : pic;
+      typeof pic === "string" && !/^https?:\/\//i.test(pic)
+        ? `${backendBaseUrl}/${pic.replace(/^\/+/, "")}`
+        : pic;
 
     profileImageUpload.setPreviewUrl(normalized);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -202,7 +210,9 @@ export const ProfilePage: React.FC = () => {
     if (user?.profile_picture) {
       const pic = user.profile_picture;
       const normalized =
-        typeof pic === "string" && !/^https?:\/\//i.test(pic) ? `${backendBaseUrl}/${pic.replace(/^\/+/, "")}` : pic;
+        typeof pic === "string" && !/^https?:\/\//i.test(pic)
+          ? `${backendBaseUrl}/${pic.replace(/^\/+/, "")}`
+          : pic;
       profileImageUpload.setPreviewUrl(normalized);
     }
   };
@@ -215,7 +225,9 @@ export const ProfilePage: React.FC = () => {
     if (user?.profile_picture) {
       const pic = user.profile_picture;
       const normalized =
-        typeof pic === "string" && !/^https?:\/\//i.test(pic) ? `${backendBaseUrl}/${pic.replace(/^\/+/, "")}` : pic;
+        typeof pic === "string" && !/^https?:\/\//i.test(pic)
+          ? `${backendBaseUrl}/${pic.replace(/^\/+/, "")}`
+          : pic;
       profileImageUpload.setPreviewUrl(normalized);
     }
     // reset fields to current user values
@@ -251,7 +263,9 @@ export const ProfilePage: React.FC = () => {
 
         // Normalize filePath and build absolute URL
         // Normalizar filePath y construir URL absoluta
-        const path = (uploadResp.filePath || "").replace(/\\/g, "/").replace(/^\/+/, "");
+        const path = (uploadResp.filePath || "")
+          .replace(/\\/g, "/")
+          .replace(/^\/+/, "");
         newImageUrl = `${backendBaseUrl}/${path}`;
 
         toast.success(uploadResp.message || "Foto de perfil actualizada.");
@@ -308,14 +322,17 @@ export const ProfilePage: React.FC = () => {
   if (!user) {
     return (
       <div style={styles.container}>
-        <p style={styles.errorText}>Error: No se pudieron cargar los datos del usuario.</p>
+        <p style={styles.errorText}>
+          Error: No se pudieron cargar los datos del usuario.
+        </p>
       </div>
     );
   }
 
   // Determine display image URL: prefer hook previewUrl (already normalized), fallback to default
   // Determinar URL de imagen a mostrar: preferir previewUrl del hook, si no fallback al default
-  const displayImageUrl = profileImageUpload.previewUrl || "/images/profile/default_avatar.png";
+  const displayImageUrl =
+    profileImageUpload.previewUrl || "/images/profile/default-avatar.png";
 
   return (
     <div style={styles.container}>
@@ -334,7 +351,7 @@ export const ProfilePage: React.FC = () => {
 
         <ImageUploadPreview
           previewUrl={displayImageUrl}
-          defaultImage="/images/profile/default_avatar.png"
+          defaultImage="/images/profile/default-avatar.png"
           onClick={isEditing ? profileImageUpload.handleImageClick : undefined}
           altText={`${user.first_name || ""} ${user.last_name || ""}`}
           shape="circle"
@@ -354,12 +371,16 @@ export const ProfilePage: React.FC = () => {
       {/* NON-EDITABLE FIELDS / CAMPOS NO EDITABLES */}
       <div style={styles.infoRow}>
         <span style={styles.label}>Email:</span>
-        <span style={isEditing ? styles.disabledText : undefined}>{user.email}</span>
+        <span style={isEditing ? styles.disabledText : undefined}>
+          {user.email}
+        </span>
       </div>
 
       <div style={styles.infoRow}>
         <span style={styles.label}>Rol:</span>
-        <span style={isEditing ? styles.disabledText : undefined}>{user.role}</span>
+        <span style={isEditing ? styles.disabledText : undefined}>
+          {user.role}
+        </span>
       </div>
 
       {/* EDITABLE FIELDS OR VIEW MODE / CAMPOS EDITABLES O MODO VISUALIZACIÓN */}
@@ -425,22 +446,36 @@ export const ProfilePage: React.FC = () => {
       <div style={styles.infoRow}>
         <span style={styles.label}>Gimnasio:</span>
         <span style={isEditing ? styles.disabledText : undefined}>
-          {gymFetchError ? <span style={{ color: "red" }}>{gymFetchError}</span> : gymName || "Cargando..."}
+          {gymFetchError ? (
+            <span style={{ color: "red" }}>{gymFetchError}</span>
+          ) : (
+            gymName || "Cargando..."
+          )}
         </span>
       </div>
 
       {/* ACTION BUTTONS / BOTONES DE ACCION */}
       <div style={styles.buttonRow}>
         {!isEditing ? (
-          <button style={styles.button} onClick={handleEditClick} aria-label="Editar perfil">
+          <button
+            style={styles.button}
+            onClick={handleEditClick}
+            aria-label="Editar perfil">
             Editar Perfil
           </button>
         ) : (
           <>
-            <button style={styles.button} onClick={handleSaveClick} disabled={isSaving} aria-busy={isSaving}>
+            <button
+              style={styles.button}
+              onClick={handleSaveClick}
+              disabled={isSaving}
+              aria-busy={isSaving}>
               {isSaving ? "Guardando..." : "Guardar Cambios"}
             </button>
-            <button style={styles.cancelButton} onClick={handleCancelClick} disabled={isSaving}>
+            <button
+              style={styles.cancelButton}
+              onClick={handleCancelClick}
+              disabled={isSaving}>
               Cancelar
             </button>
           </>
