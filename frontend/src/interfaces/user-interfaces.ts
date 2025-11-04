@@ -96,3 +96,59 @@ export interface UpdateProfileResponse {
   message: string;
   user?: User;
 }
+
+/* ========================================
+ * Interfaces para Gestión de Usuarios y Managers (Admin/Manager Views)
+ * Interfaces for User and Manager Management (Admin/Manager Views)
+ * ======================================== */
+
+/* ========================================
+ * Interfaz para Usuario con información del Gimnasio (Admin)
+ * Interface for User with Gym information (Admin)
+ * ======================================== */
+// Usado en UsersManagementPage para mostrar usuarios con datos del gimnasio
+// Used in UsersManagementPage to display users with gym data
+export interface UserWithGym {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: string;
+  home_gym_id: number;
+  registered_at: string;
+  gym_name: string;
+}
+
+/* ========================================
+ * Interfaz para Manager con información completa del Gimnasio (Admin)
+ * Interface for Manager with complete Gym information (Admin)
+ * ======================================== */
+// Usado en ManagersManagementPage para mostrar managers con datos completos del gimnasio
+// Used in ManagersManagementPage to display managers with complete gym data
+export interface ManagerWithGym {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string | null;
+  home_gym_id: number;
+  registered_at: string;
+  gym_name: string;
+  gym_city: string;
+  gym_address: string;
+}
+
+/* ========================================
+ * Interfaz para Usuario básico de un Gimnasio (Manager/Admin)
+ * Interface for basic Gym User (Manager/Admin)
+ * ======================================== */
+// Usado cuando un Manager consulta los usuarios de su gimnasio
+// Used when a Manager queries users from their gym
+export interface GymUser {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: string;
+  registered_at: string;
+}

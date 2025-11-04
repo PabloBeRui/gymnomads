@@ -18,6 +18,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterUserPage } from "./pages/RegisterUserPage";
 import { UserVisitGymPage } from "./pages/UserVisitGymPage";
 import { VisitsManagementPage } from "./pages/VisitsManagementPage";
+import { UsersManagementPage } from "./pages/UsersManagementPage"; // ← AÑADIR
 
 // Importar el hook de autenticación / Import the authentication hook
 import { useAuth } from "./context/AuthContext";
@@ -102,6 +103,8 @@ function App() {
               <>
                 <Link to="/visits/manage">Visitas</Link>
                 {" | "}
+                <Link to="/users/manage">Usuarios</Link>
+                {" | "}
               </>
             )}
             {/* 3. Botón Logout */}
@@ -149,6 +152,8 @@ function App() {
         <Route element={<ProtectedRoute allowedRoles={["admin", "manager"]} />}>
           <Route path="/gyms/edit/:id" element={<EditGymPage />} />
           <Route path="/visits/manage" element={<VisitsManagementPage />} />
+          <Route path="/users/manage" element={<UsersManagementPage />} />{" "}
+          {/* ← AÑADIR */}
         </Route>
 
         {/* ========================================
