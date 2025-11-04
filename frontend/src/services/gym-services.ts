@@ -9,7 +9,7 @@ import { handleApiError } from "../utils/error-handler";
 // Interfaz Gym
 // Gym interface
 
-import type { Gym } from "../interfaces/gym-interfaces";
+import type { Gym, CreateGymManagerResponse } from "../interfaces/gym-interfaces";
 
 // Definir la URL base de la API para evitar repetirla.
 // Define the base API URL to avoid repetition.
@@ -85,8 +85,8 @@ export const getGymById = async (gymId: number): Promise<Gym> => {
 
 /**
  * ========================================
- * API CALL: Crear un nuevo gimnasio
- * API CALL: Create a new gym
+ * API CALL: Crear un nuevo gimnasio + manager
+ * API CALL: Create a new gym + manager
  * ========================================
  *
  * - Recibe FormData y el token / Receives FormData and the token
@@ -96,23 +96,14 @@ export const getGymById = async (gymId: number): Promise<Gym> => {
 export const createGym = async (
   gymData: FormData,
   token: string
-): Promise<Gym> => {
+): Promise<CreateGymManagerResponse> => {
   try {
-    const response = await axios.post(`${API_URL}/gyms`, gymData, {
-      headers: {
-        // Let axios set Content-Type for FormData (it includes the boundary)
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    // Minimal normalization / fallback:
-    // - If backend returns { newGym: {...} } or { gym: {...} }, prefer that.
-    // - Otherwise return response.data (assumed to be the Gym).
-    const data = response.data;
-    const gym: Gym =
-      data && (data.newGym || data.gym) ? data.newGym || data.gym : data;
-
-    return gym;
+    const response = await axios.post<CreateGymManagerResponse>(
+      `${API_URL}/gyms`,
+      gymData,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data; // Devuelve toda la respuesta / Return full response
   } catch (error) {
     const errorMessage = handleApiError(error, "No se pudo crear el gimnasio.");
     throw new Error(errorMessage);

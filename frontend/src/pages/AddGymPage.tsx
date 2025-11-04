@@ -4,10 +4,10 @@
  * =============================================================================
  *
  * Página para que un administrador añada un nuevo gimnasio.
- * Page for an administrator to add a new gym.
+ * Al crear el gimnasio, automáticamente se crea un manager asociado.
  *
- * NOTA: El administrador NO puede subir imágenes del gimnasio.
- * NOTE: The administrator CANNOT upload gym images.
+ * Page for an administrator to add a new gym.
+ * When creating a gym, a manager is automatically created.
  *
  * =============================================================================
  */
@@ -23,13 +23,13 @@ import { useAuth } from "../context/AuthContext";
 import { useApiCall } from "../hooks/useApiCall";
 
 // Importar servicios / Import services
-import { createGym } from "../services/gym-services";
+import { createGym, getAllGyms } from "../services/gym-services";
 
 // Importar utilidades / Import utilities
 import { handleApiError } from "../utils/error-handler";
 
-// Tipos
-import type { Gym } from "../interfaces/gym-interfaces";
+// Tipos / Types
+import type { CreateGymManagerResponse } from "../interfaces/gym-interfaces";
 
 /**
  * =============================================================================
@@ -82,6 +82,15 @@ const styles: { [key: string]: React.CSSProperties } = {
     backgroundColor: "#f0f0f0",
     borderRadius: "4px",
   },
+  warningText: {
+    color: "#856404",
+    fontSize: "0.9em",
+    marginTop: "10px",
+    padding: "10px",
+    backgroundColor: "#fff3cd",
+    border: "1px solid #ffeeba",
+    borderRadius: "4px",
+  },
 };
 
 /**
@@ -100,14 +109,15 @@ export const AddGymPage = () => {
   const [city, setCity] = useState<string>("");
   const [latitude, setLatitude] = useState<string>("");
   const [longitude, setLongitude] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
 
   // --- Estado de Error Local / Local Error State ---
   const [error, setError] = useState<string | null>(null);
 
   // --- Hook de API / API Hook ---
-  const { loading: isSubmitting, execute: executeCreateGym } = useApiCall<Gym>(
-    "Error al crear el gimnasio."
-  );
+  const { loading: isSubmitting, execute: executeCreateGym } =
+    useApiCall<CreateGymManagerResponse>("Error al crear el gimnasio.");
 
   // --- Manejadores / Handlers ---
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -128,6 +138,12 @@ export const AddGymPage = () => {
       case "longitude":
         setLongitude(value);
         break;
+      case "password":
+        setPassword(value);
+        break;
+      case "phone":
+        setPhone(value);
+        break;
       default:
         break;
     }
@@ -139,14 +155,16 @@ export const AddGymPage = () => {
     e.preventDefault();
     setError(null);
 
-    // VALIDACIONES
-    if (!name || !address || !city || !latitude || !longitude) {
-      const errorMsg = "Todos los campos son obligatorios.";
+    // VALIDACIÓN 1: Campos obligatorios / Required fields
+    if (!name || !address || !city || !latitude || !longitude || !password) {
+      const errorMsg =
+        "Todos los campos obligatorios deben completarse (nombre, dirección, ciudad, coordenadas y contraseña del manager).";
       setError(errorMsg);
       toast.error(errorMsg);
       return;
     }
 
+    // VALIDACIÓN 2: Coordenadas válidas / Valid coordinates
     const latNum = parseFloat(latitude);
     const lonNum = parseFloat(longitude);
     if (isNaN(latNum) || isNaN(lonNum)) {
@@ -168,6 +186,41 @@ export const AddGymPage = () => {
       return;
     }
 
+    // VALIDACIÓN 3: Contraseña mínima / Minimum password length
+    if (password.length < 6) {
+      const errorMsg =
+        "La contraseña del manager debe tener al menos 6 caracteres.";
+      setError(errorMsg);
+      toast.error(errorMsg);
+      return;
+    }
+
+    // VALIDACIÓN 4: Comprobar que no exista un gimnasio con el mismo nombre
+    // Validation 4: Check that a gym with the same name doesn't exist
+    try {
+      const existingGyms = await getAllGyms();
+      const gymExists = existingGyms.some(
+        (gym) => gym.name.toLowerCase().trim() === name.toLowerCase().trim()
+      );
+
+      if (gymExists) {
+        const errorMsg =
+          "Ya existe un gimnasio con ese nombre. Por favor, elige otro nombre.";
+        setError(errorMsg);
+        toast.error(errorMsg);
+        return;
+      }
+    } catch (err) {
+      const errorMsg = "Error al verificar gimnasios existentes.";
+      setError(errorMsg);
+      toast.error(errorMsg);
+      if (import.meta.env.DEV) {
+        console.error("Error checking existing gyms:", err);
+      }
+      return;
+    }
+
+    // VALIDACIÓN 5: Token de autenticación / Authentication token
     if (!token) {
       const errorMsg =
         "No se está autenticado. Por favor, iniciar sesión de nuevo.";
@@ -176,20 +229,26 @@ export const AddGymPage = () => {
       return;
     }
 
-    // Crear FormData
+    // Crear FormData con todos los campos / Create FormData with all fields
     const formData = new FormData();
     formData.append("name", name);
     formData.append("address", address);
     formData.append("city", city);
     formData.append("latitude", String(latNum));
     formData.append("longitude", String(lonNum));
+    formData.append("password", password);
+    if (phone) formData.append("phone", phone); // Teléfono opcional / Optional phone
 
     try {
-      // esperar la creación (capturará errores en el catch)
-      await executeCreateGym(() => createGym(formData, token));
+      // Ejecutar creación de gimnasio + manager / Execute gym + manager creation
+      const response = await executeCreateGym(() => createGym(formData, token));
 
-      // éxito: mostrar toast y navegar siempre a /gyms
-      toast.success("¡Gimnasio añadido con éxito!");
+      // Mostrar mensaje de éxito con email del manager / Show success message with manager email
+      toast.success(
+        `¡Gimnasio creado con éxito! Manager: ${response.managerEmail}`
+      );
+
+      // Navegar a la lista de gimnasios / Navigate to gyms list
       navigate("/gyms");
     } catch (err) {
       const processedErrorMessage = handleApiError(
@@ -209,16 +268,18 @@ export const AddGymPage = () => {
     <div style={styles.container}>
       <h2>Añadir Nuevo Gimnasio</h2>
 
-      <p style={styles.infoText}>
-        ℹ️ Nota: El administrador no puede subir imágenes del gimnasio. Las
-        imágenes (logo e imagen principal) deben ser gestionadas por el manager
-        del gimnasio desde la página de edición.
+      <p style={styles.warningText}>
+        ⚠️ <strong>Importante:</strong> Al crear el gimnasio, automáticamente se
+        creará un usuario manager asociado. El email del manager será generado
+        automáticamente a partir del nombre del gimnasio (ejemplo:
+        nombregimnasio@gymnomads.com).
       </p>
 
       <form onSubmit={handleSubmit}>
+        {/* Nombre del Gimnasio / Gym Name */}
         <div style={styles.formGroup}>
           <label htmlFor="name" style={styles.label}>
-            Nombre: <span style={{ color: "red" }}>*</span>
+            Nombre del Gimnasio: <span style={{ color: "red" }}>*</span>
           </label>
           <input
             name="name"
@@ -232,6 +293,7 @@ export const AddGymPage = () => {
           />
         </div>
 
+        {/* Dirección / Address */}
         <div style={styles.formGroup}>
           <label htmlFor="address" style={styles.label}>
             Dirección: <span style={{ color: "red" }}>*</span>
@@ -248,6 +310,7 @@ export const AddGymPage = () => {
           />
         </div>
 
+        {/* Ciudad / City */}
         <div style={styles.formGroup}>
           <label htmlFor="city" style={styles.label}>
             Ciudad: <span style={{ color: "red" }}>*</span>
@@ -264,6 +327,7 @@ export const AddGymPage = () => {
           />
         </div>
 
+        {/* Latitud / Latitude */}
         <div style={styles.formGroup}>
           <label htmlFor="latitude" style={styles.label}>
             Latitud: <span style={{ color: "red" }}>*</span>
@@ -286,6 +350,7 @@ export const AddGymPage = () => {
           </small>
         </div>
 
+        {/* Longitud / Longitude */}
         <div style={styles.formGroup}>
           <label htmlFor="longitude" style={styles.label}>
             Longitud: <span style={{ color: "red" }}>*</span>
@@ -308,12 +373,56 @@ export const AddGymPage = () => {
           </small>
         </div>
 
+        {/* Contraseña del Manager / Manager Password */}
+        <div style={styles.formGroup}>
+          <label htmlFor="password" style={styles.label}>
+            Contraseña del Manager: <span style={{ color: "red" }}>*</span>
+          </label>
+          <input
+            name="password"
+            id="password"
+            type="password"
+            value={password}
+            onChange={handleChange}
+            style={styles.input}
+            required
+            placeholder="Mínimo 6 caracteres"
+            minLength={6}
+          />
+          <small style={{ color: "#666", fontSize: "0.85em" }}>
+            Esta contraseña será utilizada por el manager para acceder al
+            sistema
+          </small>
+        </div>
+
+        {/* Teléfono del Manager (Opcional) / Manager Phone (Optional) */}
+        <div style={styles.formGroup}>
+          <label htmlFor="phone" style={styles.label}>
+            Teléfono del Manager (opcional):
+          </label>
+          <input
+            name="phone"
+            id="phone"
+            type="tel"
+            value={phone}
+            onChange={handleChange}
+            style={styles.input}
+            placeholder="Ej: +34 600 000 000"
+          />
+        </div>
+
         {error && <p style={styles.errorText}>{error}</p>}
 
         <button type="submit" style={styles.button} disabled={isSubmitting}>
-          {isSubmitting ? "Añadiendo..." : "Añadir Gimnasio"}
+          {isSubmitting ? "Creando gimnasio y manager..." : "Crear Gimnasio"}
         </button>
       </form>
+
+      <p style={styles.infoText}>
+        ℹ️ Nota: Las imágenes del gimnasio (logo e imagen principal) deben ser
+        gestionadas por el manager desde la página de edición una vez creado el
+        gimnasio.
+      </p>
     </div>
   );
 };
