@@ -71,20 +71,53 @@
       }
     },
     {
-      "name": "Delete gym by admin",
+      "name": "Create user by admin",
       "event": [],
       "request": {
-        "method": "GET",
+        "method": "POST",
         "header": [],
         "auth": {
           "type": "noauth"
         },
         "description": "",
         "url": {
-          "raw": "",
-          "protocol": "",
-          "host": [],
-          "path": [],
+          "raw": "http://localhost:3000/api/users/admin/create",
+          "protocol": "http",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "api",
+            "users",
+            "admin",
+            "create"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Delete gym by admin",
+      "event": [],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:3000/api/gyms/3",
+          "protocol": "http",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "api",
+            "gyms",
+            "3"
+          ],
           "query": [],
           "variable": []
         }
@@ -183,10 +216,15 @@
         },
         "description": "",
         "url": {
-          "raw": "",
-          "protocol": "",
-          "host": [],
-          "path": [],
+          "raw": "http://localhost:3000/api/users",
+          "protocol": "http",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "api",
+            "users"
+          ],
           "query": [],
           "variable": []
         }
@@ -203,11 +241,21 @@
         },
         "description": "",
         "url": {
-          "raw": "",
-          "protocol": "",
-          "host": [],
-          "path": [],
-          "query": [],
+          "raw": "http://localhost:3000/api/gyms?city=a coruña",
+          "protocol": "http",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "api",
+            "gyms"
+          ],
+          "query": [
+            {
+              "key": "city",
+              "value": "a coruña"
+            }
+          ],
           "variable": []
         }
       }
@@ -223,10 +271,16 @@
         },
         "description": "",
         "url": {
-          "raw": "",
-          "protocol": "",
-          "host": [],
-          "path": [],
+          "raw": "http://localhost:3000/api/gyms/3",
+          "protocol": "http",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "api",
+            "gyms",
+            "3"
+          ],
           "query": [],
           "variable": []
         }
@@ -243,10 +297,17 @@
         },
         "description": "",
         "url": {
-          "raw": "",
-          "protocol": "",
-          "host": [],
-          "path": [],
+          "raw": "http://localhost:3000/api/gyms/2/users",
+          "protocol": "http",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "api",
+            "gyms",
+            "2",
+            "users"
+          ],
           "query": [],
           "variable": []
         }
@@ -263,10 +324,16 @@
         },
         "description": "",
         "url": {
-          "raw": "",
-          "protocol": "",
-          "host": [],
-          "path": [],
+          "raw": "http://localhost:3000/api/users/profile",
+          "protocol": "http",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "api",
+            "users",
+            "profile"
+          ],
           "query": [],
           "variable": []
         }
@@ -343,7 +410,12 @@
         "method": "POST",
         "header": [],
         "auth": {
-          "type": "noauth"
+          "type": "bearer",
+          "bearer": {
+            "key": "token",
+            "value": "",
+            "type": "string"
+          }
         },
         "description": "",
         "url": {
@@ -362,7 +434,7 @@
         },
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"email\": \"nuevo.manager@email.com\",\n    \"password\": \"managerpass\"\n}",
+          "raw": "{\n    \"email\": \"manager@gymnomads.com\",\n    \"password\": \"manager123\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -539,17 +611,23 @@
       "name": "Update gym",
       "event": [],
       "request": {
-        "method": "GET",
+        "method": "PUT",
         "header": [],
         "auth": {
           "type": "noauth"
         },
         "description": "",
         "url": {
-          "raw": "",
-          "protocol": "",
-          "host": [],
-          "path": [],
+          "raw": "http://localhost:3000/api/gyms/3",
+          "protocol": "http",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "api",
+            "gyms",
+            "3"
+          ],
           "query": [],
           "variable": []
         }
@@ -559,17 +637,23 @@
       "name": "Update profile photo",
       "event": [],
       "request": {
-        "method": "GET",
+        "method": "POST",
         "header": [],
         "auth": {
           "type": "noauth"
         },
         "description": "",
         "url": {
-          "raw": "",
-          "protocol": "",
-          "host": [],
-          "path": [],
+          "raw": "http://localhost:3000/api/users/profile",
+          "protocol": "http",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "api",
+            "users",
+            "profile"
+          ],
           "query": [],
           "variable": []
         }
@@ -616,26 +700,61 @@
       }
     },
     {
-      "name": "Create user by admin",
+      "name": "Get All visits by admin",
       "event": [],
       "request": {
-        "method": "POST",
+        "method": "GET",
         "header": [],
         "auth": {
-          "type": "noauth"
+          "type": "bearer",
+          "bearer": {
+            "key": "token",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJhZG1pbiIsImhvbWVfZ3ltX2lkIjoxLCJpYXQiOjE3NjIyNDU4NjgsImV4cCI6MTc2MjI1MzA2OH0.4f_L02pE-9-7lUJwGAyo1cIgbwLaTsiFIxU1ozHv-9Q",
+            "type": "string"
+          }
         },
         "description": "",
         "url": {
-          "raw": "http://localhost:3000/api/users/admin/create",
+          "raw": "http://localhost:3000/api/visits/",
           "protocol": "http",
           "host": [
             "localhost:3000"
           ],
           "path": [
             "api",
-            "users",
-            "admin",
-            "create"
+            "visits",
+            ""
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Manager: Get My Gym Visits",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": {
+            "key": "token",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInJvbGUiOiJtYW5hZ2VyIiwiaG9tZV9neW1faWQiOjIsImlhdCI6MTc2MjI0NjA3MSwiZXhwIjoxNzYyMjUzMjcxfQ.rlFh4v_7WpkNEBAeskmo6zi7Za_0oRHftzCcqPLhzm4",
+            "type": "string"
+          }
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:3000/api/visits/my-gym",
+          "protocol": "http",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "api",
+            "visits",
+            "my-gym"
           ],
           "query": [],
           "variable": []
