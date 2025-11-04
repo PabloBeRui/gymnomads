@@ -1,41 +1,39 @@
 const db = require("../../config/db");
 
-// Crear una nueva visita
-// Create a new visit
-
+/* ========================================
+ * Crear una nueva visita
+ * Create a new visit
+ * ======================================== */
 const createVisit = async (req, res) => {
   try {
-    // El ID del usuario se obtiene del token, a través del middleware
-    // get the user ID from the token, via the middleware
-
+    // 1. Obtener el ID del usuario del token (vía middleware)
+    // 1. Get the user ID from the token (via middleware)
     const user_id = req.user.userId;
-    // El ID del gimnasio se obtiene del cuerpo de la petición
-    //  get the gym ID from the request body
 
+    // 2. Obtener el ID del gimnasio del cuerpo de la petición
+    // 2. Get the gym ID from the request body
     const { gym_id } = req.body;
 
-    // Comprobar que se ha enviado el gym_id
-    // Check if gym_id was sent
-
+    // 3. Validar que se ha enviado el gym_id
+    // 3. Validate that gym_id was sent
     if (!gym_id) {
-      // 400 Bad Request: la petición es incorrecta o está incompleta
       console.log(
-        "400 Bad Request: la petición es incorrecta o está incompleta, se requiere id del gimanasio"
+        "400 Bad Request: la petición es incorrecta o está incompleta, se requiere id del gimnasio"
       );
       return res
         .status(400)
         .json({ message: "Se requiere el ID del gimnasio" });
     }
 
-    // Insertar la nueva visita en la base de datos
-    // Insert the new visit into the database
+    // 4. Insertar la nueva visita en la base de datos
+    // 4. Insert the new visit into the database
     const [result] = await db.query(
       "INSERT INTO visits (user_id, gym_id) VALUES (?, ?)",
       [user_id, gym_id]
     );
 
-    // Enviar una respuesta de éxito
-    // Send a success response
+    // 5. Enviar respuesta de éxito (201 Created)
+    // 5. Send success response (201 Created)
     res.status(201).json({
       message: "Visita registrada con éxito",
       visitId: result.insertId,
@@ -46,27 +44,30 @@ const createVisit = async (req, res) => {
   }
 };
 
-// Obtener todas las visitas de un usuario específico
-// Get all visits for a specific user
-
+/* ========================================
+ * Obtener todas las visitas de un usuario específico
+ * Get all visits for a specific user
+ * ======================================== */
 const getVisitsByUser = async (req, res) => {
   try {
-    // Obtener el ID del usuario de los parámetros de la URL
-    // Get the user ID from the URL parameters
+    // 1. Obtener el ID del usuario de los parámetros de la URL
+    // 1. Get the user ID from the URL parameters
     const { userId } = req.params;
 
-    // Medida de seguridad: un usuario solo puede ver su propio historial
-    // Security measure: a user can only view their own history
+    // 2. Medida de seguridad: un usuario solo puede ver su propio historial
+    // 2. Security measure: a user can only view their own history
     if (req.user.userId !== parseInt(userId)) {
-      // 403 Forbidden: tienes un token válido, pero no tienes permiso para ver esto
       return res.status(403).json({ message: "Acceso prohibido" });
     }
 
-    // Une la tabla 'visits' con 'gyms' para obtener también el nombre del gimnasio
-    //  join the 'visits' table with 'gyms' to also get the gym's name
-
+    // 3. Unir tabla 'visits' con 'gyms' para obtener datos del gimnasio
+    // 3. Join 'visits' table with 'gyms' to get gym data
     const [visits] = await db.query(
-      `SELECT visits.id, visits.visited_at, gyms.name AS gym_name, gyms.city 
+      `SELECT 
+        visits.id, 
+        visits.visited_at, 
+        gyms.name AS gym_name, 
+        gyms.city 
        FROM visits 
        JOIN gyms ON visits.gym_id = gyms.id 
        WHERE visits.user_id = ? 
@@ -74,25 +75,33 @@ const getVisitsByUser = async (req, res) => {
       [userId]
     );
 
+    // 4. Devolver lista de visitas
+    // 4. Return visits list
     res.status(200).json(visits);
   } catch (error) {
-    console.error(`error:${error}`);
+    console.error(`error: ${error}`);
     res.status(500).json({ message: "Error interno del servidor" });
   }
 };
 
-// Obtener todos los visitantes de un gimnasio específico
-// Get all visitors for a specific gym
-
+/* ========================================
+ * Obtener todos los visitantes de un gimnasio específico
+ * Get all visitors for a specific gym
+ * ======================================== */
 const getVisitsByGym = async (req, res) => {
   try {
+    // 1. Obtener el ID del gimnasio de los parámetros de la URL
+    // 1. Get the gym ID from the URL parameters
     const { gymId } = req.params;
 
-    // Unir 'visits' con 'users' para obtener el nombre del visitante
-    // join 'visits' with 'users' to get the visitor's name
-
+    // 2. Unir 'visits' con 'users' para obtener datos del visitante
+    // 2. Join 'visits' with 'users' to get visitor data
     const [visits] = await db.query(
-      `SELECT visits.id, visits.visited_at, users.first_name, users.last_name 
+      `SELECT 
+        visits.id, 
+        visits.visited_at, 
+        users.first_name, 
+        users.last_name 
        FROM visits 
        JOIN users ON visits.user_id = users.id 
        WHERE visits.gym_id = ? 
@@ -100,31 +109,35 @@ const getVisitsByGym = async (req, res) => {
       [gymId]
     );
 
+    // 3. Devolver lista de visitantes
+    // 3. Return visitors list
     res.status(200).json(visits);
   } catch (error) {
-    console.error(`error:${error}`);
+    console.error(`error: ${error}`);
     res.status(500).json({ message: "Error interno del servidor" });
   }
 };
 
-// Obtener todas las visitas con filtros (Admin)
-// Get all visits with filters (Admin)
+/* ========================================
+ * Obtener todas las visitas con filtros opcionales (Admin)
+ * Get all visits with optional filters (Admin)
+ * ======================================== */
 const getAllVisits = async (req, res) => {
   try {
-    // Verificar que el usuario sea admin
-    // Verify user is admin
+    // 1. Verificar que el usuario sea admin
+    // 1. Verify user is admin
     if (req.user.role !== "admin") {
       return res
         .status(403)
         .json({ message: "Acceso prohibido. Solo administradores." });
     }
 
-    // Obtener parámetros de filtro opcionales
-    // Get optional filter parameters
+    // 2. Obtener parámetros de filtro opcionales de la query string
+    // 2. Get optional filter parameters from query string
     const { gym_id, user_search } = req.query;
 
-    // Construir consulta SQL dinámica
-    // Build dynamic SQL query
+    // 3. Construir consulta SQL dinámica con JOINs
+    // 3. Build dynamic SQL query with JOINs
     let query = `
       SELECT 
         visits.id,
@@ -143,15 +156,15 @@ const getAllVisits = async (req, res) => {
 
     const params = [];
 
-    // Filtro por gimnasio
-    // Filter by gym
+    // 4. Aplicar filtro por gimnasio (si se proporciona)
+    // 4. Apply filter by gym (if provided)
     if (gym_id) {
       query += ` AND visits.gym_id = ?`;
       params.push(gym_id);
     }
 
-    // Filtro por búsqueda de usuario (nombre o email)
-    // Filter by user search (name or email)
+    // 5. Aplicar filtro de búsqueda de usuario por nombre o email (si se proporciona)
+    // 5. Apply user search filter by name or email (if provided)
     if (user_search) {
       query += ` AND (
         CONCAT(users.first_name, ' ', users.last_name) LIKE ? 
@@ -161,10 +174,12 @@ const getAllVisits = async (req, res) => {
       params.push(searchPattern, searchPattern);
     }
 
-    // Ordenar por fecha descendente
-    // Order by date descending
+    // 6. Ordenar por fecha de visita descendente
+    // 6. Order by visit date descending
     query += ` ORDER BY visits.visited_at DESC`;
 
+    // 7. Ejecutar la consulta y devolver resultados
+    // 7. Execute the query and return results
     const [visits] = await db.query(query, params);
 
     res.status(200).json(visits);
@@ -174,20 +189,22 @@ const getAllVisits = async (req, res) => {
   }
 };
 
-// Obtener visitas del gimnasio del manager
-// Get visits from manager's gym
+/* ========================================
+ * Obtener visitas del gimnasio del manager (Manager)
+ * Get visits from manager's gym (Manager)
+ * ======================================== */
 const getManagerGymVisits = async (req, res) => {
   try {
-    // Verificar que el usuario sea manager
-    // Verify user is manager
+    // 1. Verificar que el usuario sea manager
+    // 1. Verify user is manager
     if (req.user.role !== "manager") {
       return res
         .status(403)
         .json({ message: "Acceso prohibido. Solo managers." });
     }
 
-    // Obtener el home_gym_id del manager
-    // Get the manager's home_gym_id
+    // 2. Obtener el home_gym_id del manager
+    // 2. Get the manager's home_gym_id
     const [managerData] = await db.query(
       "SELECT home_gym_id FROM users WHERE id = ?",
       [req.user.userId]
@@ -201,12 +218,12 @@ const getManagerGymVisits = async (req, res) => {
 
     const gymId = managerData[0].home_gym_id;
 
-    // Obtener parámetros de filtro opcionales
-    // Get optional filter parameters
+    // 3. Obtener parámetros de filtro opcionales de la query string
+    // 3. Get optional filter parameters from query string
     const { user_search } = req.query;
 
-    // Construir consulta SQL
-    // Build SQL query
+    // 4. Construir consulta SQL para obtener visitas del gimnasio del manager
+    // 4. Build SQL query to get visits from manager's gym
     let query = `
       SELECT 
         visits.id,
@@ -225,8 +242,8 @@ const getManagerGymVisits = async (req, res) => {
 
     const params = [gymId];
 
-    // Filtro por búsqueda de usuario
-    // Filter by user search
+    // 5. Aplicar filtro de búsqueda de usuario (si se proporciona)
+    // 5. Apply user search filter (if provided)
     if (user_search) {
       query += ` AND (
         CONCAT(users.first_name, ' ', users.last_name) LIKE ? 
@@ -236,10 +253,12 @@ const getManagerGymVisits = async (req, res) => {
       params.push(searchPattern, searchPattern);
     }
 
-    // Ordenar por fecha descendente
-    // Order by date descending
+    // 6. Ordenar por fecha de visita descendente
+    // 6. Order by visit date descending
     query += ` ORDER BY visits.visited_at DESC`;
 
+    // 7. Ejecutar la consulta y devolver resultados
+    // 7. Execute the query and return results
     const [visits] = await db.query(query, params);
 
     res.status(200).json(visits);

@@ -9,6 +9,7 @@ const {
   updateProfilePicture,
   deleteUserByAdmin,
   getAllUsers,
+  getAllManagers,  // ← AÑADIR ESTE IMPORT
   changePassword,
   createUserByAdmin,
 } = require("../controllers/user-controller");
@@ -84,6 +85,16 @@ router.get(
   authMiddleware, // 1. ¿estás logueado? / is loged?
   adminMiddleware, // 2. ¿eres admin? / is admin?
   getAllUsers // 3. si sí a ambas, ejecuta la acción / if true both, execute
+);
+
+// GET /api/users/managers - obtener todos los managers (admin) - get all managers (admin)
+// ← AÑADIR ESTA RUTA NUEVA
+
+router.get(
+  "/managers",
+  authMiddleware, // 1. ¿estás logueado? / is logged?
+  adminMiddleware, // 2. ¿eres admin? / is admin?
+  getAllManagers // 3. si sí a ambas, ejecuta la acción / if true both, execute
 );
 
 // DELETE /api/users/:id - eliminar un usuario por su id (admin) / delete a user by their id (admin)

@@ -17,6 +17,7 @@ const {
 const authMiddleware = require("../middleware/auth-middleware");
 const adminMiddleware = require("../middleware/admin-middleware");
 const managerMiddleware = require("../middleware/manager-middleware");
+const adminOrManagerMiddleware = require("../middleware/admin-or-manager-middleware");
 
 // createUploader multer & handler upload-middleware
 const createUploader = require("../utils/multer-config");
@@ -81,7 +82,7 @@ router.delete(
 router.get(
   "/:gymId/users",
   authMiddleware, // 1. verificar si el usuario está logueado / verify if the user is logged in
-  adminMiddleware, // 2. verificar si el usuario es admin / verify if the user is admin
+  adminOrManagerMiddleware, // 2. verificar si el usuario es admin / verify if the user is admin
   getUsersByGym // 3. si ambas son correctas, ejecutar la acción / if both are correct, execute the action
 );
 

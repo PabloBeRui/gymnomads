@@ -1,22 +1,31 @@
 const db = require("../../config/db");
 const bcrypt = require("bcrypt");
 const fs = require("fs/promises");
-// Función para obtener todos los gimnasios o filtrar gimansio por ciudad
-// Function to get all gyms or filter by city
 
+/* ========================================
+ * Obtener todos los gimnasios o filtrar por ciudad
+ * Get all gyms or filter by city
+ * ======================================== */
 const getAllGyms = async (req, res) => {
   try {
+    // 1. Obtener filtro de ciudad de la query string (opcional)
+    // 1. Get city filter from query string (optional)
     const { city } = req.query;
 
+    // 2. Construir query base
+    // 2. Build base query
     let query = "SELECT * FROM gyms";
     const params = [];
 
+    // 3. Aplicar filtro por ciudad si se proporciona
+    // 3. Apply city filter if provided
     if (city) {
-      // Si hay filtro, añade WHERE // If there is a filter, add WHERE
       query += " WHERE city = ?";
       params.push(city);
     }
 
+    // 4. Ejecutar la consulta y devolver resultados
+    // 4. Execute the query and return results
     const [rows] = await db.query(query, params);
     res.status(200).json(rows);
   } catch (error) {
@@ -25,31 +34,33 @@ const getAllGyms = async (req, res) => {
   }
 };
 
-// Obtener un gimnasio por ID
-// Get a gym by ID
-
+/* ========================================
+ * Obtener un gimnasio por ID
+ * Get a gym by ID
+ * ======================================== */
 const getGymById = async (req, res) => {
   try {
-    // Obtener el ID de los parámetros de la URL
-    // Get the ID from the URL parameters
-
+    // 1. Obtener el ID de los parámetros de la URL
+    // 1. Get the ID from the URL parameters
     const { id } = req.params;
 
-    // Ejecutar la consulta SQL para buscar por ID
-    // Execute the SQL query to find by ID
+    // 2. Ejecutar la consulta SQL para buscar por ID
+    // 2. Execute the SQL query to find by ID
     const [rows] = await db.query("SELECT * FROM gyms WHERE id = ?", [id]);
 
-    // Comprobar si se encontró el gimnasio. Si no se encuentra, devolver un error 404. Si se encuentra, devolver los datos del gimnasio
-    // Check if the gym was found. If not found, return a 404 error. If found, return the gym data
-
+    // 3. Comprobar si se encontró el gimnasio
+    // 3. Check if the gym was found
     if (rows.length === 0) {
       return res.status(404).json({ message: "Gimnasio no encontrado" });
     }
+
+    // 4. Devolver los datos del gimnasio
+    // 4. Return the gym data
     res.status(200).json(rows[0]);
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      message: `Error en el servidor`,
+      message: "Error en el servidor",
     });
   }
 };
@@ -60,11 +71,13 @@ const getGymById = async (req, res) => {
  * ======================================== */
 const createGym = async (req, res) => {
   try {
-    // Obtener datos del formulario / Get form data
+    // 1. Obtener datos del formulario
+    // 1. Get form data
     const { name, address, city, latitude, longitude, password, phone } =
       req.body;
 
-    // Validación básica de campos / Basic field validation
+    // 2. Validar campos obligatorios
+    // 2. Validate required fields
     if (!name || !address || !city || !latitude || !longitude || !password) {
       return res.status(400).json({
         message:
@@ -72,7 +85,8 @@ const createGym = async (req, res) => {
       });
     }
 
-    // Validar coordenadas / Validate coordinates
+    // 3. Validar y parsear coordenadas
+    // 3. Validate and parse coordinates
     const lat = parseFloat(latitude);
     const lon = parseFloat(longitude);
 
@@ -88,7 +102,8 @@ const createGym = async (req, res) => {
       });
     }
 
-    // PASO 1: CREAR GIMNASIO / STEP 1: CREATE GYM
+    // 4. Crear gimnasio en la base de datos
+    // 4. Create gym in database
     const [gymResult] = await db.query(
       "INSERT INTO gyms (name, address, city, latitude, longitude) VALUES (?, ?, ?, ?, ?)",
       [name, address, city, lat, lon]
@@ -96,9 +111,8 @@ const createGym = async (req, res) => {
 
     const gymId = gymResult.insertId;
 
-    // PASO 2: GENERAR EMAIL AUTOMÁTICO PARA EL MANAGER / STEP 2: GENERATE AUTOMATIC EMAIL FOR MANAGER
-    // Limpiar nombre: quitar acentos, espacios, caracteres especiales
-    // Clean name: remove accents, spaces, special characters
+    // 5. Generar email automático para el manager
+    // 5. Generate automatic email for the manager
     const cleanName = name
       .toLowerCase()
       .normalize("NFD")
@@ -108,25 +122,28 @@ const createGym = async (req, res) => {
 
     const managerEmail = `${cleanName}@gymnomads.com`;
 
-    // PASO 3: VERIFICAR QUE EL EMAIL NO EXISTA (seguridad) / STEP 3: VERIFY EMAIL DOESN'T EXIST (security)
+    // 6. Verificar que el email no exista (prevenir gimnasios duplicados)
+    // 6. Verify that the email doesn't exist (prevent duplicate gyms)
     const [existingEmail] = await db.query(
       "SELECT id FROM users WHERE email = ?",
       [managerEmail]
     );
 
     if (existingEmail.length > 0) {
-      // Si el email ya existe, eliminar el gimnasio creado (rollback manual)
-      // If email exists, delete the created gym (manual rollback)
+      // Rollback manual: eliminar el gimnasio creado
+      // Manual rollback: delete the created gym
       await db.query("DELETE FROM gyms WHERE id = ?", [gymId]);
       return res.status(409).json({
         message: `El email ${managerEmail} ya está en uso. El nombre del gimnasio debe ser único.`,
       });
     }
 
-    // PASO 4: HASHEAR CONTRASEÑA / STEP 4: HASH PASSWORD
+    // 7. Hashear contraseña del manager
+    // 7. Hash manager password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // PASO 5: CREAR MANAGER AUTOMÁTICAMENTE / STEP 5: CREATE MANAGER AUTOMATICALLY
+    // 8. Crear manager automáticamente
+    // 8. Create manager automatically
     const [managerResult] = await db.query(
       "INSERT INTO users (first_name, last_name, email, password, phone, home_gym_id, role) VALUES (?, ?, ?, ?, ?, ?, ?)",
       [
@@ -140,7 +157,8 @@ const createGym = async (req, res) => {
       ]
     );
 
-    // PASO 6: RESPUESTA DE ÉXITO / STEP 6: SUCCESS RESPONSE
+    // 9. Enviar respuesta de éxito con datos del gym y manager
+    // 9. Send success response with gym and manager data
     res.status(201).json({
       message: "Gimnasio y manager creados con éxito",
       gymId: gymId,
@@ -163,48 +181,43 @@ const createGym = async (req, res) => {
   }
 };
 
-// actualizar un gimnasio existente (solo para administradores)
-// update an existing gym (admin only)
-
+/* ========================================
+ * Actualizar un gimnasio existente (Admin)
+ * Update an existing gym (Admin)
+ * ======================================== */
 const updateGym = async (req, res) => {
   try {
-    // obtener el id del gimnasio de los parámetros de la url
-    // get the gym id from the url parameters
-
+    // 1. Obtener el ID del gimnasio de los parámetros de la URL
+    // 1. Get the gym ID from the URL parameters
     const { id } = req.params;
 
-    // obtener los nuevos datos del cuerpo de la petición
-    // get the new data from the request body
-
+    // 2. Obtener los nuevos datos del cuerpo de la petición
+    // 2. Get the new data from the request body
     const { name, address, city, latitude, longitude } = req.body;
 
-    // validar que todos los campos necesarios estén presentes
-    // validate that all required fields are present
-
+    // 3. Validar que todos los campos necesarios estén presentes
+    // 3. Validate that all required fields are present
     if (!name || !address || !city || !latitude || !longitude) {
       return res
         .status(400)
         .json({ message: "todos los campos son requeridos" });
     }
 
-    // ejecutar la consulta sql para actualizar el gimnasio
-    // execute the sql query to update the gym
-
+    // 4. Ejecutar la consulta SQL para actualizar el gimnasio
+    // 4. Execute the SQL query to update the gym
     const [result] = await db.query(
       "UPDATE gyms SET name = ?, address = ?, city = ?, latitude = ?, longitude = ? WHERE id = ?",
       [name, address, city, latitude, longitude, id]
     );
 
-    // comprobar si alguna fila fue realmente actualizada
-    // check if any row was actually updated
-
+    // 5. Comprobar si alguna fila fue actualizada
+    // 5. Check if any row was updated
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "gimnasio no encontrado" });
     }
 
-    // enviar una respuesta de éxito
-    // send a success response
-
+    // 6. Enviar respuesta de éxito
+    // 6. Send success response
     res.status(200).json({ message: "gimnasio actualizado con éxito" });
   } catch (error) {
     console.error(error);
@@ -218,13 +231,12 @@ const updateGym = async (req, res) => {
  * ======================================== */
 const deleteGym = async (req, res) => {
   try {
-    // obtener el id del gimnasio de los parámetros de la url
-    // get the gym id from the url parameters
-
+    // 1. Obtener el ID del gimnasio de los parámetros de la URL
+    // 1. Get the gym ID from the URL parameters
     const { id } = req.params;
 
-    // PROTECCIÓN: No permitir eliminar gimnasio ID=1 (administración)
-    // PROTECTION: Cannot delete gym ID=1 (administration)
+    // 2. PROTECCIÓN: No permitir eliminar gimnasio ID=1 (administración del sistema)
+    // 2. PROTECTION: Cannot delete gym ID=1 (system administration)
     if (Number(id) === 1) {
       return res.status(403).json({
         message:
@@ -232,21 +244,18 @@ const deleteGym = async (req, res) => {
       });
     }
 
-    // ejecutar la consulta sql para eliminar el gimnasio
-    // execute the sql query to delete the gym
-
+    // 3. Ejecutar la consulta SQL para eliminar el gimnasio
+    // 3. Execute the SQL query to delete the gym
     const [result] = await db.query("DELETE FROM gyms WHERE id = ?", [id]);
 
-    // comprobar si alguna fila fue realmente eliminada
-    // check if any row was actually deleted
-
+    // 4. Comprobar si alguna fila fue eliminada
+    // 4. Check if any row was deleted
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "gimnasio no encontrado" });
     }
 
-    // enviar una respuesta de éxito sin contenido (204)
-    // send a success response with no content (204)
-
+    // 5. Enviar respuesta de éxito sin contenido (204 No Content)
+    // 5. Send success response with no content (204 No Content)
     res.status(204).send();
   } catch (error) {
     console.error(error);
@@ -254,41 +263,66 @@ const deleteGym = async (req, res) => {
   }
 };
 
-// obtener todos los usuarios de un gimnasio específico (solo para administradores)
-// get all users for a specific gym (admin only)
-
+/* ========================================
+ * Obtener usuarios de un gimnasio con búsqueda opcional (Admin/Manager)
+ * Get users from a gym with optional search (Admin/Manager)
+ * ======================================== */
 const getUsersByGym = async (req, res) => {
   try {
-    // obtener el id del gimnasio de los parámetros de la url
-    // get the gym id from the url parameters
-
+    // 1. Obtener el ID del gimnasio de los parámetros de la URL
+    // 1. Get the gym ID from the URL parameters
     const { gymId } = req.params;
 
-    // ejecutar la consulta para obtener los datos de los usuarios de ese gimnasio
-    // execute the query to get the user data for that gym
+    // 2. Obtener parámetro de búsqueda de la query string (opcional)
+    // 2. Get search parameter from query string (optional)
+    const { search } = req.query;
 
-    const [users] = await db.query(
-      "SELECT id, first_name, last_name, email, role FROM users WHERE home_gym_id = ?",
-      [gymId]
-    );
+    // 3. Construir query base para obtener usuarios del gimnasio
+    // 3. Build base query to get gym users
+    let query = `
+      SELECT 
+        id, 
+        first_name, 
+        last_name, 
+        email, 
+        role, 
+        registered_at 
+      FROM users 
+      WHERE home_gym_id = ? AND role = 'user'
+    `;
+    const params = [gymId];
 
-    // si no se encuentran usuarios para ese gimnasio, devuelvo un array vacío, lo cual es correcto
-    // if no users are found for that gym, i return an empty array, which is correct
+    // 4. Aplicar filtro de búsqueda por nombre o email (si se proporciona)
+    // 4. Apply search filter by name or email (if provided)
+    if (search) {
+      query +=
+        " AND (first_name LIKE ? OR last_name LIKE ? OR email LIKE ?)";
+      const searchTerm = `%${search}%`;
+      params.push(searchTerm, searchTerm, searchTerm);
+    }
 
+    // 5. Ordenar por fecha de registro descendente
+    // 5. Order by registration date descending
+    query += " ORDER BY registered_at DESC";
+
+    // 6. Ejecutar la consulta y devolver resultados
+    // 6. Execute the query and return results
+    const [users] = await db.query(query, params);
     res.status(200).json(users);
   } catch (error) {
-    console.error(`Error al obtener todos los usuarios del gimansio: ${error}`);
+    console.error(`Error al obtener usuarios del gimnasio: ${error}`);
     res.status(500).json({ message: "error interno del servidor" });
   }
 };
 
-// --- LÓGICA PARA SUBIDA DE IMÁGENES / UPLOAD IMAGE LOGIC ---
-
-// Función genérica para actualizar una imagen de un gimnasio (logo o principal)
-// Generic function to update a gym image (logo or main)
-
+/* ========================================
+ * Función genérica para actualizar imagen de gimnasio (logo o imagen principal)
+ * Generic function to update gym image (logo or main image)
+ * ======================================== */
 const updateGymImage = async (req, res, imageColumnName) => {
   try {
+    // 1. Comprobar que se ha subido un archivo (Multer proporciona req.file)
+    // 1. Check that a file was uploaded (Multer provides req.file)
     if (!req.file) {
       return res
         .status(400)
@@ -298,7 +332,8 @@ const updateGymImage = async (req, res, imageColumnName) => {
     const { id } = req.params;
     const newFilePath = req.file.path;
 
-    // 1. obtener la ruta de la imagen antigua
+    // 2. Obtener la ruta de la imagen antigua
+    // 2. Get the old image path
     const [gyms] = await db.query(
       `SELECT ${imageColumnName} FROM gyms WHERE id = ?`,
       [id]
@@ -309,24 +344,30 @@ const updateGymImage = async (req, res, imageColumnName) => {
     }
     const oldFilePath = gyms[0]?.[imageColumnName];
 
-    // 2. actualizo la base de datos con la nueva ruta
+    // 3. Actualizar la base de datos con la nueva ruta
+    // 3. Update the database with the new path
     await db.query(`UPDATE gyms SET ${imageColumnName} = ? WHERE id = ?`, [
       newFilePath,
       id,
     ]);
 
-    // 3. borro el archivo antiguo si existía
+    // 4. Borrar el archivo antiguo (si existía)
+    // 4. Delete the old file (if it existed)
     if (oldFilePath) {
       try {
         await fs.unlink(oldFilePath);
       } catch (err) {
         console.error(
-          `error al borrar la imagen antigua (${imageColumnName}):`,
+          `Error al borrar la imagen antigua (${imageColumnName}):`,
           err
         );
+        // No detenemos el proceso, la subida fue exitosa
+        // We don't stop the process, the upload was successful
       }
     }
 
+    // 5. Enviar respuesta de éxito
+    // 5. Send success response
     res.status(200).json({
       message: `imagen (${imageColumnName}) actualizada con éxito`,
       filePath: newFilePath,
@@ -337,16 +378,18 @@ const updateGymImage = async (req, res, imageColumnName) => {
   }
 };
 
-// controlador específico para subir el logo
-// specific controller to upload the logo
-
+/* ========================================
+ * Actualizar logo del gimnasio (Admin/Manager)
+ * Update gym logo (Admin/Manager)
+ * ======================================== */
 const uploadLogo = (req, res) => {
   updateGymImage(req, res, "logo_url");
 };
 
-// controlador específico para subir la imagen principal
-// specific controller to upload the main image
-
+/* ========================================
+ * Actualizar imagen principal del gimnasio (Admin/Manager)
+ * Update gym main image (Admin/Manager)
+ * ======================================== */
 const uploadMainImage = (req, res) => {
   updateGymImage(req, res, "main_image_url");
 };

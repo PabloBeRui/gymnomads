@@ -52,7 +52,12 @@
         "method": "POST",
         "header": [],
         "auth": {
-          "type": "noauth"
+          "type": "bearer",
+          "bearer": {
+            "key": "token",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJhZG1pbiIsImhvbWVfZ3ltX2lkIjoxLCJpYXQiOjE3NjIyNTg1NjgsImV4cCI6MTc2MjI2NTc2OH0.SIZgOsMfJ2gVP2ogdNoa6KBqvoOwBXV3hIZkThhvpDM",
+            "type": "string"
+          }
         },
         "description": "",
         "url": {
@@ -67,6 +72,15 @@
           ],
           "query": [],
           "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"gymconmanager\",\n    \"address\": \"Calle Falsa 123, B\",\n    \"city\": \"Ciudad Prueba\",\n    \"latitude\": 40.4168,\n    \"longitude\": -3.7038,\n    \"password\": \"manager123\",\n    \"phone\": \"600112233\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
         }
       }
     },
@@ -206,17 +220,22 @@
       }
     },
     {
-      "name": "Get all users by admin",
+      "name": "Get all users or filtered  -admin",
       "event": [],
       "request": {
         "method": "GET",
         "header": [],
         "auth": {
-          "type": "noauth"
+          "type": "bearer",
+          "bearer": {
+            "key": "token",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJhZG1pbiIsImhvbWVfZ3ltX2lkIjoxLCJpYXQiOjE3NjIyNjU3ODEsImV4cCI6MTc2MjI3Mjk4MX0.irP-PTZWC1e0M0HRDEJfagU65OczzkcHccutOE_iD24",
+            "type": "string"
+          }
         },
         "description": "",
         "url": {
-          "raw": "http://localhost:3000/api/users",
+          "raw": "http://localhost:3000/api/users?gym_id=2&search=pedro",
           "protocol": "http",
           "host": [
             "localhost:3000"
@@ -225,8 +244,26 @@
             "api",
             "users"
           ],
-          "query": [],
+          "query": [
+            {
+              "key": "gym_id",
+              "value": "2"
+            },
+            {
+              "key": "search",
+              "value": "pedro"
+            }
+          ],
           "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "[{\n      \"gym_id\":2,\n  \"search\":\"pedro\"\n  }]",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
         }
       }
     },
@@ -271,7 +308,7 @@
         },
         "description": "",
         "url": {
-          "raw": "http://localhost:3000/api/gyms/3",
+          "raw": "http://localhost:3000/api/gyms/1",
           "protocol": "http",
           "host": [
             "localhost:3000"
@@ -279,7 +316,7 @@
           "path": [
             "api",
             "gyms",
-            "3"
+            "1"
           ],
           "query": [],
           "variable": []
@@ -287,13 +324,18 @@
       }
     },
     {
-      "name": "Get user by gym by admin",
+      "name": "Get all users or filtered by gym - manager or admin",
       "event": [],
       "request": {
         "method": "GET",
         "header": [],
         "auth": {
-          "type": "noauth"
+          "type": "bearer",
+          "bearer": {
+            "key": "token",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInJvbGUiOiJtYW5hZ2VyIiwiaG9tZV9neW1faWQiOjIsImlhdCI6MTc2MjI2NzI4NSwiZXhwIjoxNzYyMjc0NDg1fQ.4IMPP2C7RAfeH2JBfTNFTxzwBsaQ7BNMMlBWODCP5tY",
+            "type": "string"
+          }
         },
         "description": "",
         "url": {
@@ -434,7 +476,7 @@
         },
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"email\": \"manager@gymnomads.com\",\n    \"password\": \"manager123\"\n}",
+          "raw": "{\n    \"email\": \"admin@gymnomads.com\",\n    \"password\": \"admin123\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -755,6 +797,36 @@
             "api",
             "visits",
             "my-gym"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Get All Managers or filtered (Admin)",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": {
+            "key": "token",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJhZG1pbiIsImhvbWVfZ3ltX2lkIjoxLCJpYXQiOjE3NjIyNjY3OTQsImV4cCI6MTc2MjI3Mzk5NH0.H8l-u-rVoRvgMMrHk4zBae2WNXUAjBZMH6nYpeepHPM",
+            "type": "string"
+          }
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:3000/api/managers",
+          "protocol": "http",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "api",
+            "managers"
           ],
           "query": [],
           "variable": []
