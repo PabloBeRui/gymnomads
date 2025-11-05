@@ -21,9 +21,11 @@ import { Link, useNavigate } from "react-router-dom";
 import type { Gym } from "../interfaces/gym-interfaces";
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
+import { ConfirmationModal } from "../components/ConfirmationModal";
 
 /* =============================================================================
    ESTILOS (inline)
+   STYLES (inline)
    ============================================================================= */
 const styles: { [key: string]: React.CSSProperties } = {
   container: { padding: "20px", maxWidth: "1200px", margin: "0 auto" },
@@ -91,21 +93,28 @@ const styles: { [key: string]: React.CSSProperties } = {
 
 /* =============================================================================
    COMPONENTE: ListGymsPage
+   COMPONENT: ListGymsPage
    ============================================================================= */
 export const ListGymsPage = () => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
 
+  // Estados del componente / Component states
   const [gyms, setGyms] = useState<Gym[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
+  // Estados para modal de eliminación / States for delete modal
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [gymToDelete, setGymToDelete] = useState<Gym | null>(null);
+
   // Fallback para backendBaseUrl
+  // Fallback for backendBaseUrl
   const backendBaseUrl =
     import.meta.env.VITE_BACKEND_BASE_URL || window.location.origin;
 
-  // Cargar gimnasios al montar
+  // Cargar gimnasios al montar / Load gyms on mount
   useEffect(() => {
     const fetchGyms = async () => {
       setError(null);
@@ -129,12 +138,12 @@ export const ListGymsPage = () => {
     fetchGyms();
   }, []);
 
-  // Manejo de búsqueda
+  // Manejo de búsqueda / Search handling
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
-  // Filtrado por nombre o ciudad
+  // Filtrado por nombre o ciudad / Filter by name or city
   const filteredGyms = gyms.filter((gym) => {
     const term = searchTerm.trim().toLowerCase();
     if (!term) return true;
@@ -144,25 +153,25 @@ export const ListGymsPage = () => {
     );
   });
 
-  // Eliminar gimnasio (solo admin)
-  const handleDelete = async (gymId: number): Promise<void> => {
-    if (
-      !window.confirm(
-        "¿Estás seguro de que quieres eliminar este gimnasio? Esta acción no se puede deshacer."
-      )
-    ) {
-      return;
-    }
+  // Abrir modal de confirmación de eliminación / Open delete confirmation modal
+  const handleDelete = (gym: Gym): void => {
+    setGymToDelete(gym);
+    setShowDeleteModal(true);
+  };
 
-    if (!token) {
-      toast.error("No estás autenticado para realizar esta acción.");
-      return;
-    }
+  // Confirmar eliminación de gimnasio / Confirm gym deletion
+  const handleDeleteConfirm = async () => {
+    if (!gymToDelete || !token) return;
 
     try {
-      await deleteGym(gymId, token);
-      setGyms((prev) => prev.filter((g) => g.id !== gymId));
-      toast.success("Gimnasio eliminado con éxito.");
+      await deleteGym(gymToDelete.id, token);
+      setGyms((prev) => prev.filter((g) => g.id !== gymToDelete.id));
+      toast.success(`Gimnasio "${gymToDelete.name}" eliminado con éxito.`);
+
+      // Cerrar modal
+      // Close modal
+      setShowDeleteModal(false);
+      setGymToDelete(null);
     } catch (err) {
       const processedErrorMessage = handleApiError(
         err,
@@ -171,6 +180,12 @@ export const ListGymsPage = () => {
       toast.error(processedErrorMessage);
       if (import.meta.env.DEV) console.error("Error deleting gym:", err);
     }
+  };
+
+  // Cancelar eliminación de gimnasio / Cancel gym deletion
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+    setGymToDelete(null);
   };
 
   // Render loading
@@ -192,13 +207,13 @@ export const ListGymsPage = () => {
     );
   }
 
-  // Render principal
+  // Render principal / Main render
   return (
     <div style={styles.container}>
       <h2>Gimnasios Asociados</h2>
       <p>Descubre los gimnasios a los que puedes acceder con GymNomads.</p>
 
-      {/* Botón para añadir gimnasio (solo admin) */}
+      {/* Botón para añadir gimnasio (solo admin) / Add gym button (admin only) */}
       {user?.role === "admin" && (
         <Link
           to="/gyms/add"
@@ -238,7 +253,7 @@ export const ListGymsPage = () => {
               key={gym.id}
               style={{
                 ...styles.gymCard,
-                cursor: "pointer", // Mostrar cursor de mano
+                cursor: "pointer", // Mostrar cursor de mano / Show hand cursor
                 transition: "transform 0.2s, box-shadow 0.2s", // Animación suave / smooth animation
               }}
               aria-labelledby={`gym-${gym.id}-name`}
@@ -253,7 +268,7 @@ export const ListGymsPage = () => {
                 e.currentTarget.style.transform = "translateY(0)";
                 e.currentTarget.style.boxShadow = "none";
               }}
-              role="button" // Accesibilidad / accesibility
+              role="button" // Accesibilidad / accessibility
               tabIndex={0} // Permitir navegación con teclado / allow keyboard navigation
               onKeyPress={(e) => {
                 // Permitir Enter o Space para activar / enter or space to activate
@@ -282,10 +297,11 @@ export const ListGymsPage = () => {
               </div>
 
               {/* Mostrar acciones solo para admin o manager del gym */}
+              {/* Show actions only for admin or gym manager */}
               {(user?.role === "admin" ||
                 (user?.role === "manager" && user.home_gym_id === gym.id)) && (
                 <div style={styles.cardFooter}>
-                  {/* Edit: usa la ruta definida en App.tsx (ajústala si usas otra) */}
+                  {/* Botón Editar / Edit button */}
                   <button
                     style={styles.button}
                     onClick={(e) => {
@@ -297,14 +313,14 @@ export const ListGymsPage = () => {
                     Editar
                   </button>
 
-                  {/* Delete solo admin */}
+                  {/* Botón Eliminar (solo admin) / Delete button (admin only) */}
                   {user?.role === "admin" && (
                     <button
                       style={styles.deleteButton}
-                      // Evitar que el click llegue al div padre / Prevent click from reaching parent div
                       onClick={(e) => {
+                        // Evitar que el click llegue al div padre / Prevent click from reaching parent div
                         e.stopPropagation();
-                        handleDelete(gym.id);
+                        handleDelete(gym);
                       }}
                       aria-label={`Eliminar gimnasio ${gym.name}`}>
                       Eliminar
@@ -316,6 +332,24 @@ export const ListGymsPage = () => {
           );
         })}
       </div>
+
+      {/* Modal de confirmación de eliminación / Delete confirmation modal */}
+      <ConfirmationModal
+        isOpen={showDeleteModal && gymToDelete !== null}
+        onCancel={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="⚠️ Eliminar Gimnasio"
+        message={
+          gymToDelete
+            ? `¿Estás seguro de que quieres eliminar el gimnasio "${gymToDelete.name}" ubicado en ${gymToDelete.city}?`
+            : ""
+        }
+        warningMessage="⚠️ ATENCIÓN: Al eliminar este gimnasio se eliminará el manager asociado, todos los usuarios de este gimnasio y todas las visitas relacionadas."
+        note="Esta acción NO se puede deshacer."
+        confirmText="Eliminar Gimnasio"
+        cancelText="Cancelar"
+        variant="danger"
+      />
     </div>
   );
 };
