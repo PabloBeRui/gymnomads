@@ -114,7 +114,10 @@ export const ListGymsPage = () => {
         const data = await getAllGyms();
         setGyms(data);
       } catch (err) {
-        const msg = handleApiError(err, "Hubo un problema al cargar los gimnasios.");
+        const msg = handleApiError(
+          err,
+          "Hubo un problema al cargar los gimnasios."
+        );
         setError(msg);
         toast.error(msg);
         if (import.meta.env.DEV) console.error("Error fetching gyms:", err);
@@ -143,7 +146,11 @@ export const ListGymsPage = () => {
 
   // Eliminar gimnasio (solo admin)
   const handleDelete = async (gymId: number): Promise<void> => {
-    if (!window.confirm("¿Estás seguro de que quieres eliminar este gimnasio? Esta acción no se puede deshacer.")) {
+    if (
+      !window.confirm(
+        "¿Estás seguro de que quieres eliminar este gimnasio? Esta acción no se puede deshacer."
+      )
+    ) {
       return;
     }
 
@@ -157,7 +164,10 @@ export const ListGymsPage = () => {
       setGyms((prev) => prev.filter((g) => g.id !== gymId));
       toast.success("Gimnasio eliminado con éxito.");
     } catch (err) {
-      const processedErrorMessage = handleApiError(err, "No se pudo eliminar el gimnasio.");
+      const processedErrorMessage = handleApiError(
+        err,
+        "No se pudo eliminar el gimnasio."
+      );
       toast.error(processedErrorMessage);
       if (import.meta.env.DEV) console.error("Error deleting gym:", err);
     }
@@ -190,7 +200,10 @@ export const ListGymsPage = () => {
 
       {/* Botón para añadir gimnasio (solo admin) */}
       {user?.role === "admin" && (
-        <Link to="/gyms/add" style={styles.addGymButton} aria-label="Añadir gimnasio">
+        <Link
+          to="/gyms/add"
+          style={styles.addGymButton}
+          aria-label="Añadir gimnasio">
           Añadir Gimnasio
         </Link>
       )}
@@ -206,43 +219,48 @@ export const ListGymsPage = () => {
 
       <div style={styles.gymList}>
         {filteredGyms.length === 0 && !isLoading && (
-          <p style={styles.noResultsText}>No se encontraron gimnasios que coincidan con tu búsqueda.</p>
+          <p style={styles.noResultsText}>
+            No se encontraron gimnasios que coincidan con tu búsqueda.
+          </p>
         )}
 
         {filteredGyms.map((gym) => {
           const logoSrc = gym.logo_url
-            ? `${backendBaseUrl}/${gym.logo_url.startsWith("/") ? gym.logo_url.substring(1) : gym.logo_url}`
+            ? `${backendBaseUrl}/${
+                gym.logo_url.startsWith("/")
+                  ? gym.logo_url.substring(1)
+                  : gym.logo_url
+              }`
             : "/images/gym-logo/default-gym-logo.png";
 
           return (
-            <div 
-  key={gym.id} 
-  style={{
-    ...styles.gymCard,
-    cursor: "pointer",  // Mostrar cursor de mano
-    transition: "transform 0.2s, box-shadow 0.2s",  // Animación suave / smooth animation
-  }} 
-  aria-labelledby={`gym-${gym.id}-name`}
-  onClick={() => navigate(`/gyms/${gym.id}`)}  // Navegar al hacer click / navigate on click
-  onMouseEnter={(e) => {
-    // Efecto hover: elevar la tarjeta / hover effect 
-    e.currentTarget.style.transform = "translateY(-5px)";
-    e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
-  }}
-  onMouseLeave={(e) => {
-    // Volver al estado normal / back normal state
-    e.currentTarget.style.transform = "translateY(0)";
-    e.currentTarget.style.boxShadow = "none";
-  }}
-  role="button"  // Accesibilidad / accesibility
-  tabIndex={0}  // Permitir navegación con teclado / allow keyboard navigation
-  onKeyPress={(e) => {
-    // Permitir Enter o Space para activar / enter or space to activate
-    if (e.key === "Enter" || e.key === " ") {
-      navigate(`/gyms/${gym.id}`);
-    }
-  }}
->
+            <div
+              key={gym.id}
+              style={{
+                ...styles.gymCard,
+                cursor: "pointer", // Mostrar cursor de mano
+                transition: "transform 0.2s, box-shadow 0.2s", // Animación suave / smooth animation
+              }}
+              aria-labelledby={`gym-${gym.id}-name`}
+              onClick={() => navigate(`/gyms/${gym.id}`)} // Navegar al hacer click / navigate on click
+              onMouseEnter={(e) => {
+                // Efecto hover: elevar la tarjeta / hover effect
+                e.currentTarget.style.transform = "translateY(-5px)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+              }}
+              onMouseLeave={(e) => {
+                // Volver al estado normal / back normal state
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+              role="button" // Accesibilidad / accesibility
+              tabIndex={0} // Permitir navegación con teclado / allow keyboard navigation
+              onKeyPress={(e) => {
+                // Permitir Enter o Space para activar / enter or space to activate
+                if (e.key === "Enter" || e.key === " ") {
+                  navigate(`/gyms/${gym.id}`);
+                }
+              }}>
               <img
                 src={logoSrc}
                 alt={`Logo de ${gym.name}`}
@@ -264,12 +282,17 @@ export const ListGymsPage = () => {
               </div>
 
               {/* Mostrar acciones solo para admin o manager del gym */}
-              {(user?.role === "admin" || (user?.role === "manager" && user.home_gym_id === gym.id)) && (
+              {(user?.role === "admin" ||
+                (user?.role === "manager" && user.home_gym_id === gym.id)) && (
                 <div style={styles.cardFooter}>
                   {/* Edit: usa la ruta definida en App.tsx (ajústala si usas otra) */}
                   <button
                     style={styles.button}
-                    onClick={() => navigate(`/gyms/edit/${gym.id}`)}
+                    onClick={(e) => {
+                      // Evitar que el click llegue al div padre / Prevent click from reaching parent div
+                      e.stopPropagation();
+                      navigate(`/gyms/edit/${gym.id}`);
+                    }}
                     aria-label={`Editar gimnasio ${gym.name}`}>
                     Editar
                   </button>
@@ -278,7 +301,11 @@ export const ListGymsPage = () => {
                   {user?.role === "admin" && (
                     <button
                       style={styles.deleteButton}
-                      onClick={() => handleDelete(gym.id)}
+                      // Evitar que el click llegue al div padre / Prevent click from reaching parent div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(gym.id);
+                      }}
                       aria-label={`Eliminar gimnasio ${gym.name}`}>
                       Eliminar
                     </button>
