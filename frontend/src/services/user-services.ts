@@ -440,3 +440,49 @@ export const getUsersByGym = async (
     throw new Error(errorMessage);
   }
 };
+
+
+/* ========================================
+ * API CALL: Eliminar un manager (Admin)
+ * API CALL: Delete a manager (Admin)
+ * ======================================== */
+
+// Eliminar un manager por ID (solo Admin)
+// Delete a manager by ID (Admin only)
+export const deleteManager = async (
+  token: string,
+  userId: number
+): Promise<{ message: string }> => {
+  // Comprobar si hay token
+  // Check if token exists
+  if (!token) {
+    throw new Error("No se proporcionó token de autenticación.");
+  }
+
+  try {
+    // Realizar petición DELETE al endpoint '/users/:id'
+    // Perform DELETE request to '/users/:id' endpoint
+    const response = await axios.delete<{ message: string }>(
+      `${API_URL}/users/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    // Devolver la respuesta del servidor
+    // Return the server response
+    return response.data;
+  } catch (error) {
+    // Usar el manejador centralizado
+    // Use the centralized handler
+    const errorMessage = handleApiError(
+      error,
+      "Error al eliminar el manager."
+    );
+    // Lanzar error procesado
+    // Throw processed error
+    throw new Error(errorMessage);
+  }
+};
