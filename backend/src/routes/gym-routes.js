@@ -1,5 +1,4 @@
-//Imports
-//Router express & controller
+// Import Router express & controllers
 const { Router } = require("express");
 const {
   getAllGyms,
@@ -12,98 +11,105 @@ const {
   uploadMainImage,
 } = require("../controllers/gym-controller");
 
-// Middlewares de seguridad / ecurity middlewares
-
+// Importar middlewares de seguridad
+// Import security middlewares
 const authMiddleware = require("../middleware/auth-middleware");
 const adminMiddleware = require("../middleware/admin-middleware");
 const managerMiddleware = require("../middleware/manager-middleware");
 const adminOrManagerMiddleware = require("../middleware/admin-or-manager-middleware");
 
-// createUploader multer & handler upload-middleware
+// Importar createUploader de multer y handlers de upload-middleware
+// Import createUploader from multer and handlers from upload-middleware
 const createUploader = require("../utils/multer-config");
 const {
   createUploadHandler,
   handleGymCreateUpload,
 } = require("../middleware/upload-middleware");
-// crear los uploaders específicos que necesito para este archivo
-// create the specific uploaders i need for this file
+
+// Crear los uploaders específicos para logos e imágenes de gimnasios
+// Create specific uploaders for gym logos and images
 const logoUploader = createUploader("gym_logos");
 const mainImageUploader = createUploader("gym_images");
 
 // Crear una instancia del enrutador de Express
 // Create an instance of the Express router
-
 const router = Router();
 
-// Rutas / Routes
+/* =============================================================================
+   RUTAS PÚBLICAS (no requieren token)
+   PUBLIC ROUTES (do not require a token)
+   ============================================================================= */
 
-// --- RUTAS PÚBLICAS / PUBLIC ROUTES ---
-
-// GET /api/gyms - Obtener todos los gimnasios /Get all gyms
-
+// GET /api/gyms - Obtener todos los gimnasios / Get all gyms
 router.get("/", getAllGyms);
 
 // GET /api/gyms/:id - Obtener un gimnasio por ID / Get a gym by ID
-
 router.get("/:id", getGymById);
 
-// --- RUTAS DE ADMINISTRADOR / ADMIN ROUTES ---
+/* =============================================================================
+   RUTAS PROTEGIDAS (solo administradores)
+   PROTECTED ROUTES (admin only)
+   ============================================================================= */
 
-// POST /api/gyms - crear un nuevo gimnasio (protegido) / create a new gym (protected)
-
+// POST /api/gyms - Crear un nuevo gimnasio (admin) / Create a new gym (admin)
 router.post(
   "/",
-  authMiddleware, // 1. verificar si el usuario está logueado / verify if the user is logged in
-  adminMiddleware, // 2. verificar si el usuario es admin / verify if the user is admin
-  handleGymCreateUpload, // 3. Procesar archivos con Multer (.fields())
-  createGym // 4. si ambas son correctas, ejecutar la acción / if both are correct, execute the action
+  authMiddleware, // 1. ¿Estás logueado? / Are you logged in?
+  adminMiddleware, // 2. ¿Eres admin? / Are you admin?
+  handleGymCreateUpload, // 3. Procesar archivos con Multer (.fields()) / Process files with Multer (.fields())
+  createGym // 4. Si sí a ambas, ejecuta la acción / If yes to both, execute action
 );
 
-// PUT /api/gyms/:id - actualizar un gimnasio existente (protegido) / update an existing gym (protected)
-
+// PUT /api/gyms/:id - Actualizar un gimnasio existente (admin) / Update an existing gym (admin)
 router.put(
   "/:id",
-  authMiddleware, // 1. verificar si el usuario está logueado / verify if the user is logged in
-  adminMiddleware, // 2. verificar si el usuario es admin / verify if the user is admin
-  updateGym // 3. si ambas son correctas, ejecutar la acción / if both are correct, execute the action
+  authMiddleware, // 1. ¿Estás logueado? / Are you logged in?
+  adminMiddleware, // 2. ¿Eres admin? / Are you admin?
+  updateGym // 3. Si sí a ambas, ejecuta la acción / If yes to both, execute action
 );
 
-// DELETE /api/gyms/:id - eliminar un gimnasio (protegido) / delete a gym (protected)
-
+// DELETE /api/gyms/:id - Eliminar un gimnasio (admin) / Delete a gym (admin)
 router.delete(
   "/:id",
-  authMiddleware, // 1. verificar si el usuario está logueado / verify if the user is logged in
-  adminMiddleware, // 2. verificar si el usuario es admin / verify if the user is admin
-  deleteGym // 3. si ambas son correctas, ejecutar la acción / if both are correct, execute the action
+  authMiddleware, // 1. ¿Estás logueado? / Are you logged in?
+  adminMiddleware, // 2. ¿Eres admin? / Are you admin?
+  deleteGym // 3. Si sí a ambas, ejecuta la acción / If yes to both, execute action
 );
 
-// GET /api/gyms/:gymId/users - obtener los usuarios de un gimnasio (protegido) / get users for a gym (protected)
+/* =============================================================================
+   RUTAS PROTEGIDAS (admin o manager del gimnasio)
+   PROTECTED ROUTES (admin or gym manager)
+   ============================================================================= */
 
+// GET /api/gyms/:gymId/users - Obtener usuarios de un gimnasio / Get users from a gym
 router.get(
   "/:gymId/users",
-  authMiddleware, // 1. verificar si el usuario está logueado / verify if the user is logged in
-  adminOrManagerMiddleware, // 2. verificar si el usuario es admin / verify if the user is admin
-  getUsersByGym // 3. si ambas son correctas, ejecutar la acción / if both are correct, execute the action
+  authMiddleware, // 1. ¿Estás logueado? / Are you logged in?
+  adminOrManagerMiddleware, // 2. ¿Eres admin o manager? / Are you admin or manager?
+  getUsersByGym // 3. Si sí a ambas, ejecuta la acción / If yes to both, execute action
 );
 
-// --- RUTAS DE MANAGER / MANAGER ROUTES ---
+/* =============================================================================
+   RUTAS PROTEGIDAS (solo manager del gimnasio)
+   PROTECTED ROUTES (gym manager only)
+   ============================================================================= */
 
-// POST /api/gyms/:id/logo - subir/actualizar logo del gimnasio / upload/update gym logo
+// POST /api/gyms/:id/logo - Subir/actualizar logo del gimnasio / Upload/update gym logo
 router.post(
   "/:id/logo",
-  authMiddleware, // 1. verificar si el usuario está logueado / verify if the user is logged in
-  managerMiddleware, // 2. verificar si es el manager de ese gimnasio / verify if they are the manager of that gym
-  createUploadHandler(logoUploader, "logo"), // 3. procesar el archivo de imagen con multer / process the image file with multer & upload-middleware
-  uploadLogo // 4. si todo es correcto, ejecutar la acción del controlador / if all is correct, execute the controller action
+  authMiddleware, // 1. ¿Estás logueado? / Are you logged in?
+  managerMiddleware, // 2. ¿Eres el manager de este gimnasio? / Are you the manager of this gym?
+  createUploadHandler(logoUploader, "logo"), // 3. Procesar archivo con Multer / Process file with Multer
+  uploadLogo // 4. Si todo es correcto, ejecuta la acción / If all is correct, execute action
 );
 
-// POST /api/gyms/:id/image - subir/actualizar imagen principal del gimnasio / upload/update main gym image
+// POST /api/gyms/:id/image - Subir/actualizar imagen principal del gimnasio / Upload/update main gym image
 router.post(
   "/:id/image",
-  authMiddleware, // 1. verificar si el usuario está logueado / verify if the user is logged in
-  managerMiddleware, // 2. verificar si es el manager de ese gimnasio / verify if they are the manager of that gym
-  createUploadHandler(mainImageUploader, "mainImage"), // 3. procesar el archivo de imagen con multer / process the image file with multer & upload-middleware
-  uploadMainImage // 4. si todo es correcto, ejecutar la acción del controlador / if all is correct, execute the controller action
+  authMiddleware, // 1. ¿Estás logueado? / Are you logged in?
+  managerMiddleware, // 2. ¿Eres el manager de este gimnasio? / Are you the manager of this gym?
+  createUploadHandler(mainImageUploader, "mainImage"), // 3. Procesar archivo con Multer / Process file with Multer
+  uploadMainImage // 4. Si todo es correcto, ejecuta la acción / If all is correct, execute action
 );
 
 module.exports = router;

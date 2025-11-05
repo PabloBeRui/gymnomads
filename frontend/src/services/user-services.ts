@@ -5,14 +5,6 @@ import axios from "axios";
 // Importar el manejador de errores centralizado.
 // Import the centralized error handler.
 import { handleApiError } from "../utils/error-handler";
-import type {
-  GymUser,
-  ManagerWithGym,
-  UserWithGym,
-} from "../interfaces/user-interfaces";
-
-// Interfaz para los datos de registro .
-// Registration data interface
 
 // Importar interfaces necesarias / Import necessary interfaces
 import type {
@@ -22,11 +14,14 @@ import type {
   LoginResponse,
   User,
   UpdateUserData,
+  GymUser,
+  ManagerWithGym,
+  UserWithGym,
+  UpdateManagerData,
 } from "../interfaces/user-interfaces";
 
 // Definir la URL base de la API.
 // Define the base API URL.
-
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 /* ========================================
@@ -36,7 +31,6 @@ const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 // Recibe los datos del formulario (RegisterData) y devuelve la respuesta del backend.
 // Receives form data (RegisterData) and returns the backend response.
-
 export const registerUser = async (
   userData: RegisterData
 ): Promise<RegisterResponse> => {
@@ -104,7 +98,6 @@ export const loginUser = async (
 
 // Recibe el token JWT y devuelve los datos del usuario (respuesta del backend).
 // Receives the JWT token and returns the user data (backend response).
-
 export const getUserProfile = async (token: string): Promise<User> => {
   try {
     // Realizar petición GET al endpoint '/users/profile'.
@@ -112,7 +105,6 @@ export const getUserProfile = async (token: string): Promise<User> => {
 
     // Incluir el token en la cabecera 'Authorization' para rutas protegidas.
     // Include the token in the 'Authorization' header for protected routes.
-
     const response = await axios.get(`${API_URL}/users/profile`, {
       headers: {
         Authorization: `Bearer ${token}`, // Formato estándar Bearer token
@@ -254,8 +246,8 @@ export const uploadProfilePicture = async (
 };
 
 /* ========================================
- * NUEVAS FUNCIONES PARA GESTIÓN DE USUARIOS (Admin/Manager)
- * NEW FUNCTIONS FOR USER MANAGEMENT (Admin/Manager)
+ * FUNCIONES PARA GESTIÓN DE USUARIOS (Admin/Manager)
+ * FUNCTIONS FOR USER MANAGEMENT (Admin/Manager)
  * ======================================== */
 
 /* ========================================
@@ -441,6 +433,54 @@ export const getUsersByGym = async (
   }
 };
 
+/* ========================================
+ * API CALL: Actualizar datos de un manager (Admin)
+ * API CALL: Update manager data (Admin)
+ * ======================================== */
+
+// Actualizar información de un manager (nombre, apellidos, teléfono)
+// Update manager information (first name, last name, phone)
+// NOTA: El email NO se puede actualizar (está vinculado al gimnasio)
+// NOTE: Email CANNOT be updated (it's linked to the gym)
+export const updateManager = async (
+  token: string,
+  userId: number,
+  managerData: UpdateManagerData
+): Promise<{ message: string; user: ManagerWithGym }> => {
+  // Comprobar si hay token
+  // Check if token exists
+  if (!token) {
+    throw new Error("No se proporcionó token de autenticación.");
+  }
+
+  try {
+    // Realizar petición PUT al endpoint '/users/:id'
+    // Perform PUT request to '/users/:id' endpoint
+    const response = await axios.put<{ message: string; user: ManagerWithGym }>(
+      `${API_URL}/users/${userId}`,
+      managerData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    // Devolver la respuesta del servidor (mensaje y usuario actualizado)
+    // Return the server response (message and updated user)
+    return response.data;
+  } catch (error) {
+    // Usar el manejador centralizado
+    // Use the centralized handler
+    const errorMessage = handleApiError(
+      error,
+      "Error al actualizar los datos del manager."
+    );
+    // Lanzar error procesado
+    // Throw processed error
+    throw new Error(errorMessage);
+  }
+};
 
 /* ========================================
  * API CALL: Eliminar un manager (Admin)
@@ -449,6 +489,8 @@ export const getUsersByGym = async (
 
 // Eliminar un manager por ID (solo Admin)
 // Delete a manager by ID (Admin only)
+// NOTA: Esto eliminará el usuario manager de la base de datos
+// NOTE: This will delete the manager user from the database
 export const deleteManager = async (
   token: string,
   userId: number

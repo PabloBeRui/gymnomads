@@ -152,7 +152,9 @@ const getProfile = async (req, res) => {
         );
       }
 
-      userProfile.profile_picture = `${process.env.BASE_URL || ""}/${imagePath}`;
+      userProfile.profile_picture = `${
+        process.env.BASE_URL || ""
+      }/${imagePath}`;
       console.log("URL de imagen construida:", userProfile.profile_picture);
     }
 
@@ -214,9 +216,7 @@ const deleteProfilebyUser = async (req, res) => {
 
     // 2. Ejecutar la consulta SQL para eliminar el usuario
     // 2. Execute the SQL query to delete the user
-    const [result] = await db.query("DELETE FROM users WHERE id = ?", [
-      userId,
-    ]);
+    const [result] = await db.query("DELETE FROM users WHERE id = ?", [userId]);
 
     // 3. Comprobar si alguna fila fue eliminada
     // 3. Check if any row was deleted
@@ -371,7 +371,8 @@ const getAllUsers = async (req, res) => {
     // 4. Aplicar filtro de búsqueda por nombre o email (si se proporciona)
     // 4. Apply search filter by name or email (if provided)
     if (search) {
-      query += " AND (u.first_name LIKE ? OR u.last_name LIKE ? OR u.email LIKE ?)";
+      query +=
+        " AND (u.first_name LIKE ? OR u.last_name LIKE ? OR u.email LIKE ?)";
       const searchTerm = `%${search}%`;
       params.push(searchTerm, searchTerm, searchTerm);
     }
@@ -430,7 +431,8 @@ const getAllManagers = async (req, res) => {
     // 4. Aplicar filtro de búsqueda por nombre, email o nombre del gimnasio (si se proporciona)
     // 4. Apply search filter by name, email or gym name (if provided)
     if (search) {
-      query += " AND (u.first_name LIKE ? OR u.last_name LIKE ? OR u.email LIKE ? OR g.name LIKE ?)";
+      query +=
+        " AND (u.first_name LIKE ? OR u.last_name LIKE ? OR u.email LIKE ? OR g.name LIKE ?)";
       const searchTerm = `%${search}%`;
       params.push(searchTerm, searchTerm, searchTerm, searchTerm);
     }
@@ -562,6 +564,99 @@ const createUserByAdmin = async (req, res) => {
   }
 };
 
+/* ========================================
+ * Actualizar datos de un usuario (Admin)
+ * Update user data (Admin)
+ * ======================================== */
+const updateUser = async (req, res) => {
+  try {
+    // 1. Obtener el ID del usuario de los parámetros de la URL
+    // 1. Get user ID from URL parameters
+    const { id } = req.params;
+
+    // 2. Obtener los datos a actualizar del cuerpo de la petición
+    // 2. Get data to update from request body
+    const { first_name, last_name, phone } = req.body;
+
+    // 3. Validar que se proporcionen los campos obligatorios
+    // 3. Validate that required fields are provided
+    if (!first_name || !last_name) {
+      return res.status(400).json({
+        message: "Nombre y apellidos son obligatorios.",
+      });
+    }
+
+    // 4. Validar longitud mínima
+    // 4. Validate minimum length
+    if (first_name.trim().length < 2) {
+      return res.status(400).json({
+        message: "El nombre debe tener al menos 2 caracteres.",
+      });
+    }
+
+    if (last_name.trim().length < 2) {
+      return res.status(400).json({
+        message: "Los apellidos deben tener al menos 2 caracteres.",
+      });
+    }
+
+    // 5. Actualizar el usuario en la base de datos
+    // 5. Update user in database
+    const [result] = await db.query(
+      "UPDATE users SET first_name = ?, last_name = ?, phone = ? WHERE id = ?",
+      [first_name.trim(), last_name.trim(), phone || null, id]
+    );
+
+    // 6. Comprobar si se actualizó alguna fila
+    // 6. Check if any row was updated
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        message: "Usuario no encontrado.",
+      });
+    }
+
+    // 7. Obtener el usuario actualizado con información del gimnasio (INNER JOIN)
+    // 7. Get updated user with gym information (INNER JOIN)
+    const [updatedUser] = await db.query(
+      `SELECT 
+        u.id,
+        u.first_name,
+        u.last_name,
+        u.email,
+        u.phone,
+        u.home_gym_id,
+        u.registered_at,
+        g.name AS gym_name,
+        g.city AS gym_city,
+        g.address AS gym_address
+      FROM users u
+      INNER JOIN gyms g ON u.home_gym_id = g.id
+      WHERE u.id = ?`,
+      [id]
+    );
+
+    // 8. Verificar que se encontró el usuario (por si el gimnasio no existe)
+    // 8. Verify that user was found (in case gym doesn't exist)
+    if (updatedUser.length === 0) {
+      return res.status(404).json({
+        message: "Usuario no encontrado o gimnasio asociado no existe.",
+      });
+    }
+
+    // 9. Enviar respuesta de éxito con el usuario actualizado
+    // 9. Send success response with updated user
+    res.status(200).json({
+      message: "Usuario actualizado correctamente.",
+      user: updatedUser[0],
+    });
+  } catch (error) {
+    console.error(`Error al actualizar usuario: ${error}`);
+    res.status(500).json({
+      message: "Error interno del servidor al actualizar el usuario.",
+    });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -574,4 +669,5 @@ module.exports = {
   getAllManagers,
   changePassword,
   createUserByAdmin,
+  updateUser,
 };

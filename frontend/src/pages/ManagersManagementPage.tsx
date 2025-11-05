@@ -4,33 +4,35 @@
  * =============================================================================
  *
  * Página para gestionar y visualizar gerentes (managers) registrados.
- * - Solo Admin: puede ver todos los managers y filtrar por ciudad y búsqueda.
- * - Permite eliminar managers (al eliminar un manager, se elimina en cascada
- *   el gimnasio asociado, sus usuarios y visitas).
+ * - Solo Admin: puede ver todos los managers y filtrar por búsqueda global.
+ * - Permite ver y editar información de managers (nombre, apellidos, teléfono).
+ *
+ * IMPORTANTE: Los managers NO se pueden eliminar directamente desde esta página.
+ * Solo se eliminan al eliminar el gimnasio asociado (acción en CASCADE).
+ * Para eliminar un manager, ir a la página de gestión de gimnasios.
  *
  * Page to manage and view registered managers.
- * - Admin only: can see all managers and filter by city and search.
- * - Allows deleting managers (deleting a manager cascades to delete
- *   the associated gym, its users and visits).
+ * - Admin only: can see all managers and filter by global search.
+ * - Allows viewing and editing manager information (name, last name, phone).
  *
- * NOTA: Los managers tienen como first_name y last_name el nombre del gimnasio,
- * por lo que no se muestran en esta vista (son redundantes con gym_name).
- * El identificador real del manager es su email.
+ * IMPORTANT: Managers CANNOT be deleted directly from this page.
+ * They are only deleted when the associated gym is deleted (CASCADE action).
+ * To delete a manager, go to the gym management page.
  *
- * NOTE: Managers have the gym name as first_name and last_name,
- * so they are not shown in this view (redundant with gym_name).
- * The real identifier of the manager is their email.
  *
  * =============================================================================
  */
 
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { deleteManager, getAllManagers } from "../services/user-services";
-import type { ManagerWithGym } from "../interfaces/user-interfaces";
+import { getAllManagers, updateManager } from "../services/user-services";
+import type {
+  ManagerWithGym,
+  UpdateManagerData,
+} from "../interfaces/user-interfaces";
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
-import { ConfirmationModal } from "../components/ConfirmationModal";
+import { ManagerDetailsModal } from "../components/ManagerDetailsModal";
 
 /* =============================================================================
    ESTILOS (inline)
@@ -65,6 +67,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     flexDirection: "column",
     gap: "5px",
+    flex: "1 1 300px",
   },
   label: {
     fontSize: "0.9rem",
@@ -76,7 +79,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: "1rem",
     border: "1px solid #ccc",
     borderRadius: "4px",
-    minWidth: "200px",
+    width: "100%",
   },
   clearButton: {
     padding: "10px 20px",
@@ -147,15 +150,17 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: "#6c757d",
     marginTop: "5px",
   },
-  deleteButton: {
-    padding: "8px 12px",
-    fontSize: "0.9rem",
-    backgroundColor: "#dc3545",
-    color: "white",
-    border: "none",
-    borderRadius: "4px",
+  clickableRow: {
     cursor: "pointer",
     transition: "background-color 0.2s",
+  },
+  warningBox: {
+    padding: "15px",
+    backgroundColor: "#fff3cd",
+    border: "1px solid #ffeeba",
+    borderRadius: "8px",
+    marginBottom: "20px",
+    color: "#856404",
   },
 };
 
@@ -172,13 +177,12 @@ export const ManagersManagementPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Estados de filtros / Filter states
-  const [cityFilter, setCityFilter] = useState<string>("");
+  // Estado de filtro único / Single filter state
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  // Estados para modal de eliminación / States for delete modal
-  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
-  const [managerToDelete, setManagerToDelete] = useState<ManagerWithGym | null>(
+  // Estados para modal de detalles / States for details modal
+  const [showDetailsModal, setShowDetailsModal] = useState<boolean>(false);
+  const [selectedManager, setSelectedManager] = useState<ManagerWithGym | null>(
     null
   );
 
@@ -200,10 +204,9 @@ export const ManagersManagementPage = () => {
     setIsLoading(true);
 
     try {
-      // Obtener todos los managers con filtros opcionales
-      // Get all managers with optional filters
+      // Obtener todos los managers con búsqueda global
+      // Get all managers with global search
       const filters = {
-        city: cityFilter.trim() || undefined,
         search: searchTerm.trim() || undefined,
       };
       const managersData = await getAllManagers(token, filters);
@@ -220,8 +223,8 @@ export const ManagersManagementPage = () => {
     }
   };
 
-  // Efecto con debounce para cargar managers cuando cambien los filtros
-  // Effect with debounce to load managers when filters change
+  // Efecto con debounce para cargar managers cuando cambie el filtro
+  // Effect with debounce to load managers when filter changes
   useEffect(() => {
     // Debounce de 500ms para no saturar el backend
     // 500ms debounce to avoid overwhelming the backend
@@ -229,58 +232,74 @@ export const ManagersManagementPage = () => {
       fetchManagers();
     }, 500);
 
-    // Limpiar timeout si los filtros cambian antes de que se ejecute
-    // Clear timeout if filters change before execution
+    // Limpiar timeout si el filtro cambia antes de que se ejecute
+    // Clear timeout if filter changes before execution
     return () => clearTimeout(timeoutId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cityFilter, searchTerm]); // Se ejecuta cuando cambian los filtros / Runs when filters change
+  }, [searchTerm]); // Se ejecuta cuando cambia el filtro / Runs when filter changes
 
-  // Limpiar filtros / Clear filters
-  const handleClearFilters = () => {
-    setCityFilter("");
+  // Limpiar filtro / Clear filter
+  const handleClearFilter = () => {
     setSearchTerm("");
   };
 
   // Calcular estadísticas / Calculate statistics
   const totalManagers = managers.length;
 
-  // Manejar eliminación de manager / Handle manager deletion
-  const handleDeleteClick = (manager: ManagerWithGym) => {
-    setManagerToDelete(manager);
-    setShowDeleteModal(true);
+  // Manejar click en fila para ver detalles / Handle row click to view details
+  const handleRowClick = (manager: ManagerWithGym) => {
+    setSelectedManager(manager);
+    setShowDetailsModal(true);
   };
 
-  // Confirmar eliminación de manager / Confirm manager deletion
-  const handleDeleteConfirm = async () => {
-    if (!managerToDelete || !token) return;
+  // Manejar guardado de cambios en manager / Handle manager changes save
+  const handleSaveManager = async (
+    managerId: number,
+    updatedData: UpdateManagerData
+  ) => {
+    if (!token) {
+      toast.error("No estás autenticado.");
+      return;
+    }
 
     try {
-      await deleteManager(token, managerToDelete.id);
-      toast.success(
-        `Manager "${managerToDelete.email}" eliminado correctamente.`
+      // Actualizar manager en el backend
+      // Update manager in backend
+      const response = await updateManager(token, managerId, updatedData);
+
+      // Mostrar mensaje de éxito
+      // Show success message
+      toast.success(response.message || "Manager actualizado correctamente.");
+
+      // Actualizar la lista local de managers
+      // Update local managers list
+      setManagers((prev) =>
+        prev.map((m) => (m.id === managerId ? response.user : m))
       );
 
-      // Actualizar la lista eliminando el manager
-      // Update the list by removing the manager
-      setManagers((prev) => prev.filter((m) => m.id !== managerToDelete.id));
+      // Actualizar el manager seleccionado en el modal
+      // Update selected manager in modal
+      setSelectedManager(response.user);
 
-      // Cerrar modal
-      // Close modal
-      setShowDeleteModal(false);
-      setManagerToDelete(null);
+      if (import.meta.env.DEV) {
+        console.log("Manager actualizado:", response.user);
+      }
     } catch (err) {
-      const msg = handleApiError(err, "No se pudo eliminar el manager.");
+      const msg = handleApiError(err, "Error al actualizar el manager.");
       toast.error(msg);
       if (import.meta.env.DEV) {
-        console.error("Error eliminando manager:", msg);
+        console.error("Error actualizando manager:", msg);
       }
+      // Re-lanzar el error para que el modal lo maneje
+      // Re-throw the error for the modal to handle
+      throw err;
     }
   };
 
-  // Cancelar eliminación de manager / Cancel manager deletion
-  const handleDeleteCancel = () => {
-    setShowDeleteModal(false);
-    setManagerToDelete(null);
+  // Cerrar modal de detalles / Close details modal
+  const handleCloseDetailsModal = () => {
+    setShowDetailsModal(false);
+    setSelectedManager(null);
   };
 
   // Render loading
@@ -309,8 +328,17 @@ export const ManagersManagementPage = () => {
       <div style={styles.header}>
         <h1 style={styles.title}>Gestión de Managers</h1>
         <p style={styles.subtitle}>
-          Visualiza y filtra todos los gerentes registrados en la plataforma.
+          Visualiza, edita y filtra todos los gerentes registrados en la
+          plataforma. Haz click en una fila para ver y editar detalles completos
+          (incluido email y teléfono).
         </p>
+      </div>
+
+      {/* Advertencia sobre eliminación / Warning about deletion */}
+      <div style={styles.warningBox}>
+        <strong>ℹ️ Nota importante:</strong> Los managers no se pueden eliminar
+        directamente desde esta página. Para eliminar un manager, debes eliminar
+        el gimnasio asociado desde la página de gestión de gimnasios.
       </div>
 
       {/* Estadísticas / Statistics */}
@@ -323,24 +351,9 @@ export const ManagersManagementPage = () => {
         </div>
       </div>
 
-      {/* Filtros / Filters */}
+      {/* Filtro único / Single filter */}
       <div style={styles.filtersContainer}>
-        {/* Filtro por ciudad / City filter */}
-        <div style={styles.filterGroup}>
-          <label htmlFor="cityFilter" style={styles.label}>
-            Filtrar por Ciudad
-          </label>
-          <input
-            id="cityFilter"
-            type="text"
-            value={cityFilter}
-            onChange={(e) => setCityFilter(e.target.value)}
-            placeholder="Ej: Madrid, Barcelona..."
-            style={styles.input}
-          />
-        </div>
-
-        {/* Filtro por búsqueda / Search filter */}
+        {/* Búsqueda global / Global search */}
         <div style={styles.filterGroup}>
           <label htmlFor="searchFilter" style={styles.label}>
             Buscar Manager
@@ -350,39 +363,44 @@ export const ManagersManagementPage = () => {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Email o nombre de gimnasio..."
+            placeholder="Buscar por nombre, apellidos, gimnasio o ciudad..."
             style={styles.input}
           />
+          <small style={{ color: "#6c757d", fontSize: "0.85em" }}>
+            La búsqueda filtra por todos los campos visibles
+          </small>
         </div>
 
-        {/* Botón de limpiar filtros / Clear filters button */}
-        <button
-          onClick={handleClearFilters}
-          style={styles.clearButton}
-          disabled={isLoading}>
-          Limpiar Filtros
-        </button>
+        {/* Botón de limpiar filtro / Clear filter button */}
+        {searchTerm && (
+          <button
+            onClick={handleClearFilter}
+            style={styles.clearButton}
+            disabled={isLoading}>
+            Limpiar Búsqueda
+          </button>
+        )}
       </div>
 
       {/* Tabla de managers / Managers table */}
       {managers.length === 0 ? (
         <div style={styles.emptyState}>
-          {searchTerm || cityFilter ? (
-            // Si hay filtros activos / If filters are active
+          {searchTerm ? (
+            // Si hay búsqueda activa / If search is active
             <>
-              <p>🔍 No se encontraron managers con los filtros aplicados.</p>
+              <p>🔍 No se encontraron managers con el criterio de búsqueda.</p>
               <button
-                onClick={handleClearFilters}
+                onClick={handleClearFilter}
                 style={{
                   ...styles.clearButton,
                   marginTop: "15px",
                   cursor: "pointer",
                 }}>
-                Limpiar filtros
+                Limpiar búsqueda
               </button>
             </>
           ) : (
-            // Si no hay filtros / If no filters
+            // Si no hay búsqueda / If no search
             <p>📭 Aún no hay managers registrados.</p>
           )}
         </div>
@@ -391,35 +409,29 @@ export const ManagersManagementPage = () => {
           <table style={styles.table}>
             <thead>
               <tr>
-                <th style={styles.th}>Email</th>
-                <th style={styles.th}>Teléfono</th>
+                <th style={styles.th}>Manager</th>
                 <th style={styles.th}>Gimnasio</th>
                 <th style={styles.th}>Ciudad</th>
-                <th style={styles.th}>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {managers.map((manager) => (
-                <tr key={manager.id}>
-                  <td style={styles.td}>{manager.email}</td>
-                  <td style={styles.td}>{manager.phone || "N/A"}</td>
+                <tr
+                  key={manager.id}
+                  style={styles.clickableRow}
+                  onClick={() => handleRowClick(manager)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#f8f9fa";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }}
+                  title="Click para ver detalles completos (email, teléfono, etc.)">
+                  <td style={styles.td}>
+                    {manager.first_name} {manager.last_name}
+                  </td>
                   <td style={styles.td}>{manager.gym_name}</td>
                   <td style={styles.td}>{manager.gym_city}</td>
-                  <td style={styles.td}>
-                    {/* Botón eliminar / Delete button */}
-                    <button
-                      style={styles.deleteButton}
-                      onClick={() => handleDeleteClick(manager)}
-                      aria-label={`Eliminar manager ${manager.email}`}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "#c82333";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "#dc3545";
-                      }}>
-                      🗑️ Eliminar
-                    </button>
-                  </td>
                 </tr>
               ))}
             </tbody>
@@ -427,21 +439,12 @@ export const ManagersManagementPage = () => {
         </div>
       )}
 
-      <ConfirmationModal
-        isOpen={showDeleteModal && managerToDelete !== null}
-        onCancel={handleDeleteCancel}
-        onConfirm={handleDeleteConfirm}
-        title="⚠️ Confirmar Eliminación"
-        message={
-          managerToDelete
-            ? `¿Estás seguro de que quieres eliminar el manager "${managerToDelete.email}" del gimnasio "${managerToDelete.gym_name}"?`
-            : ""
-        }
-        warningMessage="⚠️ ATENCIÓN: Al eliminar el manager también se eliminará el gimnasio asociado y todos sus usuarios y visitas."
-        note="Esta acción NO se puede deshacer."
-        confirmText="Eliminar"
-        cancelText="Cancelar"
-        variant="danger"
+      {/* Modal de detalles del manager / Manager details modal */}
+      <ManagerDetailsModal
+        isOpen={showDetailsModal}
+        onClose={handleCloseDetailsModal}
+        manager={selectedManager}
+        onSave={handleSaveManager}
       />
     </div>
   );

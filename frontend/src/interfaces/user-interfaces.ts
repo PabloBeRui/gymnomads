@@ -78,10 +78,23 @@ export interface UpdateUserData {
 }
 
 /* ========================================
+ * Interfaz para Datos de Actualización de Manager (Admin)
+ * Interface for Manager Update Data (Admin)
+ * ======================================== */
+// Exportar interfaz para los datos enviados al actualizar un manager.
+// Export interface for the data sent when updating a manager.
+// NOTA: El email NO se puede actualizar (está vinculado al gimnasio)
+// NOTE: Email CANNOT be updated (it's linked to the gym)
+export interface UpdateManagerData {
+  first_name: string;
+  last_name: string;
+  phone?: string | null; // Opcional / Optional
+}
+
+/* ========================================
  * Interfaz para la respuesta de subida de imagen
  * Interface for image upload response
  * ======================================== */
-//  /
 export interface UploadProfilePictureResponse {
   message: string;
   filePath: string;
