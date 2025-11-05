@@ -69,24 +69,60 @@ const getGymById = async (req, res) => {
  * Crear Gimnasio + Manager Automático
  * Create Gym + Automatic Manager
  * ======================================== */
+/* ========================================
+ * Crear Gimnasio + Manager Automático (con datos reales del manager)
+ * Create Gym + Automatic Manager (with real manager data)
+ * ======================================== */
 const createGym = async (req, res) => {
   try {
-    // 1. Obtener datos del formulario
-    // 1. Get form data
-    const { name, address, city, latitude, longitude, password, phone } =
-      req.body;
+    // 1. Obtener datos del formulario (incluyendo datos reales del manager)
+    // 1. Get form data (including real manager data)
+    const {
+      name,
+      address,
+      city,
+      latitude,
+      longitude,
+      manager_first_name, // ← NUEVO: Nombre real del manager
+      manager_last_name, // ← NUEVO: Apellidos reales del manager
+      manager_phone, // ← NUEVO: Teléfono del manager (opcional)
+      manager_password, // ← RENOMBRADO: antes era "password"
+    } = req.body;
 
-    // 2. Validar campos obligatorios
-    // 2. Validate required fields
-    if (!name || !address || !city || !latitude || !longitude || !password) {
+    // 2. Validar campos obligatorios (incluyendo datos del manager)
+    // 2. Validate required fields (including manager data)
+    if (
+      !name ||
+      !address ||
+      !city ||
+      !latitude ||
+      !longitude ||
+      !manager_first_name || // ← NUEVO: Validación obligatoria
+      !manager_last_name || // ← NUEVO: Validación obligatoria
+      !manager_password
+    ) {
       return res.status(400).json({
         message:
-          "Nombre, dirección, ciudad, coordenadas y contraseña son obligatorios.",
+          "Nombre del gimnasio, dirección, ciudad, coordenadas, datos del manager (nombre y apellidos) y contraseña son obligatorios.",
       });
     }
 
-    // 3. Validar y parsear coordenadas
-    // 3. Validate and parse coordinates
+    // 3. Validar longitud mínima de nombres del manager
+    // 3. Validate minimum length of manager names
+    if (manager_first_name.trim().length < 2) {
+      return res.status(400).json({
+        message: "El nombre del manager debe tener al menos 2 caracteres.",
+      });
+    }
+
+    if (manager_last_name.trim().length < 2) {
+      return res.status(400).json({
+        message: "Los apellidos del manager deben tener al menos 2 caracteres.",
+      });
+    }
+
+    // 4. Validar y parsear coordenadas
+    // 4. Validate and parse coordinates
     const lat = parseFloat(latitude);
     const lon = parseFloat(longitude);
 
@@ -102,8 +138,8 @@ const createGym = async (req, res) => {
       });
     }
 
-    // 4. Crear gimnasio en la base de datos
-    // 4. Create gym in database
+    // 5. Crear gimnasio en la base de datos
+    // 5. Create gym in database
     const [gymResult] = await db.query(
       "INSERT INTO gyms (name, address, city, latitude, longitude) VALUES (?, ?, ?, ?, ?)",
       [name, address, city, lat, lon]
@@ -111,8 +147,8 @@ const createGym = async (req, res) => {
 
     const gymId = gymResult.insertId;
 
-    // 5. Generar email automático para el manager
-    // 5. Generate automatic email for the manager
+    // 6. Generar email automático para el manager
+    // 6. Generate automatic email for the manager
     const cleanName = name
       .toLowerCase()
       .normalize("NFD")
@@ -122,8 +158,8 @@ const createGym = async (req, res) => {
 
     const managerEmail = `${cleanName}@gymnomads.com`;
 
-    // 6. Verificar que el email no exista (prevenir gimnasios duplicados)
-    // 6. Verify that the email doesn't exist (prevent duplicate gyms)
+    // 7. Verificar que el email no exista (prevenir gimnasios duplicados)
+    // 7. Verify that the email doesn't exist (prevent duplicate gyms)
     const [existingEmail] = await db.query(
       "SELECT id FROM users WHERE email = ?",
       [managerEmail]
@@ -138,27 +174,28 @@ const createGym = async (req, res) => {
       });
     }
 
-    // 7. Hashear contraseña del manager
-    // 7. Hash manager password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // 8. Hashear contraseña del manager
+    // 8. Hash manager password
+    const hashedPassword = await bcrypt.hash(manager_password, 10);
 
-    // 8. Crear manager automáticamente
-    // 8. Create manager automatically
+    // 9. Crear manager con DATOS REALES
+    // 9. Create manager with REAL DATA
     const [managerResult] = await db.query(
       "INSERT INTO users (first_name, last_name, email, password, phone, home_gym_id, role) VALUES (?, ?, ?, ?, ?, ?, ?)",
       [
-        name, // first_name = nombre del gimnasio / gym name
-        name, // last_name = nombre del gimnasio / gym name
+        manager_first_name.trim(),
+        manager_last_name.trim(),
         managerEmail, // email generado automáticamente / auto-generated email
         hashedPassword, // password hasheado / hashed password
-        phone || null, // teléfono opcional / optional phone
+        manager_phone?.trim() || null,
         gymId, // gimnasio recién creado / newly created gym
         "manager", // rol = manager
       ]
     );
 
-    // 9. Enviar respuesta de éxito con datos del gym y manager
-    // 9. Send success response with gym and manager data
+    // 10. Enviar respuesta de éxito con datos del gym y manager
+    // 10. Send success response with gym and manager data
+
     res.status(201).json({
       message: "Gimnasio y manager creados con éxito",
       gymId: gymId,
@@ -171,6 +208,14 @@ const createGym = async (req, res) => {
         city,
         latitude: lat,
         longitude: lon,
+      },
+      newManager: {
+        id: managerResult.insertId,
+        first_name: manager_first_name.trim(),
+        last_name: manager_last_name.trim(),
+        email: managerEmail,
+        phone: manager_phone?.trim() || null,
+        role: "manager",
       },
     });
   } catch (error) {
@@ -295,8 +340,7 @@ const getUsersByGym = async (req, res) => {
     // 4. Aplicar filtro de búsqueda por nombre o email (si se proporciona)
     // 4. Apply search filter by name or email (if provided)
     if (search) {
-      query +=
-        " AND (first_name LIKE ? OR last_name LIKE ? OR email LIKE ?)";
+      query += " AND (first_name LIKE ? OR last_name LIKE ? OR email LIKE ?)";
       const searchTerm = `%${search}%`;
       params.push(searchTerm, searchTerm, searchTerm);
     }

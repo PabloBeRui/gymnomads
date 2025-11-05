@@ -3,13 +3,28 @@
  * PÁGINA: AddGymPage
  * =============================================================================
  *
- * Página para que un administrador añada un nuevo gimnasio.
- * Al crear el gimnasio, automáticamente se crea un manager asociado.
+ * Page para que un administrador añada un nuevo gimnasio.
+ * Al crear el gimnasio, automáticamente se crea un manager asociado con
+ * datos reales de la persona responsable.
+ *
+ * MEJORAS IMPLEMENTADAS:
+ * - Validación de confirmación de contraseña del manager
+ * - Preview del email generado automáticamente
+ * - Validación de nombres mínimos (2 caracteres)
+ * - Separación visual clara entre datos del gym y del manager
  *
  * Page for an administrator to add a new gym.
- * When creating a gym, a manager is automatically created.
+ * When creating a gym, a manager is automatically created with real data
+ * of the responsible person.
+ *
+ * IMPLEMENTED IMPROVEMENTS:
+ * - Manager password confirmation validation
+ * - Auto-generated email preview
+ * - Minimum name validation (2 characters)
+ * - Clear visual separation between gym and manager data
  *
  * =============================================================================
+
  */
 
 import React, { useState } from "react";
@@ -23,7 +38,7 @@ import { useAuth } from "../context/AuthContext";
 import { useApiCall } from "../hooks/useApiCall";
 
 // Importar servicios / Import services
-import { createGym, getAllGyms } from "../services/gym-services";
+import { createGym } from "../services/gym-services";
 
 // Importar utilidades / Import utilities
 import { handleApiError } from "../utils/error-handler";
@@ -34,6 +49,7 @@ import type { CreateGymManagerResponse } from "../interfaces/gym-interfaces";
 /**
  * =============================================================================
  * ESTILOS
+ * STYLES
  * =============================================================================
  */
 const styles: { [key: string]: React.CSSProperties } = {
@@ -91,11 +107,42 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: "1px solid #ffeeba",
     borderRadius: "4px",
   },
+  managerSection: {
+    marginTop: "30px",
+    padding: "20px",
+    backgroundColor: "#f8f9fa",
+    borderRadius: "8px",
+    border: "2px solid #007bff",
+  },
+  sectionTitle: {
+    marginTop: 0,
+    color: "#007bff",
+  },
+  emailPreview: {
+    fontSize: "0.9em",
+    color: "#666",
+    marginBottom: "15px",
+  },
+  helperText: {
+    color: "#666",
+    fontSize: "0.85em",
+  },
+  passwordMatch: {
+    color: "#28a745",
+    fontSize: "0.85em",
+    marginTop: "5px",
+  },
+  passwordMismatch: {
+    color: "#dc3545",
+    fontSize: "0.85em",
+    marginTop: "5px",
+  },
 };
 
 /**
  * =============================================================================
  * COMPONENTE: AddGymPage
+ * COMPONENT: AddGymPage
  * =============================================================================
  */
 export const AddGymPage = () => {
@@ -103,14 +150,20 @@ export const AddGymPage = () => {
   const navigate = useNavigate();
   const { token } = useAuth();
 
-  // --- Estados de Formulario / Form States ---
+  // --- Estados de Formulario del Gimnasio / Gym Form States ---
   const [name, setName] = useState<string>("");
   const [address, setAddress] = useState<string>("");
   const [city, setCity] = useState<string>("");
   const [latitude, setLatitude] = useState<string>("");
   const [longitude, setLongitude] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [phone, setPhone] = useState<string>("");
+
+  // --- Estados del Manager / Manager States ---
+  const [managerFirstName, setManagerFirstName] = useState<string>("");
+  const [managerLastName, setManagerLastName] = useState<string>("");
+  const [managerPhone, setManagerPhone] = useState<string>("");
+  const [managerPassword, setManagerPassword] = useState<string>("");
+  const [managerPasswordConfirm, setManagerPasswordConfirm] =
+    useState<string>(""); // ← NUEVO: Confirmación de contraseña
 
   // --- Estado de Error Local / Local Error State ---
   const [error, setError] = useState<string | null>(null);
@@ -118,6 +171,47 @@ export const AddGymPage = () => {
   // --- Hook de API / API Hook ---
   const { loading: isSubmitting, execute: executeCreateGym } =
     useApiCall<CreateGymManagerResponse>("Error al crear el gimnasio.");
+
+  /**
+   * Genera el email del manager basado en el nombre del gimnasio
+   * Generates the manager email based on the gym name
+   */
+  const generateManagerEmail = (gymName: string): string => {
+    if (!gymName) return "nombregimnasio@gymnomads.com";
+
+    return (
+      gymName
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "") // Quitar acentos / Remove accents
+        .replace(/\s+/g, "") // Quitar espacios / Remove spaces
+        .replace(/[^a-z0-9]/g, "") + // Solo letras y números / Only letters and numbers
+      "@gymnomads.com"
+    );
+  };
+
+  /**
+   * Verifica si las contraseñas coinciden
+   * Checks if passwords match
+   */
+  const passwordsMatch = (): boolean => {
+    return (
+      managerPassword.length > 0 &&
+      managerPasswordConfirm.length > 0 &&
+      managerPassword === managerPasswordConfirm
+    );
+  };
+
+  /**
+   * Verifica si hay un error de contraseñas (escritas pero no coinciden)
+   * Checks if there's a password error (written but don't match)
+   */
+  const passwordsMismatch = (): boolean => {
+    return (
+      managerPasswordConfirm.length > 0 &&
+      managerPassword !== managerPasswordConfirm
+    );
+  };
 
   // --- Manejadores / Handlers ---
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -138,11 +232,20 @@ export const AddGymPage = () => {
       case "longitude":
         setLongitude(value);
         break;
-      case "password":
-        setPassword(value);
+      case "managerFirstName":
+        setManagerFirstName(value);
         break;
-      case "phone":
-        setPhone(value);
+      case "managerLastName":
+        setManagerLastName(value);
+        break;
+      case "managerPhone":
+        setManagerPhone(value);
+        break;
+      case "managerPassword":
+        setManagerPassword(value);
+        break;
+      case "managerPasswordConfirm": // ← NUEVO
+        setManagerPasswordConfirm(value);
         break;
       default:
         break;
@@ -156,9 +259,19 @@ export const AddGymPage = () => {
     setError(null);
 
     // VALIDACIÓN 1: Campos obligatorios / Required fields
-    if (!name || !address || !city || !latitude || !longitude || !password) {
+    if (
+      !name ||
+      !address ||
+      !city ||
+      !latitude ||
+      !longitude ||
+      !managerFirstName ||
+      !managerLastName ||
+      !managerPassword ||
+      !managerPasswordConfirm // ← NUEVO
+    ) {
       const errorMsg =
-        "Todos los campos obligatorios deben completarse (nombre, dirección, ciudad, coordenadas y contraseña del manager).";
+        "Todos los campos obligatorios deben completarse (nombre del gimnasio, dirección, ciudad, coordenadas y datos del manager).";
       setError(errorMsg);
       toast.error(errorMsg);
       return;
@@ -167,18 +280,21 @@ export const AddGymPage = () => {
     // VALIDACIÓN 2: Coordenadas válidas / Valid coordinates
     const latNum = parseFloat(latitude);
     const lonNum = parseFloat(longitude);
+
     if (isNaN(latNum) || isNaN(lonNum)) {
       const errorMsg = "Latitud y Longitud deben ser números válidos.";
       setError(errorMsg);
       toast.error(errorMsg);
       return;
     }
+
     if (latNum < -90 || latNum > 90) {
       const errorMsg = "La latitud debe estar entre -90 y 90.";
       setError(errorMsg);
       toast.error(errorMsg);
       return;
     }
+
     if (lonNum < -180 || lonNum > 180) {
       const errorMsg = "La longitud debe estar entre -180 y 180.";
       setError(errorMsg);
@@ -186,8 +302,25 @@ export const AddGymPage = () => {
       return;
     }
 
-    // VALIDACIÓN 3: Contraseña mínima / Minimum password length
-    if (password.length < 6) {
+    // VALIDACIÓN 3: Nombres del manager / Manager names validation
+    if (managerFirstName.trim().length < 2) {
+      const errorMsg =
+        "El nombre del manager debe tener al menos 2 caracteres.";
+      setError(errorMsg);
+      toast.error(errorMsg);
+      return;
+    }
+
+    if (managerLastName.trim().length < 2) {
+      const errorMsg =
+        "Los apellidos del manager deben tener al menos 2 caracteres.";
+      setError(errorMsg);
+      toast.error(errorMsg);
+      return;
+    }
+
+    // VALIDACIÓN 4: Contraseña mínima / Minimum password length
+    if (managerPassword.length < 6) {
       const errorMsg =
         "La contraseña del manager debe tener al menos 6 caracteres.";
       setError(errorMsg);
@@ -195,32 +328,15 @@ export const AddGymPage = () => {
       return;
     }
 
-    // VALIDACIÓN 4: Comprobar que no exista un gimnasio con el mismo nombre
-    // Validation 4: Check that a gym with the same name doesn't exist
-    try {
-      const existingGyms = await getAllGyms();
-      const gymExists = existingGyms.some(
-        (gym) => gym.name.toLowerCase().trim() === name.toLowerCase().trim()
-      );
-
-      if (gymExists) {
-        const errorMsg =
-          "Ya existe un gimnasio con ese nombre. Por favor, elige otro nombre.";
-        setError(errorMsg);
-        toast.error(errorMsg);
-        return;
-      }
-    } catch (err) {
-      const errorMsg = "Error al verificar gimnasios existentes.";
+    // VALIDACIÓN 5: Contraseñas coinciden / Passwords match (← NUEVO)
+    if (managerPassword !== managerPasswordConfirm) {
+      const errorMsg = "Las contraseñas no coinciden.";
       setError(errorMsg);
       toast.error(errorMsg);
-      if (import.meta.env.DEV) {
-        console.error("Error checking existing gyms:", err);
-      }
       return;
     }
 
-    // VALIDACIÓN 5: Token de autenticación / Authentication token
+    // VALIDACIÓN 6: Token de autenticación / Authentication token
     if (!token) {
       const errorMsg =
         "No se está autenticado. Por favor, iniciar sesión de nuevo.";
@@ -236,8 +352,10 @@ export const AddGymPage = () => {
     formData.append("city", city);
     formData.append("latitude", String(latNum));
     formData.append("longitude", String(lonNum));
-    formData.append("password", password);
-    if (phone) formData.append("phone", phone); // Teléfono opcional / Optional phone
+    formData.append("manager_first_name", managerFirstName);
+    formData.append("manager_last_name", managerLastName);
+    formData.append("manager_password", managerPassword);
+    if (managerPhone) formData.append("manager_phone", managerPhone);
 
     try {
       // Ejecutar creación de gimnasio + manager / Execute gym + manager creation
@@ -245,7 +363,7 @@ export const AddGymPage = () => {
 
       // Mostrar mensaje de éxito con email del manager / Show success message with manager email
       toast.success(
-        `¡Gimnasio creado con éxito! Manager: ${response.managerEmail}`
+        `¡Gimnasio "${name}" creado con éxito! Manager: ${managerFirstName} ${managerLastName} (${response.managerEmail})`
       );
 
       // Navegar a la lista de gimnasios / Navigate to gyms list
@@ -270,12 +388,15 @@ export const AddGymPage = () => {
 
       <p style={styles.warningText}>
         ⚠️ <strong>Importante:</strong> Al crear el gimnasio, automáticamente se
-        creará un usuario manager asociado. El email del manager será generado
-        automáticamente a partir del nombre del gimnasio (ejemplo:
-        nombregimnasio@gymnomads.com).
+        creará un usuario manager con los datos de la persona responsable. El
+        email del manager será generado automáticamente a partir del nombre del
+        gimnasio (ejemplo: nombregimnasio@gymnomads.com).
       </p>
 
       <form onSubmit={handleSubmit}>
+        {/* ===== SECCIÓN: Datos del Gimnasio ===== */}
+        {/* ===== SECTION: Gym Data ===== */}
+
         {/* Nombre del Gimnasio / Gym Name */}
         <div style={styles.formGroup}>
           <label htmlFor="name" style={styles.label}>
@@ -345,9 +466,7 @@ export const AddGymPage = () => {
             min={-90}
             max={90}
           />
-          <small style={{ color: "#666", fontSize: "0.85em" }}>
-            Debe estar entre -90 y 90
-          </small>
+          <small style={styles.helperText}>Debe estar entre -90 y 90</small>
         </div>
 
         {/* Longitud / Longitude */}
@@ -368,60 +487,138 @@ export const AddGymPage = () => {
             min={-180}
             max={180}
           />
-          <small style={{ color: "#666", fontSize: "0.85em" }}>
-            Debe estar entre -180 y 180
-          </small>
+          <small style={styles.helperText}>Debe estar entre -180 y 180</small>
         </div>
 
-        {/* Contraseña del Manager / Manager Password */}
-        <div style={styles.formGroup}>
-          <label htmlFor="password" style={styles.label}>
-            Contraseña del Manager: <span style={{ color: "red" }}>*</span>
-          </label>
-          <input
-            name="password"
-            id="password"
-            type="password"
-            value={password}
-            onChange={handleChange}
-            style={styles.input}
-            required
-            placeholder="Mínimo 6 caracteres"
-            minLength={6}
-          />
-          <small style={{ color: "#666", fontSize: "0.85em" }}>
-            Esta contraseña será utilizada por el manager para acceder al
-            sistema
-          </small>
+        {/* ===== SECCIÓN: Datos del Manager Responsable ===== */}
+        {/* ===== SECTION: Responsible Manager Data ===== */}
+        <div style={styles.managerSection}>
+          <h3 style={styles.sectionTitle}>👤 Datos del Manager Responsable</h3>
+          <p style={styles.emailPreview}>
+            Email: <strong>{generateManagerEmail(name)}</strong>
+          </p>
+
+          {/* Nombre del Manager / Manager First Name */}
+          <div style={styles.formGroup}>
+            <label htmlFor="managerFirstName" style={styles.label}>
+              Nombre: <span style={{ color: "red" }}>*</span>
+            </label>
+            <input
+              name="managerFirstName"
+              id="managerFirstName"
+              type="text"
+              value={managerFirstName}
+              onChange={handleChange}
+              style={styles.input}
+              required
+              placeholder="Ej: Pablo"
+              minLength={2}
+            />
+            <small style={styles.helperText}>
+              Nombre real de la persona responsable del gimnasio
+            </small>
+          </div>
+
+          {/* Apellidos del Manager / Manager Last Name */}
+          <div style={styles.formGroup}>
+            <label htmlFor="managerLastName" style={styles.label}>
+              Apellidos: <span style={{ color: "red" }}>*</span>
+            </label>
+            <input
+              name="managerLastName"
+              id="managerLastName"
+              type="text"
+              value={managerLastName}
+              onChange={handleChange}
+              style={styles.input}
+              required
+              placeholder="Ej: Bernabéu Ruiz"
+              minLength={2}
+            />
+          </div>
+
+          {/* Teléfono del Manager (Opcional) / Manager Phone (Optional) */}
+          <div style={styles.formGroup}>
+            <label htmlFor="managerPhone" style={styles.label}>
+              Teléfono(opcional):
+            </label>
+            <input
+              name="managerPhone"
+              id="managerPhone"
+              type="tel"
+              value={managerPhone}
+              onChange={handleChange}
+              style={styles.input}
+              placeholder="Ej: +34 666 555 444"
+            />
+          </div>
+
+          {/* Contraseña del Manager / Manager Password */}
+          <div style={styles.formGroup}>
+            <label htmlFor="managerPassword" style={styles.label}>
+              Contraseña: <span style={{ color: "red" }}>*</span>
+            </label>
+            <input
+              name="managerPassword"
+              id="managerPassword"
+              type="password"
+              value={managerPassword}
+              onChange={handleChange}
+              style={styles.input}
+              required
+              placeholder="Mínimo 6 caracteres"
+              minLength={6}
+            />
+            <small style={styles.helperText}>
+              Esta contraseña será utilizada por el manager para acceder al
+              sistema
+            </small>
+          </div>
+
+          {/* Confirmar Contraseña del Manager / Confirm Manager Password (← NUEVO) */}
+          <div style={styles.formGroup}>
+            <label htmlFor="managerPasswordConfirm" style={styles.label}>
+              Confirmar Contraseña: <span style={{ color: "red" }}>*</span>
+            </label>
+            <input
+              name="managerPasswordConfirm"
+              id="managerPasswordConfirm"
+              type="password"
+              value={managerPasswordConfirm}
+              onChange={handleChange}
+              style={styles.input}
+              required
+              placeholder="Repite la contraseña"
+              minLength={6}
+            />
+            {/* Indicador visual de coincidencia / Visual match indicator */}
+            {passwordsMatch() && (
+              <small style={styles.passwordMatch}>
+                ✓ Las contraseñas coinciden
+              </small>
+            )}
+            {passwordsMismatch() && (
+              <small style={styles.passwordMismatch}>
+                ✗ Las contraseñas no coinciden
+              </small>
+            )}
+          </div>
         </div>
 
-        {/* Teléfono del Manager (Opcional) / Manager Phone (Optional) */}
-        <div style={styles.formGroup}>
-          <label htmlFor="phone" style={styles.label}>
-            Teléfono del Manager (opcional):
-          </label>
-          <input
-            name="phone"
-            id="phone"
-            type="tel"
-            value={phone}
-            onChange={handleChange}
-            style={styles.input}
-            placeholder="Ej: +34 600 000 000"
-          />
-        </div>
-
+        {/* Mostrar error si existe / Show error if exists */}
         {error && <p style={styles.errorText}>{error}</p>}
 
+        {/* Botón de envío / Submit button */}
         <button type="submit" style={styles.button} disabled={isSubmitting}>
           {isSubmitting ? "Creando gimnasio y manager..." : "Crear Gimnasio"}
         </button>
       </form>
 
+      {/* Nota informativa / Informative note */}
       <p style={styles.infoText}>
-        ℹ️ Nota: Las imágenes del gimnasio (logo e imagen principal) deben ser
-        gestionadas por el manager desde la página de edición una vez creado el
-        gimnasio.
+        ℹ️ <strong>Nota:</strong> Las imágenes del gimnasio (logo e imagen
+        principal) podrán ser añadidas por el manager desde la página de edición
+        una vez creado el gimnasio.
       </p>
     </div>
   );
