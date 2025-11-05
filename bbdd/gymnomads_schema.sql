@@ -8,8 +8,8 @@ CREATE TABLE `gyms` (
   `city` VARCHAR(100) NOT NULL,
   `latitude` DECIMAL(10, 8) NOT NULL,
   `longitude` DECIMAL(11, 8) NOT NULL,
-  `logo_url` VARCHAR(255) NULL,        -- <-- COLUMNA NUEVA
-  `main_image_url` VARCHAR(255) NULL   -- <-- COLUMNA NUEVA
+  `logo_url` VARCHAR(255) NULL,        
+  `main_image_url` VARCHAR(255) NULL   
 ) ENGINE=InnoDB;
 
 -- Crear la tabla para los usuarios
@@ -26,7 +26,7 @@ CREATE TABLE `users` (
   `home_gym_id` INT NOT NULL,
   `role` ENUM('user','manager','admin') NOT NULL DEFAULT 'user',
   `registered_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (`home_gym_id`) REFERENCES `gyms`(`id`)
+  FOREIGN KEY (`home_gym_id`) REFERENCES `gyms`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- Crear la tabla para las visitas
