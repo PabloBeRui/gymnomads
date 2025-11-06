@@ -44,7 +44,7 @@ export interface LoginData {
 // Export interface for the response received upon successful login.
 export interface LoginResponse {
   message: string;
-  token: string; // Asumimos que el backend devuelve un token JWT
+  token: string; // Asumimos que el backend devuelve un token JWT / We assume backend returns a JWT token
 }
 
 /* ========================================
@@ -59,7 +59,7 @@ export interface User {
   last_name: string;
   email: string;
   phone?: string | null;
-  profile_picture?: string | null; // Asumimos URL de la imagen / Assume image URL
+  profile_picture?: string | null; // URL de la imagen de perfil / Profile picture URL
   home_gym_id: number;
   registered_at: string; // O Date / Or Date
   role: string;
@@ -116,8 +116,8 @@ export interface UpdateProfileResponse {
  * ======================================== */
 
 /* ========================================
- * Interfaz para Usuario con información del Gimnasio (Admin)
- * Interface for User with Gym information (Admin)
+ * Interfaz para Usuario con información del Gimnasio (Admin/Manager)
+ * Interface for User with Gym information (Admin/Manager)
  * ======================================== */
 // Usado en UsersManagementPage para mostrar usuarios con datos del gimnasio
 // Used in UsersManagementPage to display users with gym data
@@ -126,6 +126,8 @@ export interface UserWithGym {
   first_name: string;
   last_name: string;
   email: string;
+  phone: string | null;
+  profile_picture: string | null; // Foto de perfil del usuario / User's profile picture
   role: string;
   home_gym_id: number;
   registered_at: string;
@@ -144,6 +146,7 @@ export interface ManagerWithGym {
   last_name: string;
   email: string;
   phone: string | null;
+  profile_picture: string | null; // Foto de perfil del manager / Manager's profile picture
   home_gym_id: number;
   registered_at: string;
   gym_name: string;
@@ -162,6 +165,8 @@ export interface GymUser {
   first_name: string;
   last_name: string;
   email: string;
+  phone: string | null;
+  profile_picture: string | null; // Foto de perfil del usuario / User's profile picture
   role: string;
   registered_at: string;
 }

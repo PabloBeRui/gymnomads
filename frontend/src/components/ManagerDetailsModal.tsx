@@ -7,6 +7,7 @@
  *
  * FUNCIONALIDADES:
  * - Visualizar todos los datos del manager (nombre, apellidos, email, teléfono, gimnasio)
+ * - Foto de perfil con Avatar component (imagen real o iniciales con color)
  * - Editar nombre, apellidos y teléfono
  * - Email NO editable (vinculado al gimnasio)
  * - Dos modos: Vista (lectura) y Edición
@@ -20,6 +21,7 @@
  *
  * FEATURES:
  * - View all manager data (name, last name, email, phone, gym)
+ * - Profile picture with Avatar component (real image or initials with color)
  * - Edit name, last name and phone
  * - Email NOT editable (linked to gym)
  * - Two modes: View (read) and Edit
@@ -34,6 +36,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import type { ManagerWithGym } from "../interfaces/user-interfaces";
+import { Avatar } from "./Avatar";
 
 /* =============================================================================
    INTERFACES
@@ -110,6 +113,35 @@ const styles: { [key: string]: React.CSSProperties } = {
     cursor: "pointer",
     color: "#6c757d",
     padding: "5px 10px",
+  },
+  // Header con Avatar y datos principales / Header with Avatar and main data
+  profileHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: "20px",
+    marginBottom: "30px",
+    paddingBottom: "20px",
+    borderBottom: "1px solid #e5e7eb",
+  },
+  // Información junto al avatar / Info next to avatar
+  profileInfo: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    gap: "5px",
+  },
+  // Nombre completo del manager / Manager's full name
+  profileName: {
+    fontSize: "1.5rem",
+    fontWeight: "bold",
+    color: "#333",
+    margin: 0,
+  },
+  // Email del manager / Manager's email
+  profileEmail: {
+    fontSize: "1rem",
+    color: "#6c757d",
+    margin: 0,
   },
   infoSection: {
     marginBottom: "20px",
@@ -314,7 +346,7 @@ export const ManagerDetailsModal = ({
     return () => {
       document.removeEventListener("keydown", handleEscKey);
     };
-  }, [isOpen, isSaving, handleClose]); //  handleClose
+  }, [isOpen, isSaving, handleClose]);
 
   // No renderizar si el modal no está abierto o no hay manager
   // Don't render if modal is not open or there's no manager
@@ -343,7 +375,23 @@ export const ManagerDetailsModal = ({
           </button>
         </div>
 
-        {/* Contenido del modal / Modal content */}
+        {/* Header con Avatar, nombre y email / Header with Avatar, name and email */}
+        <div style={styles.profileHeader}>
+          <Avatar
+            src={manager.profile_picture}
+            firstName={manager.first_name}
+            lastName={manager.last_name}
+            size={100}
+          />
+          <div style={styles.profileInfo}>
+            <h3 style={styles.profileName}>
+              {manager.first_name} {manager.last_name}
+            </h3>
+            <p style={styles.profileEmail}>{manager.email}</p>
+          </div>
+        </div>
+
+        {/* Contenido del modal (campos editables) / Modal content (editable fields) */}
         <div style={styles.infoSection}>
           {/* Nombre / First Name */}
           <div style={styles.infoRow}>

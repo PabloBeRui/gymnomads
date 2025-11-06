@@ -7,6 +7,7 @@ import { Routes, Route, Link } from "react-router-dom";
 
 //Componentes / Components
 import { ApiTest } from "./components/ApiTest";
+import { Avatar } from "./components/Avatar";
 
 //Pages
 import { ProfilePage } from "./pages/ProfilePage";
@@ -75,25 +76,14 @@ function App() {
                 display: "flex",
                 alignItems: "center",
                 textDecoration: "none",
+                gap: "8px",
               }}>
-              <img
-                src={
-                  user.profile_picture
-                    ? user.profile_picture
-                    : "/images/profile/default-avatar.png"
-                }
-                alt={`Perfil de ${user.first_name}`}
-                style={{
-                  width: "30px",
-                  height: "30px",
-                  borderRadius: "50%",
-                  objectFit: "cover",
-                  marginRight: "5px",
-                }}
+              <Avatar
+                src={user.profile_picture}
+                firstName={user.first_name}
+                lastName={user.last_name}
+                size={30}
               />
-              <span style={{ color: "green", fontWeight: "bolder" }}>
-                {user.first_name}
-              </span>
             </Link>
             {" | "}
 

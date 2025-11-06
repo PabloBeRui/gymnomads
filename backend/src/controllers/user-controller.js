@@ -352,7 +352,8 @@ const getAllUsers = async (req, res) => {
         u.last_name, 
         u.email, 
         u.role, 
-        u.home_gym_id, 
+        u.home_gym_id,
+        u.profile_picture,
         u.registered_at,
         g.name AS gym_name
       FROM users u
@@ -381,11 +382,25 @@ const getAllUsers = async (req, res) => {
     // 5. Order by registration date descending
     query += " ORDER BY u.registered_at DESC";
 
-    // 6. Ejecutar la consulta y devolver resultados
-    // 6. Execute the query and return results
-    const [users] = await db.query(query, params);
-    res.status(200).json(users);
-  } catch (error) {
+    // 6. Ejecutar la consulta
+    // 6. Execute the query
+    const [users] = await db.query(query, params);
+
+    // 7. Construir URLs completas para las imágenes de perfil
+    // 7. Build full profile picture URLs
+    const baseUrl = process.env.BASE_URL || "";
+    const usersWithFullUrls = users.map(user => {
+      if (user.profile_picture) {
+        const imagePath = user.profile_picture.replace(/\\/g, "/");
+        user.profile_picture = `${baseUrl}/${imagePath}`;
+      }
+      return user;
+    });
+
+    // 8. Devolver resultados con URLs completas
+    // 8. Return results with full URLs
+    res.status(200).json(usersWithFullUrls);
+  } catch (error) {
     console.error(error);
     res.status(500).json({ message: "error interno del servidor" });
   }
@@ -412,6 +427,7 @@ const getAllManagers = async (req, res) => {
         u.phone,
         u.home_gym_id, 
         u.registered_at,
+        u.profile_picture,
         g.name AS gym_name,
         g.city AS gym_city,
         g.address AS gym_address
@@ -441,10 +457,24 @@ const getAllManagers = async (req, res) => {
     // 5. Order by registration date descending
     query += " ORDER BY u.registered_at DESC";
 
-    // 6. Ejecutar la consulta y devolver resultados
-    // 6. Execute the query and return results
-    const [managers] = await db.query(query, params);
-    res.status(200).json(managers);
+    // 6. Ejecutar la consulta
+    // 6. Execute the query
+    const [managers] = await db.query(query, params);
+
+    // 7. Construir URLs completas para las imágenes de perfil
+    // 7. Build full profile picture URLs
+    const baseUrl = process.env.BASE_URL || "";
+    const managersWithFullUrls = managers.map(manager => {
+      if (manager.profile_picture) {
+        const imagePath = manager.profile_picture.replace(/\\/g, "/");
+        manager.profile_picture = `${baseUrl}/${imagePath}`;
+      }
+      return manager;
+    });
+
+    // 8. Devolver resultados con URLs completas
+    // 8. Return results with full URLs
+    res.status(200).json(managersWithFullUrls);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "error interno del servidor" });
