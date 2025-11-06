@@ -380,27 +380,22 @@ const getAllUsers = async (req, res) => {
 
     // 5. Ordenar por fecha de registro descendente
     // 5. Order by registration date descending
-    query += " ORDER BY u.registered_at DESC";
+    query += " ORDER BY u.registered_at DESC"; // 6. Execute the query
 
     // 6. Ejecutar la consulta
-    // 6. Execute the query
-    const [users] = await db.query(query, params);
+    const [users] = await db.query(query, params); // 7. Construir URLs completas para las imágenes de perfil // 7. Build full profile picture URLs
 
-    // 7. Construir URLs completas para las imágenes de perfil
-    // 7. Build full profile picture URLs
-    const baseUrl = process.env.BASE_URL || "";
-    const usersWithFullUrls = users.map(user => {
-      if (user.profile_picture) {
-        const imagePath = user.profile_picture.replace(/\\/g, "/");
-        user.profile_picture = `${baseUrl}/${imagePath}`;
-      }
-      return user;
-    });
+    const baseUrl = process.env.BASE_URL || "";
+    const usersWithFullUrls = users.map((user) => {
+      if (user.profile_picture) {
+        const imagePath = user.profile_picture.replace(/\\/g, "/");
+        user.profile_picture = `${baseUrl}/${imagePath}`;
+      }
+      return user;
+    }); // 8. Devolver resultados con URLs completas // 8. Return results with full URLs
 
-    // 8. Devolver resultados con URLs completas
-    // 8. Return results with full URLs
-    res.status(200).json(usersWithFullUrls);
-  } catch (error) {
+    res.status(200).json(usersWithFullUrls);
+  } catch (error) {
     console.error(error);
     res.status(500).json({ message: "error interno del servidor" });
   }
@@ -430,6 +425,7 @@ const getAllManagers = async (req, res) => {
         u.profile_picture,
         g.name AS gym_name,
         g.city AS gym_city,
+        g.logo_url,
         g.address AS gym_address
       FROM users u
       INNER JOIN gyms g ON u.home_gym_id = g.id
@@ -455,26 +451,26 @@ const getAllManagers = async (req, res) => {
 
     // 5. Ordenar por fecha de registro descendente
     // 5. Order by registration date descending
-    query += " ORDER BY u.registered_at DESC";
+    query += " ORDER BY u.registered_at DESC"; // 6. Execute the query
 
     // 6. Ejecutar la consulta
-    // 6. Execute the query
-    const [managers] = await db.query(query, params);
+    const [managers] = await db.query(query, params); // 7. Construir URLs completas para las imágenes de perfil // 7. Build full profile picture URLs
 
-    // 7. Construir URLs completas para las imágenes de perfil
-    // 7. Build full profile picture URLs
-    const baseUrl = process.env.BASE_URL || "";
-    const managersWithFullUrls = managers.map(manager => {
-      if (manager.profile_picture) {
-        const imagePath = manager.profile_picture.replace(/\\/g, "/");
-        manager.profile_picture = `${baseUrl}/${imagePath}`;
-      }
-      return manager;
-    });
+    const baseUrl = process.env.BASE_URL || "";
+    const managersWithFullUrls = managers.map((manager) => {
+      if (manager.profile_picture) {
+        const imagePath = manager.profile_picture.replace(/\\/g, "/");
+        manager.profile_picture = `${baseUrl}/${imagePath}`;
+      }
+      if (manager.logo_url) {
+        const logoPath = manager.logo_url.replace(/\\/g, "/");
+        manager.logo_url = `${baseUrl}/${logoPath}`;
+      }
 
-    // 8. Devolver resultados con URLs completas
-    // 8. Return results with full URLs
-    res.status(200).json(managersWithFullUrls);
+      return manager;
+    }); // 8. Devolver resultados con URLs completas // 8. Return results with full URLs
+
+    res.status(200).json(managersWithFullUrls);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "error interno del servidor" });

@@ -33,6 +33,7 @@ import type {
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
 import { ManagerDetailsModal } from "../components/ManagerDetailsModal";
+import { Avatar } from "../components/Avatar";
 
 /* =============================================================================
    ESTILOS (inline)
@@ -363,7 +364,7 @@ export const ManagersManagementPage = () => {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar por nombre, apellidos, gimnasio o ciudad..."
+            placeholder="Manager, Gimnasio, Ciudad"
             style={styles.input}
           />
           <small style={{ color: "#6c757d", fontSize: "0.85em" }}>
@@ -411,7 +412,6 @@ export const ManagersManagementPage = () => {
               <tr>
                 <th style={styles.th}>Manager</th>
                 <th style={styles.th}>Gimnasio</th>
-                <th style={styles.th}>Ciudad</th>
               </tr>
             </thead>
             <tbody>
@@ -427,11 +427,43 @@ export const ManagersManagementPage = () => {
                     e.currentTarget.style.backgroundColor = "transparent";
                   }}
                   title="Click para ver detalles completos (email, teléfono, etc.)">
+                  {/* --- COLUMNA MANAGER (CON AVATAR) --- */}
                   <td style={styles.td}>
-                    {manager.first_name} {manager.last_name}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                      }}>
+                      <Avatar
+                        src={manager.profile_picture}
+                        firstName={manager.first_name}
+                        lastName={manager.last_name}
+                        size={35}
+                      />
+                      <span>
+                        {manager.first_name} {manager.last_name}
+                      </span>
+                    </div>
                   </td>
-                  <td style={styles.td}>{manager.gym_name}</td>
-                  <td style={styles.td}>{manager.gym_city}</td>
+
+                  {/* --- COLUMNA GIMNASIO (CON LOGO) --- */}
+                  <td style={styles.td}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                      }}>
+                      <Avatar
+                        src={manager.logo_url}
+                        firstName={manager.gym_name} // Fallback: Iniciales del nombre del gym
+                        lastName="" // Dejar vacío o usar la ciudad
+                        size={35}
+                      />
+                      <span>{manager.gym_name}</span>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>

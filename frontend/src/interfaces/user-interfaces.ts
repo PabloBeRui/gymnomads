@@ -152,6 +152,7 @@ export interface ManagerWithGym {
   gym_name: string;
   gym_city: string;
   gym_address: string;
+  logo_url: string | null;
 }
 
 /* ========================================
