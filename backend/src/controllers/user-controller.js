@@ -355,6 +355,7 @@ const getAllUsers = async (req, res) => {
         u.home_gym_id,
         u.profile_picture,
         u.registered_at,
+        g.logo_url,
         g.name AS gym_name
       FROM users u
       INNER JOIN gyms g ON u.home_gym_id = g.id
@@ -390,6 +391,10 @@ const getAllUsers = async (req, res) => {
       if (user.profile_picture) {
         const imagePath = user.profile_picture.replace(/\\/g, "/");
         user.profile_picture = `${baseUrl}/${imagePath}`;
+      }
+      if (user.logo_url) {
+        const logoPath = user.logo_url.replace(/\\/g, "/");
+        user.logo_url = `${baseUrl}/${logoPath}`;
       }
       return user;
     }); // 8. Devolver resultados con URLs completas // 8. Return results with full URLs

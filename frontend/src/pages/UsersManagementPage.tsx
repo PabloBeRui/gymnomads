@@ -1,6 +1,6 @@
 /**
  * =============================================================================
- *  UsersManagementPage
+ * PÁGINA: UsersManagementPage
  * =============================================================================
  *
  * Página para gestionar y visualizar usuarios registrados en gimnasios.
@@ -16,15 +16,24 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { getAllUsers, getUsersByGym } from "../services/user-services";
+// --- MODIFICADO: Importar deleteUser / MODIFIED: Import deleteUser ---
+import {
+  getAllUsers,
+  getUsersByGym,
+  deleteUser,
+} from "../services/user-services";
 import { getAllGyms } from "../services/gym-services";
 import type { UserWithGym, GymUser } from "../interfaces/user-interfaces";
 import type { Gym } from "../interfaces/gym-interfaces";
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
+// --- NUEVO: Importar componentes de UI / NEW: Import UI components ---
+import { Avatar } from "../components/Avatar";
+import { UserDetailModal } from "../components/userDetailModal";
 
 /* =============================================================================
    ESTILOS (inline)
+   STYLES (inline)
    ============================================================================= */
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
@@ -107,6 +116,11 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: "12px 15px",
     borderBottom: "1px solid #dee2e6",
   },
+  // --- NUEVO: Estilo para filas clickeables / NEW: Style for clickable rows ---
+  clickableRow: {
+    cursor: "pointer",
+    transition: "background-color 0.2s",
+  },
   loadingContainer: {
     padding: "40px",
     textAlign: "center",
@@ -162,6 +176,7 @@ const styles: { [key: string]: React.CSSProperties } = {
 
 /* =============================================================================
    COMPONENTE: UsersManagementPage
+   COMPONENT: UsersManagementPage
    ============================================================================= */
 export const UsersManagementPage = () => {
   const { user, token } = useAuth();
@@ -177,7 +192,14 @@ export const UsersManagementPage = () => {
   // Estados de filtros / Filter states
   const [selectedGymId, setSelectedGymId] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [gymSearchTerm, setGymSearchTerm] = useState<string>(""); // Nuevo: para filtrar gimnasios en el dropdown
+  const [gymSearchTerm, setGymSearchTerm] = useState<string>("");
+
+  // --- NUEVO: Estados para el modal / NEW: States for modal ---
+  const [showDetailModal, setShowDetailModal] = useState<boolean>(false);
+  const [selectedUser, setSelectedUser] = useState<
+    UserWithGym | GymUser | null
+  >(null);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   // Cargar gimnasios (solo para admin) / Load gyms (admin only)
   useEffect(() => {
@@ -283,6 +305,49 @@ export const UsersManagementPage = () => {
       day: "2-digit",
     });
   };
+
+  // --- NUEVO: Lógica del Modal / NEW: Modal Logic ---
+
+  // Abrir el modal con el usuario seleccionado
+  // Open the modal with the selected user
+  const handleRowClick = (user: UserWithGym | GymUser) => {
+    setSelectedUser(user);
+    setShowDetailModal(true);
+  };
+
+  // Cerrar el modal y limpiar la selección
+  // Close the modal and clear selection
+  const handleCloseModal = () => {
+    setShowDetailModal(false);
+    setSelectedUser(null);
+  };
+
+  // Manejar la eliminación del usuario (se pasa al modal)
+  // Handle user deletion (passed to modal)
+  const handleDeleteUser = async (userId: number) => {
+    if (!token) {
+      toast.error("No estás autenticado.");
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      // Llamar al servicio de eliminación
+      // Call delete service
+      await deleteUser(token, userId);
+      toast.success("Usuario eliminado correctamente.");
+
+      // Actualizar estado local (optimista)
+      // Update local state (optimistic)
+      setUsers((prevUsers) => prevUsers.filter((u) => u.id !== userId));
+    } catch (err) {
+      const msg = handleApiError(err, "Error al eliminar el usuario.");
+      toast.error(msg);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+  // --- FIN NUEVA LÓGICA ---
 
   // Calcular estadísticas / Calculate statistics
   const totalUsers = users.length;
@@ -427,35 +492,91 @@ export const UsersManagementPage = () => {
       ) : (
         <div style={styles.tableContainer}>
           <table style={styles.table}>
+            {/* --- MODIFICADO: Cabecera de tabla / MODIFIED: Table header --- */}
             <thead>
               <tr>
-                <th style={styles.th}>ID</th>
                 <th style={styles.th}>Nombre</th>
-                <th style={styles.th}>Email</th>
                 {isAdmin && <th style={styles.th}>Gimnasio</th>}
                 <th style={styles.th}>Fecha de Registro</th>
               </tr>
             </thead>
+            {/* --- FIN MODIFICADO --- */}
+
+            {/* --- MODIFICADO: Cuerpo de tabla / MODIFIED: Table body --- */}
             <tbody>
               {users.map((u) => (
-                <tr key={u.id}>
-                  <td style={styles.td}>#{u.id}</td>
+                <tr
+                  key={u.id}
+                  style={styles.clickableRow} // <-- NUEVO: Estilo clickeable
+                  onClick={() => handleRowClick(u)} // <-- NUEVO: Abre modal
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#f8f9fa";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }}
+                  title={`Ver detalles de ${u.first_name} ${u.last_name}`}>
+                  {/* Columna: Avatar + Nombre */}
+                  {/* Column: Avatar + Name */}
                   <td style={styles.td}>
-                    {u.first_name} {u.last_name}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                      }}>
+                      <Avatar
+                        src={u.profile_picture}
+                        firstName={u.first_name}
+                        lastName={u.last_name}
+                        size={35}
+                      />
+                      <span>
+                        {u.first_name} {u.last_name}
+                      </span>
+                    </div>
                   </td>
-                  <td style={styles.td}>{u.email}</td>
-                  {isAdmin && (
+
+                  {/* Columna: Gimnasio (con logo, solo Admin) */}
+                  {/* Column: Gym (with logo, Admin only) */}
+                  {isAdmin && "gym_name" in u && (
                     <td style={styles.td}>
-                      {"gym_name" in u ? u.gym_name : "N/A"}
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                        }}>
+                        <Avatar
+                          src={(u as UserWithGym).logo_url}
+                          firstName={u.gym_name}
+                          lastName=""
+                          size={35}
+                        />
+                        <span>{u.gym_name}</span>
+                      </div>
                     </td>
                   )}
+
+                  {/* Columna: Fecha de Registro */}
+                  {/* Column: Registration Date */}
                   <td style={styles.td}>{formatDate(u.registered_at)}</td>
                 </tr>
               ))}
             </tbody>
+            {/* --- FIN MODIFICADO --- */}
           </table>
         </div>
       )}
+
+      {/* --- NUEVO: Renderizar el modal / NEW: Render the modal --- */}
+      <UserDetailModal
+        isOpen={showDetailModal}
+        onClose={handleCloseModal}
+        user={selectedUser as UserWithGym | null} // Asegurar el tipo / Ensure type
+        onDelete={handleDeleteUser}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 };

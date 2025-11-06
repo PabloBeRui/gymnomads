@@ -519,10 +519,50 @@ export const deleteManager = async (
   } catch (error) {
     // Usar el manejador centralizado
     // Use the centralized handler
-    const errorMessage = handleApiError(
-      error,
-      "Error al eliminar el manager."
+    const errorMessage = handleApiError(error, "Error al eliminar el manager.");
+    // Lanzar error procesado
+    // Throw processed error
+    throw new Error(errorMessage);
+  }
+};
+
+/* ========================================
+ * API CALL: Eliminar un usuario (Admin/Manager)
+ * API CALL: Delete a user (Admin/Manager)
+ * ======================================== */
+
+// Eliminar un usuario por ID (Admin o Manager de su gym)
+// Delete a user by ID (Admin or Manager of their gym)
+export const deleteUser = async (
+  token: string,
+  userId: number
+): Promise<{ message: string }> => {
+  // Comprobar si hay token
+  // Check if token exists
+  if (!token) {
+    throw new Error("No se proporcionó token de autenticación.");
+  }
+
+  try {
+    // Realizar petición DELETE al endpoint '/users/:id'
+    // Perform DELETE request to '/users/:id' endpoint
+    const response = await axios.delete<{ message: string }>(
+      `${API_URL}/users/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
+
+    // Devolver la respuesta del servidor (en este caso, 204 No Content no devuelve body,
+    // pero nuestro controller de admin sí, así que lo maneja)
+    // Return the server response
+    return response.data;
+  } catch (error) {
+    // Usar el manejador centralizado
+    // Use the centralized handler
+    const errorMessage = handleApiError(error, "Error al eliminar el usuario.");
     // Lanzar error procesado
     // Throw processed error
     throw new Error(errorMessage);

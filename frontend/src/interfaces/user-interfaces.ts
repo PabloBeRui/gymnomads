@@ -132,6 +132,7 @@ export interface UserWithGym {
   home_gym_id: number;
   registered_at: string;
   gym_name: string;
+  logo_url: string | null;
 }
 
 /* ========================================
