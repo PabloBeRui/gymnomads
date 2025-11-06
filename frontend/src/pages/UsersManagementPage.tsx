@@ -16,7 +16,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-// --- MODIFICADO: Importar deleteUser / MODIFIED: Import deleteUser ---
+// ---Importar deleteUser /  Import deleteUser ---
 import {
   getAllUsers,
   getUsersByGym,
@@ -27,7 +27,7 @@ import type { UserWithGym, GymUser } from "../interfaces/user-interfaces";
 import type { Gym } from "../interfaces/gym-interfaces";
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
-// --- NUEVO: Importar componentes de UI / NEW: Import UI components ---
+//  Importar componentes de UI /  Import UI components ---
 import { Avatar } from "../components/Avatar";
 import { UserDetailModal } from "../components/userDetailModal";
 

@@ -16,10 +16,12 @@ export interface Visit {
  * Interface for Visit with Related Data
  * ======================================== */
 export interface VisitWithDetails extends Visit {
-  user_name?: string;        // Nombre completo del usuario / User full name
-  user_email?: string;        // Email del usuario / User email
-  gym_name?: string;          // Nombre del gimnasio / Gym name
-  gym_city?: string;          // Ciudad del gimnasio / Gym city
+  user_name?: string; // Nombre completo del usuario / User full name
+  user_email?: string; // Email del usuario / User email
+  user_profile_picture?: string | null;
+  gym_name?: string; // Nombre del gimnasio / Gym name
+  gym_city?: string; // Ciudad del gimnasio / Gym city
+  gym_logo_url?: string | null;
 }
 
 /* ========================================
@@ -44,8 +46,8 @@ export interface CreateVisitResponse {
  * Interface for Visit Filters
  * ======================================== */
 export interface VisitsFilters {
-  gym_id?: number;           // Filtro por gimnasio (solo admin) / Filter by gym (admin only)
-  user_search?: string;      // Búsqueda por nombre/email de usuario / Search by user name/email
-  start_date?: string;       // Fecha inicio (opcional) / Start date (optional)
-  end_date?: string;         // Fecha fin (opcional) / End date (optional)
+  gym_id?: number; // Filtro por gimnasio (solo admin) / Filter by gym (admin only)
+  user_search?: string; // Búsqueda por nombre/email de usuario / Search by user name/email
+  start_date?: string; // Fecha inicio (opcional) / Start date (optional)
+  end_date?: string; // Fecha fin (opcional) / End date (optional)
 }

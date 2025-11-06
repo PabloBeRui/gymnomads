@@ -62,22 +62,35 @@ const getVisitsByUser = async (req, res) => {
 
     // 3. Unir tabla 'visits' con 'gyms' para obtener datos del gimnasio
     // 3. Join 'visits' table with 'gyms' to get gym data
+    // --- CORREGIDO: Añadido g.logo_url ---
+    // --- FIXED: Added g.logo_url ---
     const [visits] = await db.query(
       `SELECT 
         visits.id, 
         visits.visited_at, 
-        gyms.name AS gym_name, 
-        gyms.city 
+        g.name AS gym_name, 
+        g.city,
+        g.logo_url
        FROM visits 
-       JOIN gyms ON visits.gym_id = gyms.id 
+       JOIN gyms g ON visits.gym_id = g.id 
        WHERE visits.user_id = ? 
        ORDER BY visits.visited_at DESC`,
       [userId]
     );
 
-    // 4. Devolver lista de visitas
-    // 4. Return visits list
-    res.status(200).json(visits);
+    // --- NUEVO: 4. Construir URLs completas para logos / NEW: 4. Build full URLs for logos ---
+    const baseUrl = process.env.BASE_URL || "";
+    const visitsWithUrls = visits.map((visit) => {
+      if (visit.logo_url) {
+        const logoPath = visit.logo_url.replace(/\\/g, "/");
+        visit.logo_url = `${baseUrl}/${logoPath}`;
+      }
+      return visit;
+    });
+
+    // 5. Devolver lista de visitas
+    // 5. Return visits list
+    res.status(200).json(visitsWithUrls);
   } catch (error) {
     console.error(`error: ${error}`);
     res.status(500).json({ message: "Error interno del servidor" });
@@ -96,22 +109,35 @@ const getVisitsByGym = async (req, res) => {
 
     // 2. Unir 'visits' con 'users' para obtener datos del visitante
     // 2. Join 'visits' with 'users' to get visitor data
+    // --- CORREGIDO: Añadido u.profile_picture ---
+    // --- FIXED: Added u.profile_picture ---
     const [visits] = await db.query(
       `SELECT 
         visits.id, 
         visits.visited_at, 
-        users.first_name, 
-        users.last_name 
+        u.first_name, 
+        u.last_name,
+        u.profile_picture
        FROM visits 
-       JOIN users ON visits.user_id = users.id 
+       JOIN users u ON visits.user_id = u.id 
        WHERE visits.gym_id = ? 
        ORDER BY visits.visited_at DESC`,
       [gymId]
     );
 
-    // 3. Devolver lista de visitantes
-    // 3. Return visitors list
-    res.status(200).json(visits);
+    // --- NUEVO: 3. Construir URLs completas para avatares / NEW: 3. Build full URLs for avatars ---
+    const baseUrl = process.env.BASE_URL || "";
+    const visitsWithUrls = visits.map((visit) => {
+      if (visit.profile_picture) {
+        const imagePath = visit.profile_picture.replace(/\\/g, "/");
+        visit.profile_picture = `${baseUrl}/${imagePath}`;
+      }
+      return visit;
+    });
+
+    // 4. Devolver lista de visitantes
+    // 4. Return visitors list
+    res.status(200).json(visitsWithUrls);
   } catch (error) {
     console.error(`error: ${error}`);
     res.status(500).json({ message: "Error interno del servidor" });
@@ -138,19 +164,23 @@ const getAllVisits = async (req, res) => {
 
     // 3. Construir consulta SQL dinámica con JOINs
     // 3. Build dynamic SQL query with JOINs
+    // --- Añadidos alias u/g y campos profile_picture/logo_url ---
+    // ---  Added u/g aliases and profile_picture/logo_url fields ---
     let query = `
       SELECT 
         visits.id,
         visits.user_id,
         visits.gym_id,
         visits.visited_at AS visit_date,
-        CONCAT(users.first_name, ' ', users.last_name) AS user_name,
-        users.email AS user_email,
-        gyms.name AS gym_name,
-        gyms.city AS gym_city
+        CONCAT(u.first_name, ' ', u.last_name) AS user_name,
+        u.email AS user_email,
+        u.profile_picture,
+        g.name AS gym_name,
+        g.city AS gym_city,
+        g.logo_url
       FROM visits
-      JOIN users ON visits.user_id = users.id
-      JOIN gyms ON visits.gym_id = gyms.id
+      JOIN users u ON visits.user_id = u.id
+      JOIN gyms g ON visits.gym_id = g.id
       WHERE 1=1
     `;
 
@@ -167,8 +197,8 @@ const getAllVisits = async (req, res) => {
     // 5. Apply user search filter by name or email (if provided)
     if (user_search) {
       query += ` AND (
-        CONCAT(users.first_name, ' ', users.last_name) LIKE ? 
-        OR users.email LIKE ?
+        CONCAT(u.first_name, ' ', u.last_name) LIKE ? 
+        OR u.email LIKE ?
       )`;
       const searchPattern = `%${user_search}%`;
       params.push(searchPattern, searchPattern);
@@ -178,11 +208,27 @@ const getAllVisits = async (req, res) => {
     // 6. Order by visit date descending
     query += ` ORDER BY visits.visited_at DESC`;
 
-    // 7. Ejecutar la consulta y devolver resultados
-    // 7. Execute the query and return results
+    // 7. Ejecutar la consulta
+    // 7. Execute the query
     const [visits] = await db.query(query, params);
 
-    res.status(200).json(visits);
+    // ---  8. Construir URLs completas para imágenes /  8. Build full URLs for images ---
+    const baseUrl = process.env.BASE_URL || "";
+    const visitsWithUrls = visits.map((visit) => {
+      if (visit.profile_picture) {
+        const imagePath = visit.profile_picture.replace(/\\/g, "/");
+        visit.profile_picture = `${baseUrl}/${imagePath}`;
+      }
+      if (visit.logo_url) {
+        const logoPath = visit.logo_url.replace(/\\/g, "/");
+        visit.logo_url = `${baseUrl}/${logoPath}`;
+      }
+      return visit;
+    });
+
+    // 9. Devolver resultados
+    // 9. Return results
+    res.status(200).json(visitsWithUrls);
   } catch (error) {
     console.error("Error al obtener visitas:", error);
     res.status(500).json({ message: "Error interno del servidor" });
@@ -224,19 +270,23 @@ const getManagerGymVisits = async (req, res) => {
 
     // 4. Construir consulta SQL para obtener visitas del gimnasio del manager
     // 4. Build SQL query to get visits from manager's gym
+    // ---  Añadidos alias u/g y campos profile_picture/logo_url ---
+    // ---  Added u/g aliases and profile_picture/logo_url fields ---
     let query = `
       SELECT 
         visits.id,
         visits.user_id,
         visits.gym_id,
         visits.visited_at AS visit_date,
-        CONCAT(users.first_name, ' ', users.last_name) AS user_name,
-        users.email AS user_email,
-        gyms.name AS gym_name,
-        gyms.city AS gym_city
+        CONCAT(u.first_name, ' ', u.last_name) AS user_name,
+        u.email AS user_email,
+        u.profile_picture,
+        g.name AS gym_name,
+        g.city AS gym_city,
+        g.logo_url
       FROM visits
-      JOIN users ON visits.user_id = users.id
-      JOIN gyms ON visits.gym_id = gyms.id
+      JOIN users u ON visits.user_id = u.id
+      JOIN gyms g ON visits.gym_id = g.id
       WHERE visits.gym_id = ?
     `;
 
@@ -246,8 +296,8 @@ const getManagerGymVisits = async (req, res) => {
     // 5. Apply user search filter (if provided)
     if (user_search) {
       query += ` AND (
-        CONCAT(users.first_name, ' ', users.last_name) LIKE ? 
-        OR users.email LIKE ?
+        CONCAT(u.first_name, ' ', u.last_name) LIKE ? 
+        OR u.email LIKE ?
       )`;
       const searchPattern = `%${user_search}%`;
       params.push(searchPattern, searchPattern);
@@ -257,11 +307,27 @@ const getManagerGymVisits = async (req, res) => {
     // 6. Order by visit date descending
     query += ` ORDER BY visits.visited_at DESC`;
 
-    // 7. Ejecutar la consulta y devolver resultados
-    // 7. Execute the query and return results
+    // 7. Ejecutar la consulta
+    // 7. Execute the query
     const [visits] = await db.query(query, params);
 
-    res.status(200).json(visits);
+    // ---  8. Construir URLs completas para imágenes /  8. Build full URLs for images ---
+    const baseUrl = process.env.BASE_URL || "";
+    const visitsWithUrls = visits.map((visit) => {
+      if (visit.profile_picture) {
+        const imagePath = visit.profile_picture.replace(/\\/g, "/");
+        visit.profile_picture = `${baseUrl}/${imagePath}`;
+      }
+      if (visit.logo_url) {
+        const logoPath = visit.logo_url.replace(/\\/g, "/");
+        visit.logo_url = `${baseUrl}/${logoPath}`;
+      }
+      return visit;
+    });
+
+    // 9. Devolver resultados
+    // 9. Return results
+    res.status(200).json(visitsWithUrls);
   } catch (error) {
     console.error("Error al obtener visitas del gimnasio:", error);
     res.status(500).json({ message: "Error interno del servidor" });

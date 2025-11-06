@@ -6,10 +6,12 @@
  * Página para gestionar y visualizar visitas a gimnasios.
  * - Admin: puede ver todas las visitas y filtrar por gimnasio y usuario.
  * - Manager: solo ve visitas de su gimnasio, puede filtrar por usuario.
+ * -  Filtros automáticos con debounce 500ms. Tabla limpia.
  *
  * Page to manage and view gym visits.
  * - Admin: can see all visits and filter by gym and user.
  * - Manager: only sees visits from their gym, can filter by user.
+ * - Automatic filters with 500ms debounce. Clean table.
  *
  * =============================================================================
  */
@@ -22,9 +24,12 @@ import type { VisitWithDetails } from "../interfaces/visit-interfaces";
 import type { Gym } from "../interfaces/gym-interfaces";
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
+import { Avatar } from "../components/Avatar";
+import { VisitsDetailsModal } from "../components/VisitsDetailsModal";
 
 /* =============================================================================
    ESTILOS (inline)
+   STYLES (inline)
    ============================================================================= */
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
@@ -76,16 +81,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     minWidth: "200px",
     backgroundColor: "white",
   },
-  applyButton: {
-    padding: "10px 20px",
-    fontSize: "1rem",
-    backgroundColor: "#007bff",
-    color: "white",
-    border: "none",
-    borderRadius: "4px",
-    cursor: "pointer",
-    fontWeight: "bold",
-  },
   clearButton: {
     padding: "10px 20px",
     fontSize: "1rem",
@@ -116,6 +111,10 @@ const styles: { [key: string]: React.CSSProperties } = {
   td: {
     padding: "12px 15px",
     borderBottom: "1px solid #dee2e6",
+  },
+  clickableRow: {
+    cursor: "pointer",
+    transition: "background-color 0.2s",
   },
   loadingContainer: {
     padding: "40px",
@@ -159,6 +158,7 @@ const styles: { [key: string]: React.CSSProperties } = {
 
 /* =============================================================================
    COMPONENTE: VisitsManagementPage
+   COMPONENT: VisitsManagementPage
    ============================================================================= */
 export const VisitsManagementPage = () => {
   const { user, token } = useAuth();
@@ -174,6 +174,12 @@ export const VisitsManagementPage = () => {
   // Estados de filtros / Filter states
   const [selectedGymId, setSelectedGymId] = useState<string>("");
   const [userSearch, setUserSearch] = useState<string>("");
+
+  // Estados para el modal / States for modal
+  const [showDetailModal, setShowDetailModal] = useState<boolean>(false);
+  const [selectedVisit, setSelectedVisit] = useState<VisitWithDetails | null>(
+    null
+  );
 
   // Cargar gimnasios (solo para admin) / Load gyms (admin only)
   useEffect(() => {
@@ -208,21 +214,21 @@ export const VisitsManagementPage = () => {
 
     try {
       let visitsData: VisitWithDetails[];
+      const filters = {
+        user_search: userSearch.trim() || undefined,
+      };
 
       if (isAdmin) {
         // Admin: obtener todas las visitas con filtros opcionales
         // Admin: get all visits with optional filters
-        const filters = {
+        const adminFilters = {
+          ...filters,
           gym_id: selectedGymId ? Number(selectedGymId) : undefined,
-          user_search: userSearch.trim() || undefined,
         };
-        visitsData = await getAllVisits(token, filters);
+        visitsData = await getAllVisits(token, adminFilters);
       } else if (isManager) {
         // Manager: obtener solo visitas de su gimnasio
         // Manager: get only visits from their gym
-        const filters = {
-          user_search: userSearch.trim() || undefined,
-        };
         visitsData = await getManagerGymVisits(token, filters);
       } else {
         throw new Error("No tienes permisos para ver esta página.");
@@ -241,51 +247,42 @@ export const VisitsManagementPage = () => {
     }
   };
 
-  // Cargar visitas al montar y cuando cambien los filtros
-  // Load visits on mount and when filters change
+  // --- Efecto con debounce /  Effect with debounce ---
+  // Cargar visitas al cambiar los filtros, con debounce
+  // Load visits when filters change, with debounce
   useEffect(() => {
-    fetchVisits();
+    // Debounce de 500ms para no saturar el backend
+    // 500ms debounce to avoid overwhelming the backend
+    const timeoutId = setTimeout(() => {
+      fetchVisits();
+    }, 500);
+
+    // Limpiar timeout si los filtros cambian antes de que se ejecute
+    // Clear timeout if filters change before execution
+    return () => clearTimeout(timeoutId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Solo al montar / Only on mount
+  }, [selectedGymId, userSearch]); // Se ejecuta cuando cambian los filtros / Runs when filters change
 
-  // Aplicar filtros / Apply filters
-  const handleApplyFilters = () => {
-    fetchVisits();
-  };
-
-  // Limpiar filtros / Clear filters
+  // ---  Limpiar filtros /  Clear filters ---
+  // Ya no llama a fetchVisits() directamente, el useEffect lo detectará
+  // No longer calls fetchVisits() directly, useEffect will detect it
   const handleClearFilters = () => {
     setSelectedGymId("");
     setUserSearch("");
-    // Recargar sin filtros / Reload without filters
-    setTimeout(() => fetchVisits(), 0);
   };
 
-  // Formatear fecha para mostrar / Format date for display
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleString("es-ES", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+  // Lógica del Modal (abrir/cerrar) / Modal Logic (open/close)
+  const handleRowClick = (visit: VisitWithDetails) => {
+    setSelectedVisit(visit);
+    setShowDetailModal(true);
+  };
+  const handleCloseModal = () => {
+    setShowDetailModal(false);
+    setSelectedVisit(null);
   };
 
   // Calcular estadísticas / Calculate statistics
   const totalVisits = visits.length;
-
-  // Visitas de hoy / Today's visits
-  const today = new Date();
-  today.setHours(0, 0, 0, 0); // Inicio del día / Start of day
-  const visitsToday = visits.filter((v) => {
-    const visitDate = new Date(v.visit_date);
-    return visitDate >= today;
-  }).length;
-
-  // Gimnasios activos (con al menos una visita) / Active gyms (with at least one visit)
-  const uniqueGyms = new Set(visits.map((v) => v.gym_id)).size;
 
   // Render loading
   if (isLoading && visits.length === 0) {
@@ -321,24 +318,14 @@ export const VisitsManagementPage = () => {
         </p>
       </div>
 
-      {/* Estadísticas / Statistics */}
+      {/* Estadísticas (Solo total) / Statistics (Total only) */}
       <div style={styles.statsContainer}>
         <div style={styles.statCard}>
           <div style={styles.statNumber}>{totalVisits}</div>
-          <div style={styles.statLabel}>Total de Visitas</div>
-        </div>
-
-        <div style={styles.statCard}>
-          <div style={styles.statNumber}>{visitsToday}</div>
-          <div style={styles.statLabel}>Visitas Hoy</div>
-        </div>
-
-        {isAdmin && (
-          <div style={styles.statCard}>
-            <div style={styles.statNumber}>{uniqueGyms}</div>
-            <div style={styles.statLabel}>Gimnasios Activos</div>
+          <div style={styles.statLabel}>
+            {isLoading ? "Cargando..." : "Total de Visitas"}
           </div>
-        )}
+        </div>
       </div>
 
       {/* Filtros / Filters */}
@@ -352,7 +339,7 @@ export const VisitsManagementPage = () => {
             <select
               id="gymFilter"
               value={selectedGymId}
-              onChange={(e) => setSelectedGymId(e.target.value)}
+              onChange={(e) => setSelectedGymId(e.target.value)} // <-- Dispara el useEffect
               style={styles.select}>
               <option value="">Todos los gimnasios</option>
               {gyms.map((gym) => (
@@ -373,23 +360,14 @@ export const VisitsManagementPage = () => {
             id="userFilter"
             type="text"
             value={userSearch}
-            onChange={(e) => setUserSearch(e.target.value)}
+            onChange={(e) => setUserSearch(e.target.value)} // <-- Dispara el useEffect
             placeholder="Nombre o email..."
             style={styles.input}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") handleApplyFilters();
-            }}
+            // onKeyPress eliminado / onKeyPress removed
           />
         </div>
 
-        {/* Botones de acción / Action buttons */}
-        <button
-          onClick={handleApplyFilters}
-          style={styles.applyButton}
-          disabled={isLoading}>
-          {isLoading ? "Cargando..." : "Aplicar Filtros"}
-        </button>
-
+        {/* Botón de limpiar filtros / Clear filters button */}
         <button
           onClick={handleClearFilters}
           style={styles.clearButton}
@@ -399,6 +377,7 @@ export const VisitsManagementPage = () => {
       </div>
 
       {/* Tabla de visitas / Visits table */}
+
       {visits.length === 0 ? (
         <div style={styles.emptyState}>
           {userSearch || selectedGymId ? (
@@ -423,35 +402,80 @@ export const VisitsManagementPage = () => {
       ) : (
         <div style={styles.tableContainer}>
           <table style={styles.table}>
+            {/* Cabecera de tabla (Usuario, Gimnasio Visitado) */}
+            {/* Table header (User, Gym Visited) */}
             <thead>
               <tr>
-                <th style={styles.th}>ID</th>
                 <th style={styles.th}>Usuario</th>
-                <th style={styles.th}>Email</th>
-                {isAdmin && <th style={styles.th}>Gimnasio</th>}
-                {isAdmin && <th style={styles.th}>Ciudad</th>}
-                <th style={styles.th}>Fecha de Visita</th>
+                <th style={styles.th}>Gimnasio Visitado</th>
               </tr>
             </thead>
+
+            {/* Cuerpo de tabla (Avatar + Nombre, Logo + Nombre) */}
+            {/* Table body (Avatar + Name, Logo + Name) */}
             <tbody>
               {visits.map((visit) => (
-                <tr key={visit.id}>
-                  <td style={styles.td}>#{visit.id}</td>
-                  <td style={styles.td}>{visit.user_name || "N/A"}</td>
-                  <td style={styles.td}>{visit.user_email || "N/A"}</td>
-                  {isAdmin && (
-                    <td style={styles.td}>{visit.gym_name || "N/A"}</td>
-                  )}
-                  {isAdmin && (
-                    <td style={styles.td}>{visit.gym_city || "N/A"}</td>
-                  )}
-                  <td style={styles.td}>{formatDate(visit.visit_date)}</td>
+                <tr
+                  key={visit.id}
+                  style={styles.clickableRow}
+                  onClick={() => handleRowClick(visit)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#f8f9fa";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }}
+                  title={`Ver detalles de la visita #${visit.id}`}>
+                  {/* Columna: Avatar + Nombre Usuario */}
+                  {/* Column: Avatar + User Name */}
+                  <td style={styles.td}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                      }}>
+                      <Avatar
+                        src={visit.user_profile_picture}
+                        firstName={visit.user_name || "Usuario"}
+                        lastName={""}
+                        size={35}
+                      />
+                      <span>{visit.user_name || "N/A"}</span>
+                    </div>
+                  </td>
+
+                  {/* Columna: Logo + Nombre Gimnasio */}
+                  {/* Column: Logo + Gym Name */}
+                  <td style={styles.td}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                      }}>
+                      <Avatar
+                        src={visit.gym_logo_url}
+                        firstName={visit.gym_name || "Gimnasio"}
+                        lastName={""}
+                        size={35}
+                      />
+                      <span>{visit.gym_name || "N/A"}</span>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
+
+      {/* Renderizar el modal / Render the modal */}
+      <VisitsDetailsModal
+        isOpen={showDetailModal}
+        onClose={handleCloseModal}
+        visit={selectedVisit}
+      />
     </div>
   );
 };

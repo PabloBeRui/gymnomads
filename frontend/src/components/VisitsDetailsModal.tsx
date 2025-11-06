@@ -1,0 +1,285 @@
+/**
+ * =============================================================================
+ * COMPONENTE: VisitsDetailsModal
+ * =============================================================================
+ *
+ * Modal de "solo vista" para mostrar los detalles de una visita específica.
+ * - Muestra Avatar/info del usuario y Logo/info del gimnasio.
+ * - Muestra la fecha exacta de la visita.
+ * - Cierre con ESC o click fuera del modal.
+ *
+ * View-only modal to display details of a specific visit.
+ * - Shows User Avatar/info and Gym Logo/info.
+ * - Shows the exact date of the visit.
+ * - Close with ESC or click outside modal.
+ *
+ * =============================================================================
+ */
+
+import { useEffect, useCallback } from "react";
+import type { VisitWithDetails } from "../interfaces/visit-interfaces";
+import { Avatar } from "./Avatar";
+
+/* =============================================================================
+   INTERFACES
+   ============================================================================= */
+
+interface VisitsDetailsModalProps {
+  // Visibilidad del modal
+  // Modal visibility
+  isOpen: boolean;
+
+  // Función al cerrar el modal
+  // Function on close
+  onClose: () => void;
+
+  // Datos de la visita a mostrar
+  // Visit data to display
+  visit: VisitWithDetails | null;
+}
+
+/* =============================================================================
+   ESTILOS (similares a ManagerDetailsModal)
+   STYLES (similar to ManagerDetailsModal)
+   ============================================================================= */
+const styles: { [key: string]: React.CSSProperties } = {
+  modalOverlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1000,
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: "30px",
+    borderRadius: "8px",
+    maxWidth: "600px",
+    width: "90%",
+    maxHeight: "90vh",
+    overflowY: "auto",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+  },
+  modalHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "20px",
+    paddingBottom: "15px",
+    borderBottom: "2px solid #dee2e6",
+  },
+  modalTitle: {
+    fontSize: "1.5rem",
+    color: "#333",
+    margin: 0,
+  },
+  closeButton: {
+    background: "none",
+    border: "none",
+    fontSize: "1.5rem",
+    cursor: "pointer",
+    color: "#6c757d",
+    padding: "5px 10px",
+  },
+  profileHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: "20px",
+    marginBottom: "30px",
+    paddingBottom: "20px",
+    borderBottom: "1px solid #e5e7eb",
+  },
+  profileInfo: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    gap: "5px",
+  },
+  profileName: {
+    fontSize: "1.5rem",
+    fontWeight: "bold",
+    color: "#333",
+    margin: 0,
+  },
+  profileEmail: {
+    fontSize: "1rem",
+    color: "#6c757d",
+    margin: 0,
+  },
+  infoSection: {
+    marginBottom: "20px",
+  },
+  infoRow: {
+    display: "flex",
+    flexDirection: "column",
+    marginBottom: "15px",
+  },
+  label: {
+    fontSize: "0.9rem",
+    fontWeight: "bold",
+    color: "#495057",
+    marginBottom: "5px",
+  },
+  value: {
+    fontSize: "1rem",
+    color: "#212529",
+    padding: "8px 12px",
+    backgroundColor: "#f8f9fa",
+    borderRadius: "4px",
+    display: "flex", // <-- Añadido para alinear avatar
+    alignItems: "center", // <-- Añadido para alinear avatar
+    gap: "10px", // <-- Añadido para alinear avatar
+  },
+  buttonContainer: {
+    display: "flex",
+    gap: "10px",
+    justifyContent: "flex-end", // Botones a la derecha
+    marginTop: "20px",
+    paddingTop: "15px",
+    borderTop: "1px solid #dee2e6",
+  },
+  button: {
+    padding: "10px 20px",
+    fontSize: "1rem",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+  },
+  closeBtn: {
+    backgroundColor: "#6c757d",
+    color: "white",
+  },
+};
+
+/* =============================================================================
+   COMPONENTE: VisitsDetailsModal
+   ============================================================================= */
+export const VisitsDetailsModal = ({
+  isOpen,
+  onClose,
+  visit,
+}: VisitsDetailsModalProps) => {
+  // Manejar cierre del modal
+  // Handle modal close
+  const handleClose = useCallback(() => {
+    onClose();
+  }, [onClose]);
+
+  // Manejar tecla ESC para cerrar
+  // Handle ESC key to close
+  useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && isOpen) {
+        handleClose();
+      }
+    };
+    document.addEventListener("keydown", handleEscKey);
+    return () => {
+      document.removeEventListener("keydown", handleEscKey);
+    };
+  }, [isOpen, handleClose]);
+
+  // Formatear fecha para mostrar
+  // Format date for display
+  const formatFullDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleString("es-ES", {
+      year: "numeric",
+      month: "long",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  };
+
+  // --- Render ---
+
+  if (!isOpen || !visit) return null;
+
+  return (
+    <>
+      <div
+        style={styles.modalOverlay}
+        onClick={handleClose}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title">
+        <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+          {/* Header del modal */}
+          {/* Modal header */}
+          <div style={styles.modalHeader}>
+            <h2 id="modal-title" style={styles.modalTitle}>
+              🎟️ Detalle de la Visita (ID: {visit.id})
+            </h2>
+            <button
+              style={styles.closeButton}
+              onClick={handleClose}
+              aria-label="Cerrar modal">
+              ✕
+            </button>
+          </div>
+
+          {/* Header con Avatar, nombre y email del USUARIO */}
+          {/* Header with Avatar, name and email of USER */}
+          <div style={styles.profileHeader}>
+            <Avatar
+              src={visit.user_profile_picture}
+              firstName={visit.user_name || "Usuario"}
+              lastName={""}
+              size={100}
+            />
+            <div style={styles.profileInfo}>
+              <h3 style={styles.profileName}>{visit.user_name || "N/A"}</h3>
+              <p style={styles.profileEmail}>{visit.user_email || "N/A"}</p>
+            </div>
+          </div>
+
+          {/* Contenido del modal (solo vista) */}
+          {/* Modal content (view-only) */}
+          <div style={styles.infoSection}>
+            <div style={styles.infoRow}>
+              <label style={styles.label}>Gimnasio Visitado:</label>
+              <div style={styles.value}>
+                <Avatar
+                  src={visit.gym_logo_url}
+                  firstName={visit.gym_name || "Gimnasio"}
+                  lastName=""
+                  size={30}
+                />
+                <span>{visit.gym_name || "N/A"}</span>
+              </div>
+            </div>
+
+            <div style={styles.infoRow}>
+              <label style={styles.label}>Ciudad del Gimnasio:</label>
+              <div style={styles.value}>{visit.gym_city || "N/A"}</div>
+            </div>
+
+            <div style={styles.infoRow}>
+              <label style={styles.label}>Fecha y Hora de la Visita:</label>
+              <div style={styles.value}>{formatFullDate(visit.visit_date)}</div>
+            </div>
+          </div>
+
+          {/* Botones de acción */}
+          {/* Action buttons */}
+          <div style={styles.buttonContainer}>
+            {/* Botón Cerrar */}
+            {/* Close Button */}
+            <button
+              style={{ ...styles.button, ...styles.closeBtn }}
+              onClick={handleClose}>
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
