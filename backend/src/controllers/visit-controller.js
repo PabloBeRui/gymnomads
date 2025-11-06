@@ -174,10 +174,10 @@ const getAllVisits = async (req, res) => {
         visits.visited_at AS visit_date,
         CONCAT(u.first_name, ' ', u.last_name) AS user_name,
         u.email AS user_email,
-        u.profile_picture,
+        u.profile_picture AS user_profile_picture,
         g.name AS gym_name,
         g.city AS gym_city,
-        g.logo_url
+        g.logo_url AS gym_logo_url
       FROM visits
       JOIN users u ON visits.user_id = u.id
       JOIN gyms g ON visits.gym_id = g.id
@@ -215,13 +215,15 @@ const getAllVisits = async (req, res) => {
     // ---  8. Construir URLs completas para imágenes /  8. Build full URLs for images ---
     const baseUrl = process.env.BASE_URL || "";
     const visitsWithUrls = visits.map((visit) => {
-      if (visit.profile_picture) {
-        const imagePath = visit.profile_picture.replace(/\\/g, "/");
-        visit.profile_picture = `${baseUrl}/${imagePath}`;
+      if (visit.user_profile_picture) {
+        // <-- CORREGIDO
+        const imagePath = visit.user_profile_picture.replace(/\\/g, "/");
+        visit.user_profile_picture = `${baseUrl}/${imagePath}`; // <-- CORREGIDO
       }
-      if (visit.logo_url) {
-        const logoPath = visit.logo_url.replace(/\\/g, "/");
-        visit.logo_url = `${baseUrl}/${logoPath}`;
+      if (visit.gym_logo_url) {
+        // <-- CORREGIDO
+        const logoPath = visit.gym_logo_url.replace(/\\/g, "/");
+        visit.gym_logo_url = `${baseUrl}/${logoPath}`; // <-- CORREGIDO
       }
       return visit;
     });
@@ -280,10 +282,10 @@ const getManagerGymVisits = async (req, res) => {
         visits.visited_at AS visit_date,
         CONCAT(u.first_name, ' ', u.last_name) AS user_name,
         u.email AS user_email,
-        u.profile_picture,
+        u.profile_picture AS user_profile_picture,,
         g.name AS gym_name,
         g.city AS gym_city,
-        g.logo_url
+        g.logo_url AS gym_logo_url
       FROM visits
       JOIN users u ON visits.user_id = u.id
       JOIN gyms g ON visits.gym_id = g.id
@@ -314,13 +316,15 @@ const getManagerGymVisits = async (req, res) => {
     // ---  8. Construir URLs completas para imágenes /  8. Build full URLs for images ---
     const baseUrl = process.env.BASE_URL || "";
     const visitsWithUrls = visits.map((visit) => {
-      if (visit.profile_picture) {
-        const imagePath = visit.profile_picture.replace(/\\/g, "/");
-        visit.profile_picture = `${baseUrl}/${imagePath}`;
+      if (visit.user_profile_picture) {
+        // <-- CORREGIDO
+        const imagePath = visit.user_profile_picture.replace(/\\/g, "/");
+        visit.user_profile_picture = `${baseUrl}/${imagePath}`; // <-- CORREGIDO
       }
-      if (visit.logo_url) {
-        const logoPath = visit.logo_url.replace(/\\/g, "/");
-        visit.logo_url = `${baseUrl}/${logoPath}`;
+      if (visit.gym_logo_url) {
+        // <-- CORREGIDO
+        const logoPath = visit.gym_logo_url.replace(/\\/g, "/");
+        visit.gym_logo_url = `${baseUrl}/${logoPath}`; // <-- CORREGIDO
       }
       return visit;
     });
