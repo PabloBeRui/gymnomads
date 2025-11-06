@@ -282,7 +282,7 @@ const getManagerGymVisits = async (req, res) => {
         visits.visited_at AS visit_date,
         CONCAT(u.first_name, ' ', u.last_name) AS user_name,
         u.email AS user_email,
-        u.profile_picture AS user_profile_picture,,
+        u.profile_picture AS user_profile_picture,
         g.name AS gym_name,
         g.city AS gym_city,
         g.logo_url AS gym_logo_url
