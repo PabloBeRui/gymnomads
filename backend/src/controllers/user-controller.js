@@ -488,16 +488,34 @@ const getAllManagers = async (req, res) => {
  * ======================================== */
 const changePassword = async (req, res) => {
   try {
-    // 1. Obtener el ID del usuario del token
-    // 1. Get the user ID from the token
-    const userId = req.user.userId;
+    // --- Validación de Rol ---
+    // --- Role Validation ---
 
-    // 2. Obtener las contraseñas del cuerpo de la petición
-    // 2. Get the passwords from the request body
+    // 1. Obtener los datos del usuario logueado (del token, vía middleware)
+    // 1. Get logged in user data (from token, via middleware)
+    const loggedInUser = req.user;
+
+    // 2. Comprobar si el rol es 'admin'
+    // 2. Check if the role is 'admin'
+    if (loggedInUser.role === "admin") {
+      // 403 Prohibido: Los admins no pueden usar esta ruta
+      // 403 Forbidden: Admins cannot use this route
+      return res.status(403).json({
+        message:
+          "Acción no permitida. Los administradores no pueden cambiar su contraseña desde este panel.",
+      });
+    }
+
+    // 3. Obtener el ID del usuario
+    // 3. Get the user ID
+    const userId = loggedInUser.userId;
+
+    // 4. Obtener las contraseñas del cuerpo de la petición
+    // 4. Get the passwords from the request body
     const { currentPassword, newPassword } = req.body;
 
-    // 3. Buscar al usuario en la base de datos para obtener su hash actual
-    // 3. Find the user in the database to get their current hash
+    // 5. Buscar al usuario en la base de datos para obtener su hash actual
+    // 5. Find the user in the database to get their current hash
     const [users] = await db.query("SELECT password FROM users WHERE id = ?", [
       userId,
     ]);
@@ -508,8 +526,8 @@ const changePassword = async (req, res) => {
 
     const user = users[0];
 
-    // 4. Verificar que la contraseña actual es correcta
-    // 4. Verify that the current password is correct
+    // 6. Verificar que la contraseña actual es correcta
+    // 6. Verify that the current password is correct
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
       return res
@@ -517,20 +535,20 @@ const changePassword = async (req, res) => {
         .json({ message: "la contraseña actual es incorrecta" });
     }
 
-    // 5. Hashear la nueva contraseña
-    // 5. Hash the new password
+    // 7. Hashear la nueva contraseña
+    // 7. Hash the new password
     const saltRounds = 10;
     const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
 
-    // 6. Actualizar la contraseña en la base de datos
-    // 6. Update the password in the database
+    // 8. Actualizar la contraseña en la base de datos
+    // 8. Update the password in the database
     await db.query("UPDATE users SET password = ? WHERE id = ?", [
       hashedNewPassword,
       userId,
     ]);
 
-    // 7. Enviar respuesta de éxito
-    // 7. Send success response
+    // 9. Enviar respuesta de éxito
+    // 9. Send success response
     res.status(200).json({ message: "contraseña actualizada con éxito" });
   } catch (error) {
     console.error(`Fallo al actualizar la contraseña: ${error}`);
