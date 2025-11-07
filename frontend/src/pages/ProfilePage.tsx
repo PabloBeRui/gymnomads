@@ -11,13 +11,14 @@
  * - Editar nombre, apellidos y teléfono
  * - Cambiar foto de perfil
  * - Modo edición con validación
- * -  Permite cambiar la contraseña
+ * - Permite cambiar la contraseña (excepto para 'admin')
  *
  * ✅ Usando / USING:
  * - useImageUpload (para manejo de foto de perfil)
  * - ImageUploadPreview (componente de preview)
  * - useApiCall (llamadas API)
- *-handleAPiError
+ * - handleApiError
+ * - useAuth (para obtener datos y rol del usuario)
  * =============================================================================
  */
 
@@ -35,14 +36,12 @@ import { useImageUpload } from "../hooks/useImageUpload";
 import { ImageUploadPreview } from "../components/ImageUploadPreview";
 
 // Importar servicios / Import services
-// --- MODIFICADO: Añadir 'changePassword' / MODIFIED: Add 'changePassword' ---
 import { getGymById } from "../services/gym-services";
 import {
-  updateUserProfile, // <--- Mantenemos tu nombre original
+  updateUserProfile,
   uploadProfilePicture,
-  changePassword, // <-- AÑADIDO
+  changePassword,
 } from "../services/user-services";
-// --- FIN MODIFICACIÓN ---
 
 // Importar interfaces / Import interfaces
 import type {
@@ -50,15 +49,15 @@ import type {
   User,
   UploadProfilePictureResponse,
   UpdateProfileResponse,
-  ChangePasswordData, // <-- AÑADIDO
+  ChangePasswordData,
 } from "../interfaces/user-interfaces";
 
 // Importar utilidades / Import utilities
 import { handleApiError } from "../utils/error-handler";
 
 /* =============================================================================
-   ESTILOS (inline) / STYLES (inline)
-   ============================================================================= */
+    ESTILOS (inline) / STYLES (inline)
+    ============================================================================= */
 const styles: { [key: string]: React.CSSProperties } = {
   container: { padding: 20, maxWidth: 720, margin: "20px auto" },
   header: { marginBottom: 16 },
@@ -103,8 +102,23 @@ const styles: { [key: string]: React.CSSProperties } = {
     boxSizing: "border-box",
   },
   smallHelp: { fontSize: "0.9rem", color: "#666", marginTop: 6 },
-  // --- NUEVO: Estilos para sección de contraseña ---
-  // --- NEW: Styles for password section ---
+  adminNotice: {
+    padding: "12px 16px",
+    borderRadius: 4,
+    backgroundColor: "#e6f7ff", // Un 'info' azul claro / A light 'info' blue
+    border: "1px solid #b3e0ff",
+    color: "#0056b3", // Texto azul oscuro / Dark blue text
+  },
+  adminNoticeLink: {
+    color: "#004085", // Más oscuro para el link / Darker for the link
+    fontWeight: "bold",
+    textDecoration: "underline",
+    marginLeft: "4px", // Pequeño espacio / A small space
+  },
+  // --- FIN MODIFICACIÓN ---
+
+  // --- Estilos para sección de contraseña ---
+  // --- Styles for password section ---
   passwordSection: {
     marginTop: "30px",
     paddingTop: "20px",
@@ -121,8 +135,8 @@ const styles: { [key: string]: React.CSSProperties } = {
 };
 
 /* =============================================================================
-   COMPONENTE: ProfilePage / COMPONENT: ProfilePage
-   ============================================================================= */
+    COMPONENTE: ProfilePage / COMPONENT: ProfilePage
+    ============================================================================= */
 export const ProfilePage: React.FC = () => {
   // --- Context / Auth ---
   const { user, token, setUser } = useAuth(); // Mantenemos tu 'setUser' original
@@ -136,7 +150,7 @@ export const ProfilePage: React.FC = () => {
   const [editLastName, setEditLastName] = useState<string>("");
   const [editPhone, setEditPhone] = useState<string>("");
 
-  // --- NUEVO: Estados de Contraseña / NEW: Password States ---
+  // --- Estados de Contraseña / Password States ---
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
@@ -151,7 +165,7 @@ export const ProfilePage: React.FC = () => {
     execute,
   } = useApiCall("Error al guardar el perfil.");
 
-  // --- NUEVO: Hook de API para contraseña / NEW: API Hook for password ---
+  // --- Hook de API para contraseña / API Hook for password ---
   const { loading: isChangingPassword, execute: executePasswordChange } =
     useApiCall<{ message: string }>();
 
@@ -172,9 +186,9 @@ export const ProfilePage: React.FC = () => {
     import.meta.env.VITE_BACKEND_BASE_URL || window.location.origin;
 
   /* ===========================================================================
-     Sincronizar campos editables cuando cambian los datos del usuario
-     Sync editable fields when user data changes
-     =========================================================================== */
+      Sincronizar campos editables cuando cambian los datos del usuario
+      Sync editable fields when user data changes
+      =========================================================================== */
   useEffect(() => {
     if (user) {
       setEditFirstName(user.first_name || "");
@@ -184,9 +198,9 @@ export const ProfilePage: React.FC = () => {
   }, [user]);
 
   /* ===========================================================================
-     Obtener el nombre del gimnasio si el usuario tiene home_gym_id
-     Fetch gym name if user has a home_gym_id
-     =========================================================================== */
+      Obtener el nombre del gimnasio si el usuario tiene home_gym_id
+      Fetch gym name if user has a home_gym_id
+      =========================================================================== */
   useEffect(() => {
     const fetchGym = async () => {
       if (!user?.home_gym_id) return;
@@ -207,9 +221,9 @@ export const ProfilePage: React.FC = () => {
   }, [user?.home_gym_id]);
 
   /* ===========================================================================
-     Inicializar preview desde user.profile_picture (si está disponible)
-     Initialize preview from user.profile_picture (if available)
-     =========================================================================== */
+      Inicializar preview desde user.profile_picture (si está disponible)
+      Initialize preview from user.profile_picture (if available)
+      =========================================================================== */
   useEffect(() => {
     if (!user?.profile_picture) return;
 
@@ -226,9 +240,9 @@ export const ProfilePage: React.FC = () => {
   }, [user?.profile_picture]);
 
   /* ===========================================================================
-     Manejadores: editar, cancelar, guardar
-     Handlers: edit, cancel, save
-     =========================================================================== */
+      Manejadores: editar, cancelar, guardar
+      Handlers: edit, cancel, save
+      =========================================================================== */
   const handleEditClick = () => {
     setEditFirstName(user?.first_name || "");
     setEditLastName(user?.last_name || "");
@@ -267,7 +281,7 @@ export const ProfilePage: React.FC = () => {
     setEditLastName(user?.last_name || "");
     setEditPhone(user?.phone || "");
 
-    // --- NUEVO: Limpiar campos de contraseña / NEW: Clear password fields ---
+    // --- Limpiar campos de contraseña / Clear password fields ---
     setPasswordError(null);
     setPasswordSuccess(null);
     setCurrentPassword("");
@@ -317,7 +331,7 @@ export const ProfilePage: React.FC = () => {
         phone: editPhone || null,
       };
 
-      // --- Mantenemos tu 'updateUserProfile' original / --- Keep your original 'updateUserProfile'
+      //  'updateUserProfile' original /  original 'updateUserProfile'
       const updateResp = await execute<UpdateProfileResponse>(() =>
         updateUserProfile(token, payload)
       );
@@ -352,7 +366,7 @@ export const ProfilePage: React.FC = () => {
     }
   };
 
-  // --- NUEVO: Manejar cambio de contraseña / NEW: Handle password change ---
+  // --- Manejar cambio de contraseña / Handle password change ---
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     setPasswordError(null);
@@ -401,11 +415,10 @@ export const ProfilePage: React.FC = () => {
   };
 
   /* ===========================================================================
-     Render
-     Renderizado
-     =========================================================================== */
+      Render
+      Renderizado
+      =========================================================================== */
   if (!user) {
-    // Tu lógica original no usa 'authLoading' aquí
     return (
       <div style={styles.container}>
         <p style={styles.errorText}>
@@ -543,95 +556,112 @@ export const ProfilePage: React.FC = () => {
         </div>
       </div>
 
-      {/* --- NUEVO: Sección de Contraseña (Solo en modo edición) --- */}
-      {/* --- NEW: Password Section (Edit mode only) --- */}
-      {isEditing && (
-        <div style={styles.passwordSection}>
-          <h4 style={styles.passwordTitle}>Cambiar Contraseña</h4>
-
-          {/* Formulario de Contraseña / Password Form */}
-          <form onSubmit={handlePasswordChange}>
-            {/* Campo: Contraseña Actual / Field: Current Password */}
-            <div style={styles.formGroup}>
-              <label htmlFor="currentPassword" style={styles.label}>
-                Contraseña Actual: <span style={{ color: "red" }}>*</span>
-              </label>
-              <input
-                type="password"
-                id="currentPassword"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                style={styles.input}
-                disabled={isChangingPassword}
-                required
-              />
+      {isEditing &&
+        (user?.role === "admin" ? (
+          // ES ADMIN: Mostrar aviso / IS ADMIN: Show notice
+          <div style={styles.passwordSection}>
+            <h4 style={styles.passwordTitle}>Cambiar Contraseña</h4>
+            <div style={styles.adminNotice}>
+              <p style={{ margin: 0 }}>
+                Si necesita cambiar el password, póngase en contacto con
+                <a
+                  href="mailto:gymnomads@gymnomads.com"
+                  style={styles.adminNoticeLink}>
+                  gymnomads@gymnomads.com
+                </a>
+                .
+              </p>
             </div>
+          </div>
+        ) : (
+          // NO ES ADMIN: Mostrar formulario (tu código original)
+          // IS NOT ADMIN: Show form (your original code)
+          <div style={styles.passwordSection}>
+            <h4 style={styles.passwordTitle}>Cambiar Contraseña</h4>
 
-            {/* Campo: Nueva Contraseña / Field: New Password */}
-            <div style={styles.formGroup}>
-              <label htmlFor="newPassword" style={styles.label}>
-                Nueva Contraseña: <span style={{ color: "red" }}>*</span>
-              </label>
-              <input
-                type="password"
-                id="newPassword"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                style={styles.input}
-                disabled={isChangingPassword}
-                minLength={6}
-                required
-              />
-            </div>
+            {/* Formulario de Contraseña / Password Form */}
+            <form onSubmit={handlePasswordChange}>
+              {/* Campo: Contraseña Actual / Field: Current Password */}
+              <div style={styles.formGroup}>
+                <label htmlFor="currentPassword" style={styles.label}>
+                  Contraseña Actual: <span style={{ color: "red" }}>*</span>
+                </label>
+                <input
+                  type="password"
+                  id="currentPassword"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  style={styles.input}
+                  disabled={isChangingPassword}
+                  required
+                />
+              </div>
 
-            {/* Campo: Confirmar Nueva Contraseña / Field: Confirm New Password */}
-            <div style={styles.formGroup}>
-              <label htmlFor="confirmNewPassword" style={styles.label}>
-                Confirmar Nueva Contraseña:{" "}
-                <span style={{ color: "red" }}>*</span>
-              </label>
-              <input
-                type="password"
-                id="confirmNewPassword"
-                value={confirmNewPassword}
-                onChange={(e) => setConfirmNewPassword(e.target.value)}
-                style={styles.input}
-                disabled={isChangingPassword}
-                minLength={6}
-                required
-              />
-              {/* Indicador de coincidencia / Match indicator */}
-              {newPassword &&
-                confirmNewPassword &&
-                (newPassword === confirmNewPassword ? (
-                  <small style={styles.successText}>
-                    ✓ Las contraseñas coinciden
-                  </small>
-                ) : (
-                  <small style={styles.errorText}>
-                    ✗ Las contraseñas no coinciden
-                  </small>
-                ))}
-            </div>
+              {/* Campo: Nueva Contraseña / Field: New Password */}
+              <div style={styles.formGroup}>
+                <label htmlFor="newPassword" style={styles.label}>
+                  Nueva Contraseña: <span style={{ color: "red" }}>*</span>
+                </label>
+                <input
+                  type="password"
+                  id="newPassword"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  style={styles.input}
+                  disabled={isChangingPassword}
+                  minLength={6}
+                  required
+                />
+              </div>
 
-            {/* Botón para cambiar contraseña / Button to change password */}
-            <button
-              type="submit" // 'submit' para este formulario anidado
-              style={{ ...styles.button, ...styles.editButton }} // Azul
-              disabled={isChangingPassword}>
-              {isChangingPassword
-                ? "Cambiando..."
-                : "Establecer Nueva Contraseña"}
-            </button>
+              {/* Campo: Confirmar Nueva Contraseña / Field: Confirm New Password */}
+              <div style={styles.formGroup}>
+                <label htmlFor="confirmNewPassword" style={styles.label}>
+                  Confirmar Nueva Contraseña:{" "}
+                  <span style={{ color: "red" }}>*</span>
+                </label>
+                <input
+                  type="password"
+                  id="confirmNewPassword"
+                  value={confirmNewPassword}
+                  onChange={(e) => setConfirmNewPassword(e.target.value)}
+                  style={styles.input}
+                  disabled={isChangingPassword}
+                  minLength={6}
+                  required
+                />
+                {/* Indicador de coincidencia / Match indicator */}
+                {newPassword &&
+                  confirmNewPassword &&
+                  (newPassword === confirmNewPassword ? (
+                    <small style={styles.successText}>
+                      ✓ Las contraseñas coinciden
+                    </small>
+                  ) : (
+                    <small style={styles.errorText}>
+                      ✗ Las contraseñas no coinciden
+                    </small>
+                  ))}
+              </div>
 
-            {/* Mensajes de feedback de contraseña / Password feedback messages */}
-            {passwordError && <p style={styles.errorText}>{passwordError}</p>}
-            {passwordSuccess && (
-              <p style={styles.successText}>{passwordSuccess}</p>
-            )}
-          </form>
-        </div>
-      )}
+              {/* Botón para cambiar contraseña / Button to change password */}
+              <button
+                type="submit" // 'submit' para este formulario anidado
+                style={{ ...styles.button, ...styles.editButton }} // Azul
+                disabled={isChangingPassword}>
+                {isChangingPassword
+                  ? "Cambiando..."
+                  : "Establecer Nueva Contraseña"}
+              </button>
+
+              {/* Mensajes de feedback de contraseña / Password feedback messages */}
+              {passwordError && <p style={styles.errorText}>{passwordError}</p>}
+              {passwordSuccess && (
+                <p style={styles.successText}>{passwordSuccess}</p>
+              )}
+            </form>
+          </div>
+        ))}
 
       {/* Botones de Acción (Guardar / Editar) / Action Buttons (Save / Edit) */}
       <div style={styles.buttonRow}>
