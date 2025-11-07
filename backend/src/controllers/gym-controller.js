@@ -14,7 +14,7 @@ const getAllGyms = async (req, res) => {
 
     // 2. Construir query base
     // 2. Build base query
-    let query = "SELECT * FROM gyms";
+    let query = "SELECT * FROM gyms WHERE id != 1";
     const params = [];
 
     // 3. Aplicar filtro por ciudad si se proporciona
