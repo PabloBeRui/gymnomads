@@ -11,12 +11,13 @@
  * - Editar nombre, apellidos y teléfono
  * - Cambiar foto de perfil
  * - Modo edición con validación
+ * -  Permite cambiar la contraseña
  *
  * ✅ Usando / USING:
- * - useImageUpload (para manejo de foto de perfil) / useImageUpload (for profile picture handling)
- * - ImageUploadPreview (componente de preview) / ImageUploadPreview (preview component)
- * - useApiCall (llamadas API) / useApiCall (API calls)
- * - handleApiError (manejo de errores) / handleApiError (error handling)
+ * - useImageUpload (para manejo de foto de perfil)
+ * - ImageUploadPreview (componente de preview)
+ * - useApiCall (llamadas API)
+ *-handleAPiError
  * =============================================================================
  */
 
@@ -34,11 +35,14 @@ import { useImageUpload } from "../hooks/useImageUpload";
 import { ImageUploadPreview } from "../components/ImageUploadPreview";
 
 // Importar servicios / Import services
+// --- MODIFICADO: Añadir 'changePassword' / MODIFIED: Add 'changePassword' ---
 import { getGymById } from "../services/gym-services";
 import {
-  updateUserProfile,
+  updateUserProfile, // <--- Mantenemos tu nombre original
   uploadProfilePicture,
+  changePassword, // <-- AÑADIDO
 } from "../services/user-services";
+// --- FIN MODIFICACIÓN ---
 
 // Importar interfaces / Import interfaces
 import type {
@@ -46,6 +50,7 @@ import type {
   User,
   UploadProfilePictureResponse,
   UpdateProfileResponse,
+  ChangePasswordData, // <-- AÑADIDO
 } from "../interfaces/user-interfaces";
 
 // Importar utilidades / Import utilities
@@ -65,6 +70,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: 4,
     border: "1px solid #ccc",
     boxSizing: "border-box",
+    width: "100%", // Asegurar ancho completo
   },
   buttonRow: { marginTop: 12, display: "flex", gap: 8 },
   button: {
@@ -83,17 +89,35 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: 4,
     cursor: "pointer",
   },
-  errorText: { color: "red", marginTop: 8 },
+  errorText: { color: "red", marginTop: 8, fontSize: "0.9em" },
+  successText: { color: "green", marginTop: 8, fontSize: "0.9em" }, // Estilo para éxito
   disabledText: {
     color: "grey",
     fontStyle: "italic",
     backgroundColor: "#f8f8f8",
-    padding: "2px 4px",
-    borderRadius: 3,
-    display: "inline-block",
+    padding: "6px 8px", // Coincidir con input
+    borderRadius: 4,
+    display: "block", // 'block' para que 'width' 100% funcione
     margin: 0,
+    width: "100%",
+    boxSizing: "border-box",
   },
   smallHelp: { fontSize: "0.9rem", color: "#666", marginTop: 6 },
+  // --- NUEVO: Estilos para sección de contraseña ---
+  // --- NEW: Styles for password section ---
+  passwordSection: {
+    marginTop: "30px",
+    paddingTop: "20px",
+    borderTop: "1px solid #eee",
+  },
+  passwordTitle: {
+    fontSize: "1.2rem",
+    fontWeight: "bold",
+    marginBottom: "15px",
+  },
+  formGroup: {
+    marginBottom: "15px",
+  },
 };
 
 /* =============================================================================
@@ -101,7 +125,7 @@ const styles: { [key: string]: React.CSSProperties } = {
    ============================================================================= */
 export const ProfilePage: React.FC = () => {
   // --- Context / Auth ---
-  const { user, token, setUser } = useAuth();
+  const { user, token, setUser } = useAuth(); // Mantenemos tu 'setUser' original
 
   // --- Local state / Estados locales ---
   const [gymName, setGymName] = useState<string | null>(null);
@@ -112,16 +136,27 @@ export const ProfilePage: React.FC = () => {
   const [editLastName, setEditLastName] = useState<string>("");
   const [editPhone, setEditPhone] = useState<string>("");
 
-  // API hook for save/update actions (handles loading + errors)
+  // --- NUEVO: Estados de Contraseña / NEW: Password States ---
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
+
   // Hook para acciones de guardado/actualización (gestiona loading y errores)
+  // Hook for save/update actions (handles loading + errors)
   const {
     loading: isSaving,
     error: editError,
     execute,
   } = useApiCall("Error al guardar el perfil.");
 
-  // useImageUpload hook (no extra typing here; hook API used below)
-  // Hook useImageUpload para manejar selección/preview/subida de imagen de perfil
+  // --- NUEVO: Hook de API para contraseña / NEW: API Hook for password ---
+  const { loading: isChangingPassword, execute: executePasswordChange } =
+    useApiCall<{ message: string }>();
+
+  // Hook useImageUpload (versión Objeto, como en tu original)
+  // useImageUpload hook (Object version, as in your original)
   const profileImageUpload = useImageUpload({
     maxSizeMB: 5,
     allowedTypes: ["image/png", "image/jpeg", "image/jpg", "image/webp"],
@@ -131,16 +166,15 @@ export const ProfilePage: React.FC = () => {
     },
   });
 
-  // Backend base URL fallback (para construir URLs si la API devuelve rutas relativas)
-  // Fallback de la URL base del backend (to build absolute URLs if API returns relative paths)
+  // Fallback de la URL base del backend
+  // Fallback for the backend base URL
   const backendBaseUrl =
     import.meta.env.VITE_BACKEND_BASE_URL || window.location.origin;
 
   /* ===========================================================================
-     Sync editable fields when user data changes
      Sincronizar campos editables cuando cambian los datos del usuario
-     ===========================================================================
-  */
+     Sync editable fields when user data changes
+     =========================================================================== */
   useEffect(() => {
     if (user) {
       setEditFirstName(user.first_name || "");
@@ -150,10 +184,9 @@ export const ProfilePage: React.FC = () => {
   }, [user]);
 
   /* ===========================================================================
-     Fetch gym name if user has a home_gym_id
      Obtener el nombre del gimnasio si el usuario tiene home_gym_id
-     ===========================================================================
-  */
+     Fetch gym name if user has a home_gym_id
+     =========================================================================== */
   useEffect(() => {
     const fetchGym = async () => {
       if (!user?.home_gym_id) return;
@@ -174,15 +207,14 @@ export const ProfilePage: React.FC = () => {
   }, [user?.home_gym_id]);
 
   /* ===========================================================================
+     Inicializar preview desde user.profile_picture (si está disponible)
      Initialize preview from user.profile_picture (if available)
-     Inicializar preview desde user.profile_picture si está disponible
-     ===========================================================================
-  */
+     =========================================================================== */
   useEffect(() => {
     if (!user?.profile_picture) return;
 
-    // If the stored profile_picture is a relative path, prefix backendBaseUrl
     // Si profile_picture es una ruta relativa, añado backendBaseUrl al principio
+    // If profile_picture is a relative path, prefix backendBaseUrl
     const pic = user.profile_picture;
     const normalized =
       typeof pic === "string" && !/^https?:\/\//i.test(pic)
@@ -194,18 +226,17 @@ export const ProfilePage: React.FC = () => {
   }, [user?.profile_picture]);
 
   /* ===========================================================================
-     Handlers: edit, cancel, save
      Manejadores: editar, cancelar, guardar
-     ===========================================================================
-  */
+     Handlers: edit, cancel, save
+     =========================================================================== */
   const handleEditClick = () => {
     setEditFirstName(user?.first_name || "");
     setEditLastName(user?.last_name || "");
     setEditPhone(user?.phone || "");
     setIsEditing(true);
 
-    // clear any previous selected file and ensure preview shows current image
     // Limpiar archivo seleccionado anteriormente y asegurar que el preview muestre la imagen actual
+    // clear any previous selected file and ensure preview shows current image
     profileImageUpload.clearImage();
     if (user?.profile_picture) {
       const pic = user.profile_picture;
@@ -219,8 +250,8 @@ export const ProfilePage: React.FC = () => {
 
   const handleCancelClick = () => {
     setIsEditing(false);
-    // restore preview and clear selected file
     // Restaurar preview y limpiar archivo seleccionado
+    // Restore preview and clear selected file
     profileImageUpload.clearImage();
     if (user?.profile_picture) {
       const pic = user.profile_picture;
@@ -230,15 +261,22 @@ export const ProfilePage: React.FC = () => {
           : pic;
       profileImageUpload.setPreviewUrl(normalized);
     }
-    // reset fields to current user values
     // Restaurar campos a los valores actuales del usuario
+    // Reset fields to current user values
     setEditFirstName(user?.first_name || "");
     setEditLastName(user?.last_name || "");
     setEditPhone(user?.phone || "");
+
+    // --- NUEVO: Limpiar campos de contraseña / NEW: Clear password fields ---
+    setPasswordError(null);
+    setPasswordSuccess(null);
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmNewPassword("");
   };
 
   const handleSaveClick = async () => {
-    // basic validation / validación básica
+    // validación básica / basic validation
     if (!editFirstName || !editLastName) {
       toast.error("El nombre y los apellidos son obligatorios.");
       return;
@@ -252,17 +290,17 @@ export const ProfilePage: React.FC = () => {
     let newImageUrl: string | null = user?.profile_picture || null;
 
     try {
-      // 1) upload image if selected
       // 1) subir imagen si se seleccionó
+      // 1) upload image if selected
       if (profileImageUpload.selectedFile) {
         const uploadResp = await execute<UploadProfilePictureResponse>(() =>
-          // uploadProfilePicture expects (token, file)
           // uploadProfilePicture espera (token, file)
+          // uploadProfilePicture expects (token, file)
           uploadProfilePicture(token, profileImageUpload.selectedFile!)
         );
 
-        // Normalize filePath and build absolute URL
         // Normalizar filePath y construir URL absoluta
+        // Normalize filePath and build absolute URL
         const path = (uploadResp.filePath || "")
           .replace(/\\/g, "/")
           .replace(/^\/+/, "");
@@ -271,26 +309,27 @@ export const ProfilePage: React.FC = () => {
         toast.success(uploadResp.message || "Foto de perfil actualizada.");
       }
 
-      // 2) update text fields
       // 2) actualizar campos de texto
+      // 2) update text fields
       const payload: UpdateUserData = {
         first_name: editFirstName,
         last_name: editLastName,
         phone: editPhone || null,
       };
 
+      // --- Mantenemos tu 'updateUserProfile' original / --- Keep your original 'updateUserProfile'
       const updateResp = await execute<UpdateProfileResponse>(() =>
         updateUserProfile(token, payload)
       );
 
-      // show success when only text changed (image upload already showed its toast)
       // mostrar success si solo se cambiaron textos (la subida de imagen ya mostró su toast)
+      // show success when only text changed (image upload already showed its toast)
       if (!profileImageUpload.selectedFile) {
         toast.success(updateResp.message || "Perfil actualizado con éxito.");
       }
 
-      // 3) update context user
       // 3) actualizar el usuario en el contexto
+      // 3) update the user in the context
       const updatedUser: User = {
         ...user!,
         first_name: editFirstName,
@@ -298,11 +337,10 @@ export const ProfilePage: React.FC = () => {
         phone: editPhone || null,
         profile_picture: newImageUrl || null,
       };
+      setUser(updatedUser); // <-- Mantenemos tu 'setUser' original
 
-      setUser(updatedUser);
-
-      // 4) cleanup
       // 4) limpieza final
+      // 4) cleanup
       setIsEditing(false);
       profileImageUpload.clearImage();
 
@@ -314,12 +352,60 @@ export const ProfilePage: React.FC = () => {
     }
   };
 
+  // --- NUEVO: Manejar cambio de contraseña / NEW: Handle password change ---
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordError(null);
+    setPasswordSuccess(null);
+
+    // 1. Validar token / 1. Validate token
+    if (!token) {
+      setPasswordError("No estás autenticado.");
+      return;
+    }
+    // 2. Validar que no falten campos / 2. Validate fields are not empty
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+      setPasswordError("Todos los campos de contraseña son obligatorios.");
+      return;
+    }
+    // 3. Validar que las contraseñas coincidan / 3. Validate passwords match
+    if (newPassword !== confirmNewPassword) {
+      setPasswordError("Las nuevas contraseñas no coinciden.");
+      return;
+    }
+    // 4. Validar longitud de contraseña / 4. Validate password length
+    if (newPassword.length < 6) {
+      setPasswordError("La nueva contraseña debe tener al menos 6 caracteres.");
+      return;
+    }
+    // 5. Preparar datos y llamar a la API / 5. Prepare data and call API
+    const passwordData: ChangePasswordData = {
+      currentPassword,
+      newPassword,
+    };
+    try {
+      const response = await executePasswordChange(() =>
+        changePassword(token, passwordData)
+      );
+      setPasswordSuccess(response.message || "Contraseña cambiada con éxito.");
+      toast.success("Contraseña cambiada con éxito.");
+      // Limpiar campos / Clear fields
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmNewPassword("");
+    } catch (error) {
+      setPasswordError(
+        (error as Error).message || "Error al cambiar la contraseña."
+      );
+    }
+  };
+
   /* ===========================================================================
      Render
      Renderizado
-     ===========================================================================
-  */
+     =========================================================================== */
   if (!user) {
+    // Tu lógica original no usa 'authLoading' aquí
     return (
       <div style={styles.container}>
         <p style={styles.errorText}>
@@ -329,8 +415,8 @@ export const ProfilePage: React.FC = () => {
     );
   }
 
-  // Determine display image URL: prefer hook previewUrl (already normalized), fallback to default
-  // Determinar URL de imagen a mostrar: preferir previewUrl del hook, si no fallback al default
+  // Determinar URL de imagen a mostrar
+  // Determine display image URL
   const displayImageUrl =
     profileImageUpload.previewUrl || "/images/profile/default-avatar.png";
 
@@ -338,7 +424,7 @@ export const ProfilePage: React.FC = () => {
     <div style={styles.container}>
       <h2 style={styles.header}>Mi Perfil</h2>
 
-      {/* PROFILE IMAGE / IMAGEN DE PERFIL */}
+      {/* IMAGEN DE PERFIL / PROFILE IMAGE */}
       <div style={styles.previewWrapper}>
         <input
           id="profile-file"
@@ -349,6 +435,8 @@ export const ProfilePage: React.FC = () => {
           style={{ display: "none" }}
         />
 
+        {/* Lógica de 'ImageUploadPreview' original (usando onClick) */}
+        {/* Original 'ImageUploadPreview' logic (using onClick) */}
         <ImageUploadPreview
           previewUrl={displayImageUrl}
           defaultImage="/images/profile/default-avatar.png"
@@ -368,40 +456,40 @@ export const ProfilePage: React.FC = () => {
         )}
       </div>
 
-      {/* NON-EDITABLE FIELDS / CAMPOS NO EDITABLES */}
-      <div style={styles.infoRow}>
+      {/* CAMPOS NO EDITABLES / NON-EDITABLE FIELDS */}
+      <div style={styles.formGroup}>
         <span style={styles.label}>Email:</span>
-        <span style={isEditing ? styles.disabledText : undefined}>
+        <div style={isEditing ? styles.disabledText : styles.input}>
           {user.email}
-        </span>
+        </div>
       </div>
 
-      <div style={styles.infoRow}>
+      <div style={styles.formGroup}>
         <span style={styles.label}>Rol:</span>
-        <span style={isEditing ? styles.disabledText : undefined}>
+        <div style={isEditing ? styles.disabledText : styles.input}>
           {user.role}
-        </span>
+        </div>
       </div>
 
-      {/* EDITABLE FIELDS OR VIEW MODE / CAMPOS EDITABLES O MODO VISUALIZACIÓN */}
+      {/* CAMPOS EDITABLES O MODO VISUALIZACIÓN / EDITABLE FIELDS OR VIEW MODE */}
       {!isEditing ? (
         <>
-          <div style={styles.infoRow}>
+          <div style={styles.formGroup}>
             <span style={styles.label}>Nombre:</span>
-            <span>{user.first_name}</span>
+            <div style={styles.input}>{user.first_name}</div>
           </div>
-          <div style={styles.infoRow}>
+          <div style={styles.formGroup}>
             <span style={styles.label}>Apellidos:</span>
-            <span>{user.last_name}</span>
+            <div style={styles.input}>{user.last_name}</div>
           </div>
-          <div style={styles.infoRow}>
+          <div style={styles.formGroup}>
             <span style={styles.label}>Teléfono:</span>
-            <span>{user.phone || "No especificado"}</span>
+            <div style={styles.input}>{user.phone || "No especificado"}</div>
           </div>
         </>
       ) : (
         <>
-          <div style={styles.infoRow}>
+          <div style={styles.formGroup}>
             <label htmlFor="edit-first-name" style={styles.label}>
               Nombre:
             </label>
@@ -414,7 +502,7 @@ export const ProfilePage: React.FC = () => {
             />
           </div>
 
-          <div style={styles.infoRow}>
+          <div style={styles.formGroup}>
             <label htmlFor="edit-last-name" style={styles.label}>
               Apellidos:
             </label>
@@ -427,7 +515,7 @@ export const ProfilePage: React.FC = () => {
             />
           </div>
 
-          <div style={styles.infoRow}>
+          <div style={styles.formGroup}>
             <label htmlFor="edit-phone" style={styles.label}>
               Teléfono:
             </label>
@@ -437,24 +525,115 @@ export const ProfilePage: React.FC = () => {
               value={editPhone}
               onChange={(e) => setEditPhone(e.target.value)}
               style={styles.input}
+              placeholder="Opcional"
             />
           </div>
         </>
       )}
 
-      {/* ASSOCIATED GYM / GIMNASIO ASOCIADO */}
-      <div style={styles.infoRow}>
+      {/* GIMNASIO ASOCIADO / ASSOCIATED GYM */}
+      <div style={styles.formGroup}>
         <span style={styles.label}>Gimnasio:</span>
-        <span style={isEditing ? styles.disabledText : undefined}>
+        <div style={isEditing ? styles.disabledText : styles.input}>
           {gymFetchError ? (
             <span style={{ color: "red" }}>{gymFetchError}</span>
           ) : (
             gymName || "Cargando..."
           )}
-        </span>
+        </div>
       </div>
 
-      {/* ACTION BUTTONS / BOTONES DE ACCION */}
+      {/* --- NUEVO: Sección de Contraseña (Solo en modo edición) --- */}
+      {/* --- NEW: Password Section (Edit mode only) --- */}
+      {isEditing && (
+        <div style={styles.passwordSection}>
+          <h4 style={styles.passwordTitle}>Cambiar Contraseña</h4>
+
+          {/* Formulario de Contraseña / Password Form */}
+          <form onSubmit={handlePasswordChange}>
+            {/* Campo: Contraseña Actual / Field: Current Password */}
+            <div style={styles.formGroup}>
+              <label htmlFor="currentPassword" style={styles.label}>
+                Contraseña Actual: <span style={{ color: "red" }}>*</span>
+              </label>
+              <input
+                type="password"
+                id="currentPassword"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                style={styles.input}
+                disabled={isChangingPassword}
+                required
+              />
+            </div>
+
+            {/* Campo: Nueva Contraseña / Field: New Password */}
+            <div style={styles.formGroup}>
+              <label htmlFor="newPassword" style={styles.label}>
+                Nueva Contraseña: <span style={{ color: "red" }}>*</span>
+              </label>
+              <input
+                type="password"
+                id="newPassword"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                style={styles.input}
+                disabled={isChangingPassword}
+                minLength={6}
+                required
+              />
+            </div>
+
+            {/* Campo: Confirmar Nueva Contraseña / Field: Confirm New Password */}
+            <div style={styles.formGroup}>
+              <label htmlFor="confirmNewPassword" style={styles.label}>
+                Confirmar Nueva Contraseña:{" "}
+                <span style={{ color: "red" }}>*</span>
+              </label>
+              <input
+                type="password"
+                id="confirmNewPassword"
+                value={confirmNewPassword}
+                onChange={(e) => setConfirmNewPassword(e.target.value)}
+                style={styles.input}
+                disabled={isChangingPassword}
+                minLength={6}
+                required
+              />
+              {/* Indicador de coincidencia / Match indicator */}
+              {newPassword &&
+                confirmNewPassword &&
+                (newPassword === confirmNewPassword ? (
+                  <small style={styles.successText}>
+                    ✓ Las contraseñas coinciden
+                  </small>
+                ) : (
+                  <small style={styles.errorText}>
+                    ✗ Las contraseñas no coinciden
+                  </small>
+                ))}
+            </div>
+
+            {/* Botón para cambiar contraseña / Button to change password */}
+            <button
+              type="submit" // 'submit' para este formulario anidado
+              style={{ ...styles.button, ...styles.editButton }} // Azul
+              disabled={isChangingPassword}>
+              {isChangingPassword
+                ? "Cambiando..."
+                : "Establecer Nueva Contraseña"}
+            </button>
+
+            {/* Mensajes de feedback de contraseña / Password feedback messages */}
+            {passwordError && <p style={styles.errorText}>{passwordError}</p>}
+            {passwordSuccess && (
+              <p style={styles.successText}>{passwordSuccess}</p>
+            )}
+          </form>
+        </div>
+      )}
+
+      {/* Botones de Acción (Guardar / Editar) / Action Buttons (Save / Edit) */}
       <div style={styles.buttonRow}>
         {!isEditing ? (
           <button
@@ -466,16 +645,17 @@ export const ProfilePage: React.FC = () => {
         ) : (
           <>
             <button
-              style={styles.button}
+              style={{ ...styles.button, ...styles.saveButton }} // Verde
               onClick={handleSaveClick}
-              disabled={isSaving}
+              disabled={isSaving || isChangingPassword} // Deshabilitar si CUALQUIERA está guardando
               aria-busy={isSaving}>
               {isSaving ? "Guardando..." : "Guardar Cambios"}
             </button>
             <button
-              style={styles.cancelButton}
+              style={styles.cancelButton} // Gris
               onClick={handleCancelClick}
-              disabled={isSaving}>
+              disabled={isSaving || isChangingPassword} // Deshabilitar si CUALQUIERA está guardando
+            >
               Cancelar
             </button>
           </>

@@ -172,3 +172,12 @@ export interface GymUser {
   role: string;
   registered_at: string;
 }
+
+/* ========================================
+ * Interfaz para Cambio de Contraseña
+ * Interface for Password Change
+ * ======================================== */
+export interface ChangePasswordData {
+  currentPassword: string;
+  newPassword: string;
+}

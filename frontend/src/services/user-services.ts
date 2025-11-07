@@ -18,6 +18,7 @@ import type {
   ManagerWithGym,
   UserWithGym,
   UpdateManagerData,
+  ChangePasswordData
 } from "../interfaces/user-interfaces";
 
 // Definir la URL base de la API.
@@ -565,6 +566,44 @@ export const deleteUser = async (
     const errorMessage = handleApiError(error, "Error al eliminar el usuario.");
     // Lanzar error procesado
     // Throw processed error
+    throw new Error(errorMessage);
+  }
+};
+
+
+
+/* ========================================
+ * API CALL: Cambiar contraseña del usuario
+ * API CALL: Change user password
+ * ======================================== */
+export const changePassword = async (
+  token: string,
+  data: ChangePasswordData
+): Promise<{ message: string }> => {
+  if (!token) {
+    throw new Error("No se proporcionó token de autenticación.");
+  }
+
+  try {
+    // Realizar petición PUT al endpoint de contraseña
+    // Perform PUT request to the password endpoint
+    const response = await axios.put<{ message: string }>(
+      `${API_URL}/users/password`,
+      data, // Enviar { currentPassword, newPassword }
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    // Usar el manejador centralizado
+    // Use the centralized handler
+    const errorMessage = handleApiError(
+      error,
+      "Error al cambiar la contraseña."
+    );
     throw new Error(errorMessage);
   }
 };
