@@ -7,18 +7,18 @@
  * User profile page with view/edit mode.
  *
  * Funcionalidades / Features:
- * - Ver datos del perfil (nombre, email, rol, teléfono, gimnasio)
- * - Editar nombre, apellidos y teléfono
- * - Cambiar foto de perfil
- * - Modo edición con validación
- * - Permite cambiar la contraseña (excepto para 'admin')
+ * - Ver datos del perfil (nombre, email, rol, teléfono, gimnasio) / View profile data (name, email, role, phone, gym)
+ * - Editar nombre, apellidos y teléfono / Edit first name, last name, and phone
+ * - Cambiar foto de perfil / Change profile picture
+ * - Modo edición con validación / Edit mode with validation
+ * - Permite cambiar la contraseña (excepto para 'admin') / Allows password change (except for 'admin')
  *
- * ✅ Usando / USING:
- * - useImageUpload (para manejo de foto de perfil)
- * - ImageUploadPreview (componente de preview)
- * - useApiCall (llamadas API)
- * - handleApiError
- * - useAuth (para obtener datos y rol del usuario)
+ *  Usando / USING:
+ * - useImageUpload (para manejo de foto de perfil / for profile picture handling)
+ * - Avatar (componente de visualización de imagen / image display component)
+ * - useApiCall (llamadas API / API calls)
+ * - handleApiError (manejador de errores de API / API error handler)
+ * - useAuth (para obtener datos y rol del usuario / to get user data and role)
  * =============================================================================
  */
 
@@ -32,8 +32,7 @@ import { useAuth } from "../context/AuthContext";
 import { useApiCall } from "../hooks/useApiCall";
 import { useImageUpload } from "../hooks/useImageUpload";
 
-// Importar componente / Import component
-import { ImageUploadPreview } from "../components/ImageUploadPreview";
+import { Avatar } from "../components/Avatar";
 
 // Importar servicios / Import services
 import { getGymById } from "../services/gym-services";
@@ -113,12 +112,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: "#004085", // Más oscuro para el link / Darker for the link
     fontWeight: "bold",
     textDecoration: "underline",
-    marginLeft: "4px", // Pequeño espacio / A small space
+    marginLeft: "4px",
   },
-  // --- FIN MODIFICACIÓN ---
-
-  // --- Estilos para sección de contraseña ---
-  // --- Styles for password section ---
   passwordSection: {
     marginTop: "30px",
     paddingTop: "20px",
@@ -270,7 +265,7 @@ export const ProfilePage: React.FC = () => {
     if (user?.profile_picture) {
       const pic = user.profile_picture;
       const normalized =
-        typeof pic === "string" && !/^https?:\/\//i.test(pic)
+        typeof pic === "string" && !/^httpsD?:\/\//i.test(pic)
           ? `${backendBaseUrl}/${pic.replace(/^\/+/, "")}`
           : pic;
       profileImageUpload.setPreviewUrl(normalized);
@@ -428,16 +423,12 @@ export const ProfilePage: React.FC = () => {
     );
   }
 
-  // Determinar URL de imagen a mostrar
-  // Determine display image URL
-  const displayImageUrl =
-    profileImageUpload.previewUrl || "/images/profile/default-avatar.png";
-
   return (
     <div style={styles.container}>
       <h2 style={styles.header}>Mi Perfil</h2>
 
-      {/* IMAGEN DE PERFIL / PROFILE IMAGE */}
+      {/* --- MODIFICACIÓN: Implementación de 'Avatar' ---
+          --- MODIFICATION: 'Avatar' Implementation --- */}
       <div style={styles.previewWrapper}>
         <input
           id="profile-file"
@@ -448,26 +439,37 @@ export const ProfilePage: React.FC = () => {
           style={{ display: "none" }}
         />
 
-        {/* Lógica de 'ImageUploadPreview' original (usando onClick) */}
-        {/* Original 'ImageUploadPreview' logic (using onClick) */}
-        <ImageUploadPreview
-          previewUrl={displayImageUrl}
-          defaultImage="/images/profile/default-avatar.png"
-          onClick={isEditing ? profileImageUpload.handleImageClick : undefined}
-          altText={`${user.first_name || ""} ${user.last_name || ""}`}
-          shape="circle"
+        {/* Usamos el componente Avatar.
+          - 'src' es la URL del preview (si existe) o la URL del usuario.
+            Si es null, 'Avatar' mostrará las iniciales.
+          - 'firstName' y 'lastName' se usan para las iniciales y el 'title'.
+          - 'onClick' solo se activa en modo edición.
+          
+          We use the Avatar component.
+          - 'src' is the preview URL (if it exists) or the user's URL.
+            If null, 'Avatar' will show initials.
+          - 'firstName' and 'lastName' are used for initials and 'title'.
+          - 'onClick' is only active in edit mode.
+        */}
+        <Avatar
+          src={profileImageUpload.previewUrl}
+          firstName={user.first_name || ""}
+          lastName={user.last_name || ""}
           size={100}
-          showHelpText={isEditing}
-          helpText="Haz clic para cambiar la foto"
-          style={{ cursor: isEditing ? "pointer" : "default" }}
+          onClick={isEditing ? profileImageUpload.handleImageClick : undefined}
         />
 
         {isEditing && (
           <div style={styles.smallHelp}>
-            Selecciona una imagen PNG/JPG/WEBP hasta 5MB. (Opcional)
+            {profileImageUpload.selectedFile
+              ? `Archivo: ${profileImageUpload.selectedFile.name}`
+              : "Haz clic en el avatar para cambiar la foto."}
+            <br />
+            (PNG/JPG/WEBP, max 5MB. Opcional)
           </div>
         )}
       </div>
+      {/* --- FIN MODIFICACIÓN --- */}
 
       {/* CAMPOS NO EDITABLES / NON-EDITABLE FIELDS */}
       <div style={styles.formGroup}>
@@ -556,6 +558,8 @@ export const ProfilePage: React.FC = () => {
         </div>
       </div>
 
+      {/* Lógica de Contraseña basada en Rol (Solo en modo edición) */}
+      {/* Role-based Password Logic (Edit mode only) */}
       {isEditing &&
         (user?.role === "admin" ? (
           // ES ADMIN: Mostrar aviso / IS ADMIN: Show notice
