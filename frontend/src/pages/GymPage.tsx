@@ -7,9 +7,11 @@
  * Muestra información del gimnasio, mapa (placeholder), y permite a los
  * usuarios (role='user') registrar una visita.
  *
+ *
  * Page to display details of a specific gym.
  * Shows gym information, map (placeholder), and allows users (role='user')
  * to register a visit.
+ *
  *
  * =============================================================================
  */
@@ -22,10 +24,14 @@ import { useAuth } from "../context/AuthContext";
 import type { Gym } from "../interfaces/gym-interfaces";
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
+// Importar el modal /Import the modal
+import { ConfirmationModal } from "../components/ConfirmationModal";
 
 /* =============================================================================
    ESTILOS (inline)
+   STYLES (inline)
    ============================================================================= */
+
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     padding: "20px",
@@ -111,6 +117,7 @@ const styles: { [key: string]: React.CSSProperties } = {
 
 /* =============================================================================
    COMPONENTE: GymPage
+   COMPONENT: GymPage
    ============================================================================= */
 export const GymPage = () => {
   // Obtener el ID del gimnasio desde los parámetros de la URL
@@ -123,9 +130,15 @@ export const GymPage = () => {
   const [gym, setGym] = useState<Gym | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [isRegistering, setIsRegistering] = useState<boolean>(false);
+
+  // --- MODIFICADO: Renombrado a 'isProcessing' / MODIFIED: Renamed to 'isProcessing' ---
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+
+  // --- NUEVO: Estado para el modal / NEW: State for modal ---
+  const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
 
   // Fallback para backendBaseUrl
+  // Fallback for backendBaseUrl
   const backendBaseUrl =
     import.meta.env.VITE_BACKEND_BASE_URL || window.location.origin;
 
@@ -163,17 +176,26 @@ export const GymPage = () => {
     fetchGym();
   }, [id]);
 
-  // Manejar la confirmación y registro de visita
-  // Handle visit confirmation and registration
-  const handleVisitClick = async () => {
-    // Confirmar con el usuario
-    // Confirm with user
-    const confirmed = window.confirm(
-      `¿Confirmas tu visita a ${gym?.name || "este gimnasio"}?`
-    );
+  // ---  Manejar la confirmación y registro de visita ---
+  // ---  Handle visit confirmation and registration ---
 
-    if (!confirmed) return;
+  // PASO 1: Abrir el modal de confirmación
+  // STEP 1: Open confirmation modal
+  const handleVisitClick = () => {
+    // abre el modal
+    // opens the modal
+    setShowConfirmModal(true);
+  };
 
+  // PASO 2: Cancelar la visita (cierra el modal)
+  // STEP 2: Cancel the visit (closes modal)
+  const handleCancelVisit = () => {
+    setShowConfirmModal(false);
+  };
+
+  // PASO 3: Confirmar la visita (lógica de API)
+  // STEP 3: Confirm the visit (API logic)
+  const handleConfirmVisit = async () => {
     // Validar autenticación
     // Validate authentication
     if (!token || !gym) {
@@ -181,44 +203,25 @@ export const GymPage = () => {
       return;
     }
 
-    setIsRegistering(true);
+    setIsProcessing(true);
+    setShowConfirmModal(false); // Cerrar modal al confirmar
 
     try {
       // Crear la visita en el backend
       // Create the visit in the backend
       const response = await createVisit(gym.id, token);
 
-      // 🔍 DEBUG: Ver qué devuelve el backend (quitar en producción)
-      // DEBUG: See what the backend returns (remove in production)
-      if (import.meta.env.DEV) {
-        console.log("Response from createVisit:", response);
-      }
-
-      // Extraer el ID de la visita (el backend devuelve visitId directamente)
-      // Extract visit ID (backend returns visitId directly)
-      const visitId = response.visitId;
-
-      // Validar que se recibió el ID
-      // Validate that ID was received
-      if (!visitId) {
-        throw new Error("No se recibió el ID de la visita del servidor");
-      }
-
-      // Mostrar mensaje de éxito
-      // Show success message
       toast.success(response.message || "Visita registrada con éxito.");
 
-      // Navegar a la página del QR, pasando el ID de la visita
-      // Navigate to QR page, passing the visit ID
-      navigate(`/visits/${visitId}/qr`);
+      // Navegar a la página del QR, usando el visitId de la respuesta
+      // Navigate to QR page, using visitId from response
+      navigate(`/visits/${response.visitId}/qr`);
     } catch (err) {
-      // Procesar el error con el manejador centralizado
-      // Process error with centralized handler
       const msg = handleApiError(err, "No se pudo registrar la visita.");
       toast.error(msg);
       if (import.meta.env.DEV) console.error("Error creating visit:", err);
     } finally {
-      setIsRegistering(false);
+      setIsProcessing(false);
     }
   };
 
@@ -289,7 +292,7 @@ export const GymPage = () => {
         onError={(e) => {
           const target = e.target as HTMLImageElement;
           target.onerror = null;
-          target.src = "/images/gym-image/default-gym-image.jpg";
+          target.src = "/images/gym-image/default-gym-image.png";
         }}
       />
 
@@ -305,26 +308,44 @@ export const GymPage = () => {
         <button
           style={{
             ...styles.visitButton,
-            ...(isRegistering ? styles.visitButtonDisabled : {}),
+            ...(isProcessing ? styles.visitButtonDisabled : {}),
           }}
+          // --- onClick ahora solo abre el modal ---
+          // --- onClick now just opens the modal ---
           onClick={handleVisitClick}
-          disabled={isRegistering}
+          disabled={isProcessing}
           aria-label={`Registrar visita a ${gym.name}`}
-          onMouseOver={(e) => {
-            if (!isRegistering) {
+          onMouseEnter={(e) => {
+            if (!isProcessing) {
               (e.target as HTMLButtonElement).style.backgroundColor =
                 styles.visitButtonHover.backgroundColor || "";
             }
           }}
-          onMouseOut={(e) => {
-            if (!isRegistering) {
+          onMouseLeave={(e) => {
+            if (!isProcessing) {
               (e.target as HTMLButtonElement).style.backgroundColor =
                 styles.visitButton.backgroundColor || "";
             }
           }}>
-          {isRegistering ? "Registrando visita..." : "Visitar"}
+          {isProcessing ? "Registrando visita..." : "Visitar"}
         </button>
       )}
+
+      {/* Añadir el Modal de Confirmación  */}
+      {/* Add the Confirmation Modal  */}
+      <ConfirmationModal
+        isOpen={showConfirmModal}
+        onCancel={handleCancelVisit}
+        onConfirm={handleConfirmVisit}
+        title="Confirmar Visita"
+        message={`¿Estás seguro de que quieres registrar una visita a ${
+          gym?.name || "este gimnasio"
+        }?`}
+        note="Esto contará como una visita válida para el día de hoy."
+        confirmText={isProcessing ? "Registrando..." : "Confirmar Visita"}
+        variant="info" // Usamos 'info' (azul)
+        isLoading={isProcessing}
+      />
     </div>
   );
 };
