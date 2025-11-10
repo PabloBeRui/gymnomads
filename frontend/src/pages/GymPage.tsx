@@ -260,7 +260,7 @@ export const GymPage = () => {
           ? gym.main_image_url.substring(1)
           : gym.main_image_url
       }`
-    : "/images/gym-image/default-gym-image.png";
+    : "/images/gym-image/default-gym-image.jpg";
 
   // Render principal
   return (
@@ -292,7 +292,7 @@ export const GymPage = () => {
         onError={(e) => {
           const target = e.target as HTMLImageElement;
           target.onerror = null;
-          target.src = "/images/gym-image/default-gym-image.png";
+          target.src = "/images/gym-image/default-gym-image.jpg";
         }}
       />
 
