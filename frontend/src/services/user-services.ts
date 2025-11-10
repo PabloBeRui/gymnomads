@@ -18,7 +18,7 @@ import type {
   ManagerWithGym,
   UserWithGym,
   UpdateManagerData,
-  ChangePasswordData
+  ChangePasswordData,
 } from "../interfaces/user-interfaces";
 
 // Definir la URL base de la API.
@@ -80,14 +80,27 @@ export const loginUser = async (
     // Return the received data (message and token).
     return response.data;
   } catch (error) {
-    // Usar el manejador centralizado con un mensaje por defecto específico para login.
-    // Use the centralized handler with a default message specific to login.
+    // Manejo de error específico para el login.
+    // Specific error handling for login.
+    //  mensaje del backend (ej: "Credenciales incorrectas") en lugar del genérico para 401.
+    //  backend message (e.g., "Incorrect credentials") instead of the generic one for 401.
+    if (axios.isAxiosError(error) && error.response?.data?.message) {
+      // Si el mensaje específico del backend es "credenciales incorrectas", lo reemplazamos.
+      // If the specific backend message is "credenciales incorrectas", we replace it.
+      if (error.response.data.message === "credenciales incorrectas") {
+        throw new Error("Usuario o contraseña incorrectos");
+      }
+      // Si es otro mensaje específico del backend, lo lanzamos directamente.
+      // If it's another specific backend message, we throw it directly.
+      throw new Error(error.response.data.message);
+    }
+
+    // Si no hay un mensaje específico, usar el manejador genérico como fallback.
+    // If there's no specific message, use the generic handler as a fallback.
     const errorMessage = handleApiError(
       error,
       "Error al iniciar sesión. Comprueba tus credenciales."
     );
-    // Lanzar un nuevo error con el mensaje procesado.
-    // Throw a new error with the processed message.
     throw new Error(errorMessage);
   }
 };
@@ -569,8 +582,6 @@ export const deleteUser = async (
     throw new Error(errorMessage);
   }
 };
-
-
 
 /* ========================================
  * API CALL: Cambiar contraseña del usuario
