@@ -469,7 +469,7 @@ export const EditGymPage = () => {
               />
               <ImageUploadPreview
                 previewUrl={logoUpload.previewUrl}
-                defaultImage="/images/gym/default_logo.png"
+                defaultImage="/images/gym-logo/default-gym-logo.png"
                 onClick={logoUpload.handleImageClick}
                 altText="Logo del gimnasio"
                 shape="square"
@@ -499,7 +499,7 @@ export const EditGymPage = () => {
               />
               <ImageUploadPreview
                 previewUrl={mainImageUpload.previewUrl}
-                defaultImage="/images/gym/default_main.png"
+                defaultImage="/images/gym-image/default-gym-image.jpg"
                 onClick={mainImageUpload.handleImageClick}
                 altText="Imagen principal del gimnasio"
                 shape="square"
