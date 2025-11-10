@@ -138,6 +138,7 @@ export const ProfilePage: React.FC = () => {
 
   // --- Local state / Estados locales ---
   const [gymName, setGymName] = useState<string | null>(null);
+  const [gymLogoUrl, setGymLogoUrl] = useState<string | null>(null);
   const [gymFetchError, setGymFetchError] = useState<string | null>(null);
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -203,6 +204,7 @@ export const ProfilePage: React.FC = () => {
         setGymFetchError(null);
         const g = await getGymById(user.home_gym_id);
         setGymName(g.name || null);
+        setGymLogoUrl(g.logo_url || null);
       } catch (err) {
         const msg = handleApiError(
           err,
@@ -210,6 +212,7 @@ export const ProfilePage: React.FC = () => {
         );
         setGymFetchError(msg);
         setGymName(null);
+        setGymLogoUrl(null);
       }
     };
     fetchGym();
@@ -493,12 +496,10 @@ export const ProfilePage: React.FC = () => {
         !isEditing ? (
           <>
             <div style={styles.formGroup}>
-              <span style={styles.label}>Nombre:</span>
-              <div style={styles.input}>{user.first_name}</div>
-            </div>
-            <div style={styles.formGroup}>
-              <span style={styles.label}>Apellidos:</span>
-              <div style={styles.input}>{user.last_name}</div>
+              <span style={styles.label}>Nombre Completo:</span>
+              <div style={styles.input}>
+                {`${user.first_name} ${user.last_name}`}
+              </div>
             </div>
             <div style={styles.formGroup}>
               <span style={styles.label}>Teléfono:</span>
@@ -557,8 +558,31 @@ export const ProfilePage: React.FC = () => {
           <div style={isEditing ? styles.disabledText : styles.input}>
             {gymFetchError ? (
               <span style={{ color: "red" }}>{gymFetchError}</span>
+            ) : gymName ? (
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <img
+                  src={
+                    gymLogoUrl
+                      ? `${backendBaseUrl}/${gymLogoUrl.replace(/^\/+/, "")}`
+                      : "/images/gym-logo/default-gym-logo.png"
+                  }
+                  alt={`Logo de ${gymName}`}
+                  style={{
+                    height: 24,
+                    width: 24,
+                    marginRight: 8,
+                    objectFit: "contain",
+                  }}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.onerror = null;
+                    target.src = "/images/gym-logo/default-gym-logo.png";
+                  }}
+                />
+                {gymName}
+              </div>
             ) : (
-              gymName || "Cargando..."
+              "Cargando..."
             )}
           </div>
         </div>
