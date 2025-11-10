@@ -478,85 +478,91 @@ export const ProfilePage: React.FC = () => {
           {user.email}
         </div>
       </div>
-
-      <div style={styles.formGroup}>
-        <span style={styles.label}>Rol:</span>
-        <div style={isEditing ? styles.disabledText : styles.input}>
-          {user.role}
+      {/* Mostrar Rol solo para Admin y Manager / Show Role only for Admin and Manager */}
+      {(user.role === "admin" || user.role === "manager") && (
+        <div style={styles.formGroup}>
+          <span style={styles.label}>Rol:</span>
+          <div style={isEditing ? styles.disabledText : styles.input}>
+            {user.role}
+          </div>
         </div>
-      </div>
-
-      {/* CAMPOS EDITABLES O MODO VISUALIZACIÓN / EDITABLE FIELDS OR VIEW MODE */}
-      {!isEditing ? (
-        <>
-          <div style={styles.formGroup}>
-            <span style={styles.label}>Nombre:</span>
-            <div style={styles.input}>{user.first_name}</div>
-          </div>
-          <div style={styles.formGroup}>
-            <span style={styles.label}>Apellidos:</span>
-            <div style={styles.input}>{user.last_name}</div>
-          </div>
-          <div style={styles.formGroup}>
-            <span style={styles.label}>Teléfono:</span>
-            <div style={styles.input}>{user.phone || "No especificado"}</div>
-          </div>
-        </>
-      ) : (
-        <>
-          <div style={styles.formGroup}>
-            <label htmlFor="edit-first-name" style={styles.label}>
-              Nombre:
-            </label>
-            <input
-              id="edit-first-name"
-              type="text"
-              value={editFirstName}
-              onChange={(e) => setEditFirstName(e.target.value)}
-              style={styles.input}
-            />
-          </div>
-
-          <div style={styles.formGroup}>
-            <label htmlFor="edit-last-name" style={styles.label}>
-              Apellidos:
-            </label>
-            <input
-              id="edit-last-name"
-              type="text"
-              value={editLastName}
-              onChange={(e) => setEditLastName(e.target.value)}
-              style={styles.input}
-            />
-          </div>
-
-          <div style={styles.formGroup}>
-            <label htmlFor="edit-phone" style={styles.label}>
-              Teléfono:
-            </label>
-            <input
-              id="edit-phone"
-              type="tel"
-              value={editPhone}
-              onChange={(e) => setEditPhone(e.target.value)}
-              style={styles.input}
-              placeholder="Opcional"
-            />
-          </div>
-        </>
       )}
 
+      {/* CAMPOS EDITABLES O MODO VISUALIZACIÓN / EDITABLE FIELDS OR VIEW MODE */}
+      {user.role !== "admin" ? (
+        !isEditing ? (
+          <>
+            <div style={styles.formGroup}>
+              <span style={styles.label}>Nombre:</span>
+              <div style={styles.input}>{user.first_name}</div>
+            </div>
+            <div style={styles.formGroup}>
+              <span style={styles.label}>Apellidos:</span>
+              <div style={styles.input}>{user.last_name}</div>
+            </div>
+            <div style={styles.formGroup}>
+              <span style={styles.label}>Teléfono:</span>
+              <div style={styles.input}>{user.phone || "No especificado"}</div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div style={styles.formGroup}>
+              <label htmlFor="edit-first-name" style={styles.label}>
+                Nombre:
+              </label>
+              <input
+                id="edit-first-name"
+                type="text"
+                value={editFirstName}
+                onChange={(e) => setEditFirstName(e.target.value)}
+                style={styles.input}
+              />
+            </div>
+
+            <div style={styles.formGroup}>
+              <label htmlFor="edit-last-name" style={styles.label}>
+                Apellidos:
+              </label>
+              <input
+                id="edit-last-name"
+                type="text"
+                value={editLastName}
+                onChange={(e) => setEditLastName(e.target.value)}
+                style={styles.input}
+              />
+            </div>
+
+            <div style={styles.formGroup}>
+              <label htmlFor="edit-phone" style={styles.label}>
+                Teléfono:
+              </label>
+              <input
+                id="edit-phone"
+                type="tel"
+                value={editPhone}
+                onChange={(e) => setEditPhone(e.target.value)}
+                style={styles.input}
+                placeholder="Opcional"
+              />
+            </div>
+          </>
+        )
+      ) : null}
+
       {/* GIMNASIO ASOCIADO / ASSOCIATED GYM */}
-      <div style={styles.formGroup}>
-        <span style={styles.label}>Gimnasio:</span>
-        <div style={isEditing ? styles.disabledText : styles.input}>
-          {gymFetchError ? (
-            <span style={{ color: "red" }}>{gymFetchError}</span>
-          ) : (
-            gymName || "Cargando..."
-          )}
+      {user.role !== "admin" && (
+        <div style={styles.formGroup}>
+          <span style={styles.label}>Gimnasio:</span>
+          <div style={isEditing ? styles.disabledText : styles.input}>
+            {gymFetchError ? (
+              <span style={{ color: "red" }}>{gymFetchError}</span>
+            ) : (
+              gymName || "Cargando..."
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Lógica de Contraseña basada en Rol (Solo en modo edición) */}
       {/* Role-based Password Logic (Edit mode only) */}
