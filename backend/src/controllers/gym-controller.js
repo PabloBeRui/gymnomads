@@ -20,7 +20,7 @@ const getAllGyms = async (req, res) => {
     // 3. Aplicar filtro por ciudad si se proporciona
     // 3. Apply city filter if provided
     if (city) {
-      query += " WHERE city = ?";
+      query += " AND city = ?";
       params.push(city);
     }
 
