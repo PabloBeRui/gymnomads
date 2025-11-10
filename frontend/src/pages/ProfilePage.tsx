@@ -33,13 +33,13 @@ import { useApiCall } from "../hooks/useApiCall";
 import { useImageUpload } from "../hooks/useImageUpload";
 
 import { Avatar } from "../components/Avatar";
+import { ChangePasswordModal } from "../components/ChangePasswordModal";
 
 // Importar servicios / Import services
 import { getGymById } from "../services/gym-services";
 import {
   updateUserProfile,
   uploadProfilePicture,
-  changePassword,
 } from "../services/user-services";
 
 // Importar interfaces / Import interfaces
@@ -48,7 +48,6 @@ import type {
   User,
   UploadProfilePictureResponse,
   UpdateProfileResponse,
-  ChangePasswordData,
 } from "../interfaces/user-interfaces";
 
 // Importar utilidades / Import utilities
@@ -68,7 +67,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: 4,
     border: "1px solid #ccc",
     boxSizing: "border-box",
-    width: "100%", // Asegurar ancho completo
+    width: "100%", // Asegurar ancho completo // Ensure full width
   },
   buttonRow: { marginTop: 12, display: "flex", gap: 8 },
   button: {
@@ -87,15 +86,23 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: 4,
     cursor: "pointer",
   },
+  passwordButton: {
+    padding: "8px 12px",
+    backgroundColor: "#17a2b8",
+    color: "white",
+    border: "none",
+    borderRadius: 4,
+    cursor: "pointer",
+  },
   errorText: { color: "red", marginTop: 8, fontSize: "0.9em" },
-  successText: { color: "green", marginTop: 8, fontSize: "0.9em" }, // Estilo para éxito
+  successText: { color: "green", marginTop: 8, fontSize: "0.9em" }, // Estilo para éxito // Success style
   disabledText: {
     color: "grey",
     fontStyle: "italic",
     backgroundColor: "#f8f8f8",
-    padding: "6px 8px", // Coincidir con input
+    padding: "6px 8px", // Coincidir con input // Match input
     borderRadius: 4,
-    display: "block", // 'block' para que 'width' 100% funcione
+    display: "block", // 'block' para que 'width' 100% funcione // 'block' for 100% width to work
     margin: 0,
     width: "100%",
     boxSizing: "border-box",
@@ -104,12 +111,12 @@ const styles: { [key: string]: React.CSSProperties } = {
   adminNotice: {
     padding: "12px 16px",
     borderRadius: 4,
-    backgroundColor: "#e6f7ff", // Un 'info' azul claro / A light 'info' blue
+    backgroundColor: "#e6f7ff", // Un 'info' azul claro // A light 'info' blue
     border: "1px solid #b3e0ff",
-    color: "#0056b3", // Texto azul oscuro / Dark blue text
+    color: "#0056b3", // Texto azul oscuro // Dark blue text
   },
   adminNoticeLink: {
-    color: "#004085", // Más oscuro para el link / Darker for the link
+    color: "#004085", // Más oscuro para el link // Darker for the link
     fontWeight: "bold",
     textDecoration: "underline",
     marginLeft: "4px",
@@ -134,7 +141,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     ============================================================================= */
 export const ProfilePage: React.FC = () => {
   // --- Context / Auth ---
-  const { user, token, setUser } = useAuth(); // Mantenemos tu 'setUser' original
+  const { user, token, setUser } = useAuth(); // Mantenemos tu 'setUser' original // Keep original 'setUser'
 
   // --- Local state / Estados locales ---
   const [gymName, setGymName] = useState<string | null>(null);
@@ -146,12 +153,8 @@ export const ProfilePage: React.FC = () => {
   const [editLastName, setEditLastName] = useState<string>("");
   const [editPhone, setEditPhone] = useState<string>("");
 
-  // --- Estados de Contraseña / Password States ---
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmNewPassword, setConfirmNewPassword] = useState("");
-  const [passwordError, setPasswordError] = useState<string | null>(null);
-  const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
+  // --- Estado para el modal de contraseña / State for the password modal ---
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState<boolean>(false);
 
   // Hook para acciones de guardado/actualización (gestiona loading y errores)
   // Hook for save/update actions (handles loading + errors)
@@ -160,10 +163,6 @@ export const ProfilePage: React.FC = () => {
     error: editError,
     execute,
   } = useApiCall("Error al guardar el perfil.");
-
-  // --- Hook de API para contraseña / API Hook for password ---
-  const { loading: isChangingPassword, execute: executePasswordChange } =
-    useApiCall<{ message: string }>();
 
   // Hook useImageUpload (versión Objeto, como en tu original)
   // useImageUpload hook (Object version, as in your original)
@@ -268,7 +267,7 @@ export const ProfilePage: React.FC = () => {
     if (user?.profile_picture) {
       const pic = user.profile_picture;
       const normalized =
-        typeof pic === "string" && !/^httpsD?:\/\//i.test(pic)
+        typeof pic === "string" && !/^https?:\/\//i.test(pic)
           ? `${backendBaseUrl}/${pic.replace(/^\/+/, "")}`
           : pic;
       profileImageUpload.setPreviewUrl(normalized);
@@ -278,13 +277,6 @@ export const ProfilePage: React.FC = () => {
     setEditFirstName(user?.first_name || "");
     setEditLastName(user?.last_name || "");
     setEditPhone(user?.phone || "");
-
-    // --- Limpiar campos de contraseña / Clear password fields ---
-    setPasswordError(null);
-    setPasswordSuccess(null);
-    setCurrentPassword("");
-    setNewPassword("");
-    setConfirmNewPassword("");
   };
 
   const handleSaveClick = async () => {
@@ -329,7 +321,7 @@ export const ProfilePage: React.FC = () => {
         phone: editPhone || null,
       };
 
-      //  'updateUserProfile' original /  original 'updateUserProfile'
+      // 'updateUserProfile' original / original 'updateUserProfile'
       const updateResp = await execute<UpdateProfileResponse>(() =>
         updateUserProfile(token, payload)
       );
@@ -349,7 +341,7 @@ export const ProfilePage: React.FC = () => {
         phone: editPhone || null,
         profile_picture: newImageUrl || null,
       };
-      setUser(updatedUser); // <-- Mantenemos tu 'setUser' original
+      setUser(updatedUser); // Mantenemos tu 'setUser' original // Keep original 'setUser'
 
       // 4) limpieza final
       // 4) cleanup
@@ -361,54 +353,6 @@ export const ProfilePage: React.FC = () => {
       const msg = handleApiError(err, "Error al guardar el perfil.");
       toast.error(msg);
       if (import.meta.env.DEV) console.error("Error saving profile:", err);
-    }
-  };
-
-  // --- Manejar cambio de contraseña / Handle password change ---
-  const handlePasswordChange = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setPasswordError(null);
-    setPasswordSuccess(null);
-
-    // 1. Validar token / 1. Validate token
-    if (!token) {
-      setPasswordError("No estás autenticado.");
-      return;
-    }
-    // 2. Validar que no falten campos / 2. Validate fields are not empty
-    if (!currentPassword || !newPassword || !confirmNewPassword) {
-      setPasswordError("Todos los campos de contraseña son obligatorios.");
-      return;
-    }
-    // 3. Validar que las contraseñas coincidan / 3. Validate passwords match
-    if (newPassword !== confirmNewPassword) {
-      setPasswordError("Las nuevas contraseñas no coinciden.");
-      return;
-    }
-    // 4. Validar longitud de contraseña / 4. Validate password length
-    if (newPassword.length < 6) {
-      setPasswordError("La nueva contraseña debe tener al menos 6 caracteres.");
-      return;
-    }
-    // 5. Preparar datos y llamar a la API / 5. Prepare data and call API
-    const passwordData: ChangePasswordData = {
-      currentPassword,
-      newPassword,
-    };
-    try {
-      const response = await executePasswordChange(() =>
-        changePassword(token, passwordData)
-      );
-      setPasswordSuccess(response.message || "Contraseña cambiada con éxito.");
-      toast.success("Contraseña cambiada con éxito.");
-      // Limpiar campos / Clear fields
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmNewPassword("");
-    } catch (error) {
-      setPasswordError(
-        (error as Error).message || "Error al cambiar la contraseña."
-      );
     }
   };
 
@@ -442,12 +386,13 @@ export const ProfilePage: React.FC = () => {
           style={{ display: "none" }}
         />
 
-        {/* Usamos el componente Avatar.
+        {/* 
+          Usamos el componente Avatar.
           - 'src' es la URL del preview (si existe) o la URL del usuario.
             Si es null, 'Avatar' mostrará las iniciales.
           - 'firstName' y 'lastName' se usan para las iniciales y el 'title'.
           - 'onClick' solo se activa en modo edición.
-          
+
           We use the Avatar component.
           - 'src' is the preview URL (if it exists) or the user's URL.
             If null, 'Avatar' will show initials.
@@ -588,137 +533,39 @@ export const ProfilePage: React.FC = () => {
         </div>
       )}
 
-      {/* Lógica de Contraseña basada en Rol (Solo en modo edición) */}
-      {/* Role-based Password Logic (Edit mode only) */}
-      {isEditing &&
-        (user?.role === "admin" ? (
-          // ES ADMIN: Mostrar aviso / IS ADMIN: Show notice
-          <div style={styles.passwordSection}>
-            <h4 style={styles.passwordTitle}>Cambiar Contraseña</h4>
-            <div style={styles.adminNotice}>
-              <p style={{ margin: 0 }}>
-                Si necesita cambiar el password, póngase en contacto con
-                <a
-                  href="mailto:gymnomads@gymnomads.com"
-                  style={styles.adminNoticeLink}>
-                  gymnomads@gymnomads.com
-                </a>
-                .
-              </p>
-            </div>
-          </div>
-        ) : (
-          // NO ES ADMIN: Mostrar formulario (tu código original)
-          // IS NOT ADMIN: Show form (your original code)
-          <div style={styles.passwordSection}>
-            <h4 style={styles.passwordTitle}>Cambiar Contraseña</h4>
-
-            {/* Formulario de Contraseña / Password Form */}
-            <form onSubmit={handlePasswordChange}>
-              {/* Campo: Contraseña Actual / Field: Current Password */}
-              <div style={styles.formGroup}>
-                <label htmlFor="currentPassword" style={styles.label}>
-                  Contraseña Actual: <span style={{ color: "red" }}>*</span>
-                </label>
-                <input
-                  type="password"
-                  id="currentPassword"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  style={styles.input}
-                  disabled={isChangingPassword}
-                  required
-                />
-              </div>
-
-              {/* Campo: Nueva Contraseña / Field: New Password */}
-              <div style={styles.formGroup}>
-                <label htmlFor="newPassword" style={styles.label}>
-                  Nueva Contraseña: <span style={{ color: "red" }}>*</span>
-                </label>
-                <input
-                  type="password"
-                  id="newPassword"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  style={styles.input}
-                  disabled={isChangingPassword}
-                  minLength={6}
-                  required
-                />
-              </div>
-
-              {/* Campo: Confirmar Nueva Contraseña / Field: Confirm New Password */}
-              <div style={styles.formGroup}>
-                <label htmlFor="confirmNewPassword" style={styles.label}>
-                  Confirmar Nueva Contraseña:{" "}
-                  <span style={{ color: "red" }}>*</span>
-                </label>
-                <input
-                  type="password"
-                  id="confirmNewPassword"
-                  value={confirmNewPassword}
-                  onChange={(e) => setConfirmNewPassword(e.target.value)}
-                  style={styles.input}
-                  disabled={isChangingPassword}
-                  minLength={6}
-                  required
-                />
-                {/* Indicador de coincidencia / Match indicator */}
-                {newPassword &&
-                  confirmNewPassword &&
-                  (newPassword === confirmNewPassword ? (
-                    <small style={styles.successText}>
-                      ✓ Las contraseñas coinciden
-                    </small>
-                  ) : (
-                    <small style={styles.errorText}>
-                      ✗ Las contraseñas no coinciden
-                    </small>
-                  ))}
-              </div>
-
-              {/* Botón para cambiar contraseña / Button to change password */}
-              <button
-                type="submit" // 'submit' para este formulario anidado
-                style={{ ...styles.button, ...styles.editButton }} // Azul
-                disabled={isChangingPassword}>
-                {isChangingPassword
-                  ? "Cambiando..."
-                  : "Establecer Nueva Contraseña"}
-              </button>
-
-              {/* Mensajes de feedback de contraseña / Password feedback messages */}
-              {passwordError && <p style={styles.errorText}>{passwordError}</p>}
-              {passwordSuccess && (
-                <p style={styles.successText}>{passwordSuccess}</p>
-              )}
-            </form>
-          </div>
-        ))}
-
       {/* Botones de Acción (Guardar / Editar) / Action Buttons (Save / Edit) */}
       <div style={styles.buttonRow}>
         {!isEditing ? (
-          <button
-            style={styles.button}
-            onClick={handleEditClick}
-            aria-label="Editar perfil">
-            Editar Perfil
-          </button>
+          <>
+            <button
+              style={styles.button}
+              onClick={handleEditClick}
+              aria-label="Editar perfil">
+              Editar Perfil
+            </button>
+            {user.role !== 'admin' && (
+              <button
+                style={styles.passwordButton}
+                onClick={() => setIsPasswordModalOpen(true)}
+                aria-label="Cambiar contraseña"
+              >
+                Cambiar Contraseña
+              </button>
+            )}
+          </>
         ) : (
           <>
             <button
-              style={{ ...styles.button, ...styles.saveButton }} // Verde
+              style={styles.button}
               onClick={handleSaveClick}
-              disabled={isSaving || isChangingPassword} // Deshabilitar si CUALQUIERA está guardando
+              disabled={isSaving}
               aria-busy={isSaving}>
               {isSaving ? "Guardando..." : "Guardar Cambios"}
             </button>
             <button
-              style={styles.cancelButton} // Gris
+              style={styles.cancelButton}
               onClick={handleCancelClick}
-              disabled={isSaving || isChangingPassword} // Deshabilitar si CUALQUIERA está guardando
+              disabled={isSaving}
             >
               Cancelar
             </button>
@@ -729,6 +576,12 @@ export const ProfilePage: React.FC = () => {
       {/* ERRORS / STATUS */}
       {isEditing && editError && <p style={styles.errorText}>{editError}</p>}
       {isSaving && <p style={{ marginTop: 8 }}>Guardando cambios...</p>}
+
+      {/* Renderizar el modal / Render the modal */}
+      <ChangePasswordModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
+      />
     </div>
   );
 };
