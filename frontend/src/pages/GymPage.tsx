@@ -4,14 +4,12 @@
  * =============================================================================
  *
  * Página para mostrar los detalles de un gimnasio específico.
- * Muestra información del gimnasio, mapa (placeholder), y permite a los
+ * Muestra información del gimnasio, mapa interactivo (OSM), y permite a los
  * usuarios (role='user') registrar una visita.
  *
- *
  * Page to display details of a specific gym.
- * Shows gym information, map (placeholder), and allows users (role='user')
+ * Shows gym information, interactive map (OSM), and allows users (role='user')
  * to register a visit.
- *
  *
  * =============================================================================
  */
@@ -24,13 +22,16 @@ import { useAuth } from "../context/AuthContext";
 import type { Gym } from "../interfaces/gym-interfaces";
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
-// Importar el modal /Import the modal
+// modal de confirmación / confirmation modal
 import { ConfirmationModal } from "../components/ConfirmationModal";
 
+// --- Componente de Mapa / Map Component ---
+import { GymMap } from "../components/GymMap";
+
 /* =============================================================================
-   ESTILOS (inline)
-   STYLES (inline)
-   ============================================================================= */
+    ESTILOS (inline)
+    STYLES (inline)
+    ============================================================================= */
 
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
@@ -81,19 +82,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: "8px",
     marginBottom: "30px",
   },
-  mapPlaceholder: {
-    width: "100%",
-    height: "300px",
-    backgroundColor: "#e9ecef",
-    border: "2px dashed #ccc",
-    borderRadius: "8px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: "1.5rem",
-    color: "#6c757d",
-    marginBottom: "30px",
-  },
   visitButton: {
     width: "100%",
     padding: "15px",
@@ -116,9 +104,9 @@ const styles: { [key: string]: React.CSSProperties } = {
 };
 
 /* =============================================================================
-   COMPONENTE: GymPage
-   COMPONENT: GymPage
-   ============================================================================= */
+    COMPONENTE: GymPage
+    COMPONENT: GymPage
+    ============================================================================= */
 export const GymPage = () => {
   // Obtener el ID del gimnasio desde los parámetros de la URL
   // Get the gym ID from URL parameters
@@ -296,10 +284,26 @@ export const GymPage = () => {
         }}
       />
 
-      {/* Placeholder del mapa */}
-      {/* Map placeholder */}
-      <div style={styles.mapPlaceholder}>
-        <span>MAPA</span>
+      {/* --- Map --- */}
+
+      <div style={{ marginBottom: "30px" }}>
+        <h3 style={{ marginBottom: "15px" }}>Ubicación</h3>
+
+        {/* ---  lat/lon not null --- */}
+
+        {gym.latitude && gym.longitude ? (
+          <GymMap
+            lat={gym.latitude} // Ahora TS sabe que esto es un 'number'
+            lon={gym.longitude} // Ahora TS sabe que esto es un 'number'
+            gymName={gym.name}
+          />
+        ) : (
+          // Fallback si no hay coordenadas en la BBDD
+          // Fallback if no coordinates are in the DB
+          <p style={{ ...styles.errorText, padding: 0 }}>
+            Ubicación no disponible en el mapa.
+          </p>
+        )}
       </div>
 
       {/* Botón "Visitar" solo para usuarios (no en su gym de origen) */}
