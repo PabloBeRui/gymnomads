@@ -183,6 +183,50 @@ const getVisitsByGym = async (req, res) => {
 };
 
 /* ========================================
+ * Obtener mis visitas (Usuario logueado)
+ * Get my visits (Logged-in user)
+ * ======================================== */
+const getMyVisits = async (req, res) => {
+  try {
+    // 1. Obtener el ID del usuario del token
+    const userId = req.user.userId;
+
+    // 2. Construir consulta SQL
+    const query = `
+      SELECT 
+        v.id,
+        v.gym_id,
+        v.visited_at AS visit_date,
+        g.name AS gym_name,
+        g.logo_url AS gym_logo_url
+      FROM visits v
+      JOIN gyms g ON v.gym_id = g.id
+      WHERE v.user_id = ?
+      ORDER BY v.visited_at DESC
+    `;
+
+    // 3. Ejecutar la consulta
+    const [visits] = await db.query(query, [userId]);
+
+    // 4. Construir URLs completas para logos
+    const baseUrl = process.env.BASE_URL || "";
+    const visitsWithUrls = visits.map((visit) => {
+      if (visit.gym_logo_url) {
+        const logoPath = visit.gym_logo_url.replace(/\\/g, "/");
+        visit.gym_logo_url = `${baseUrl}/${logoPath}`;
+      }
+      return visit;
+    });
+
+    // 5. Devolver resultados
+    res.status(200).json(visitsWithUrls);
+  } catch (error) {
+    console.error("Error al obtener mis visitas:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+/* ========================================
  * Obtener todas las visitas con filtros opcionales (Admin)
  * Get all visits with optional filters (Admin)
  * ======================================== */
@@ -382,4 +426,5 @@ module.exports = {
   getVisitsByGym,
   getAllVisits,
   getManagerGymVisits,
+  getMyVisits,
 };

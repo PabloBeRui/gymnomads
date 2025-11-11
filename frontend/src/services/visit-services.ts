@@ -20,7 +20,6 @@ import { handleApiError } from "../utils/error-handler";
 // Importar interfaces de visitas
 // Import visit interfaces
 import type {
-  Visit,
   CreateVisitResponse,
   VisitWithDetails,
   VisitsFilters,
@@ -76,15 +75,15 @@ export const createVisit = async (
 };
 
 /* ========================================
- * API CALL: Obtener visitas del usuario actual
+ * API CALL: Obtener las visitas del usuario actual
  * API CALL: Get current user's visits
  * ======================================== */
 
-export const getUserVisits = async (token: string): Promise<Visit[]> => {
+export const getMyVisits = async (token: string): Promise<VisitWithDetails[]> => {
   try {
     // Realizar petición GET al endpoint de visitas del usuario.
     // Perform GET request to the user visits endpoint.
-    const response = await axios.get<Visit[]>(`${API_URL}/visits/my-visits`, {
+    const response = await axios.get<VisitWithDetails[]>(`${API_URL}/visits/my-visits`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

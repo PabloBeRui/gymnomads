@@ -21,6 +21,7 @@ import { UserVisitGymPage } from "./pages/UserVisitGymPage";
 import { VisitsManagementPage } from "./pages/VisitsManagementPage";
 import { UsersManagementPage } from "./pages/UsersManagementPage";
 import { ManagersManagementPage } from "./pages/ManagersManagementPage";
+import { MyVisitsPage } from "./pages/MyVisitsPage";
 
 // Importar el hook de autenticación / Import the authentication hook
 import { useAuth } from "./context/AuthContext";
@@ -89,6 +90,14 @@ function App() {
             </Link>
             {" | "}
 
+            {/* Enlace de visitas para el rol 'user' */}
+            {user.role === "user" && (
+              <>
+                <Link to="/my-visits">Mis Visitas</Link>
+                {" | "}
+              </>
+            )}
+
             {/* 2. Enlaces Condicionales por Rol */}
             {/* Mostrar si es 'manager' O 'admin' */}
             {/* Show if 'manager' OR 'admin' */}
@@ -146,6 +155,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/visits/:visitId/qr" element={<UserVisitGymPage />} />
+          <Route path="/my-visits" element={<MyVisitsPage />} />
         </Route>
 
         {/* ========================================
