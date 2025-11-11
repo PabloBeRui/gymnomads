@@ -100,8 +100,9 @@ export const MyVisitsPage = () => {
         <table style={styles.table}>
           <thead>
             <tr>
-              <th style={styles.th}>Gimnasio Visitado</th>
-              <th style={styles.th}>Fecha de la Visita</th>
+              <th style={styles.th}>Gimnasio</th>
+              <th style={styles.th}>Fecha</th>
+              <th style={styles.th}>Hora</th>
             </tr>
           </thead>
           <tbody>
@@ -120,9 +121,15 @@ export const MyVisitsPage = () => {
                 </td>
                 <td style={styles.td}>
                   {new Date(visit.visit_date).toLocaleDateString("es-ES", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "2-digit",
+                  })}
+                </td>
+                <td style={styles.td}>
+                  {new Date(visit.visit_date).toLocaleTimeString("es-ES", {
+                    hour: "2-digit",
+                    minute: "2-digit",
                   })}
                 </td>
               </tr>
