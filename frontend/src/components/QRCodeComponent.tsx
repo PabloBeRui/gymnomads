@@ -73,7 +73,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     ============================================================================= */
 export const QRCodeComponent = ({
   data,
-  logoUrl, 
+  logoUrl,
   size = 300,
   altText = "Código QR",
 }: QRCodeComponentProps) => {

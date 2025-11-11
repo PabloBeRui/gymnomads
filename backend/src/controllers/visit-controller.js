@@ -1,9 +1,10 @@
 const db = require("../../config/db");
 
 /* ========================================
- * Crear una nueva visita
- * Create a new visit
+ * Crear una nueva visita (con comprobación de duplicados diarios)
+ * Create a new visit (with daily duplicate check)
  * ======================================== */
+
 const createVisit = async (req, res) => {
   try {
     // 1. Obtener el ID del usuario del token (vía middleware)
@@ -33,21 +34,47 @@ const createVisit = async (req, res) => {
       );
       return res
         .status(403)
-        .json({ message: "No puedes registrar una visita a tu propio gimnasio" });
+        .json({
+          message: "No puedes registrar una visita a tu propio gimnasio",
+        });
     }
 
-    // 5. Insertar la nueva visita en la base de datos
-    // 5. Insert the new visit into the database
+    // 5. Comprobar si ya existe una visita para este usuario/gimnasio HOY
+    // 5. Check if a visit for this user/gym already exists TODAY
+    // (CURDATE() compara solo la fecha, ignorando la hora)
+    // (CURDATE() compares only the date, ignoring the time)
+
+    const [existingVisit] = await db.query(
+      "SELECT id FROM visits WHERE user_id = ? AND gym_id = ? AND DATE(visited_at) = CURDATE()",
+      [user_id, gym_id]
+    );
+
+    // 6. Si ya existe, devolver el ID de esa visita (200 OK)
+    // 6. If it already exists, return that visit's ID (200 OK)
+    if (existingVisit.length > 0) {
+      console.log(
+        "200 OK: Visita existente encontrada para hoy. Devolviendo ID existente."
+      );
+      return res.status(200).json({
+        message: "Ya has registrado una visita a este gimnasio hoy.",
+        visitId: existingVisit[0].id, // Devolvemos el ID de la visita encontrada
+      });
+    }
+
+    // --- FIN DE LA MODIFICACIÓN ---
+
+    // 7. Si no existe, insertar la nueva visita en la base de datos
+    // 7. If it doesn't exist, insert the new visit into the database
     const [result] = await db.query(
       "INSERT INTO visits (user_id, gym_id) VALUES (?, ?)",
       [user_id, gym_id]
     );
 
-    // 6. Enviar respuesta de éxito (201 Created)
-    // 6. Send success response (201 Created)
+    // 8. Enviar respuesta de éxito (201 Created)
+    // 8. Send success response (201 Created)
     res.status(201).json({
       message: "Visita registrada con éxito",
-      visitId: result.insertId,
+      visitId: result.insertId, // Devolvemos el ID de la nueva visita
     });
   } catch (error) {
     console.error(`error: ${error}`);
