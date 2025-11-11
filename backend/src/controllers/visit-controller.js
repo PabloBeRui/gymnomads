@@ -25,15 +25,26 @@ const createVisit = async (req, res) => {
         .json({ message: "Se requiere el ID del gimnasio" });
     }
 
-    // 4. Insertar la nueva visita en la base de datos
-    // 4. Insert the new visit into the database
+    // 4. Lógica de negocio: un usuario no puede visitar su propio gimnasio
+    // 4. Business logic: a user cannot visit their own gym
+    if (req.user.role === "user" && req.user.home_gym_id === parseInt(gym_id)) {
+      console.log(
+        "403 Forbidden: el usuario no puede visitar su propio gimnasio"
+      );
+      return res
+        .status(403)
+        .json({ message: "No puedes registrar una visita a tu propio gimnasio" });
+    }
+
+    // 5. Insertar la nueva visita en la base de datos
+    // 5. Insert the new visit into the database
     const [result] = await db.query(
       "INSERT INTO visits (user_id, gym_id) VALUES (?, ?)",
       [user_id, gym_id]
     );
 
-    // 5. Enviar respuesta de éxito (201 Created)
-    // 5. Send success response (201 Created)
+    // 6. Enviar respuesta de éxito (201 Created)
+    // 6. Send success response (201 Created)
     res.status(201).json({
       message: "Visita registrada con éxito",
       visitId: result.insertId,

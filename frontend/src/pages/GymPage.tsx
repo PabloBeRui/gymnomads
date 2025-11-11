@@ -302,9 +302,9 @@ export const GymPage = () => {
         <span>MAPA</span>
       </div>
 
-      {/* Botón "Visitar" solo para usuarios con role='user' */}
-      {/* "Visit" button only for users with role='user' */}
-      {user && user.role === "user" && (
+      {/* Botón "Visitar" solo para usuarios (no en su gym de origen) */}
+      {/* "Visit" button only for users (not in their home gym) */}
+      {user && user.role === "user" && gym && user.home_gym_id !== gym.id && (
         <button
           style={{
             ...styles.visitButton,
