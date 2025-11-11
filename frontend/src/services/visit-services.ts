@@ -79,22 +79,32 @@ export const createVisit = async (
  * API CALL: Get current user's visits
  * ======================================== */
 
-export const getMyVisits = async (token: string): Promise<VisitWithDetails[]> => {
+export const getMyVisits = async (
+  token: string,
+  gymName?: string
+): Promise<VisitWithDetails[]> => {
   try {
+    // Construir query params si hay filtros
+    const params = new URLSearchParams();
+    if (gymName) {
+      params.append("gym_name", gymName);
+    }
+    const queryString = params.toString();
+    const url = `${API_URL}/visits/my-visits${
+      queryString ? `?${queryString}` : ""
+    }`;
+
     // Realizar petición GET al endpoint de visitas del usuario.
-    // Perform GET request to the user visits endpoint.
-    const response = await axios.get<VisitWithDetails[]>(`${API_URL}/visits/my-visits`, {
+    const response = await axios.get<VisitWithDetails[]>(url, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
     // Devolver los datos de las visitas.
-    // Return the visits data.
     return response.data;
   } catch (error) {
     // Usar el manejador centralizado.
-    // Use the centralized handler.
     const errorMessage = handleApiError(
       error,
       "No se pudieron cargar las visitas."

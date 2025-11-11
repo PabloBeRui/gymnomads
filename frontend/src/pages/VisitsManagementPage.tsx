@@ -154,6 +154,19 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: "#6c757d",
     marginTop: "5px",
   },
+  gymSearchInput: {
+    padding: "8px",
+    fontSize: "0.9rem",
+    border: "1px solid #ccc",
+    borderRadius: "4px",
+    minWidth: "200px",
+    marginBottom: "5px",
+  },
+  noResultsText: {
+    color: "#dc3545",
+    fontSize: "0.85rem",
+    marginTop: "5px",
+  },
 };
 
 /* =============================================================================
@@ -174,6 +187,7 @@ export const VisitsManagementPage = () => {
   // Estados de filtros / Filter states
   const [selectedGymId, setSelectedGymId] = useState<string>("");
   const [userSearch, setUserSearch] = useState<string>("");
+  const [gymSearchTerm, setGymSearchTerm] = useState<string>("");
 
   // Estados para el modal / States for modal
   const [showDetailModal, setShowDetailModal] = useState<boolean>(false);
@@ -200,6 +214,13 @@ export const VisitsManagementPage = () => {
 
     fetchGyms();
   }, [isAdmin]);
+
+  // Filtrar gimnasios según el término de búsqueda / Filter gyms by search term
+  const filteredGyms = gyms.filter(
+    (gym) =>
+      gym.name.toLowerCase().includes(gymSearchTerm.toLowerCase()) ||
+      gym.city.toLowerCase().includes(gymSearchTerm.toLowerCase())
+  );
 
   // Cargar visitas / Load visits
   const fetchVisits = async () => {
@@ -269,6 +290,7 @@ export const VisitsManagementPage = () => {
   const handleClearFilters = () => {
     setSelectedGymId("");
     setUserSearch("");
+    setGymSearchTerm("");
   };
 
   // Lógica del Modal (abrir/cerrar) / Modal Logic (open/close)
@@ -336,18 +358,35 @@ export const VisitsManagementPage = () => {
             <label htmlFor="gymFilter" style={styles.label}>
               Filtrar por Gimnasio
             </label>
+
+            <input
+              type="text"
+              placeholder="🔍 Buscar por nombre o ciudad..."
+              value={gymSearchTerm}
+              onChange={(e) => setGymSearchTerm(e.target.value)}
+              style={styles.gymSearchInput}
+            />
+
             <select
               id="gymFilter"
               value={selectedGymId}
-              onChange={(e) => setSelectedGymId(e.target.value)} // <-- Dispara el useEffect
+              onChange={(e) => setSelectedGymId(e.target.value)}
               style={styles.select}>
-              <option value="">Todos los gimnasios</option>
-              {gyms.map((gym) => (
+              <option value="">
+                Todos los gimnasios ({filteredGyms.length})
+              </option>
+              {filteredGyms.map((gym) => (
                 <option key={gym.id} value={gym.id}>
                   {gym.name} - {gym.city}
                 </option>
               ))}
             </select>
+
+            {gymSearchTerm && filteredGyms.length === 0 && (
+              <small style={styles.noResultsText}>
+                No se encontraron gimnasios
+              </small>
+            )}
           </div>
         )}
 

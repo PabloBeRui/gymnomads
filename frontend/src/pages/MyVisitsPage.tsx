@@ -58,44 +58,117 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: "40px",
     color: "#6c757d",
   },
+  filtersContainer: {
+    marginBottom: "20px",
+  },
+  input: {
+    padding: "10px",
+    fontSize: "1rem",
+    border: "1px solid #ccc",
+    borderRadius: "4px",
+    width: "100%",
+    maxWidth: "400px",
+  },
+  statsContainer: {
+    display: "flex",
+    gap: "20px",
+    marginBottom: "30px",
+  },
+  statCard: {
+    flex: "1 1 200px",
+    padding: "20px",
+    backgroundColor: "#f8f9fa",
+    borderRadius: "8px",
+    border: "1px solid #dee2e6",
+  },
+  statNumber: {
+    fontSize: "2rem",
+    fontWeight: "bold",
+    color: "#007bff",
+  },
+  statLabel: {
+    fontSize: "0.9rem",
+    color: "#6c757d",
+    marginTop: "5px",
+  },
 };
 
 /* =============================================================================
    COMPONENTE: MyVisitsPage
    COMPONENT: MyVisitsPage
    ============================================================================= */
-   
 export const MyVisitsPage = () => {
   const { token } = useAuth();
   const [visits, setVisits] = useState<VisitWithDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [gymSearch, setGymSearch] = useState("");
 
+  const fetchVisits = async () => {
+    if (!token) return;
+    setIsLoading(true);
+    try {
+      // Pasamos el término de búsqueda al servicio
+      const data = await getMyVisits(token, gymSearch);
+      setVisits(data);
+    } catch (error) {
+      const msg = handleApiError(error, "Error al cargar tus visitas.");
+      toast.error(msg);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // useEffect con debounce para el filtro
   useEffect(() => {
-    const fetchVisits = async () => {
-      if (!token) return;
-      try {
-        const data = await getMyVisits(token); // Llamada a la nueva función
-        setVisits(data);
-      } catch (error) {
-        const msg = handleApiError(error, "Error al cargar tus visitas.");
-        toast.error(msg);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    const timeoutId = setTimeout(() => {
+      fetchVisits();
+    }, 500); // 500ms debounce
 
-    fetchVisits();
-  }, [token]);
+    return () => clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, gymSearch]);
 
-  if (isLoading) {
+  if (isLoading && visits.length === 0) {
     return <div style={styles.loading}>Cargando tus visitas...</div>;
   }
 
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>Mis Visitas</h1>
-      {visits.length === 0 ? (
-        <p style={styles.empty}>Aún no has visitado ningún gimnasio.</p>
+
+      {/* Estadísticas */}
+      <div style={styles.statsContainer}>
+        <div style={styles.statCard}>
+          <div style={styles.statNumber}>{visits.length}</div>
+          <div style={styles.statLabel}>
+            {isLoading && visits.length === 0
+              ? "Cargando..."
+              : "Total de Visitas"}
+          </div>
+        </div>
+      </div>
+
+      {/* Filtro de búsqueda */}
+      <div style={styles.filtersContainer}>
+        <input
+          type="text"
+          value={gymSearch}
+          onChange={(e) => setGymSearch(e.target.value)}
+          placeholder="🔍 Buscar por nombre de gimnasio..."
+          style={styles.input}
+        />
+      </div>
+
+      {isLoading && <p style={styles.loading}>Buscando...</p>}
+
+      {!isLoading && visits.length === 0 ? (
+        gymSearch ? (
+          <p style={styles.empty}>
+            No se encontraron visitas para "{gymSearch}".
+          </p>
+        ) : (
+          <p style={styles.empty}>Aún no has visitado ningún gimnasio.</p>
+        )
       ) : (
         <table style={styles.table}>
           <thead>
@@ -109,7 +182,12 @@ export const MyVisitsPage = () => {
             {visits.map((visit) => (
               <tr key={visit.id}>
                 <td style={styles.td}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                    }}>
                     <Avatar
                       src={visit.gym_logo_url}
                       firstName={visit.gym_name || "Gimnasio"}

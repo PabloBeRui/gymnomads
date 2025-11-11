@@ -191,8 +191,11 @@ const getMyVisits = async (req, res) => {
     // 1. Obtener el ID del usuario del token
     const userId = req.user.userId;
 
-    // 2. Construir consulta SQL
-    const query = `
+    // 2. Obtener filtro opcional de la query string
+    const { gym_name } = req.query;
+
+    // 3. Construir consulta SQL dinámica
+    let query = `
       SELECT 
         v.id,
         v.gym_id,
@@ -202,13 +205,22 @@ const getMyVisits = async (req, res) => {
       FROM visits v
       JOIN gyms g ON v.gym_id = g.id
       WHERE v.user_id = ?
-      ORDER BY v.visited_at DESC
     `;
 
-    // 3. Ejecutar la consulta
-    const [visits] = await db.query(query, [userId]);
+    const params = [userId];
 
-    // 4. Construir URLs completas para logos
+    // Añadir filtro si se proporciona
+    if (gym_name) {
+      query += ` AND g.name LIKE ?`;
+      params.push(`%${gym_name}%`);
+    }
+
+    query += ` ORDER BY v.visited_at DESC`;
+
+    // 4. Ejecutar la consulta
+    const [visits] = await db.query(query, params);
+
+    // 5. Construir URLs completas para logos
     const baseUrl = process.env.BASE_URL || "";
     const visitsWithUrls = visits.map((visit) => {
       if (visit.gym_logo_url) {
@@ -218,7 +230,7 @@ const getMyVisits = async (req, res) => {
       return visit;
     });
 
-    // 5. Devolver resultados
+    // 6. Devolver resultados
     res.status(200).json(visitsWithUrls);
   } catch (error) {
     console.error("Error al obtener mis visitas:", error);
