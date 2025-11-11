@@ -293,9 +293,10 @@ export const GymPage = () => {
 
         {gym.latitude && gym.longitude ? (
           <GymMap
-            lat={gym.latitude} // Ahora TS sabe que esto es un 'number'
-            lon={gym.longitude} // Ahora TS sabe que esto es un 'number'
+            lat={gym.latitude}
+            lon={gym.longitude}
             gymName={gym.name}
+            logoUrl={logoSrc}
           />
         ) : (
           // Fallback si no hay coordenadas en la BBDD
