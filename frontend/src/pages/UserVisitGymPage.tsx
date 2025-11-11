@@ -152,10 +152,10 @@ export const UserVisitGymPage = () => {
         // TODO: Reemplazar con llamada real al backend
         // TODO: Replace with real backend call
         // const data = await getVisitById(Number(visitId), token);
-        
+
         // Datos mock temporales / Temporary mock data
         await new Promise((resolve) => setTimeout(resolve, 500)); // Simular carga
-        
+
         const mockData: VisitDetails = {
           id: Number(visitId),
           gym_name: "Gimnasio Demo",
@@ -271,6 +271,7 @@ export const UserVisitGymPage = () => {
       <div style={styles.qrSection}>
         <h2 style={styles.qrTitle}>Código de Acceso</h2>
         <QRCodeComponent
+          logoUrl="/public/images/gymnomads/logo/gymnomads-logo.png"
           data={qrData}
           size={280}
           altText={`Código QR de acceso para visita #${visitDetails.id}`}
@@ -293,8 +294,7 @@ export const UserVisitGymPage = () => {
       <button
         style={styles.backButton}
         onClick={() => navigate("/gyms")}
-        aria-label="Volver a la lista de gimnasios"
-      >
+        aria-label="Volver a la lista de gimnasios">
         Volver a Gimnasios
       </button>
     </div>

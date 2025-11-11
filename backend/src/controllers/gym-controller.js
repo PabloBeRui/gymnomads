@@ -331,7 +331,8 @@ const getUsersByGym = async (req, res) => {
         last_name, 
         email, 
         role, 
-        registered_at 
+        registered_at,
+        profile_picture
       FROM users 
       WHERE home_gym_id = ? AND role = 'user'
     `;
@@ -349,10 +350,24 @@ const getUsersByGym = async (req, res) => {
     // 5. Order by registration date descending
     query += " ORDER BY registered_at DESC";
 
-    // 6. Ejecutar la consulta y devolver resultados
-    // 6. Execute the query and return results
+    // 6. Ejecutar la consulta
+    // 6. Execute the query
     const [users] = await db.query(query, params);
-    res.status(200).json(users);
+
+    // 7. Construir URLs completas para las imágenes de perfil
+    // 7. Build full URLs for profile pictures
+    const baseUrl = process.env.BASE_URL || "";
+    const usersWithFullUrls = users.map((user) => {
+      if (user.profile_picture) {
+        const imagePath = user.profile_picture.replace(/\\/g, "/");
+        user.profile_picture = `${baseUrl}/${imagePath}`;
+      }
+      return user;
+    });
+
+    // 8. Devolver resultados con URLs completas
+    // 8. Return results with full URLs
+    res.status(200).json(usersWithFullUrls);
   } catch (error) {
     console.error(`Error al obtener usuarios del gimnasio: ${error}`);
     res.status(500).json({ message: "error interno del servidor" });
