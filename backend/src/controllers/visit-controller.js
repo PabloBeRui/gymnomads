@@ -201,6 +201,7 @@ const getMyVisits = async (req, res) => {
         v.gym_id,
         v.visited_at AS visit_date,
         g.name AS gym_name,
+        g.city AS gym_city,
         g.logo_url AS gym_logo_url
       FROM visits v
       JOIN gyms g ON v.gym_id = g.id

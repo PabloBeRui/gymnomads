@@ -16,6 +16,7 @@ import { getMyVisits } from "../services/visit-services"; // Asumimos que esta f
 import type { VisitWithDetails } from "../interfaces/visit-interfaces";
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
+import { VisitsDetailsModal } from "../components/VisitsDetailsModal";
 import { Avatar } from "../components/Avatar";
 
 /* =============================================================================
@@ -48,6 +49,10 @@ const styles: { [key: string]: React.CSSProperties } = {
   td: {
     padding: "12px 15px",
     borderBottom: "1px solid #dee2e6",
+  },
+  clickableRow: {
+    cursor: "pointer",
+    transition: "background-color 0.2s",
   },
   loading: {
     textAlign: "center",
@@ -103,6 +108,12 @@ export const MyVisitsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [gymSearch, setGymSearch] = useState("");
 
+  // States para el modal / modal States
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedVisit, setSelectedVisit] = useState<VisitWithDetails | null>(
+    null
+  );
+
   const fetchVisits = async () => {
     if (!token) return;
     setIsLoading(true);
@@ -127,6 +138,17 @@ export const MyVisitsPage = () => {
     return () => clearTimeout(timeoutId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, gymSearch]);
+
+  // Lógica del Modal
+  const handleRowClick = (visit: VisitWithDetails) => {
+    setSelectedVisit(visit);
+    setShowDetailModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowDetailModal(false);
+    setSelectedVisit(null);
+  };
 
   if (isLoading && visits.length === 0) {
     return <div style={styles.loading}>Cargando tus visitas...</div>;
@@ -180,7 +202,17 @@ export const MyVisitsPage = () => {
           </thead>
           <tbody>
             {visits.map((visit) => (
-              <tr key={visit.id}>
+              <tr
+                key={visit.id}
+                style={styles.clickableRow}
+                onClick={() => handleRowClick(visit)}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "#f8f9fa";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                }}
+                title={`Ver detalles de la visita`}>
                 <td style={styles.td}>
                   <div
                     style={{
@@ -215,6 +247,13 @@ export const MyVisitsPage = () => {
           </tbody>
         </table>
       )}
+
+      <VisitsDetailsModal
+        isOpen={showDetailModal}
+        onClose={handleCloseModal}
+        visit={selectedVisit}
+        viewMode="user"
+      />
     </div>
   );
 };

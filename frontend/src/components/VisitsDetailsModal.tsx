@@ -36,6 +36,10 @@ interface VisitsDetailsModalProps {
   // Datos de la visita a mostrar
   // Visit data to display
   visit: VisitWithDetails | null;
+
+  // Modo de vista para adaptar el contenido
+  // View mode to adapt content
+  viewMode?: "user" | "admin";
 }
 
 /* =============================================================================
@@ -163,6 +167,7 @@ export const VisitsDetailsModal = ({
   isOpen,
   onClose,
   visit,
+  viewMode = "admin", // Por defecto, modo admin
 }: VisitsDetailsModalProps) => {
   // Manejar cierre del modal
   // Handle modal close
@@ -215,7 +220,8 @@ export const VisitsDetailsModal = ({
           {/* Modal header */}
           <div style={styles.modalHeader}>
             <h2 id="modal-title" style={styles.modalTitle}>
-              🎟️ Detalle de la Visita (ID: {visit.id})
+              🎟️ Detalle de la Visita
+              {viewMode === "admin" && ` (ID: ${visit.id})`}
             </h2>
             <button
               style={styles.closeButton}
@@ -225,20 +231,22 @@ export const VisitsDetailsModal = ({
             </button>
           </div>
 
-          {/* Header con Avatar, nombre y email del USUARIO */}
-          {/* Header with Avatar, name and email of USER */}
-          <div style={styles.profileHeader}>
-            <Avatar
-              src={visit.user_profile_picture}
-              firstName={visit.user_name || "Usuario"}
-              lastName={""}
-              size={100}
-            />
-            <div style={styles.profileInfo}>
-              <h3 style={styles.profileName}>{visit.user_name || "N/A"}</h3>
-              <p style={styles.profileEmail}>{visit.user_email || "N/A"}</p>
+          {/* Header con Avatar, nombre y email del USUARIO (solo en modo admin) */}
+          {/* Header with Avatar, name and email of USER (admin mode only) */}
+          {viewMode === "admin" && (
+            <div style={styles.profileHeader}>
+              <Avatar
+                src={visit.user_profile_picture}
+                firstName={visit.user_name || "Usuario"}
+                lastName={""}
+                size={100}
+              />
+              <div style={styles.profileInfo}>
+                <h3 style={styles.profileName}>{visit.user_name || "N/A"}</h3>
+                <p style={styles.profileEmail}>{visit.user_email || "N/A"}</p>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Contenido del modal (solo vista) */}
           {/* Modal content (view-only) */}
