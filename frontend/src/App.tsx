@@ -68,6 +68,8 @@ function App() {
         {token && user ? (
           // --- ESTADO AUTENTICADO ---
           <>
+            <Link to="/profile">Perfil</Link>
+            {" | "}
             {/* 1. Nombre y Foto/Enlace de Perfil */}
             <Link
               to="/profile"
