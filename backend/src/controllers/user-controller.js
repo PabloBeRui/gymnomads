@@ -356,7 +356,8 @@ const getAllUsers = async (req, res) => {
         u.profile_picture,
         u.registered_at,
         g.logo_url,
-        g.name AS gym_name
+        g.name AS gym_name,
+        g.city AS gym_city
       FROM users u
       INNER JOIN gyms g ON u.home_gym_id = g.id
       WHERE u.role = 'user'

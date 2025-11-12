@@ -133,6 +133,7 @@ export interface UserWithGym {
   registered_at: string;
   gym_name: string;
   logo_url: string | null;
+  gym_city: string;
 }
 
 /* ========================================

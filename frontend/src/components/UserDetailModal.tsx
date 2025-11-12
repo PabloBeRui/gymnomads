@@ -289,11 +289,11 @@ export const UserDetailModal = ({
               <div style={styles.value}>{user.phone || "No especificado"}</div>
             </div>
 
-            {/* --- INICIO MODIFICACIÓN: Ocultar si es Manager --- */}
-            {/* --- START MODIFICATION: Hide if Manager --- */}
+           {/* --- INICIO MODIFICACIÓN: Mostrar ciudad al Admin --- */}
+            {/* --- START MODIFICATION: Show city to Admin --- */}
             {authUser?.role === "admin" && (
-              // El Admin SÍ ve el gimnasio de origen
-              // Admin DOES see the home gym
+              // El Admin SÍ ve el gimnasio de origen y la ciudad
+              // Admin DOES see the home gym and city
               <div style={styles.infoRow}>
                 <label style={styles.label}>Gimnasio de Origen:</label>
                 <div
@@ -306,10 +306,14 @@ export const UserDetailModal = ({
                   <Avatar
                     src={user.logo_url}
                     firstName={user.gym_name}
-                    lastName="" // Usar solo nombre del gym para iniciales
-                    size={30} // Tamaño pequeño
+                    lastName=""
+                    size={30}
                   />
-                  <span>{user.gym_name}</span>
+                  {/* Mostramos "Nombre (Ciudad)" */}
+                  {/* We show "Name (City)" */}
+                  <span>
+                    {user.gym_name} ({user.gym_city || "Ciudad desconocida"})
+                  </span>
                 </div>
               </div>
             )}
