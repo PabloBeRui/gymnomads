@@ -14,8 +14,8 @@ const getAllGyms = async (req, res) => {
 
     // 2. Construir query base
     // 2. Build base query
-    // --- MODIFICADO: Añadido 'is_deleted = 0' para ocultar gimnasios borrados ---
-    // --- MODIFIED: Added 'is_deleted = 0' to hide deleted gyms ---
+    // --- Añadido 'is_deleted = 0' para ocultar gimnasios borrados ---
+    // --- Added 'is_deleted = 0' to hide deleted gyms ---
     let query = "SELECT * FROM gyms WHERE id != 1 AND is_deleted = 0";
     const params = [];
 
@@ -48,8 +48,8 @@ const getGymById = async (req, res) => {
 
     // 2. Ejecutar la consulta SQL para buscar por ID (solo gimnasios activos)
     // 2. Execute the SQL query to find by ID (active gyms only)
-    // --- MODIFICADO: Añadido 'is_deleted = 0' ---
-    // --- MODIFIED: Added 'is_deleted = 0' ---
+    // ---  Añadido 'is_deleted = 0' ---
+    // --- Added 'is_deleted = 0' ---
     const [rows] = await db.query(
       "SELECT * FROM gyms WHERE id = ? AND is_deleted = 0",
       [id]
@@ -277,17 +277,15 @@ const updateGym = async (req, res) => {
 };
 
 /* ========================================
- * Eliminar Gimnasio (Borrado Lógico / Soft Delete)
- * Delete Gym (Logical Delete / Soft Delete)
+ * Eliminar Gimnasio (Borrado Lógico) y su Manager (Borrado Físico)
+ * Delete Gym (Logical) and its Manager (Physical)
  * ======================================== */
 const deleteGym = async (req, res) => {
-  try {
-    // 1. Obtener el ID del gimnasio de los parámetros de la URL
-    // 1. Get the gym ID from the URL parameters
-    const { id } = req.params;
+  const { id } = req.params;
+  let connection; // Definir la conexión fuera del try para que esté disponible en finally
 
-    // 2. PROTECCIÓN: No permitir eliminar gimnasio ID=1 (administración del sistema)
-    // 2. PROTECTION: Cannot delete gym ID=1 (system administration)
+  try {
+    // 1. PROTECCIÓN: No permitir eliminar gimnasio ID=1 (administración del sistema)
     if (Number(id) === 1) {
       return res.status(403).json({
         message:
@@ -295,27 +293,52 @@ const deleteGym = async (req, res) => {
       });
     }
 
-    // 3. Ejecutar la consulta SQL para MARCAR COMO ELIMINADO (Soft Delete)
-    // 3. Execute the SQL query to MARK AS DELETED (Soft Delete)
-    // --- MODIFICADO: De 'DELETE' a 'UPDATE' ---
-    // --- MODIFIED: From 'DELETE' to 'UPDATE' ---
-    const [result] = await db.query(
+    // 2. Obtener una conexión del pool
+    connection = await db.getConnection();
+
+    // 3. Iniciar una transacción
+    await connection.beginTransaction();
+
+    // 4. Marcar el gimnasio como eliminado (Soft Delete)
+    const [gymResult] = await connection.query(
       "UPDATE gyms SET is_deleted = 1 WHERE id = ?",
       [id]
     );
 
-    // 4. Comprobar si alguna fila fue marcada
-    // 4. Check if any row was marked
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "gimnasio no encontrado" });
+    // Si no se encontró el gimnasio, no hay nada que hacer.
+    if (gymResult.affectedRows === 0) {
+      await connection.rollback(); // Revertir por si acaso, aunque no se hizo nada
+      connection.release();
+      return res.status(404).json({ message: "Gimnasio no encontrado." });
     }
 
-    // 5. Enviar respuesta de éxito
-    // 5. Send success response
-    res.status(200).json({ message: "Gimnasio marcado como eliminado" });
+    // 5. Eliminar físicamente al manager asociado a ese gimnasio
+    await connection.query(
+      "DELETE FROM users WHERE home_gym_id = ? AND role = 'manager'",
+      [id]
+    );
+    // No compruebo affectedRows aquí, porque podría no existir un manager,
+    // lo cual no es un error.
+
+    // 6. Si todo fue bien, confirmar la transacción
+    await connection.commit();
+
+    // 7. Enviar respuesta de éxito
+    res.status(200).json({
+      message: "Gimnasio eliminado y manager asociado borrado con éxito.",
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "error interno del servidor" });
+    // 8. Si hay algún error, revertir la transacción
+    if (connection) {
+      await connection.rollback();
+    }
+    console.error(`Error al eliminar el gimnasio: ${error}`);
+    res.status(500).json({ message: "Error interno del servidor." });
+  } finally {
+    // 9. En cualquier caso, liberar la conexión de vuelta al pool
+    if (connection) {
+      connection.release();
+    }
   }
 };
 
@@ -404,8 +427,8 @@ const updateGymImage = async (req, res, imageColumnName) => {
 
     // 2. Obtener la ruta de la imagen antigua (solo de gimnasios activos)
     // 2. Get the old image path (active gyms only)
-    // --- MODIFICADO: Añadido 'is_deleted = 0' ---
-    // --- MODIFIED: Added 'is_deleted = 0' ---
+    //  Añadido 'is_deleted = 0' ---
+    //  Added 'is_deleted = 0' ---
     const [gyms] = await db.query(
       `SELECT ${imageColumnName} FROM gyms WHERE id = ? AND is_deleted = 0`,
       [id]

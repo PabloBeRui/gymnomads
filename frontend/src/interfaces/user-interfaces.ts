@@ -134,6 +134,7 @@ export interface UserWithGym {
   gym_name: string;
   logo_url: string | null;
   gym_city: string;
+  is_gym_deleted: boolean;
 }
 
 /* ========================================

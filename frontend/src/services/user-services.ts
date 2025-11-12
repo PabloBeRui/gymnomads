@@ -274,6 +274,7 @@ export const uploadProfilePicture = async (
 interface GetAllUsersFilters {
   gym_id?: number;
   search?: string;
+  gym_status?: "active" | "deleted";
 }
 
 // Obtener todos los usuarios con role='user' (solo Admin)
@@ -297,6 +298,9 @@ export const getAllUsers = async (
     }
     if (filters?.search) {
       params.append("search", filters.search);
+    }
+    if (filters?.gym_status) {
+      params.append("gym_status", filters.gym_status);
     }
 
     // Realizar petición GET al endpoint '/users' con filtros opcionales

@@ -29,7 +29,7 @@ import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
 //  Importar componentes de UI /  Import UI components ---
 import { Avatar } from "../components/Avatar";
-import { UserDetailModal } from "../components/userDetailModal";
+import { UserDetailModal } from "../components/UserDetailModal";
 
 /* =============================================================================
    ESTILOS (inline)
@@ -194,7 +194,7 @@ export const UsersManagementPage = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [gymSearchTerm, setGymSearchTerm] = useState<string>("");
 
-  // --- NUEVO: Estados para el modal / NEW: States for modal ---
+  // Estados para el modal / States for modal
   const [showDetailModal, setShowDetailModal] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<
     UserWithGym | GymUser | null
@@ -244,11 +244,23 @@ export const UsersManagementPage = () => {
 
       if (isAdmin) {
         // Admin: obtener todos los usuarios con filtros opcionales
-        // Admin: get all users with optional filters
-        const filters = {
-          gym_id: selectedGymId ? Number(selectedGymId) : undefined,
+        const gymIdAsNumber = Number(selectedGymId);
+        const filters: {
+          gym_id?: number;
+          search?: string;
+          gym_status?: "active" | "deleted";
+        } = {
           search: searchTerm.trim() || undefined,
         };
+
+        if (selectedGymId === "deleted") {
+          filters.gym_status = "deleted";
+        } else if (gymIdAsNumber > 0) {
+          filters.gym_id = gymIdAsNumber;
+          filters.gym_status = "active";
+        }
+        // Si selectedGymId es "", no se añade gym_status, y el backend devuelve todos.
+
         usersData = await getAllUsers(token, filters);
       } else if (isManager && user?.home_gym_id) {
         // Manager: obtener solo usuarios de su gimnasio
@@ -306,7 +318,7 @@ export const UsersManagementPage = () => {
     });
   };
 
-  // --- NUEVO: Lógica del Modal / NEW: Modal Logic ---
+  // --- Lógica del Modal /  Modal Logic ---
 
   // Abrir el modal con el usuario seleccionado
   // Open the modal with the selected user
@@ -347,7 +359,6 @@ export const UsersManagementPage = () => {
       setIsDeleting(false);
     }
   };
-  // --- FIN NUEVA LÓGICA ---
 
   // Calcular estadísticas / Calculate statistics
   const totalUsers = users.length;
@@ -422,8 +433,11 @@ export const UsersManagementPage = () => {
               value={selectedGymId}
               onChange={(e) => setSelectedGymId(e.target.value)}
               style={styles.select}>
-              <option value="">
-                Todos los gimnasios ({filteredGyms.length})
+              <option value="">Todos los Usuarios</option>
+              <option
+                value="deleted"
+                style={{ backgroundColor: "#ffebee", color: "#c62828" }}>
+                Usuarios de Gimnasios Eliminados
               </option>
               {filteredGyms.map((gym) => (
                 <option key={gym.id} value={gym.id}>
@@ -492,7 +506,6 @@ export const UsersManagementPage = () => {
       ) : (
         <div style={styles.tableContainer}>
           <table style={styles.table}>
-            {/* --- MODIFICADO: Cabecera de tabla / MODIFIED: Table header --- */}
             <thead>
               <tr>
                 <th style={styles.th}>Nombre</th>
@@ -500,9 +513,7 @@ export const UsersManagementPage = () => {
                 {!isAdmin && <th style={styles.th}>Fecha de Registro</th>}
               </tr>
             </thead>
-            {/* --- FIN MODIFICADO --- */}
 
-            {/* --- MODIFICADO: Cuerpo de tabla / MODIFIED: Table body --- */}
             <tbody>
               {users.map((u) => (
                 <tr
@@ -553,23 +564,27 @@ export const UsersManagementPage = () => {
                           lastName=""
                           size={35}
                         />
-                        <span>{u.gym_name}</span>
+                        <span>
+                          {u.gym_name}
+                          {(u as UserWithGym).is_gym_deleted && " (Eliminado)"}
+                        </span>
                       </div>
                     </td>
                   )}
 
                   {/* Columna: Fecha de Registro */}
                   {/* Column: Registration Date */}
-                  {!isAdmin && <td style={styles.td}>{formatDate(u.registered_at)}</td>}
+                  {!isAdmin && (
+                    <td style={styles.td}>{formatDate(u.registered_at)}</td>
+                  )}
                 </tr>
               ))}
             </tbody>
-            {/* --- FIN MODIFICADO --- */}
           </table>
         </div>
       )}
 
-      {/* --- NUEVO: Renderizar el modal / NEW: Render the modal --- */}
+      {/* Renderizar el modal / Render the modal --- */}
       <UserDetailModal
         isOpen={showDetailModal}
         onClose={handleCloseModal}

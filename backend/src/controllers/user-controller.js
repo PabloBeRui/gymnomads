@@ -341,7 +341,7 @@ const getAllUsers = async (req, res) => {
   try {
     // 1. Obtener parámetros de filtro de la query string
     // 1. Get filter parameters from query string
-    const { gym_id, search } = req.query;
+    const { gym_id, search, gym_status } = req.query;
 
     // 2. Construir query base con INNER JOIN para obtener nombre del gimnasio
     // 2. Build base query with INNER JOIN to get gym name
@@ -357,22 +357,33 @@ const getAllUsers = async (req, res) => {
         u.registered_at,
         g.logo_url,
         g.name AS gym_name,
-        g.city AS gym_city
+        g.city AS gym_city,
+        g.is_deleted AS is_gym_deleted 
       FROM users u
       INNER JOIN gyms g ON u.home_gym_id = g.id
       WHERE u.role = 'user'
     `;
     const params = [];
 
-    // 3. Aplicar filtro por gimnasio específico (si se proporciona)
-    // 3. Apply filter by specific gym (if provided)
+    // 3. Aplicar filtro por estado del gimnasio (activo, eliminado o todos)
+    // 3. Apply filter by gym status (active, deleted, or all)
+    if (gym_status === 'deleted') {
+      query += " AND g.is_deleted = 1";
+    } else if (gym_status === 'active') {
+      query += " AND g.is_deleted = 0";
+    }
+    // Si gym_status no se proporciona, no se añade filtro de is_deleted, devolviendo todos.
+    // If gym_status is not provided, no is_deleted filter is added, returning all.
+
+    // 4. Aplicar filtro por gimnasio específico (si se proporciona)
+    // 4. Apply filter by specific gym (if provided)
     if (gym_id) {
       query += " AND u.home_gym_id = ?";
       params.push(gym_id);
     }
 
-    // 4. Aplicar filtro de búsqueda por nombre o email (si se proporciona)
-    // 4. Apply search filter by name or email (if provided)
+    // 5. Aplicar filtro de búsqueda por nombre o email (si se proporciona)
+    // 5. Apply search filter by name or email (if provided)
     if (search) {
       query +=
         " AND (u.first_name LIKE ? OR u.last_name LIKE ? OR u.email LIKE ?)";
@@ -380,13 +391,16 @@ const getAllUsers = async (req, res) => {
       params.push(searchTerm, searchTerm, searchTerm);
     }
 
-    // 5. Ordenar por fecha de registro descendente
-    // 5. Order by registration date descending
-    query += " ORDER BY u.registered_at DESC"; // 6. Execute the query
+    // 6. Ordenar por fecha de registro descendente
+    // 6. Order by registration date descending
+    query += " ORDER BY u.registered_at DESC";
 
-    // 6. Ejecutar la consulta
-    const [users] = await db.query(query, params); // 7. Construir URLs completas para las imágenes de perfil // 7. Build full profile picture URLs
+    // 7. Ejecutar la consulta
+    // 7. Execute the query
+    const [users] = await db.query(query, params);
 
+    // 8. Construir URLs completas para las imágenes
+    // 8. Build full URLs for images
     const baseUrl = process.env.BASE_URL || "";
     const usersWithFullUrls = users.map((user) => {
       if (user.profile_picture) {
@@ -398,8 +412,10 @@ const getAllUsers = async (req, res) => {
         user.logo_url = `${baseUrl}/${logoPath}`;
       }
       return user;
-    }); // 8. Devolver resultados con URLs completas // 8. Return results with full URLs
+    });
 
+    // 9. Devolver resultados
+    // 9. Return results
     res.status(200).json(usersWithFullUrls);
   } catch (error) {
     console.error(error);
