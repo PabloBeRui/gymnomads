@@ -1,15 +1,18 @@
 /**
  * =============================================================================
  * COMPONENTE: UserDetailModal
+ * COMPONENT: UserDetailModal
  * =============================================================================
  *
  * Modal de "solo vista" para mostrar los detalles de un usuario.
  * - Muestra Avatar, nombre, email, teléfono y gimnasio de origen.
  * - Incluye un botón "Eliminar Usuario" (para Admin/Manager).
+ * - Oculta "Gimnasio de Origen" para el rol "manager" (es redundante).
  *
  * View-only modal to display user details.
  * - Shows Avatar, name, email, phone, and home gym.
  * - Includes a "Delete User" button (for Admin/Manager).
+ * - Hides "Home Gym" for "manager" role (it's redundant).
  *
  * =============================================================================
  */
@@ -23,8 +26,8 @@ import { ConfirmationModal } from "./ConfirmationModal"; // Reutilizamos el moda
 import { useAuth } from "../context/AuthContext";
 
 /* =============================================================================
-   INTERFACES
-   ============================================================================= */
+    INTERFACES
+    ============================================================================= */
 
 interface UserDetailModalProps {
   // Visibilidad del modal
@@ -49,9 +52,9 @@ interface UserDetailModalProps {
 }
 
 /* =============================================================================
-   ESTILOS (similares a ManagerDetailsModal)
-   STYLES (similar to ManagerDetailsModal)
-   ============================================================================= */
+    ESTILOS (similares a ManagerDetailsModal)
+    STYLES (similar to ManagerDetailsModal)
+    ============================================================================= */
 const styles: { [key: string]: React.CSSProperties } = {
   modalOverlay: {
     position: "fixed",
@@ -169,8 +172,8 @@ const styles: { [key: string]: React.CSSProperties } = {
 };
 
 /* =============================================================================
-   COMPONENTE: UserDetailModal
-   ============================================================================= */
+    COMPONENTE: UserDetailModal
+    ============================================================================= */
 export const UserDetailModal = ({
   isOpen,
   onClose,
@@ -285,24 +288,35 @@ export const UserDetailModal = ({
               <label style={styles.label}>Teléfono:</label>
               <div style={styles.value}>{user.phone || "No especificado"}</div>
             </div>
-            <div style={styles.infoRow}>
-              <label style={styles.label}>Gimnasio de Origen:</label>
-              <div
-                style={{
-                  ...styles.value,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                }}>
-                <Avatar
-                  src={user.logo_url}
-                  firstName={user.gym_name}
-                  lastName="" // Usar solo nombre del gym para iniciales
-                  size={30} // Tamaño pequeño
-                />
-                <span>{user.gym_name}</span>
+
+            {/* --- INICIO MODIFICACIÓN: Ocultar si es Manager --- */}
+            {/* --- START MODIFICATION: Hide if Manager --- */}
+            {authUser?.role === "admin" && (
+              // El Admin SÍ ve el gimnasio de origen
+              // Admin DOES see the home gym
+              <div style={styles.infoRow}>
+                <label style={styles.label}>Gimnasio de Origen:</label>
+                <div
+                  style={{
+                    ...styles.value,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                  }}>
+                  <Avatar
+                    src={user.logo_url}
+                    firstName={user.gym_name}
+                    lastName="" // Usar solo nombre del gym para iniciales
+                    size={30} // Tamaño pequeño
+                  />
+                  <span>{user.gym_name}</span>
+                </div>
               </div>
-            </div>
+            )}
+            {/* El Manager NO ve este bloque (es redundante) */}
+            {/* Manager DOES NOT see this block (it's redundant) */}
+            {/* --- FIN MODIFICACIÓN --- */}
+
             <div style={styles.infoRow}>
               <label style={styles.label}>Miembro desde:</label>
               <div style={styles.value}>
