@@ -20,16 +20,16 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getAllVisits, getManagerGymVisits } from "../services/visit-services";
 import { getAllGyms } from "../services/gym-services";
-import type { VisitWithDetails } from "../interfaces/visit-interfaces";
+import type {
+  VisitWithDetails,
+  VisitsFilters,
+} from "../interfaces/visit-interfaces";
 import type { Gym } from "../interfaces/gym-interfaces";
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
 import { Avatar } from "../components/Avatar";
 import { VisitsDetailsModal } from "../components/VisitsDetailsModal";
-
-// --- AÑADIDO: Importar el nuevo modal de estadísticas ---
-// --- ADDED: Import the new stats modal ---
-import { VisitsStatsModal } from "../components/VisitsStatsModal";
+import { VisitsStatsModal } from "../components/VisitsStatsModal"; //modal de estadísticas  / stats modal
 
 /* =============================================================================
     ESTILOS (inline)
@@ -243,24 +243,30 @@ export const VisitsManagementPage = () => {
 
     setError(null);
     setIsLoading(true);
-
     try {
       let visitsData: VisitWithDetails[];
-      const filters = {
-        user_search: userSearch.trim() || undefined,
-      };
 
       if (isAdmin) {
         // Admin: obtener todas las visitas con filtros opcionales
-        // Admin: get all visits with optional filters
-        const adminFilters = {
-          ...filters,
-          gym_id: selectedGymId ? Number(selectedGymId) : undefined,
+        const gymIdAsNumber = Number(selectedGymId);
+        const filters: VisitsFilters = {
+          user_search: userSearch.trim() || undefined,
         };
-        visitsData = await getAllVisits(token, adminFilters);
+
+        if (selectedGymId === "deleted") {
+          filters.gym_status = "deleted";
+        } else if (gymIdAsNumber > 0) {
+          filters.gym_id = gymIdAsNumber;
+          filters.gym_status = "active";
+        }
+        // Si selectedGymId es "", no se añade gym_status, y el backend devuelve todos.
+
+        visitsData = await getAllVisits(token, filters);
       } else if (isManager) {
         // Manager: obtener solo visitas de su gimnasio
-        // Manager: get only visits from their gym
+        const filters = {
+          user_search: userSearch.trim() || undefined,
+        };
         visitsData = await getManagerGymVisits(token, filters);
       } else {
         throw new Error("No tienes permisos para ver esta página.");
@@ -391,8 +397,11 @@ export const VisitsManagementPage = () => {
               value={selectedGymId}
               onChange={(e) => setSelectedGymId(e.target.value)}
               style={styles.select}>
-              <option value="">
-                Todos los gimnasios ({filteredGyms.length})
+              <option value="">A Todos los Gimnasios</option>
+              <option
+                value="deleted"
+                style={{ backgroundColor: "#ffebee", color: "#c62828" }}>
+                A Gimnasios Eliminados
               </option>
               {filteredGyms.map((gym) => (
                 <option key={gym.id} value={gym.id}>
@@ -460,17 +469,14 @@ export const VisitsManagementPage = () => {
       ) : (
         <div style={styles.tableContainer}>
           <table style={styles.table}>
-            {/* Cabecera de tabla (Usuario, Gimnasio Visitado) */}
-            {/* Table header (User, Gym Visited) */}
             <thead>
               <tr>
                 <th style={styles.th}>Usuario</th>
+                {isAdmin && <th style={styles.th}>Gimnasio Visitado</th>}
                 <th style={styles.th}>Fecha de Visita</th>
               </tr>
             </thead>
 
-            {/* Cuerpo de tabla (Avatar + Nombre, Logo + Nombre) */}
-            {/* Table body (Avatar + Name, Logo + Name) */}
             <tbody>
               {visits.map((visit) => (
                 <tr
@@ -485,7 +491,6 @@ export const VisitsManagementPage = () => {
                   }}
                   title={`Ver detalles de la visita #${visit.id}`}>
                   {/* Columna: Avatar + Nombre Usuario */}
-                  {/* Column: Avatar + User Name */}
                   <td style={styles.td}>
                     <div
                       style={{
@@ -503,8 +508,30 @@ export const VisitsManagementPage = () => {
                     </div>
                   </td>
 
+                  {/* Columna: Gimnasio (solo Admin) */}
+                  {isAdmin && (
+                    <td style={styles.td}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                        }}>
+                        <Avatar
+                          src={visit.gym_logo_url}
+                          firstName={visit.gym_name || "Gimnasio"}
+                          lastName={""}
+                          size={35}
+                        />
+                        <span>
+                          {visit.gym_name || "N/A"}
+                          {visit.is_gym_deleted && " (Eliminado)"}
+                        </span>
+                      </div>
+                    </td>
+                  )}
+
                   {/* Columna: Fecha de Visita */}
-                  {/* Column: Visit Date */}
                   <td style={styles.td}>
                     {new Date(visit.visit_date).toLocaleDateString("es-ES", {
                       day: "2-digit",

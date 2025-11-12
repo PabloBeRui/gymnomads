@@ -22,6 +22,7 @@ export interface VisitWithDetails extends Visit {
   gym_name?: string; // Nombre del gimnasio / Gym name
   gym_city?: string; // Ciudad del gimnasio / Gym city
   gym_logo_url?: string | null;
+  is_gym_deleted: boolean;
 }
 
 /* ========================================
@@ -50,6 +51,7 @@ export interface VisitsFilters {
   user_search?: string; // Búsqueda por nombre/email de usuario / Search by user name/email
   start_date?: string; // Fecha inicio (opcional) / Start date (optional)
   end_date?: string; // Fecha fin (opcional) / End date (optional)
+  gym_status?: "active" | "deleted";
 }
 
 /* ========================================

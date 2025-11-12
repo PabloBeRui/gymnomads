@@ -140,6 +140,9 @@ export const getAllVisits = async (
     if (filters?.end_date) {
       params.append("end_date", filters.end_date);
     }
+    if (filters?.gym_status) {
+      params.append("gym_status", filters.gym_status);
+    }
 
     const queryString = params.toString();
     const url = `${API_URL}/visits${queryString ? `?${queryString}` : ""}`;

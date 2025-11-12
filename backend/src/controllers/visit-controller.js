@@ -255,12 +255,10 @@ const getAllVisits = async (req, res) => {
 
     // 2. Obtener parámetros de filtro opcionales de la query string
     // 2. Get optional filter parameters from query string
-    const { gym_id, user_search } = req.query;
+    const { gym_id, user_search, gym_status } = req.query;
 
     // 3. Construir consulta SQL dinámica con JOINs
     // 3. Build dynamic SQL query with JOINs
-    // --- Añadidos alias u/g y campos profile_picture/logo_url ---
-    // ---  Added u/g aliases and profile_picture/logo_url fields ---
     let query = `
       SELECT 
         visits.id,
@@ -272,7 +270,8 @@ const getAllVisits = async (req, res) => {
         u.profile_picture AS user_profile_picture,
         g.name AS gym_name,
         g.city AS gym_city,
-        g.logo_url AS gym_logo_url
+        g.logo_url AS gym_logo_url,
+        g.is_deleted AS is_gym_deleted
       FROM visits
       JOIN users u ON visits.user_id = u.id
       JOIN gyms g ON visits.gym_id = g.id
@@ -281,15 +280,25 @@ const getAllVisits = async (req, res) => {
 
     const params = [];
 
-    // 4. Aplicar filtro por gimnasio (si se proporciona)
-    // 4. Apply filter by gym (if provided)
+    // 4. Aplicar filtro por estado del gimnasio (activo, eliminado o todos)
+    // 4. Apply filter by gym status (active, deleted, or all)
+    if (gym_status === "deleted") {
+      query += " AND g.is_deleted = 1";
+    } else if (gym_status === "active") {
+      query += " AND g.is_deleted = 0";
+    }
+    // Si gym_status no se proporciona, no se añade filtro de is_deleted, devolviendo todos.
+    // If gym_status is not provided, no is_deleted filter is added, returning all.
+
+    // 5. Aplicar filtro por gimnasio (si se proporciona)
+    // 5. Apply filter by gym (if provided)
     if (gym_id) {
       query += ` AND visits.gym_id = ?`;
       params.push(gym_id);
     }
 
-    // 5. Aplicar filtro de búsqueda de usuario por nombre o email (si se proporciona)
-    // 5. Apply user search filter by name or email (if provided)
+    // 6. Aplicar filtro de búsqueda de usuario por nombre o email (si se proporciona)
+    // 6. Apply user search filter by name or email (if provided)
     if (user_search) {
       query += ` AND (
         CONCAT(u.first_name, ' ', u.last_name) LIKE ? 
@@ -299,32 +308,30 @@ const getAllVisits = async (req, res) => {
       params.push(searchPattern, searchPattern);
     }
 
-    // 6. Ordenar por fecha de visita descendente
-    // 6. Order by visit date descending
+    // 7. Ordenar por fecha de visita descendente
+    // 7. Order by visit date descending
     query += ` ORDER BY visits.visited_at DESC`;
 
-    // 7. Ejecutar la consulta
-    // 7. Execute the query
+    // 8. Ejecutar la consulta
+    // 8. Execute the query
     const [visits] = await db.query(query, params);
 
-    // ---  8. Construir URLs completas para imágenes /  8. Build full URLs for images ---
+    // ---  9. Construir URLs completas para imágenes /  9. Build full URLs for images ---
     const baseUrl = process.env.BASE_URL || "";
     const visitsWithUrls = visits.map((visit) => {
       if (visit.user_profile_picture) {
-        // <-- CORREGIDO
         const imagePath = visit.user_profile_picture.replace(/\\/g, "/");
-        visit.user_profile_picture = `${baseUrl}/${imagePath}`; // <-- CORREGIDO
+        visit.user_profile_picture = `${baseUrl}/${imagePath}`;
       }
       if (visit.gym_logo_url) {
-        // <-- CORREGIDO
         const logoPath = visit.gym_logo_url.replace(/\\/g, "/");
-        visit.gym_logo_url = `${baseUrl}/${logoPath}`; // <-- CORREGIDO
+        visit.gym_logo_url = `${baseUrl}/${logoPath}`;
       }
       return visit;
     });
 
-    // 9. Devolver resultados
-    // 9. Return results
+    // 10. Devolver resultados
+    // 10. Return results
     res.status(200).json(visitsWithUrls);
   } catch (error) {
     console.error("Error al obtener visitas:", error);
