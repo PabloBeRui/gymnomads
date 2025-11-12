@@ -497,7 +497,7 @@ export const UsersManagementPage = () => {
               <tr>
                 <th style={styles.th}>Nombre</th>
                 {isAdmin && <th style={styles.th}>Gimnasio</th>}
-                <th style={styles.th}>Fecha de Registro</th>
+                {!isAdmin && <th style={styles.th}>Fecha de Registro</th>}
               </tr>
             </thead>
             {/* --- FIN MODIFICADO --- */}
@@ -560,7 +560,7 @@ export const UsersManagementPage = () => {
 
                   {/* Columna: Fecha de Registro */}
                   {/* Column: Registration Date */}
-                  <td style={styles.td}>{formatDate(u.registered_at)}</td>
+                  {!isAdmin && <td style={styles.td}>{formatDate(u.registered_at)}</td>}
                 </tr>
               ))}
             </tbody>
