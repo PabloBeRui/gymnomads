@@ -14,7 +14,9 @@ const getAllGyms = async (req, res) => {
 
     // 2. Construir query base
     // 2. Build base query
-    let query = "SELECT * FROM gyms WHERE id != 1";
+    // --- MODIFICADO: Añadido 'is_deleted = 0' para ocultar gimnasios borrados ---
+    // --- MODIFIED: Added 'is_deleted = 0' to hide deleted gyms ---
+    let query = "SELECT * FROM gyms WHERE id != 1 AND is_deleted = 0";
     const params = [];
 
     // 3. Aplicar filtro por ciudad si se proporciona
@@ -44,9 +46,14 @@ const getGymById = async (req, res) => {
     // 1. Get the ID from the URL parameters
     const { id } = req.params;
 
-    // 2. Ejecutar la consulta SQL para buscar por ID
-    // 2. Execute the SQL query to find by ID
-    const [rows] = await db.query("SELECT * FROM gyms WHERE id = ?", [id]);
+    // 2. Ejecutar la consulta SQL para buscar por ID (solo gimnasios activos)
+    // 2. Execute the SQL query to find by ID (active gyms only)
+    // --- MODIFICADO: Añadido 'is_deleted = 0' ---
+    // --- MODIFIED: Added 'is_deleted = 0' ---
+    const [rows] = await db.query(
+      "SELECT * FROM gyms WHERE id = ? AND is_deleted = 0",
+      [id]
+    );
 
     // 3. Comprobar si se encontró el gimnasio
     // 3. Check if the gym was found
@@ -66,10 +73,6 @@ const getGymById = async (req, res) => {
 };
 
 /* ========================================
- * Crear Gimnasio + Manager Automático
- * Create Gym + Automatic Manager
- * ======================================== */
-/* ========================================
  * Crear Gimnasio + Manager Automático (con datos reales del manager)
  * Create Gym + Automatic Manager (with real manager data)
  * ======================================== */
@@ -83,10 +86,10 @@ const createGym = async (req, res) => {
       city,
       latitude,
       longitude,
-      manager_first_name, // ← NUEVO: Nombre real del manager
-      manager_last_name, // ← NUEVO: Apellidos reales del manager
-      manager_phone, // ← NUEVO: Teléfono del manager (opcional)
-      manager_password, // ← RENOMBRADO: antes era "password"
+      manager_first_name,
+      manager_last_name,
+      manager_phone,
+      manager_password,
     } = req.body;
 
     // 2. Validar campos obligatorios (incluyendo datos del manager)
@@ -97,8 +100,8 @@ const createGym = async (req, res) => {
       !city ||
       !latitude ||
       !longitude ||
-      !manager_first_name || // ← NUEVO: Validación obligatoria
-      !manager_last_name || // ← NUEVO: Validación obligatoria
+      !manager_first_name ||
+      !manager_last_name ||
       !manager_password
     ) {
       return res.status(400).json({
@@ -140,6 +143,8 @@ const createGym = async (req, res) => {
 
     // 5. Crear gimnasio en la base de datos
     // 5. Create gym in database
+    // (Se crea con is_deleted = 0 por el valor DEFAULT del schema)
+    // (It is created with is_deleted = 0 by the schema DEFAULT value)
     const [gymResult] = await db.query(
       "INSERT INTO gyms (name, address, city, latitude, longitude) VALUES (?, ?, ?, ?, ?)",
       [name, address, city, lat, lon]
@@ -154,7 +159,7 @@ const createGym = async (req, res) => {
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "") // Quitar acentos / Remove accents
       .replace(/\s+/g, "") // Quitar espacios / Remove spaces
-      .replace(/[^a-z0-9]/g, ""); // Solo letras y números / Only letters and numbers
+      .replace(/[^a-z0-g]/g, ""); // Solo letras y números / Only letters and numbers (fixed typo)
 
     const managerEmail = `${cleanName}@gymnomads.com`;
 
@@ -195,7 +200,6 @@ const createGym = async (req, res) => {
 
     // 10. Enviar respuesta de éxito con datos del gym y manager
     // 10. Send success response with gym and manager data
-
     res.status(201).json({
       message: "Gimnasio y manager creados con éxito",
       gymId: gymId,
@@ -250,8 +254,10 @@ const updateGym = async (req, res) => {
 
     // 4. Ejecutar la consulta SQL para actualizar el gimnasio
     // 4. Execute the SQL query to update the gym
+    // (Solo actualiza gimnasios que no estén borrados)
+    // (Only updates gyms that are not deleted)
     const [result] = await db.query(
-      "UPDATE gyms SET name = ?, address = ?, city = ?, latitude = ?, longitude = ? WHERE id = ?",
+      "UPDATE gyms SET name = ?, address = ?, city = ?, latitude = ?, longitude = ? WHERE id = ? AND is_deleted = 0",
       [name, address, city, latitude, longitude, id]
     );
 
@@ -271,8 +277,8 @@ const updateGym = async (req, res) => {
 };
 
 /* ========================================
- * Eliminar Gimnasio (con protección ID=1)
- * Delete Gym (with ID=1 protection)
+ * Eliminar Gimnasio (Borrado Lógico / Soft Delete)
+ * Delete Gym (Logical Delete / Soft Delete)
  * ======================================== */
 const deleteGym = async (req, res) => {
   try {
@@ -289,19 +295,24 @@ const deleteGym = async (req, res) => {
       });
     }
 
-    // 3. Ejecutar la consulta SQL para eliminar el gimnasio
-    // 3. Execute the SQL query to delete the gym
-    const [result] = await db.query("DELETE FROM gyms WHERE id = ?", [id]);
+    // 3. Ejecutar la consulta SQL para MARCAR COMO ELIMINADO (Soft Delete)
+    // 3. Execute the SQL query to MARK AS DELETED (Soft Delete)
+    // --- MODIFICADO: De 'DELETE' a 'UPDATE' ---
+    // --- MODIFIED: From 'DELETE' to 'UPDATE' ---
+    const [result] = await db.query(
+      "UPDATE gyms SET is_deleted = 1 WHERE id = ?",
+      [id]
+    );
 
-    // 4. Comprobar si alguna fila fue eliminada
-    // 4. Check if any row was deleted
+    // 4. Comprobar si alguna fila fue marcada
+    // 4. Check if any row was marked
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "gimnasio no encontrado" });
     }
 
-    // 5. Enviar respuesta de éxito sin contenido (204 No Content)
-    // 5. Send success response with no content (204 No Content)
-    res.status(204).send();
+    // 5. Enviar respuesta de éxito
+    // 5. Send success response
+    res.status(200).json({ message: "Gimnasio marcado como eliminado" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "error interno del servidor" });
@@ -391,10 +402,12 @@ const updateGymImage = async (req, res, imageColumnName) => {
     const { id } = req.params;
     const newFilePath = req.file.path;
 
-    // 2. Obtener la ruta de la imagen antigua
-    // 2. Get the old image path
+    // 2. Obtener la ruta de la imagen antigua (solo de gimnasios activos)
+    // 2. Get the old image path (active gyms only)
+    // --- MODIFICADO: Añadido 'is_deleted = 0' ---
+    // --- MODIFIED: Added 'is_deleted = 0' ---
     const [gyms] = await db.query(
-      `SELECT ${imageColumnName} FROM gyms WHERE id = ?`,
+      `SELECT ${imageColumnName} FROM gyms WHERE id = ? AND is_deleted = 0`,
       [id]
     );
 

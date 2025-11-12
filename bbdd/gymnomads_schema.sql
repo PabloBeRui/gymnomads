@@ -8,8 +8,24 @@ CREATE TABLE `gyms` (
   `city` VARCHAR(100) NOT NULL,
   `latitude` DECIMAL(10, 8) NOT NULL,
   `longitude` DECIMAL(11, 8) NOT NULL,
-  `logo_url` VARCHAR(255) NULL,        
-  `main_image_url` VARCHAR(255) NULL   
+  `logo_url` VARCHAR(255) NULL,       
+  `main_image_url` VARCHAR(255) NULL,
+  
+  -- ==================================================================
+  -- MODIFICACIÓN PARA "SOFT DELETE" (BORRADO LÓGICO)
+  -- MODIFICATION FOR "SOFT DELETE" (LOGICAL DELETION)
+  -- Esta columna se usa para marcar gimnasios como "borrados" (1) 
+  -- sin eliminarlos físicamente de la BBDD, 
+  -- previniendo así la pérdida de datos en cascada de usuarios y visitas.
+  -- 0 = Activo (default), 1 = Borrado
+  --
+  -- This column is used to mark gyms as "deleted" (1)
+  -- without physically removing them from the DB,
+  -- thus preventing cascading data loss of users and visits.
+  -- 0 = Active (default), 1 = Deleted
+  `is_deleted` TINYINT(1) NOT NULL DEFAULT 0
+  -- ==================================================================
+
 ) ENGINE=InnoDB;
 
 -- Crear la tabla para los usuarios
@@ -26,7 +42,20 @@ CREATE TABLE `users` (
   `home_gym_id` INT NOT NULL,
   `role` ENUM('user','manager','admin') NOT NULL DEFAULT 'user',
   `registered_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (`home_gym_id`) REFERENCES `gyms`(`id`) ON DELETE CASCADE
+  
+  -- ==================================================================
+  -- MODIFICACIÓN PARA "SOFT DELETE" (BORRADO LÓGICO)
+  -- Se cambia 'ON DELETE CASCADE' por 'ON DELETE RESTRICT'.
+  -- Esto evita que un usuario sea eliminado automáticamente si su 
+  -- gimnasio de origen se borra (lo cual ya no haremos).
+  --
+  -- MODIFICATION FOR "SOFT DELETE" (LOGICAL DELETION)
+  -- Changed 'ON DELETE CASCADE' to 'ON DELETE RESTRICT'.
+  -- This prevents a user from being automatically deleted if their 
+  -- home gym is deleted (which we will no longer do).
+  FOREIGN KEY (`home_gym_id`) REFERENCES `gyms`(`id`) ON DELETE RESTRICT
+  -- ==================================================================
+
 ) ENGINE=InnoDB;
 
 -- Crear la tabla para las visitas
@@ -37,6 +66,24 @@ CREATE TABLE `visits` (
   `user_id` INT NOT NULL,
   `gym_id` INT NOT NULL,
   `visited_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  
+  -- La FK de 'user_id' SÍ mantiene ON DELETE CASCADE. 
+  -- Si un usuario se borra, sus visitas deben borrarse (ej. GDPR).
+  -- The 'user_id' FK DOES keep ON DELETE CASCADE.
+  -- If a user is deleted, their visits should be deleted (e.g., GDPR).
   FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`gym_id`) REFERENCES `gyms`(`id`) ON DELETE CASCADE
+  
+  -- ==================================================================
+  -- MODIFICACIÓN PARA "SOFT DELETE" (BORRADO LÓGICO)
+  -- Se cambia 'ON DELETE CASCADE' por 'ON DELETE RESTRICT'.
+  -- Esto evita que el historial de visitas se borre si un gimnasio 
+  -- se marca como eliminado. El historial debe persistir.
+  --
+  -- MODIFICATION FOR "SOFT DELETE" (LOGICAL DELETION)
+  -- Changed 'ON DELETE CASCADE' to 'ON DELETE RESTRICT'.
+  -- This prevents visit history from being deleted if a gym
+  -- is marked as deleted. The history must persist.
+  FOREIGN KEY (`gym_id`) REFERENCES `gyms`(`id`) ON DELETE RESTRICT
+  -- ==================================================================
+
 ) ENGINE=InnoDB;

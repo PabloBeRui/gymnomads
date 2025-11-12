@@ -344,7 +344,7 @@ export const ListGymsPage = () => {
             ? `¿Estás seguro de que quieres eliminar el gimnasio "${gymToDelete.name}" ubicado en ${gymToDelete.city}?`
             : ""
         }
-        warningMessage="⚠️ ATENCIÓN: Al eliminar este gimnasio se eliminará el manager asociado, todos los usuarios de este gimnasio y todas las visitas relacionadas."
+        warningMessage="⚠️ ATENCIÓN: Al eliminar este gimnasio se eliminará el manager asociado y todos los usuarios de este gimnasio."
         note="Esta acción NO se puede deshacer."
         confirmText="Eliminar Gimnasio"
         cancelText="Cancelar"
