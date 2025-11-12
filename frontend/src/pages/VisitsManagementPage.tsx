@@ -446,7 +446,7 @@ export const VisitsManagementPage = () => {
             <thead>
               <tr>
                 <th style={styles.th}>Usuario</th>
-                <th style={styles.th}>Gimnasio Visitado</th>
+                <th style={styles.th}>Fecha de Visita</th>
               </tr>
             </thead>
 
@@ -484,23 +484,14 @@ export const VisitsManagementPage = () => {
                     </div>
                   </td>
 
-                  {/* Columna: Logo + Nombre Gimnasio */}
-                  {/* Column: Logo + Gym Name */}
+                  {/* Columna: Fecha de Visita */}
+                  {/* Column: Visit Date */}
                   <td style={styles.td}>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                      }}>
-                      <Avatar
-                        src={visit.gym_logo_url}
-                        firstName={visit.gym_name || "Gimnasio"}
-                        lastName={""}
-                        size={35}
-                      />
-                      <span>{visit.gym_name || "N/A"}</span>
-                    </div>
+                    {new Date(visit.visit_date).toLocaleDateString("es-ES", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "2-digit",
+                    })}
                   </td>
                 </tr>
               ))}
