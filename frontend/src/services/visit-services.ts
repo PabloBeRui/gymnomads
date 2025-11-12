@@ -23,6 +23,7 @@ import type {
   CreateVisitResponse,
   VisitWithDetails,
   VisitsFilters,
+  VisitStats,
 } from "../interfaces/visit-interfaces";
 
 // Definir la URL base de la API para evitar repetirla.
@@ -212,6 +213,40 @@ export const getManagerGymVisits = async (
       error,
       "No se pudieron cargar las visitas del gimnasio."
     );
+    throw new Error(errorMessage);
+  }
+};
+
+/* ========================================
+ * API CALL: Obtener estadísticas de visitas (según rol)
+ * API CALL: Get visit statistics (role-aware)
+ * ======================================== */
+export const getVisitsStats = async (token: string): Promise<VisitStats> => {
+  if (!token) {
+    throw new Error("No se proporcionó token de autenticación.");
+  }
+
+  try {
+    // Realizar petición GET al endpoint '/visits/stats'.
+    // Perform a GET request to the '/visits/stats' endpoint.
+    const response = await axios.get<VisitStats>(`${API_URL}/visits/stats`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Formato estándar Bearer token
+      },
+    });
+
+    // Devolver los datos de estadísticas (today, thisMonth, total)
+    // Return the statistics data (today, thisMonth, total)
+    return response.data;
+  } catch (error) {
+    // Usar el manejador centralizado
+    // Use the centralized handler
+    const errorMessage = handleApiError(
+      error,
+      "Error al obtener las estadísticas de visitas."
+    );
+    // Lanzar error procesado
+    // Throw processed error
     throw new Error(errorMessage);
   }
 };

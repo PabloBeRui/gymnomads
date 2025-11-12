@@ -51,3 +51,13 @@ export interface VisitsFilters {
   start_date?: string; // Fecha inicio (opcional) / Start date (optional)
   end_date?: string; // Fecha fin (opcional) / End date (optional)
 }
+
+/* ========================================
+ * Interfaz para Estadísticas de Visitas
+ * Interface for Visit Statistics
+ * ======================================== */
+export interface VisitStats {
+  total: number;
+  thisMonth: number;
+  today: number;
+}

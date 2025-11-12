@@ -433,6 +433,67 @@ const getManagerGymVisits = async (req, res) => {
   }
 };
 
+/* ========================================
+ * Obtener estadísticas de visitas (según rol)
+ * Get visit statistics (role-aware)
+ * ======================================== */
+const getVisitsStats = async (req, res) => {
+  try {
+    // 1. Obtener datos del usuario del token
+    // 1. Get user data from token
+    const { userId, role, home_gym_id } = req.user;
+
+    let totalQuery = "";
+    let monthQuery = "";
+    let todayQuery = "";
+    let params = [];
+
+    // 2. Definir las consultas SQL basadas en el rol
+    // 2. Define SQL queries based on role
+    if (role === "admin") {
+      // Admin: Contar todas las visitas
+      // Admin: Count all visits
+      totalQuery = `SELECT COUNT(id) AS total FROM visits`;
+      monthQuery = `SELECT COUNT(id) AS thisMonth FROM visits WHERE YEAR(visited_at) = YEAR(CURDATE()) AND MONTH(visited_at) = MONTH(CURDATE())`;
+      todayQuery = `SELECT COUNT(id) AS today FROM visits WHERE DATE(visited_at) = CURDATE()`;
+      params = []; // Sin parámetros
+    } else if (role === "manager") {
+      // Manager: Contar visitas solo de su gimnasio
+      // Manager: Count visits for their gym only
+      totalQuery = `SELECT COUNT(id) AS total FROM visits WHERE gym_id = ?`;
+      monthQuery = `SELECT COUNT(id) AS thisMonth FROM visits WHERE gym_id = ? AND YEAR(visited_at) = YEAR(CURDATE()) AND MONTH(visited_at) = MONTH(CURDATE())`;
+      todayQuery = `SELECT COUNT(id) AS today FROM visits WHERE gym_id = ? AND DATE(visited_at) = CURDATE()`;
+      params = [home_gym_id, home_gym_id, home_gym_id]; // Usar 3 veces el ID del gym
+    } else {
+      // User: Contar solo las visitas propias
+      // User: Count own visits only
+      totalQuery = `SELECT COUNT(id) AS total FROM visits WHERE user_id = ?`;
+      monthQuery = `SELECT COUNT(id) AS thisMonth FROM visits WHERE user_id = ? AND YEAR(visited_at) = YEAR(CURDATE()) AND MONTH(visited_at) = MONTH(CURDATE())`;
+      todayQuery = `SELECT COUNT(id) AS today FROM visits WHERE user_id = ? AND DATE(visited_at) = CURDATE()`;
+      params = [userId, userId, userId]; // Usar 3 veces el ID del usuario
+    }
+
+    // 3. Ejecutar las 3 consultas
+    // 3. Execute the 3 queries
+    // Nota: Divido 'params' ya que cada consulta puede necesitar un número diferente
+    // Note: split 'params' as each query might need a different count
+    const [[totalResult]] = await db.query(totalQuery, params.slice(0, 1));
+    const [[monthResult]] = await db.query(monthQuery, params.slice(0, 2));
+    const [[todayResult]] = await db.query(todayQuery, params);
+
+    // 4. Devolver el objeto de estadísticas
+    // 4. Return the statistics object
+    res.status(200).json({
+      total: totalResult.total || 0,
+      thisMonth: monthResult.thisMonth || 0,
+      today: todayResult.today || 0,
+    });
+  } catch (error) {
+    console.error(`Error al obtener estadísticas de visitas: ${error}`);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
 module.exports = {
   createVisit,
   getVisitsByUser,
@@ -440,4 +501,5 @@ module.exports = {
   getAllVisits,
   getManagerGymVisits,
   getMyVisits,
+  getVisitsStats
 };

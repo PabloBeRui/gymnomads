@@ -12,17 +12,18 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { getMyVisits } from "../services/visit-services"; // Asumimos que esta función existirá
+import { getMyVisits } from "../services/visit-services";
 import type { VisitWithDetails } from "../interfaces/visit-interfaces";
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
 import { VisitsDetailsModal } from "../components/VisitsDetailsModal";
 import { Avatar } from "../components/Avatar";
+import { VisitsStatsModal } from "../components/VisitsStatsModal"; //modal de estadísticas / stats modal
 
 /* =============================================================================
-   ESTILOS (inline)
-   STYLES (inline)
-   ============================================================================= */
+    ESTILOS (inline)
+    STYLES (inline)
+    ============================================================================= */
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     padding: "20px",
@@ -85,6 +86,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     backgroundColor: "#f8f9fa",
     borderRadius: "8px",
     border: "1px solid #dee2e6",
+    cursor: "pointer",
+    transition: "box-shadow 0.2s",
   },
   statNumber: {
     fontSize: "2rem",
@@ -99,26 +102,32 @@ const styles: { [key: string]: React.CSSProperties } = {
 };
 
 /* =============================================================================
-   COMPONENTE: MyVisitsPage
-   COMPONENT: MyVisitsPage
-   ============================================================================= */
+    COMPONENTE: MyVisitsPage
+    COMPONENT: MyVisitsPage
+    ============================================================================= */
 export const MyVisitsPage = () => {
   const { token } = useAuth();
   const [visits, setVisits] = useState<VisitWithDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [gymSearch, setGymSearch] = useState("");
 
-  // States para el modal / modal States
+  // States para el modal de detalles
+  // States for details modal
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedVisit, setSelectedVisit] = useState<VisitWithDetails | null>(
     null
   );
 
+  // --- State para el modal de estadísticas ---
+  // --- State for stats modal ---
+  const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
+
   const fetchVisits = async () => {
     if (!token) return;
     setIsLoading(true);
     try {
-      // Pasamos el término de búsqueda al servicio
+      // Pasa el término de búsqueda al servicio
+      // Pass the search term to the service
       const data = await getMyVisits(token, gymSearch);
       setVisits(data);
     } catch (error) {
@@ -130,6 +139,7 @@ export const MyVisitsPage = () => {
   };
 
   // useEffect con debounce para el filtro
+  // useEffect with debounce for the filter
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       fetchVisits();
@@ -139,7 +149,8 @@ export const MyVisitsPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, gymSearch]);
 
-  // Lógica del Modal
+  // Lógica del Modal de Detalles
+  // Details Modal Logic
   const handleRowClick = (visit: VisitWithDetails) => {
     setSelectedVisit(visit);
     setShowDetailModal(true);
@@ -158,9 +169,17 @@ export const MyVisitsPage = () => {
     <div style={styles.container}>
       <h1 style={styles.title}>Mis Visitas</h1>
 
-      {/* Estadísticas */}
+      {/* --- Tarjeta de estadísticas clicable --- */}
+      {/* ---  Clickable stats card --- */}
       <div style={styles.statsContainer}>
-        <div style={styles.statCard}>
+        <div
+          style={styles.statCard}
+          onClick={() => setIsStatsModalOpen(true)} // <-- AÑADIDO
+          title="Ver estadísticas detalladas" // <-- AÑADIDO
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)")
+          }
+          onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}>
           <div style={styles.statNumber}>{visits.length}</div>
           <div style={styles.statLabel}>
             {isLoading && visits.length === 0
@@ -171,6 +190,7 @@ export const MyVisitsPage = () => {
       </div>
 
       {/* Filtro de búsqueda */}
+      {/* Search filter */}
       <div style={styles.filtersContainer}>
         <input
           type="text"
@@ -241,10 +261,20 @@ export const MyVisitsPage = () => {
         </table>
       )}
 
+      {/* Modal de Detalles de Visita */}
+      {/* Visit Details Modal */}
       <VisitsDetailsModal
         isOpen={showDetailModal}
         onClose={handleCloseModal}
         visit={selectedVisit}
+        viewMode="user"
+      />
+
+      {/* ---Modal de Estadísticas --- */}
+      {/* --- Stats Modal --- */}
+      <VisitsStatsModal
+        isOpen={isStatsModalOpen}
+        onClose={() => setIsStatsModalOpen(false)}
         viewMode="user"
       />
     </div>

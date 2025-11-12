@@ -6,7 +6,7 @@
  * Página para gestionar y visualizar visitas a gimnasios.
  * - Admin: puede ver todas las visitas y filtrar por gimnasio y usuario.
  * - Manager: solo ve visitas de su gimnasio, puede filtrar por usuario.
- * -  Filtros automáticos con debounce 500ms. Tabla limpia.
+ * - Filtros automáticos con debounce 500ms. Tabla limpia.
  *
  * Page to manage and view gym visits.
  * - Admin: can see all visits and filter by gym and user.
@@ -27,10 +27,14 @@ import { handleApiError } from "../utils/error-handler";
 import { Avatar } from "../components/Avatar";
 import { VisitsDetailsModal } from "../components/VisitsDetailsModal";
 
+// --- AÑADIDO: Importar el nuevo modal de estadísticas ---
+// --- ADDED: Import the new stats modal ---
+import { VisitsStatsModal } from "../components/VisitsStatsModal";
+
 /* =============================================================================
-   ESTILOS (inline)
-   STYLES (inline)
-   ============================================================================= */
+    ESTILOS (inline)
+    STYLES (inline)
+    ============================================================================= */
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     padding: "20px",
@@ -143,6 +147,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     backgroundColor: "#f8f9fa",
     borderRadius: "8px",
     border: "1px solid #dee2e6",
+    cursor: "pointer",
+    transition: "box-shadow 0.2s",
   },
   statNumber: {
     fontSize: "2rem",
@@ -170,30 +176,35 @@ const styles: { [key: string]: React.CSSProperties } = {
 };
 
 /* =============================================================================
-   COMPONENTE: VisitsManagementPage
-   COMPONENT: VisitsManagementPage
-   ============================================================================= */
+    COMPONENTE: VisitsManagementPage
+    COMPONENT: VisitsManagementPage
+    ============================================================================= */
 export const VisitsManagementPage = () => {
   const { user, token } = useAuth();
   const isAdmin = user?.role === "admin";
   const isManager = user?.role === "manager";
 
-  // Estados del componente / Component states
+  // States del componente / Component states
   const [visits, setVisits] = useState<VisitWithDetails[]>([]);
   const [gyms, setGyms] = useState<Gym[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Estados de filtros / Filter states
+  // States de filtros / Filter states
   const [selectedGymId, setSelectedGymId] = useState<string>("");
   const [userSearch, setUserSearch] = useState<string>("");
   const [gymSearchTerm, setGymSearchTerm] = useState<string>("");
 
-  // Estados para el modal / States for modal
+  // States para el modal de detalles
+  // States for details modal
   const [showDetailModal, setShowDetailModal] = useState<boolean>(false);
   const [selectedVisit, setSelectedVisit] = useState<VisitWithDetails | null>(
     null
   );
+
+  // --- State para el modal de estadísticas ---
+  // --- State for stats modal ---
+  const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
 
   // Cargar gimnasios (solo para admin) / Load gyms (admin only)
   useEffect(() => {
@@ -340,9 +351,17 @@ export const VisitsManagementPage = () => {
         </p>
       </div>
 
-      {/* Estadísticas (Solo total) / Statistics (Total only) */}
+      {/* --- Tarjeta de estadísticas clicable --- */}
+      {/* ---  Clickable stats card --- */}
       <div style={styles.statsContainer}>
-        <div style={styles.statCard}>
+        <div
+          style={styles.statCard}
+          onClick={() => setIsStatsModalOpen(true)} // <-- AÑADIDO
+          title="Ver estadísticas detalladas" // <-- AÑADIDO
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)")
+          }
+          onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}>
           <div style={styles.statNumber}>{totalVisits}</div>
           <div style={styles.statLabel}>
             {isLoading ? "Cargando..." : "Total de Visitas"}
@@ -500,11 +519,19 @@ export const VisitsManagementPage = () => {
         </div>
       )}
 
-      {/* Renderizar el modal / Render the modal */}
+      {/* Renderizar el modal de detalles / Render the details modal */}
       <VisitsDetailsModal
         isOpen={showDetailModal}
         onClose={handleCloseModal}
         visit={selectedVisit}
+      />
+
+      {/* --- Modal de Estadísticas --- */}
+      {/* --- Stats Modal --- */}
+      <VisitsStatsModal
+        isOpen={isStatsModalOpen}
+        onClose={() => setIsStatsModalOpen(false)}
+        viewMode={isAdmin ? "admin" : "manager"}
       />
     </div>
   );
