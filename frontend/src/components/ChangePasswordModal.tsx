@@ -28,6 +28,7 @@ import type { ChangePasswordData } from "../interfaces/user-interfaces";
 // Importar manejador de errores
 // Import error handler
 import { handleApiError } from "../utils/error-handler";
+import { CloseButton } from "./ui/CloseButton"; // Importar el nuevo componente
 
 /* =============================================================================
     ESTILOS (inline)
@@ -53,6 +54,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     width: "90%",
     maxWidth: "500px",
     boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
+    position: "relative", // Añadido para posicionar el botón de cierre
   },
   modalTitle: {
     fontSize: "1.5rem",
@@ -191,6 +193,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
   return (
     <div style={styles.modalOverlay} onClick={onClose}>
       <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+        <CloseButton onClick={onClose} ariaLabel="Cerrar modal de cambio de contraseña" />
         <h3 style={styles.modalTitle}>Cambiar Contraseña</h3>
         <form onSubmit={handleSubmit}>
           <div style={styles.formGroup}>

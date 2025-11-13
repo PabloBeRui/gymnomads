@@ -37,6 +37,7 @@
 import { useState, useEffect, useCallback } from "react";
 import type { ManagerWithGym } from "../interfaces/user-interfaces";
 import { Avatar } from "./Avatar";
+import { CloseButton } from "./ui/CloseButton"; // Importar el nuevo componente
 
 /* =============================================================================
    INTERFACES
@@ -92,6 +93,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     overflowY: "auto",
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
     animation: "slideIn 0.2s ease-in-out",
+    position: "relative", // Añadido para posicionar el botón de cierre
   },
   modalHeader: {
     display: "flex",
@@ -105,14 +107,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: "1.5rem",
     color: "#333",
     margin: 0,
-  },
-  closeButton: {
-    background: "none",
-    border: "none",
-    fontSize: "1.5rem",
-    cursor: "pointer",
-    color: "#6c757d",
-    padding: "5px 10px",
   },
   // Header con Avatar y datos principales / Header with Avatar and main data
   profileHeader: {
@@ -366,13 +360,7 @@ export const ManagerDetailsModal = ({
           <h2 id="modal-title" style={styles.modalTitle}>
             👤 Información del Manager
           </h2>
-          <button
-            style={styles.closeButton}
-            onClick={handleClose}
-            disabled={isSaving}
-            aria-label="Cerrar modal">
-            ✕
-          </button>
+          <CloseButton onClick={handleClose} ariaLabel="Cerrar información del manager" />
         </div>
 
         {/* Header con Avatar, nombre y email / Header with Avatar, name and email */}

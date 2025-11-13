@@ -19,6 +19,7 @@
 import { useEffect, useCallback } from "react";
 import type { VisitWithDetails } from "../interfaces/visit-interfaces";
 import { Avatar } from "./Avatar";
+import { CloseButton } from "./ui/CloseButton"; // Importar el nuevo componente
 
 /* =============================================================================
    INTERFACES
@@ -68,6 +69,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     maxHeight: "90vh",
     overflowY: "auto",
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    position: "relative", // Añadido para posicionar el botón de cierre
   },
   modalHeader: {
     display: "flex",
@@ -81,14 +83,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: "1.5rem",
     color: "#333",
     margin: 0,
-  },
-  closeButton: {
-    background: "none",
-    border: "none",
-    fontSize: "1.5rem",
-    cursor: "pointer",
-    color: "#6c757d",
-    padding: "5px 10px",
   },
   profileHeader: {
     display: "flex",
@@ -222,12 +216,7 @@ export const VisitsDetailsModal = ({
               🎟️ Detalle de la Visita
               {viewMode === "admin" && ` (ID: ${visit.id})`}
             </h2>
-            <button
-              style={styles.closeButton}
-              onClick={handleClose}
-              aria-label="Cerrar modal">
-              ✕
-            </button>
+            <CloseButton onClick={handleClose} ariaLabel="Cerrar detalles de la visita" />
           </div>
 
           {/* Header con Avatar, nombre y email del USUARIO (solo en modo admin) */}

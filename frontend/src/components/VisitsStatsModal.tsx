@@ -16,6 +16,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getVisitsStats } from "../services/visit-services"; // <-- Usamos tu servicio
 import type { VisitStats } from "../interfaces/visit-interfaces"; // <-- Usamos tu interfaz
+import { CloseButton } from "./ui/CloseButton"; // Importar el nuevo componente
 
 /* =============================================================================
     PROPS
@@ -56,6 +57,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     maxWidth: "600px",
     width: "90%",
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    position: "relative", // Añadido para posicionar el botón de cierre
   },
   modalHeader: {
     display: "flex",
@@ -67,13 +69,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: "1.5rem",
     color: "#333",
     margin: 0,
-  },
-  closeButton: {
-    background: "none",
-    border: "none",
-    fontSize: "1.5rem",
-    cursor: "pointer",
-    color: "#6c757d",
   },
   statsContainer: {
     display: "flex",
@@ -207,12 +202,7 @@ export const VisitsStatsModal: React.FC<VisitsStatsModalProps> = ({
           <h2 id="stats-modal-title" style={styles.modalTitle}>
             {getTitle()}
           </h2>
-          <button
-            style={styles.closeButton}
-            onClick={handleClose}
-            aria-label="Cerrar modal">
-            ✕
-          </button>
+          <CloseButton onClick={handleClose} ariaLabel="Cerrar estadísticas de visitas" />
         </div>
 
         {/* Mostrar estado de Carga / Show Loading state */}

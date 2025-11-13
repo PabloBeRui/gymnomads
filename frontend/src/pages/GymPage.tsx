@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
 // modal de confirmación / confirmation modal
 import { ConfirmationModal } from "../components/ConfirmationModal";
+import { CloseButton } from "../components/ui/CloseButton"; // Importar el nuevo componente
 
 // --- Componente de Mapa / Map Component ---
 import { GymMap } from "../components/GymMap";
@@ -101,23 +102,6 @@ const styles: { [key: string]: React.CSSProperties } = {
   visitButtonDisabled: {
     backgroundColor: "#6c757d",
     cursor: "not-allowed",
-  },
-  closeButton: {
-    position: "absolute",
-    top: "10px",
-    right: "10px",
-    backgroundColor: "transparent",
-    border: "none",
-    fontSize: "1.5rem",
-    cursor: "pointer",
-    color: "#333",
-    padding: "5px 10px",
-    borderRadius: "50%",
-    transition: "background-color 0.2s",
-    zIndex: 10, // Asegurar que esté por encima de otros elementos
-  },
-  closeButtonHover: {
-    backgroundColor: "#eee",
   },
 };
 
@@ -271,22 +255,7 @@ export const GymPage = () => {
   // Render principal
   return (
     <div style={styles.container}>
-      {/* Botón de cierre */}
-      {/* Close button */}
-      <button
-        style={styles.closeButton}
-        onClick={() => navigate("/gyms")}
-        aria-label="Cerrar y volver a la lista de gimnasios"
-        onMouseEnter={(e) =>
-          (e.target as HTMLButtonElement).style.backgroundColor =
-            styles.closeButtonHover.backgroundColor || ""
-        }
-        onMouseLeave={(e) =>
-          (e.target as HTMLButtonElement).style.backgroundColor =
-            styles.closeButton.backgroundColor || ""
-        }>
-        &times;
-      </button>
+      <CloseButton navigateTo="/gyms" ariaLabel="Volver a la lista de gimnasios" />
 
       {/* Encabezado con logo y nombre */}
       {/* Header with logo and name */}
