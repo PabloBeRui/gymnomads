@@ -1,15 +1,16 @@
 /**
  * =============================================================================
  * PÁGINA: GymPage
+ * PAGE:     GymPage
  * =============================================================================
  *
  * Página para mostrar los detalles de un gimnasio específico.
- * Muestra información del gimnasio, mapa interactivo (OSM), y permite a los
- * usuarios (role='user') registrar una visita.
+ * Muestra información del gimnasio, mapa (OSM), widget de tiempo (Open-Meteo)
+ * y permite a los usuarios (role='user') registrar una visita.
  *
  * Page to display details of a specific gym.
- * Shows gym information, interactive map (OSM), and allows users (role='user')
- * to register a visit.
+ * Shows gym info, map (OSM), weather widget (Open-Meteo), and allows
+ * users (role='user') to register a visit.
  *
  * =============================================================================
  */
@@ -24,7 +25,12 @@ import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
 // modal de confirmación / confirmation modal
 import { ConfirmationModal } from "../components/modals/ConfirmationModal";
-import { CloseButton } from "../components/ui/CloseButton"; // Importar el nuevo componente
+import { CloseButton } from "../components/ui/CloseButton"; // Importar el botón de cierre
+
+// Importar el WeatherWidget ---
+// -Import the WeatherWidget ---
+
+import { WeatherWidget } from "../components/widgets/weatherWidget";
 
 // --- Componente de Mapa / Map Component ---
 import { GymMap } from "../components/GymMap";
@@ -34,12 +40,13 @@ import { GymMap } from "../components/GymMap";
     STYLES (inline)
     ============================================================================= */
 
+// (Tu objeto 'styles' original se mantiene intacto)
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     padding: "20px",
     maxWidth: "900px",
     margin: "0 auto",
-    position: "relative", // Añadido para posicionar el botón de cierre
+    position: "relative",
   },
   loadingContainer: {
     padding: "20px",
@@ -103,6 +110,23 @@ const styles: { [key: string]: React.CSSProperties } = {
     backgroundColor: "#6c757d",
     cursor: "not-allowed",
   },
+  // Contenedor para el botón de cierre (derecha) ---
+  // Container for close button (right) ---
+  closeButtonContainer: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    padding: "20px",
+  },
+
+  //  Contenedor para el widget de tiempo (izquierda) ---
+  // Container for weather widget (left) ---
+  weatherWidgetContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    padding: "20px",
+  },
 };
 
 /* =============================================================================
@@ -120,11 +144,7 @@ export const GymPage = () => {
   const [gym, setGym] = useState<Gym | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
-  // --- MODIFICADO: Renombrado a 'isProcessing' / MODIFIED: Renamed to 'isProcessing' ---
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
-
-  // --- NUEVO: Estado para el modal / NEW: State for modal ---
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
 
   // Fallback para backendBaseUrl
@@ -166,14 +186,12 @@ export const GymPage = () => {
     fetchGym();
   }, [id]);
 
-  // ---  Manejar la confirmación y registro de visita ---
-  // ---  Handle visit confirmation and registration ---
+  // --- Manejar la confirmación y registro de visita ---
+  // --- Handle visit confirmation and registration ---
 
   // PASO 1: Abrir el modal de confirmación
   // STEP 1: Open confirmation modal
   const handleVisitClick = () => {
-    // abre el modal
-    // opens the modal
     setShowConfirmModal(true);
   };
 
@@ -255,7 +273,20 @@ export const GymPage = () => {
   // Render principal
   return (
     <div style={styles.container}>
-      <CloseButton navigateTo="/gyms" ariaLabel="Volver a la lista de gimnasios" />
+      {/*  Contenedor para widgets ---
+         Container for widgets ---
+      */}
+      <div style={styles.widgetsContainer}>
+        {/* Botón de cierre importado */}
+        {/* Imported close button */}
+        <CloseButton navigateTo="/gyms" />
+
+        {/* Widget de tiempo (se renderiza solo si hay lat/lon) */}
+        {/* Weather widget (renders only if lat/lon exist) */}
+        {gym.latitude && gym.longitude && (
+          <WeatherWidget latitude={gym.latitude} longitude={gym.longitude} />
+        )}
+      </div>
 
       {/* Encabezado con logo y nombre */}
       {/* Header with logo and name */}
@@ -289,12 +320,10 @@ export const GymPage = () => {
       />
 
       {/* --- Map --- */}
-
       <div style={{ marginBottom: "30px" }}>
         <h3 style={{ marginBottom: "15px" }}>Ubicación</h3>
 
-        {/* ---  lat/lon not null --- */}
-
+        {/* --- lat/lon not null --- */}
         {gym.latitude && gym.longitude ? (
           <GymMap
             lat={gym.latitude}
@@ -319,8 +348,6 @@ export const GymPage = () => {
             ...styles.visitButton,
             ...(isProcessing ? styles.visitButtonDisabled : {}),
           }}
-          // --- onClick ahora solo abre el modal ---
-          // --- onClick now just opens the modal ---
           onClick={handleVisitClick}
           disabled={isProcessing}
           aria-label={`Registrar visita a ${gym.name}`}
@@ -340,8 +367,8 @@ export const GymPage = () => {
         </button>
       )}
 
-      {/* Añadir el Modal de Confirmación  */}
-      {/* Add the Confirmation Modal  */}
+      {/* Añadir el Modal de Confirmación */}
+      {/* Add the Confirmation Modal */}
       <ConfirmationModal
         isOpen={showConfirmModal}
         onCancel={handleCancelVisit}
