@@ -29,7 +29,7 @@ import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
 //  Importar componentes de UI /  Import UI components ---
 import { Avatar } from "../components/Avatar";
-import { UserDetailModal } from "../components/UserDetailModal";
+import { UserDetailModal } from "../components/modals/UserDetailModal";
 
 /* =============================================================================
    ESTILOS (inline)

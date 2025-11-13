@@ -21,7 +21,7 @@ import { Link, useNavigate } from "react-router-dom";
 import type { Gym } from "../interfaces/gym-interfaces";
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
-import { ConfirmationModal } from "../components/ConfirmationModal";
+import { ConfirmationModal } from "../components/modals/ConfirmationModal";
 
 /* =============================================================================
    ESTILOS (inline)

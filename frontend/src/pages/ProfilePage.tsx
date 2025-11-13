@@ -33,7 +33,7 @@ import { useApiCall } from "../hooks/useApiCall";
 import { useImageUpload } from "../hooks/useImageUpload";
 
 import { Avatar } from "../components/Avatar";
-import { ChangePasswordModal } from "../components/ChangePasswordModal";
+import { ChangePasswordModal } from "../components/modals/ChangePasswordModal";
 
 // Importar servicios / Import services
 import { getGymById } from "../services/gym-services";

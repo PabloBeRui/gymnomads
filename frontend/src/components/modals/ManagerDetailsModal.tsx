@@ -35,9 +35,9 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
-import type { ManagerWithGym } from "../interfaces/user-interfaces";
-import { Avatar } from "./Avatar";
-import { CloseButton } from "./ui/CloseButton"; // Importar el nuevo componente
+import type { ManagerWithGym } from "../../interfaces/user-interfaces";
+import { Avatar } from "../Avatar";
+import { CloseButton } from "../ui/CloseButton"; // Importar el nuevo componente
 
 /* =============================================================================
    INTERFACES

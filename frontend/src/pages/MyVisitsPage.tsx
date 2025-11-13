@@ -16,9 +16,9 @@ import { getMyVisits } from "../services/visit-services";
 import type { VisitWithDetails } from "../interfaces/visit-interfaces";
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
-import { VisitsDetailsModal } from "../components/VisitsDetailsModal";
+import { VisitsDetailsModal } from "../components/modals/VisitsDetailsModal";
 import { Avatar } from "../components/Avatar";
-import { VisitsStatsModal } from "../components/VisitsStatsModal"; //modal de estadísticas / stats modal
+import { VisitsStatsModal } from "../components/modals/VisitsStatsModal"; //modal de estadísticas / stats modal
 
 /* =============================================================================
     ESTILOS (inline)

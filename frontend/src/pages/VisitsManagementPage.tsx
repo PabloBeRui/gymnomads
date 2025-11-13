@@ -28,8 +28,8 @@ import type { Gym } from "../interfaces/gym-interfaces";
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
 import { Avatar } from "../components/Avatar";
-import { VisitsDetailsModal } from "../components/VisitsDetailsModal";
-import { VisitsStatsModal } from "../components/VisitsStatsModal"; //modal de estadísticas  / stats modal
+import { VisitsDetailsModal } from "../components/modals/VisitsDetailsModal";
+import { VisitsStatsModal } from "../components/modals/VisitsStatsModal"; //modal de estadísticas  / stats modal
 
 /* =============================================================================
     ESTILOS (inline)

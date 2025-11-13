@@ -23,7 +23,7 @@ import type { Gym } from "../interfaces/gym-interfaces";
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
 // modal de confirmación / confirmation modal
-import { ConfirmationModal } from "../components/ConfirmationModal";
+import { ConfirmationModal } from "../components/modals/ConfirmationModal";
 import { CloseButton } from "../components/ui/CloseButton"; // Importar el nuevo componente
 
 // --- Componente de Mapa / Map Component ---

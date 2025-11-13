@@ -17,9 +17,9 @@
  */
 
 import { useEffect, useCallback } from "react";
-import type { VisitWithDetails } from "../interfaces/visit-interfaces";
-import { Avatar } from "./Avatar";
-import { CloseButton } from "./ui/CloseButton"; // Importar el nuevo componente
+import type { VisitWithDetails } from "../../interfaces/visit-interfaces";
+import { Avatar } from "../Avatar";
+import { CloseButton } from "../ui/CloseButton"; // Importar el nuevo componente
 
 /* =============================================================================
    INTERFACES

@@ -13,10 +13,10 @@
  * =============================================================================
  */
 import React, { useState, useEffect, useCallback } from "react";
-import { useAuth } from "../context/AuthContext";
-import { getVisitsStats } from "../services/visit-services"; // <-- Usamos tu servicio
-import type { VisitStats } from "../interfaces/visit-interfaces"; // <-- Usamos tu interfaz
-import { CloseButton } from "./ui/CloseButton"; // Importar el nuevo componente
+import { useAuth } from "../../context/AuthContext";
+import { getVisitsStats } from "../../services/visit-services"; // <-- Usamos tu servicio
+import type { VisitStats } from "../../interfaces/visit-interfaces"; // <-- Usamos tu interfaz
+import { CloseButton } from "../ui/CloseButton"; // Importar el nuevo componente
 
 /* =============================================================================
     PROPS

@@ -32,7 +32,7 @@ import type {
 } from "../interfaces/user-interfaces";
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
-import { ManagerDetailsModal } from "../components/ManagerDetailsModal";
+import { ManagerDetailsModal } from "../components/modals/ManagerDetailsModal";
 import { Avatar } from "../components/Avatar";
 
 /* =============================================================================

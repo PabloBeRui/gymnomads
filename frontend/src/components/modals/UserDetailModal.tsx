@@ -17,11 +17,11 @@
  * =============================================================================
  */
 
-import type { UserWithGym } from "../interfaces/user-interfaces";
-import { Avatar } from "./Avatar";
-import { ConfirmationModal } from "./ConfirmationModal"; // Reutilizamos el modal de confirmación
-import { useAuth } from "../context/AuthContext";
-import { CloseButton } from "./ui/CloseButton"; // Importar el nuevo componente
+import type { UserWithGym } from "../../interfaces/user-interfaces";
+import { Avatar } from "../Avatar";
+import { ConfirmationModal } from "../modals/ConfirmationModal"; // Reutilizamos el modal de confirmación
+import { useAuth } from "../../context/AuthContext";
+import { CloseButton } from "../ui/CloseButton"; // Importar el nuevo componente
 import { useCallback, useEffect, useState } from "react";
 
 /* =============================================================================

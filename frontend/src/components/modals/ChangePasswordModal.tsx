@@ -17,18 +17,18 @@ import { toast } from "sonner";
 
 // Importar hook y servicio necesarios
 // Import necessary hooks and services
-import { useApiCall } from "../hooks/useApiCall";
-import { changePassword } from "../services/user-services";
-import { useAuth } from "../context/AuthContext";
+import { useApiCall } from "../../hooks/useApiCall";
+import { changePassword } from "../../services/user-services";
+import { useAuth } from "../../context/AuthContext";
 
 // Importar interfaces
 // Import interfaces
-import type { ChangePasswordData } from "../interfaces/user-interfaces";
+import type { ChangePasswordData } from "../../interfaces/user-interfaces";
 
 // Importar manejador de errores
 // Import error handler
-import { handleApiError } from "../utils/error-handler";
-import { CloseButton } from "./ui/CloseButton"; // Importar el nuevo componente
+import { handleApiError } from "../../utils/error-handler";
+import { CloseButton } from "../ui/CloseButton"; // Importar el nuevo componente
 
 /* =============================================================================
     ESTILOS (inline)
