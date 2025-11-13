@@ -38,6 +38,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: "20px",
     maxWidth: "900px",
     margin: "0 auto",
+    position: "relative", // Añadido para posicionar el botón de cierre
   },
   loadingContainer: {
     padding: "20px",
@@ -100,6 +101,23 @@ const styles: { [key: string]: React.CSSProperties } = {
   visitButtonDisabled: {
     backgroundColor: "#6c757d",
     cursor: "not-allowed",
+  },
+  closeButton: {
+    position: "absolute",
+    top: "10px",
+    right: "10px",
+    backgroundColor: "transparent",
+    border: "none",
+    fontSize: "1.5rem",
+    cursor: "pointer",
+    color: "#333",
+    padding: "5px 10px",
+    borderRadius: "50%",
+    transition: "background-color 0.2s",
+    zIndex: 10, // Asegurar que esté por encima de otros elementos
+  },
+  closeButtonHover: {
+    backgroundColor: "#eee",
   },
 };
 
@@ -253,6 +271,23 @@ export const GymPage = () => {
   // Render principal
   return (
     <div style={styles.container}>
+      {/* Botón de cierre */}
+      {/* Close button */}
+      <button
+        style={styles.closeButton}
+        onClick={() => navigate("/gyms")}
+        aria-label="Cerrar y volver a la lista de gimnasios"
+        onMouseEnter={(e) =>
+          (e.target as HTMLButtonElement).style.backgroundColor =
+            styles.closeButtonHover.backgroundColor || ""
+        }
+        onMouseLeave={(e) =>
+          (e.target as HTMLButtonElement).style.backgroundColor =
+            styles.closeButton.backgroundColor || ""
+        }>
+        &times;
+      </button>
+
       {/* Encabezado con logo y nombre */}
       {/* Header with logo and name */}
       <div style={styles.gymHeader}>
