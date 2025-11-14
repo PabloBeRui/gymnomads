@@ -218,7 +218,10 @@ export const MyVisitsPage = () => {
             lastName=""
             size={35}
           />
-          <span>{visit.gym_name || "N/A"}</span>
+          <span>
+            {visit.gym_name || "N/A"}
+            {visit.is_gym_deleted === true && " (Eliminado)"}
+          </span>
         </div>
       ),
     },
@@ -279,10 +282,7 @@ export const MyVisitsPage = () => {
         <FilterInput
           label="Buscar Visitas por Gimnasio"
           value={gymSearch}
-          onChange={(e) => {
-            setGymSearch(e.target.value);
-            goToPage(1); // Resetear a la primera página con cada nueva búsqueda
-          }}
+          onChange={handleSearchChange}
           placeholder="🔍 Buscar por nombre de gimnasio..."
         />
       </div>

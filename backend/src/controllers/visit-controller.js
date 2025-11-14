@@ -248,7 +248,7 @@ const getMyVisits = async (req, res) => {
     const dataQuery = `
       SELECT 
         v.id, v.gym_id, v.visited_at AS visit_date, g.name AS gym_name,
-        g.city AS gym_city, g.logo_url AS gym_logo_url
+        g.city AS gym_city, g.logo_url AS gym_logo_url, g.is_deleted AS is_gym_deleted
       ${baseQuery}
       ORDER BY v.visited_at DESC
       LIMIT ?
@@ -303,6 +303,7 @@ const getAllVisits = async (req, res) => {
       FROM visits
       JOIN users u ON visits.user_id = u.id
       JOIN gyms g ON visits.gym_id = g.id
+      INNER JOIN gyms og ON u.home_gym_id = og.id
       WHERE 1=1
     `;
     const params = [];
@@ -341,7 +342,8 @@ const getAllVisits = async (req, res) => {
         visits.id, visits.user_id, visits.gym_id, visits.visited_at AS visit_date,
         CONCAT(u.first_name, ' ', u.last_name) AS user_name, u.email AS user_email,
         u.profile_picture AS user_profile_picture, g.name AS gym_name, g.city AS gym_city,
-        g.logo_url AS gym_logo_url, g.is_deleted AS is_gym_deleted
+        g.logo_url AS gym_logo_url, g.is_deleted AS is_gym_deleted,
+        og.name AS origin_gym_name, og.city AS origin_gym_city, og.logo_url AS origin_gym_logo_url
       ${baseQuery}
       ORDER BY visits.visited_at DESC
       LIMIT ?
@@ -358,6 +360,9 @@ const getAllVisits = async (req, res) => {
       }
       if (visit.gym_logo_url) {
         visit.gym_logo_url = `${baseUrl}/${visit.gym_logo_url.replace(/\\/g, "/")}`;
+      }
+      if (visit.origin_gym_logo_url) {
+        visit.origin_gym_logo_url = `${baseUrl}/${visit.origin_gym_logo_url.replace(/\\/g, "/")}`;
       }
       return visit;
     });
@@ -399,6 +404,7 @@ const getManagerGymVisits = async (req, res) => {
     let baseQuery = `
       FROM visits
       JOIN users u ON visits.user_id = u.id
+      LEFT JOIN gyms og ON u.home_gym_id = og.id
       WHERE visits.gym_id = ?
     `;
     const params = [gymId];
@@ -424,7 +430,8 @@ const getManagerGymVisits = async (req, res) => {
       SELECT 
         visits.id, visits.user_id, visits.gym_id, visits.visited_at AS visit_date,
         CONCAT(u.first_name, ' ', u.last_name) AS user_name, u.email AS user_email,
-        u.profile_picture AS user_profile_picture
+        u.profile_picture AS user_profile_picture,
+        og.name AS origin_gym_name, og.city AS origin_gym_city, og.logo_url AS origin_gym_logo_url
       ${baseQuery}
       ORDER BY visits.visited_at DESC
       LIMIT ?
@@ -439,6 +446,9 @@ const getManagerGymVisits = async (req, res) => {
       if (visit.user_profile_picture) {
         visit.user_profile_picture = `${baseUrl}/${visit.user_profile_picture.replace(/\\/g, "/")}`;
       }
+      if (visit.origin_gym_logo_url) {
+        visit.origin_gym_logo_url = `${baseUrl}/${visit.origin_gym_logo_url.replace(/\\/g, "/")}`;
+      }
       return visit;
     });
 
@@ -450,6 +460,91 @@ const getManagerGymVisits = async (req, res) => {
     });
   } catch (error) {
     console.error("Error al obtener visitas del gimnasio:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+/* ========================================
+ * Obtener visitas salientes de los usuarios del gimnasio del manager (Manager)
+ * Get outgoing visits from manager's gym users (Manager)
+ * ======================================== */
+const getManagerOutgoingVisits = async (req, res) => {
+  try {
+    // 1. Verificar rol y obtener ID del gimnasio del manager
+    // 1. Verify role and get manager's gym ID
+    if (req.user.role !== "manager" || !req.user.home_gym_id) {
+      return res
+        .status(403)
+        .json({ message: "Acceso prohibido o no tienes un gimnasio asignado." });
+    }
+    const managerGymId = req.user.home_gym_id;
+
+    // 2. Obtener parámetros de filtro y paginación
+    // 2. Get filter and pagination parameters
+    const { user_search, page = 1, limit = 10 } = req.query;
+    const offset = (page - 1) * limit;
+
+    // 3. Construir consulta base
+    // 3. Build base query
+    let baseQuery = `
+      FROM visits v
+      JOIN users u ON v.user_id = u.id
+      JOIN gyms dg ON v.gym_id = dg.id
+      WHERE u.home_gym_id = ? AND v.gym_id != ?
+    `;
+    const params = [managerGymId, managerGymId];
+    let filterClause = "";
+
+    // 4. Aplicar filtro de búsqueda
+    // 4. Apply search filter
+    if (user_search) {
+      filterClause += ` AND (CONCAT(u.first_name, ' ', u.last_name) LIKE ? OR u.email LIKE ?)`;
+      const searchPattern = `%${user_search}%`;
+      params.push(searchPattern, searchPattern);
+    }
+    baseQuery += filterClause;
+
+    // 5. Ejecutar query de conteo
+    // 5. Execute count query
+    const [totalResult] = await db.query(`SELECT COUNT(v.id) as total ${baseQuery}`, params);
+    const total = totalResult[0].total;
+
+    // 6. Construir y ejecutar query de datos paginados
+    // 6. Build and execute paginated data query
+    const dataQuery = `
+      SELECT 
+        v.id, v.user_id, v.gym_id, v.visited_at AS visit_date,
+        CONCAT(u.first_name, ' ', u.last_name) AS user_name, u.email AS user_email,
+        u.profile_picture AS user_profile_picture,
+        dg.name AS destination_gym_name, dg.city AS destination_gym_city, dg.logo_url AS destination_gym_logo_url
+      ${baseQuery}
+      ORDER BY v.visited_at DESC
+      LIMIT ?
+      OFFSET ?
+    `;
+    const [visits] = await db.query(dataQuery, [...params, parseInt(limit), parseInt(offset)]);
+
+    // 7. Construir URLs completas
+    // 7. Build full URLs
+    const baseUrl = process.env.BASE_URL || "";
+    const visitsWithUrls = visits.map((visit) => {
+      if (visit.user_profile_picture) {
+        visit.user_profile_picture = `${baseUrl}/${visit.user_profile_picture.replace(/\\/g, "/")}`;
+      }
+      if (visit.destination_gym_logo_url) {
+        visit.destination_gym_logo_url = `${baseUrl}/${visit.destination_gym_logo_url.replace(/\\/g, "/")}`;
+      }
+      return visit;
+    });
+
+    // 8. Devolver resultados
+    // 8. Return results
+    res.status(200).json({
+      data: visitsWithUrls,
+      total,
+    });
+  } catch (error) {
+    console.error("Error al obtener visitas salientes del gimnasio:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
 };
@@ -474,41 +569,47 @@ const getVisitsStats = async (req, res) => {
     if (role === "admin") {
       // Admin: Contar todas las visitas
       // Admin: Count all visits
-      totalQuery = `SELECT COUNT(id) AS total FROM visits`;
-      monthQuery = `SELECT COUNT(id) AS thisMonth FROM visits WHERE YEAR(visited_at) = YEAR(CURDATE()) AND MONTH(visited_at) = MONTH(CURDATE())`;
-      todayQuery = `SELECT COUNT(id) AS today FROM visits WHERE DATE(visited_at) = CURDATE()`;
-      params = []; // Sin parámetros
+      const [totalResult] = await db.query(`SELECT COUNT(id) AS total FROM visits`);
+      const [monthResult] = await db.query(`SELECT COUNT(id) AS thisMonth FROM visits WHERE YEAR(visited_at) = YEAR(CURDATE()) AND MONTH(visited_at) = MONTH(CURDATE())`);
+      const [todayResult] = await db.query(`SELECT COUNT(id) AS today FROM visits WHERE DATE(visited_at) = CURDATE()`);
+
+      return res.status(200).json({
+        total: totalResult[0].total || 0,
+        thisMonth: monthResult[0].thisMonth || 0,
+        today: todayResult[0].today || 0,
+      });
     } else if (role === "manager") {
-      // Manager: Contar visitas solo de su gimnasio
-      // Manager: Count visits for their gym only
-      totalQuery = `SELECT COUNT(id) AS total FROM visits WHERE gym_id = ?`;
-      monthQuery = `SELECT COUNT(id) AS thisMonth FROM visits WHERE gym_id = ? AND YEAR(visited_at) = YEAR(CURDATE()) AND MONTH(visited_at) = MONTH(CURDATE())`;
-      todayQuery = `SELECT COUNT(id) AS today FROM visits WHERE gym_id = ? AND DATE(visited_at) = CURDATE()`;
-      params = [home_gym_id, home_gym_id, home_gym_id]; // Usar 3 veces el ID del gym
+      // Manager: Contar visitas recibidas y enviadas de su gimnasio
+      // Manager: Count received and sent visits for their gym
+      const [totalReceivedResult] = await db.query(`SELECT COUNT(id) AS totalReceived FROM visits WHERE gym_id = ?`, [home_gym_id]);
+      const [monthReceivedResult] = await db.query(`SELECT COUNT(id) AS thisMonthReceived FROM visits WHERE gym_id = ? AND YEAR(visited_at) = YEAR(CURDATE()) AND MONTH(visited_at) = MONTH(CURDATE())`, [home_gym_id]);
+      const [todayReceivedResult] = await db.query(`SELECT COUNT(id) AS todayReceived FROM visits WHERE gym_id = ? AND DATE(visited_at) = CURDATE()`, [home_gym_id]);
+
+      const [totalSentResult] = await db.query(`SELECT COUNT(v.id) AS totalSent FROM visits v JOIN users u ON v.user_id = u.id WHERE u.home_gym_id = ? AND v.gym_id != ?`, [home_gym_id, home_gym_id]);
+      const [monthSentResult] = await db.query(`SELECT COUNT(v.id) AS thisMonthSent FROM visits v JOIN users u ON v.user_id = u.id WHERE u.home_gym_id = ? AND v.gym_id != ? AND YEAR(v.visited_at) = YEAR(CURDATE()) AND MONTH(v.visited_at) = MONTH(CURDATE())`, [home_gym_id, home_gym_id]);
+      const [todaySentResult] = await db.query(`SELECT COUNT(v.id) AS todaySent FROM visits v JOIN users u ON v.user_id = u.id WHERE u.home_gym_id = ? AND v.gym_id != ? AND DATE(v.visited_at) = CURDATE()`, [home_gym_id, home_gym_id]);
+
+      return res.status(200).json({
+        totalReceived: totalReceivedResult[0].totalReceived || 0,
+        thisMonthReceived: monthReceivedResult[0].thisMonthReceived || 0,
+        todayReceived: todayReceivedResult[0].todayReceived || 0,
+        totalSent: totalSentResult[0].totalSent || 0,
+        thisMonthSent: monthSentResult[0].thisMonthSent || 0,
+        todaySent: todaySentResult[0].todaySent || 0,
+      }); // Cierre del json y del return
     } else {
       // User: Contar solo las visitas propias
       // User: Count own visits only
-      totalQuery = `SELECT COUNT(id) AS total FROM visits WHERE user_id = ?`;
-      monthQuery = `SELECT COUNT(id) AS thisMonth FROM visits WHERE user_id = ? AND YEAR(visited_at) = YEAR(CURDATE()) AND MONTH(visited_at) = MONTH(CURDATE())`;
-      todayQuery = `SELECT COUNT(id) AS today FROM visits WHERE user_id = ? AND DATE(visited_at) = CURDATE()`;
-      params = [userId, userId, userId]; // Usar 3 veces el ID del usuario
+      const [totalResult] = await db.query(`SELECT COUNT(id) AS total FROM visits WHERE user_id = ?`, [userId]);
+      const [monthResult] = await db.query(`SELECT COUNT(id) AS thisMonth FROM visits WHERE user_id = ? AND YEAR(visited_at) = YEAR(CURDATE()) AND MONTH(visited_at) = MONTH(CURDATE())`, [userId]);
+      const [todayResult] = await db.query(`SELECT COUNT(id) AS today FROM visits WHERE user_id = ? AND DATE(visited_at) = CURDATE()`, [userId]);
+
+      return res.status(200).json({
+        total: totalResult[0].total || 0,
+        thisMonth: monthResult[0].thisMonth || 0,
+        today: todayResult[0].today || 0,
+      });
     }
-
-    // 3. Ejecutar las 3 consultas
-    // 3. Execute the 3 queries
-    // Nota: Divido 'params' ya que cada consulta puede necesitar un número diferente
-    // Note: split 'params' as each query might need a different count
-    const [[totalResult]] = await db.query(totalQuery, params.slice(0, 1));
-    const [[monthResult]] = await db.query(monthQuery, params.slice(0, 2));
-    const [[todayResult]] = await db.query(todayQuery, params);
-
-    // 4. Devolver el objeto de estadísticas
-    // 4. Return the statistics object
-    res.status(200).json({
-      total: totalResult.total || 0,
-      thisMonth: monthResult.thisMonth || 0,
-      today: todayResult.today || 0,
-    });
   } catch (error) {
     console.error(`Error al obtener estadísticas de visitas: ${error}`);
     res.status(500).json({ message: "Error interno del servidor" });
@@ -521,6 +622,7 @@ module.exports = {
   getVisitsByGym,
   getAllVisits,
   getManagerGymVisits,
+  getManagerOutgoingVisits,
   getMyVisits,
   getVisitsStats
 };

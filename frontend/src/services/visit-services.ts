@@ -269,8 +269,63 @@ export const getVisitsStats = async (token: string): Promise<VisitStats> => {
       error,
       "Error al obtener las estadísticas de visitas."
     );
-    // Lanzar error procesado
-    // Throw processed error
+    throw new Error(errorMessage);
+  }
+};
+
+/* ========================================
+ * API CALL: Obtener visitas salientes de los usuarios del gimnasio del manager
+ * API CALL: Get outgoing visits from manager's gym users
+ * ======================================== */
+
+export const getManagerOutgoingVisits = async (
+  token: string,
+  filters?: Omit<VisitsFilters, "gym_id">
+): Promise<{ data: VisitWithDetails[]; total: number }> => {
+  try {
+    // Construir query params si hay filtros
+    // Build query params if there are filters
+    const params = new URLSearchParams();
+
+    if (filters?.user_search) {
+      params.append("user_search", filters.user_search);
+    }
+    if (filters?.start_date) {
+      params.append("start_date", filters.start_date);
+    }
+    if (filters?.end_date) {
+      params.append("end_date", filters.end_date);
+    }
+    if (filters?.page) {
+      params.append("page", filters.page.toString());
+    }
+    if (filters?.limit) {
+      params.append("limit", filters.limit.toString());
+    }
+
+    const queryString = params.toString();
+    const url = `${API_URL}/visits/my-gym/outgoing${
+      queryString ? `?${queryString}` : ""
+    }`;
+
+    // Realizar petición GET al endpoint de visitas salientes del gimnasio del manager
+    // Perform GET request to the manager's gym outgoing visits endpoint
+    const response = await axios.get<{ data: VisitWithDetails[]; total: number }>(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // Devolver los datos de las visitas
+    // Return the visits data
+    return response.data;
+  } catch (error) {
+    // Usar el manejador centralizado
+    // Use the centralized handler
+    const errorMessage = handleApiError(
+      error,
+      "No se pudieron cargar las visitas salientes del gimnasio."
+    );
     throw new Error(errorMessage);
   }
 };

@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { getAllVisits, getManagerGymVisits } from "../services/visit-services";
-import { getAllGyms, getGymById } from "../services/gym-services";
+import {
+  getAllVisits,
+  getManagerGymVisits,
+  getManagerOutgoingVisits,
+} from "../services/visit-services";
+import { getAllGyms } from "../services/gym-services";
 import type {
   VisitWithDetails,
   VisitsFilters,
@@ -150,9 +154,11 @@ export const VisitsManagementPage = () => {
   // States del componente / Component states
   const [visits, setVisits] = useState<VisitWithDetails[]>([]);
   const [gyms, setGyms] = useState<Gym[]>([]);
-  const [managerGym, setManagerGym] = useState<Gym | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [managerVisitView, setManagerVisitView] = useState<"received" | "sent">(
+    "received"
+  );
 
   // Hook de paginación / Pagination hook
   const {
@@ -201,30 +207,6 @@ export const VisitsManagementPage = () => {
     fetchGyms();
   }, [isAdmin, token]);
 
-  // Cargar detalles del gimnasio del manager (solo para manager)
-  // Load manager's gym details (manager only)
-  useEffect(() => {
-    if (!isManager || !user?.home_gym_id) return;
-
-    const fetchManagerGym = async () => {
-      try {
-        const gymData = await getGymById(user.home_gym_id);
-        setManagerGym(gymData);
-      } catch (err) {
-        const msg = handleApiError(
-          err,
-          "Error al cargar los detalles de tu gimnasio."
-        );
-        toast.error(msg);
-        if (import.meta.env.DEV) {
-          console.error("Error al cargar el gimnasio del manager:", msg);
-        }
-      }
-    };
-
-    fetchManagerGym();
-  }, [isManager, user?.home_gym_id]);
-
   const filteredGyms = gyms.filter(
     (gym) =>
       gym.name.toLowerCase().includes(gymSearchTerm.toLowerCase()) ||
@@ -261,7 +243,13 @@ export const VisitsManagementPage = () => {
         }
         response = await getAllVisits(token, adminFilters);
       } else if (isManager) {
-        response = await getManagerGymVisits(token, baseFilters);
+        if (managerVisitView === "received") {
+          response = await getManagerGymVisits(token, baseFilters);
+        } else {
+          // Asumiendo que getManagerOutgoingVisits existe y está importado
+          // Assuming getManagerOutgoingVisits exists and is imported
+          response = await getManagerOutgoingVisits(token, baseFilters);
+        }
       } else {
         throw new Error("No tienes permisos para ver esta página.");
       }
@@ -289,7 +277,7 @@ export const VisitsManagementPage = () => {
 
     return () => clearTimeout(timeoutId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedGymId, userSearch, currentPage, itemsPerPage]);
+  }, [selectedGymId, userSearch, currentPage, itemsPerPage, managerVisitView]);
 
   const handleClearFilters = () => {
     setSelectedGymId("");
@@ -325,13 +313,13 @@ export const VisitsManagementPage = () => {
         </div>
       ),
     },
-    // Añadir columna de gimnasio solo para admin
-    // Add gym column only for admin
-    ...(isAdmin
+    // Columna de gimnasio de origen (para admin y manager en vista de recibidas)
+    // Origin gym column (for admin and manager in received view)
+    ...(isManager && managerVisitView === "received"
       ? [
           {
-            key: "gym_name" as keyof VisitWithDetails,
-            header: "Gimnasio Visitado",
+            key: "origin_gym_name" as keyof VisitWithDetails,
+            header: "Gimnasio de Origen",
             render: (visit: VisitWithDetails) => (
               <div
                 style={{
@@ -340,13 +328,45 @@ export const VisitsManagementPage = () => {
                   gap: "10px",
                 }}>
                 <Avatar
-                  src={visit.gym_logo_url}
-                  firstName={visit.gym_name || "Gimnasio"}
+                  src={visit.origin_gym_logo_url}
+                  firstName={visit.origin_gym_name || "Gimnasio"}
                   lastName={""}
                   size={35}
                 />
                 <span>
-                  {visit.gym_name || "N/A"}
+                  {visit.origin_gym_name || "N/A"}
+                  {/* No hay is_deleted para gimnasio de origen en este contexto */}
+                  {/* No is_deleted for origin gym in this context */}
+                </span>
+              </div>
+            ),
+          },
+        ]
+      : []),
+    // Columna de gimnasio de destino (para admin y manager en vista de enviadas)
+    // Destination gym column (for admin and manager in sent view)
+    ...(isAdmin || (isManager && managerVisitView === "sent")
+      ? [
+          {
+            key: "destination_gym_name" as keyof VisitWithDetails,
+            header: isAdmin ? "Gimnasio Visitado" : "Gimnasio de Destino",
+            render: (visit: VisitWithDetails) => (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                }}>
+                <Avatar
+                  src={isAdmin ? visit.gym_logo_url : visit.destination_gym_logo_url}
+                  firstName={isAdmin ? visit.gym_name || "Gimnasio" : visit.destination_gym_name || "Gimnasio"}
+                  lastName={""}
+                  size={35}
+                />
+                <span>
+                  {isAdmin ? visit.gym_name || "N/A" : visit.destination_gym_name || "N/A"}
+                  {/* is_gym_deleted se refiere al gimnasio de destino */}
+                  {/* is_gym_deleted refers to the destination gym */}
                   {visit.is_gym_deleted && " (Eliminado)"}
                 </span>
               </div>
@@ -386,14 +406,47 @@ export const VisitsManagementPage = () => {
     <div style={styles.container}>
       <div style={styles.header}>
         <h1 style={styles.title}>
-          {isAdmin ? "Gestión de Visitas" : "Visitas a mi Gimnasio"}
+          {isAdmin
+            ? "Gestión de Visitas"
+            : isManager
+            ? managerVisitView === "received"
+              ? "Visitas Recibidas en mi Gimnasio"
+              : "Visitas Enviadas por mis Usuarios"
+            : "Visitas a mi Gimnasio"}
         </h1>
         <p style={styles.subtitle}>
           {isAdmin
             ? "Visualiza y filtra todas las visitas de todos los gimnasios."
+            : isManager
+            ? managerVisitView === "received"
+              ? "Visualiza y filtra las visitas que ha recibido tu gimnasio."
+              : "Visualiza y filtra las visitas que tus usuarios han realizado a otros gimnasios."
             : "Visualiza y filtra las visitas a tu gimnasio."}
         </p>
       </div>
+
+      {isManager && (
+        <div style={{ marginBottom: "20px", display: "flex", gap: "10px" }}>
+          <button
+            onClick={() => setManagerVisitView("received")}
+            style={{
+              ...styles.clearButton,
+              backgroundColor:
+                managerVisitView === "received" ? "#007bff" : "#6c757d",
+            }}>
+            Visitas Recibidas
+          </button>
+          <button
+            onClick={() => setManagerVisitView("sent")}
+            style={{
+              ...styles.clearButton,
+              backgroundColor:
+                managerVisitView === "sent" ? "#007bff" : "#6c757d",
+            }}>
+            Visitas Enviadas
+          </button>
+        </div>
+      )}
 
       <div style={styles.statsContainer}>
         <div
@@ -406,7 +459,13 @@ export const VisitsManagementPage = () => {
           onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}>
           <div style={styles.statNumber}>{totalItems}</div>
           <div style={styles.statLabel}>
-            {isLoading ? "Cargando..." : "Total de Visitas"}
+            {isLoading
+              ? "Cargando..."
+              : isManager
+              ? managerVisitView === "received"
+                ? "Total de Visitas Recibidas"
+                : "Total de Visitas Enviadas"
+              : "Total de Visitas"}
           </div>
         </div>
       </div>
@@ -504,7 +563,8 @@ export const VisitsManagementPage = () => {
         isOpen={showDetailModal}
         onClose={handleCloseModal}
         visit={selectedVisit}
-        fallbackGym={managerGym}
+        viewMode={isAdmin ? "admin" : isManager ? "manager" : "user"}
+        visitType={isManager ? managerVisitView : undefined}
       />
 
       <VisitsStatsModal

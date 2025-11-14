@@ -11,6 +11,7 @@ const {
   getManagerGymVisits,
   getMyVisits,
   getVisitsStats,
+  getManagerOutgoingVisits,
 } = require("../controllers/visit-controller");
 const authMiddleware = require("../middleware/auth-middleware");
 
@@ -31,6 +32,9 @@ router.get("/", authMiddleware, getAllVisits);
 
 // GET /api/visits/my-gym - Obtener visitas del gimnasio del manager / Get manager's gym visits
 router.get("/my-gym", authMiddleware, getManagerGymVisits);
+
+// GET /api/visits/my-gym/outgoing - Obtener visitas salientes de los usuarios del gimnasio del manager / Get manager's gym outgoing visits
+router.get("/my-gym/outgoing", authMiddleware, getManagerOutgoingVisits);
 
 // GET /api/visits/my-visits - Obtener las visitas del usuario logueado / Get logged-in user's visits
 router.get("/my-visits", authMiddleware, getMyVisits);

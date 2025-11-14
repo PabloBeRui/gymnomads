@@ -108,6 +108,13 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: "#dc3545", // Color rojo para error
     fontSize: "1.1rem",
   },
+  button: {
+    padding: "10px 20px",
+    fontSize: "1rem",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+  },
 };
 
 /* =============================================================================
@@ -123,6 +130,9 @@ export const VisitsStatsModal: React.FC<VisitsStatsModalProps> = ({
   const [stats, setStats] = useState<VisitStats | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [statsViewMode, setStatsViewMode] = useState<"received" | "sent">(
+    "received"
+  );
 
   // Manejar cierre del modal
   // Handle modal close
@@ -177,7 +187,7 @@ export const VisitsStatsModal: React.FC<VisitsStatsModalProps> = ({
       case "admin":
         return "📈 Estadísticas Globales";
       case "manager":
-        return "📈 Estadísticas de Mi Gimnasio";
+        return "📈 Estadísticas de Visitas (Mi Gimnasio)";
       case "user":
       default:
         return "📈 Tus Estadísticas de Visita";
@@ -205,6 +215,31 @@ export const VisitsStatsModal: React.FC<VisitsStatsModalProps> = ({
           <CloseButton onClick={handleClose} ariaLabel="Cerrar estadísticas de visitas" />
         </div>
 
+        {viewMode === "manager" && (
+          <div style={{ marginBottom: "20px", display: "flex", gap: "10px" }}>
+            <button
+              onClick={() => setStatsViewMode("received")}
+              style={{
+                ...styles.button, // Usar un estilo de botón genérico
+                backgroundColor:
+                  statsViewMode === "received" ? "#007bff" : "#6c757d",
+                color: "white",
+              }}>
+              Estadísticas Recibidas
+            </button>
+            <button
+              onClick={() => setStatsViewMode("sent")}
+              style={{
+                ...styles.button, // Usar un estilo de botón genérico
+                backgroundColor:
+                  statsViewMode === "sent" ? "#007bff" : "#6c757d",
+                color: "white",
+              }}>
+              Estadísticas Enviadas
+            </button>
+          </div>
+        )}
+
         {/* Mostrar estado de Carga / Show Loading state */}
         {isLoading && (
           <p style={styles.loadingText}>Cargando estadísticas...</p>
@@ -216,20 +251,76 @@ export const VisitsStatsModal: React.FC<VisitsStatsModalProps> = ({
         {/* Mostrar estadísticas (si no hay carga y no hay error) */}
         {/* Show stats (if not loading and no error) */}
         {!isLoading && !error && stats && (
-          <div style={styles.statsContainer}>
-            <div style={styles.statBox}>
-              <p style={styles.statNumber}>{stats.today}</p>
-              <p style={styles.statLabel}>Visitas Hoy</p>
-            </div>
-            <div style={styles.statBox}>
-              <p style={styles.statNumber}>{stats.thisMonth}</p>
-              <p style={styles.statLabel}>Visitas este Mes</p>
-            </div>
-            <div style={styles.statBox}>
-              <p style={styles.statNumber}>{stats.total}</p>
-              <p style={styles.statLabel}>Visitas Totales</p>
-            </div>
-          </div>
+          <>
+            {viewMode === "manager" ? (
+              statsViewMode === "received" ? (
+                <>
+                  <h3
+                    style={{
+                      textAlign: "center",
+                      marginBottom: "15px",
+                      color: "#007bff",
+                    }}>
+                    Visitas Recibidas
+                  </h3>
+                  <div style={styles.statsContainer}>
+                    <div style={styles.statBox}>
+                      <p style={styles.statNumber}>{stats.todayReceived}</p>
+                      <p style={styles.statLabel}>Hoy</p>
+                    </div>
+                    <div style={styles.statBox}>
+                      <p style={styles.statNumber}>{stats.thisMonthReceived}</p>
+                      <p style={styles.statLabel}>Este Mes</p>
+                    </div>
+                    <div style={styles.statBox}>
+                      <p style={styles.statNumber}>{stats.totalReceived}</p>
+                      <p style={styles.statLabel}>Totales</p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h3
+                    style={{
+                      textAlign: "center",
+                      marginBottom: "15px",
+                      color: "#28a745",
+                    }}>
+                    Visitas Enviadas
+                  </h3>
+                  <div style={styles.statsContainer}>
+                    <div style={styles.statBox}>
+                      <p style={styles.statNumber}>{stats.todaySent}</p>
+                      <p style={styles.statLabel}>Hoy</p>
+                    </div>
+                    <div style={styles.statBox}>
+                      <p style={styles.statNumber}>{stats.thisMonthSent}</p>
+                      <p style={styles.statLabel}>Este Mes</p>
+                    </div>
+                    <div style={styles.statBox}>
+                      <p style={styles.statNumber}>{stats.totalSent}</p>
+                      <p style={styles.statLabel}>Totales</p>
+                    </div>
+                  </div>
+                </>
+              )
+            ) : (
+              <div style={styles.statsContainer}>
+                <div style={styles.statBox}>
+                  <p style={styles.statNumber}>{stats.today}</p>
+                  <p style={styles.statLabel}>Visitas Hoy</p>
+                </div>
+                <div style={styles.statBox}>
+                  <p style={styles.statNumber}>{stats.thisMonth}</p>
+                  <p style={styles.statLabel}>Visitas este Mes</p>
+                </div>
+                <div style={styles.statBox}>
+                  <p style={styles.statNumber}>{stats.total}</p>
+                  <p style={styles.statLabel}>Visitas Totales</p>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

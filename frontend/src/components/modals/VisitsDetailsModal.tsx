@@ -18,7 +18,6 @@
 
 import { useEffect, useCallback } from "react";
 import type { VisitWithDetails } from "../../interfaces/visit-interfaces";
-import type { Gym } from "../../interfaces/gym-interfaces";
 import { Avatar } from "../Avatar";
 import { CloseButton } from "../ui/CloseButton"; // Importar el nuevo componente
 
@@ -39,20 +38,13 @@ interface VisitsDetailsModalProps {
   // Visit data to display
   visit: VisitWithDetails | null;
 
-  // Gimnasio de respaldo para vistas de manager/usuario.
-  // Se utiliza cuando la información del gimnasio (nombre, ciudad, logo) no está
-  // directamente disponible en el objeto 'visit' (por ejemplo, en la vista de manager,
-  // donde las visitas son siempre del mismo gimnasio y la API no lo repite en cada visita).
-  //
-  // Fallback gym for manager/user views.
-  // Used when gym information (name, city, logo) is not directly available
-  // in the 'visit' object (e.g., in the manager's view, where visits are always
-  // from the same gym and the API does not repeat it for each visit).
-  fallbackGym?: Gym | null;
-
   // Modo de vista para adaptar el contenido
   // View mode to adapt content
-  viewMode?: "user" | "admin";
+  viewMode?: "user" | "admin" | "manager";
+
+  // Tipo de visita para gerentes (recibida o enviada)
+  // Visit type for managers (received or sent)
+  visitType?: "received" | "sent";
 }
 
 /* =============================================================================
@@ -173,8 +165,8 @@ export const VisitsDetailsModal = ({
   isOpen,
   onClose,
   visit,
-  fallbackGym,
-  viewMode = "admin", // Por defecto, modo admin
+  viewMode = "user", // Por defecto, modo user
+  visitType,
 }: VisitsDetailsModalProps) => {
   // Manejar cierre del modal
   // Handle modal close
@@ -213,9 +205,14 @@ export const VisitsDetailsModal = ({
 
   if (!isOpen || !visit) return null;
 
-  const gymName = visit.gym_name || fallbackGym?.name || "N/A";
-  const gymCity = visit.gym_city || fallbackGym?.city || "N/A";
-  const gymLogo = visit.gym_logo_url || fallbackGym?.logo_url;
+  // Lógica para determinar qué gimnasio mostrar
+  // Logic to determine which gym to display
+  const showOriginGym =
+    viewMode === "admin" || (viewMode === "manager" && visitType === "received");
+  const showDestinationGym =
+    viewMode === "admin" ||
+    viewMode === "user" ||
+    (viewMode === "manager" && visitType === "sent");
 
   return (
     <>
@@ -231,7 +228,8 @@ export const VisitsDetailsModal = ({
           <div style={styles.modalHeader}>
             <h2 id="modal-title" style={styles.modalTitle}>
               🎟️ Detalle de la Visita
-              {viewMode === "admin" && ` (ID: ${visit.id})`}
+              {(viewMode === "admin" || viewMode === "manager") &&
+                ` (ID: ${visit.id})`}
             </h2>
             <CloseButton
               onClick={handleClose}
@@ -239,9 +237,9 @@ export const VisitsDetailsModal = ({
             />
           </div>
 
-          {/* Header con Avatar, nombre y email del USUARIO (solo en modo admin) */}
-          {/* Header with Avatar, name and email of USER (admin mode only) */}
-          {viewMode === "admin" && (
+          {/* Header con Avatar, nombre y email del USUARIO (admin y manager) */}
+          {/* Header with Avatar, name and email of USER (admin and manager) */}
+          {(viewMode === "admin" || viewMode === "manager") && (
             <div style={styles.profileHeader}>
               <Avatar
                 src={visit.user_profile_picture}
@@ -259,23 +257,52 @@ export const VisitsDetailsModal = ({
           {/* Contenido del modal (solo vista) */}
           {/* Modal content (view-only) */}
           <div style={styles.infoSection}>
-            <div style={styles.infoRow}>
-              <label style={styles.label}>Gimnasio Visitado:</label>
-              <div style={styles.value}>
-                <Avatar
-                  src={gymLogo}
-                  firstName={gymName}
-                  lastName=""
-                  size={30}
-                />
-                <span>{gymName}</span>
-              </div>
-            </div>
+            {showOriginGym && (
+              <>
+                <div style={styles.infoRow}>
+                  <label style={styles.label}>Gimnasio de Origen:</label>
+                  <div style={styles.value}>
+                    <Avatar
+                      src={visit.origin_gym_logo_url}
+                      firstName={visit.origin_gym_name || "Gimnasio"}
+                      lastName=""
+                      size={30}
+                    />
+                    <span>{visit.origin_gym_name || "N/A"}</span>
+                  </div>
+                </div>
+                <div style={styles.infoRow}>
+                  <label style={styles.label}>Ciudad de Origen:</label>
+                  <div style={styles.value}>{visit.origin_gym_city || "N/A"}</div>
+                </div>
+              </>
+            )}
 
-            <div style={styles.infoRow}>
-              <label style={styles.label}>Ciudad del Gimnasio:</label>
-              <div style={styles.value}>{gymCity}</div>
-            </div>
+            {showDestinationGym && (
+              <>
+                <div style={styles.infoRow}>
+                  <label style={styles.label}>Gimnasio de Destino:</label>
+                  <div style={styles.value}>
+                    <Avatar
+                      src={visit.destination_gym_logo_url || visit.gym_logo_url}
+                      firstName={visit.destination_gym_name || visit.gym_name || "Gimnasio"}
+                      lastName=""
+                      size={30}
+                    />
+                    <span>
+                      {visit.destination_gym_name || visit.gym_name || "N/A"}
+                      {visit.is_gym_deleted === true && " (Eliminado)"}
+                    </span>
+                  </div>
+                </div>
+                <div style={styles.infoRow}>
+                  <label style={styles.label}>Ciudad de Destino:</label>
+                  <div style={styles.value}>
+                      {visit.destination_gym_city || visit.gym_city || "N/A"}
+                  </div>
+                </div>
+              </>
+            )}
 
             <div style={styles.infoRow}>
               <label style={styles.label}>Fecha y Hora de la Visita:</label>
