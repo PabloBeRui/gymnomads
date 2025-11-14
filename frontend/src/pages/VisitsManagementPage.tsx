@@ -12,7 +12,7 @@ import { handleApiError } from "../utils/error-handler";
 import { Avatar } from "../components/Avatar";
 import { VisitsDetailsModal } from "../components/modals/VisitsDetailsModal";
 import { VisitsStatsModal } from "../components/modals/VisitsStatsModal";
-import { usePagination } from "../hooks/use-pagination";
+import { usePagination } from "../hooks/usePagination";
 import { PaginationControls } from "../components/ui/PaginationControls";
 
 /* =============================================================================

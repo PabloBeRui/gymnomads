@@ -24,8 +24,10 @@ export const ApiTest = () => {
     const loadGyms = async () => {
       try {
         setError(null); // Limpiar errores previos. // Clear previous errors.
-        const data = await getAllGyms();
-        setGyms(data);
+        // La función ahora devuelve un objeto { data, total } y requiere un token
+        // The function now returns an object { data, total } and requires a token
+        const response = await getAllGyms(""); // Pasamos un token vacío para la prueba
+        setGyms(response.data); // Asignar solo la propiedad 'data' al estado
       } catch (err) {
         // Mostrar error en consola y en el estado si la petición falla.
         // Log the error and set it in the state if the request fails.

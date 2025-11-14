@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
 import { ManagerDetailsModal } from "../components/modals/ManagerDetailsModal";
 import { Avatar } from "../components/Avatar";
-import { usePagination } from "../hooks/use-pagination";
+import { usePagination } from "../hooks/usePagination";
 import { PaginationControls } from "../components/ui/PaginationControls";
 
 /* =============================================================================

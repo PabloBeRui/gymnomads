@@ -6,7 +6,7 @@ import type { Gym } from "../interfaces/gym-interfaces";
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
 import { ConfirmationModal } from "../components/modals/ConfirmationModal";
-import { usePagination } from "../hooks/use-pagination";
+import { usePagination } from "../hooks/usePagination";
 import { PaginationControls } from "../components/ui/PaginationControls";
 
 /* =============================================================================

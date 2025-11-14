@@ -82,21 +82,30 @@ export const createVisit = async (
 
 export const getMyVisits = async (
   token: string,
-  gymName?: string
-): Promise<VisitWithDetails[]> => {
+  gymName?: string,
+  page?: number,
+  limit?: number
+): Promise<{ data: VisitWithDetails[]; total: number }> => {
   try {
     // Construir query params si hay filtros
     const params = new URLSearchParams();
     if (gymName) {
       params.append("gym_name", gymName);
     }
+    if (page) {
+      params.append("page", page.toString());
+    }
+    if (limit) {
+      params.append("limit", limit.toString());
+    }
+
     const queryString = params.toString();
     const url = `${API_URL}/visits/my-visits${
       queryString ? `?${queryString}` : ""
     }`;
 
     // Realizar petición GET al endpoint de visitas del usuario.
-    const response = await axios.get<VisitWithDetails[]>(url, {
+    const response = await axios.get<{ data: VisitWithDetails[]; total: number }>(url, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

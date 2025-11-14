@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
 import { Avatar } from "../components/Avatar";
 import { UserDetailModal } from "../components/modals/UserDetailModal";
-import { usePagination } from "../hooks/use-pagination";
+import { usePagination } from "../hooks/usePagination";
 import { PaginationControls } from "../components/ui/PaginationControls";
 
 /* =============================================================================
