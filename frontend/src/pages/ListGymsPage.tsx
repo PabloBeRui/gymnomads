@@ -1,19 +1,3 @@
-/**
- * =============================================================================
- * PÁGINA: ListGymsPage / GymsPage
- * =============================================================================
- *
- * Página para mostrar la lista de todos los gimnasios disponibles con filtro
- * de búsqueda. Permite ver detalles básicos y, si el usuario tiene permisos
- * (admin o manager de ese gym), muestra opciones para editar o eliminar.
- *
- * Page to display the list of all available gyms with a search filter.
- * Allows viewing basic details and, if the user has permissions (admin or the
- * manager of that gym), shows options to edit or delete.
- *
- * =============================================================================
- */
-
 import { useState, useEffect } from "react";
 import { getAllGyms, deleteGym } from "../services/gym-services";
 import { useAuth } from "../context/AuthContext";
@@ -22,6 +6,8 @@ import type { Gym } from "../interfaces/gym-interfaces";
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
 import { ConfirmationModal } from "../components/modals/ConfirmationModal";
+import { usePagination } from "../hooks/use-pagination";
+import { PaginationControls } from "../components/ui/PaginationControls";
 
 /* =============================================================================
    ESTILOS (inline)
@@ -62,6 +48,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     flex: "1 1 300px",
     boxSizing: "border-box",
     backgroundColor: "white",
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between'
   },
   gymLogo: {
     width: "100%",
@@ -88,7 +77,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: "none",
     borderRadius: "4px",
   },
-  noResultsText: { color: "#666", fontStyle: "italic" },
+  noResultsText: { color: "#666", fontStyle: "italic", width: '100%', textAlign: 'center', padding: '40px 0' },
 };
 
 /* =============================================================================
@@ -105,23 +94,38 @@ export const ListGymsPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
+  // Hook de paginación / Pagination hook
+  const {
+    currentPage,
+    itemsPerPage,
+    totalPages,
+    setTotalItems,
+    goToPage,
+    changeItemsPerPage,
+  } = usePagination();
+
   // Estados para modal de eliminación / States for delete modal
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [gymToDelete, setGymToDelete] = useState<Gym | null>(null);
 
-  // Fallback para backendBaseUrl
-  // Fallback for backendBaseUrl
   const backendBaseUrl =
     import.meta.env.VITE_BACKEND_BASE_URL || window.location.origin;
 
-  // Cargar gimnasios al montar / Load gyms on mount
+  // Cargar gimnasios / Load gyms
   useEffect(() => {
     const fetchGyms = async () => {
+      if (!token) return;
       setError(null);
       setIsLoading(true);
       try {
-        const data = await getAllGyms();
-        setGyms(data);
+        const filters = {
+          search: searchTerm.trim() || undefined,
+          page: currentPage,
+          limit: itemsPerPage,
+        };
+        const response = await getAllGyms(token, filters);
+        setGyms(response.data);
+        setTotalItems(response.total);
       } catch (err) {
         const msg = handleApiError(
           err,
@@ -135,41 +139,36 @@ export const ListGymsPage = () => {
       }
     };
 
-    fetchGyms();
-  }, []);
+    const timeoutId = setTimeout(fetchGyms, 500);
+    return () => clearTimeout(timeoutId);
+  }, [currentPage, itemsPerPage, searchTerm, token, setTotalItems]);
 
-  // Manejo de búsqueda / Search handling
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
+    goToPage(1); // Resetear a la primera página con cada nueva búsqueda
   };
 
-  // Filtrado por nombre o ciudad / Filter by name or city
-  const filteredGyms = gyms.filter((gym) => {
-    const term = searchTerm.trim().toLowerCase();
-    if (!term) return true;
-    return (
-      (gym.name || "").toLowerCase().includes(term) ||
-      (gym.city || "").toLowerCase().includes(term)
-    );
-  });
-
-  // Abrir modal de confirmación de eliminación / Open delete confirmation modal
   const handleDelete = (gym: Gym): void => {
     setGymToDelete(gym);
     setShowDeleteModal(true);
   };
 
-  // Confirmar eliminación de gimnasio / Confirm gym deletion
   const handleDeleteConfirm = async () => {
     if (!gymToDelete || !token) return;
 
     try {
       await deleteGym(gymToDelete.id, token);
-      setGyms((prev) => prev.filter((g) => g.id !== gymToDelete.id));
+      // Refrescar la lista actual
+      const filters = {
+        search: searchTerm.trim() || undefined,
+        page: currentPage,
+        limit: itemsPerPage,
+      };
+      const response = await getAllGyms(token, filters);
+      setGyms(response.data);
+      setTotalItems(response.total);
+      
       toast.success(`Gimnasio "${gymToDelete.name}" eliminado con éxito.`);
-
-      // Cerrar modal
-      // Close modal
       setShowDeleteModal(false);
       setGymToDelete(null);
     } catch (err) {
@@ -182,23 +181,19 @@ export const ListGymsPage = () => {
     }
   };
 
-  // Cancelar eliminación de gimnasio / Cancel gym deletion
   const handleDeleteCancel = () => {
     setShowDeleteModal(false);
     setGymToDelete(null);
   };
 
-  // Render loading
-  if (isLoading) {
+  if (isLoading && gyms.length === 0) {
     return (
       <div style={styles.container}>
         <p>Cargando gimnasios...</p>
-        {/* TODO: Spinner */}
       </div>
     );
   }
 
-  // Render error
   if (error) {
     return (
       <div style={styles.container}>
@@ -207,13 +202,11 @@ export const ListGymsPage = () => {
     );
   }
 
-  // Render principal / Main render
   return (
     <div style={styles.container}>
       <h2>Gimnasios Asociados</h2>
       <p>Descubre los gimnasios a los que puedes acceder con GymNomads.</p>
 
-      {/* Botón para añadir gimnasio (solo admin) / Add gym button (admin only) */}
       {user?.role === "admin" && (
         <Link
           to="/gyms/add"
@@ -233,13 +226,13 @@ export const ListGymsPage = () => {
       />
 
       <div style={styles.gymList}>
-        {filteredGyms.length === 0 && !isLoading && (
+        {gyms.length === 0 && !isLoading && (
           <p style={styles.noResultsText}>
             No se encontraron gimnasios que coincidan con tu búsqueda.
           </p>
         )}
 
-        {filteredGyms.map((gym) => {
+        {gyms.map((gym) => {
           const logoSrc = gym.logo_url
             ? `${backendBaseUrl}/${
                 gym.logo_url.startsWith("/")
@@ -253,72 +246,63 @@ export const ListGymsPage = () => {
               key={gym.id}
               style={{
                 ...styles.gymCard,
-                cursor: "pointer", // Mostrar cursor de mano / Show hand cursor
-                transition: "transform 0.2s, box-shadow 0.2s", // Animación suave / smooth animation
+                cursor: "pointer",
+                transition: "transform 0.2s, box-shadow 0.2s",
               }}
               aria-labelledby={`gym-${gym.id}-name`}
-              onClick={() => navigate(`/gyms/${gym.id}`)} // Navegar al hacer click / navigate on click
+              onClick={() => navigate(`/gyms/${gym.id}`)}
               onMouseEnter={(e) => {
-                // Efecto hover: elevar la tarjeta / hover effect
                 e.currentTarget.style.transform = "translateY(-5px)";
                 e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
               }}
               onMouseLeave={(e) => {
-                // Volver al estado normal / back normal state
                 e.currentTarget.style.transform = "translateY(0)";
                 e.currentTarget.style.boxShadow = "none";
               }}
-              role="button" // Accesibilidad / accessibility
-              tabIndex={0} // Permitir navegación con teclado / allow keyboard navigation
+              role="button"
+              tabIndex={0}
               onKeyPress={(e) => {
-                // Permitir Enter o Space para activar / enter or space to activate
                 if (e.key === "Enter" || e.key === " ") {
                   navigate(`/gyms/${gym.id}`);
                 }
               }}>
-              <img
-                src={logoSrc}
-                alt={`Logo de ${gym.name}`}
-                style={styles.gymLogo}
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.onerror = null;
-                  target.src = "/images/gym-logo/default-gym-logo.png";
-                }}
-              />
-
-              <div style={styles.cardBody}>
-                <h3 id={`gym-${gym.id}-name`}>{gym.name}</h3>
-                <p>
-                  {gym.address}
-                  <br />
-                  {gym.city}
-                </p>
+              <div>
+                <img
+                  src={logoSrc}
+                  alt={`Logo de ${gym.name}`}
+                  style={styles.gymLogo}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.onerror = null;
+                    target.src = "/images/gym-logo/default-gym-logo.png";
+                  }}
+                />
+                <div style={styles.cardBody}>
+                  <h3 id={`gym-${gym.id}-name`}>{gym.name}</h3>
+                  <p>
+                    {gym.address}
+                    <br />
+                    {gym.city}
+                  </p>
+                </div>
               </div>
 
-              {/* Mostrar acciones solo para admin o manager del gym */}
-              {/* Show actions only for admin or gym manager */}
               {(user?.role === "admin" ||
                 (user?.role === "manager" && user.home_gym_id === gym.id)) && (
                 <div style={styles.cardFooter}>
-                  {/* Botón Editar / Edit button */}
                   <button
                     style={styles.button}
                     onClick={(e) => {
-                      // Evitar que el click llegue al div padre / Prevent click from reaching parent div
                       e.stopPropagation();
                       navigate(`/gyms/edit/${gym.id}`);
                     }}
                     aria-label={`Editar gimnasio ${gym.name}`}>
                     Editar
                   </button>
-
-                  {/* Botón Eliminar (solo admin) / Delete button (admin only) */}
                   {user?.role === "admin" && (
                     <button
                       style={styles.deleteButton}
                       onClick={(e) => {
-                        // Evitar que el click llegue al div padre / Prevent click from reaching parent div
                         e.stopPropagation();
                         handleDelete(gym);
                       }}
@@ -333,7 +317,16 @@ export const ListGymsPage = () => {
         })}
       </div>
 
-      {/* Modal de confirmación de eliminación / Delete confirmation modal */}
+      {gyms.length > 0 && (
+        <PaginationControls
+          currentPage={currentPage}
+          totalPages={totalPages}
+          itemsPerPage={itemsPerPage}
+          onPageChange={goToPage}
+          onItemsPerPageChange={changeItemsPerPage}
+        />
+      )}
+
       <ConfirmationModal
         isOpen={showDeleteModal && gymToDelete !== null}
         onCancel={handleDeleteCancel}

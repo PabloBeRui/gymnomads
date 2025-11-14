@@ -52,6 +52,8 @@ export interface VisitsFilters {
   start_date?: string; // Fecha inicio (opcional) / Start date (optional)
   end_date?: string; // Fecha fin (opcional) / End date (optional)
   gym_status?: "active" | "deleted";
+  page?: number;
+  limit?: number;
 }
 
 /* ========================================

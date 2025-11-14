@@ -1,22 +1,5 @@
-/**
- * =============================================================================
- * PÁGINA: UsersManagementPage
- * =============================================================================
- *
- * Página para gestionar y visualizar usuarios registrados en gimnasios.
- * - Admin: puede ver todos los usuarios y filtrar por gimnasio y búsqueda.
- * - Manager: solo ve usuarios de su gimnasio, puede filtrar por búsqueda.
- *
- * Page to manage and view registered gym users.
- * - Admin: can see all users and filter by gym and search.
- * - Manager: only sees users from their gym, can filter by search.
- *
- * =============================================================================
- */
-
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-// ---Importar deleteUser /  Import deleteUser ---
 import {
   getAllUsers,
   getUsersByGym,
@@ -27,9 +10,10 @@ import type { UserWithGym, GymUser } from "../interfaces/user-interfaces";
 import type { Gym } from "../interfaces/gym-interfaces";
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
-//  Importar componentes de UI /  Import UI components ---
 import { Avatar } from "../components/Avatar";
 import { UserDetailModal } from "../components/modals/UserDetailModal";
+import { usePagination } from "../hooks/use-pagination";
+import { PaginationControls } from "../components/ui/PaginationControls";
 
 /* =============================================================================
    ESTILOS (inline)
@@ -116,7 +100,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: "12px 15px",
     borderBottom: "1px solid #dee2e6",
   },
-  // --- NUEVO: Estilo para filas clickeables / NEW: Style for clickable rows ---
   clickableRow: {
     cursor: "pointer",
     transition: "background-color 0.2s",
@@ -189,6 +172,17 @@ export const UsersManagementPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Hook de paginación / Pagination hook
+  const {
+    currentPage,
+    itemsPerPage,
+    totalItems,
+    totalPages,
+    setTotalItems,
+    goToPage,
+    changeItemsPerPage,
+  } = usePagination();
+
   // Estados de filtros / Filter states
   const [selectedGymId, setSelectedGymId] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -203,12 +197,14 @@ export const UsersManagementPage = () => {
 
   // Cargar gimnasios (solo para admin) / Load gyms (admin only)
   useEffect(() => {
-    if (!isAdmin) return;
+    if (!isAdmin || !token) return;
 
     const fetchGyms = async () => {
       try {
-        const gymsData = await getAllGyms();
-        setGyms(gymsData);
+        // Pedir una cantidad alta para asegurar que traemos todos para el filtro
+        // Request a high amount to ensure we fetch all for the filter
+        const gymsData = await getAllGyms(token, { limit: 1000 });
+        setGyms(gymsData.data);
       } catch (err) {
         const msg = handleApiError(err, "Error al cargar gimnasios.");
         toast.error("No se pudieron cargar los gimnasios.");
@@ -219,7 +215,7 @@ export const UsersManagementPage = () => {
     };
 
     fetchGyms();
-  }, [isAdmin]);
+  }, [isAdmin, token]);
 
   // Filtrar gimnasios según el término de búsqueda / Filter gyms by search term
   const filteredGyms = gyms.filter(
@@ -240,17 +236,14 @@ export const UsersManagementPage = () => {
     setIsLoading(true);
 
     try {
-      let usersData: (UserWithGym | GymUser)[];
+      let response;
 
       if (isAdmin) {
-        // Admin: obtener todos los usuarios con filtros opcionales
         const gymIdAsNumber = Number(selectedGymId);
-        const filters: {
-          gym_id?: number;
-          search?: string;
-          gym_status?: "active" | "deleted";
-        } = {
+        const filters: any = {
           search: searchTerm.trim() || undefined,
+          page: currentPage,
+          limit: itemsPerPage,
         };
 
         if (selectedGymId === "deleted") {
@@ -259,21 +252,21 @@ export const UsersManagementPage = () => {
           filters.gym_id = gymIdAsNumber;
           filters.gym_status = "active";
         }
-        // Si selectedGymId es "", no se añade gym_status, y el backend devuelve todos.
 
-        usersData = await getAllUsers(token, filters);
+        response = await getAllUsers(token, filters);
       } else if (isManager && user?.home_gym_id) {
-        // Manager: obtener solo usuarios de su gimnasio
-        // Manager: get only users from their gym
         const filters = {
           search: searchTerm.trim() || undefined,
+          page: currentPage,
+          limit: itemsPerPage,
         };
-        usersData = await getUsersByGym(token, user.home_gym_id, filters);
+        response = await getUsersByGym(token, user.home_gym_id, filters);
       } else {
         throw new Error("No tienes permisos para ver esta página.");
       }
 
-      setUsers(usersData);
+      setUsers(response.data);
+      setTotalItems(response.total);
     } catch (err) {
       const msg = handleApiError(err, "Error al cargar los usuarios.");
       setError(msg);
@@ -289,23 +282,20 @@ export const UsersManagementPage = () => {
   // Efecto con debounce para cargar usuarios cuando cambien los filtros
   // Effect with debounce to load users when filters change
   useEffect(() => {
-    // Debounce de 500ms para no saturar el backend
-    // 500ms debounce to avoid overwhelming the backend
     const timeoutId = setTimeout(() => {
       fetchUsers();
     }, 500);
 
-    // Limpiar timeout si los filtros cambian antes de que se ejecute
-    // Clear timeout if filters change before execution
     return () => clearTimeout(timeoutId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedGymId, searchTerm]); // Se ejecuta cuando cambian los filtros / Runs when filters change
+  }, [selectedGymId, searchTerm, currentPage, itemsPerPage]);
 
   // Limpiar filtros / Clear filters
   const handleClearFilters = () => {
     setSelectedGymId("");
     setSearchTerm("");
     setGymSearchTerm("");
+    goToPage(1);
   };
 
   // Formatear fecha para mostrar / Format date for display
@@ -320,22 +310,16 @@ export const UsersManagementPage = () => {
 
   // --- Lógica del Modal /  Modal Logic ---
 
-  // Abrir el modal con el usuario seleccionado
-  // Open the modal with the selected user
   const handleRowClick = (user: UserWithGym | GymUser) => {
     setSelectedUser(user);
     setShowDetailModal(true);
   };
 
-  // Cerrar el modal y limpiar la selección
-  // Close the modal and clear selection
   const handleCloseModal = () => {
     setShowDetailModal(false);
     setSelectedUser(null);
   };
 
-  // Manejar la eliminación del usuario (se pasa al modal)
-  // Handle user deletion (passed to modal)
   const handleDeleteUser = async (userId: number) => {
     if (!token) {
       toast.error("No estás autenticado.");
@@ -344,31 +328,24 @@ export const UsersManagementPage = () => {
 
     setIsDeleting(true);
     try {
-      // Llamar al servicio de eliminación
-      // Call delete service
       await deleteUser(token, userId);
       toast.success("Usuario eliminado correctamente.");
-
-      // Actualizar estado local (optimista)
-      // Update local state (optimistic)
-      setUsers((prevUsers) => prevUsers.filter((u) => u.id !== userId));
+      // Refrescar la lista de usuarios en la página actual
+      fetchUsers();
     } catch (err) {
       const msg = handleApiError(err, "Error al eliminar el usuario.");
       toast.error(msg);
     } finally {
       setIsDeleting(false);
+      handleCloseModal();
     }
   };
-
-  // Calcular estadísticas / Calculate statistics
-  const totalUsers = users.length;
 
   // Render loading
   if (isLoading && users.length === 0) {
     return (
       <div style={styles.loadingContainer}>
         <p>Cargando usuarios...</p>
-        {/* TODO: Spinner */}
       </div>
     );
   }
@@ -400,7 +377,7 @@ export const UsersManagementPage = () => {
       {/* Estadísticas / Statistics */}
       <div style={styles.statsContainer}>
         <div style={styles.statCard}>
-          <div style={styles.statNumber}>{totalUsers}</div>
+          <div style={styles.statNumber}>{totalItems}</div>
           <div style={styles.statLabel}>
             {isLoading ? "Cargando..." : "Total de Usuarios"}
           </div>
@@ -409,15 +386,11 @@ export const UsersManagementPage = () => {
 
       {/* Filtros / Filters */}
       <div style={styles.filtersContainer}>
-        {/* Filtro por gimnasio (solo admin) / Gym filter (admin only) */}
         {isAdmin && (
           <div style={styles.filterGroup}>
             <label htmlFor="gymFilter" style={styles.label}>
               Filtrar por Gimnasio
             </label>
-
-            {/* Input de búsqueda para filtrar el dropdown */}
-            {/* Search input to filter the dropdown */}
             <input
               type="text"
               placeholder="🔍 Buscar por nombre o ciudad..."
@@ -425,9 +398,6 @@ export const UsersManagementPage = () => {
               onChange={(e) => setGymSearchTerm(e.target.value)}
               style={styles.gymSearchInput}
             />
-
-            {/* Dropdown con gimnasios filtrados */}
-            {/* Dropdown with filtered gyms */}
             <select
               id="gymFilter"
               value={selectedGymId}
@@ -445,9 +415,6 @@ export const UsersManagementPage = () => {
                 </option>
               ))}
             </select>
-
-            {/* Mensaje si no hay resultados en la búsqueda de gimnasios */}
-            {/* Message if no results in gym search */}
             {gymSearchTerm && filteredGyms.length === 0 && (
               <small style={styles.noResultsText}>
                 No se encontraron gimnasios
@@ -456,8 +423,6 @@ export const UsersManagementPage = () => {
           </div>
         )}
 
-        {/* Filtro por búsqueda de usuario (común para admin y manager) */}
-        {/* User search filter (common for admin and manager) */}
         <div style={styles.filterGroup}>
           <label htmlFor="searchFilter" style={styles.label}>
             Buscar Usuario
@@ -472,7 +437,6 @@ export const UsersManagementPage = () => {
           />
         </div>
 
-        {/* Botón de limpiar filtros / Clear filters button */}
         <button
           onClick={handleClearFilters}
           style={styles.clearButton}
@@ -485,7 +449,6 @@ export const UsersManagementPage = () => {
       {users.length === 0 ? (
         <div style={styles.emptyState}>
           {searchTerm || selectedGymId ? (
-            // Si hay filtros activos / If filters are active
             <>
               <p>🔍 No se encontraron usuarios con los filtros aplicados.</p>
               <button
@@ -499,58 +462,33 @@ export const UsersManagementPage = () => {
               </button>
             </>
           ) : (
-            // Si no hay filtros / If no filters
             <p>📭 Aún no hay usuarios registrados.</p>
           )}
         </div>
       ) : (
-        <div style={styles.tableContainer}>
-          <table style={styles.table}>
-            <thead>
-              <tr>
-                <th style={styles.th}>Nombre</th>
-                {isAdmin && <th style={styles.th}>Gimnasio</th>}
-                {!isAdmin && <th style={styles.th}>Fecha de Registro</th>}
-              </tr>
-            </thead>
-
-            <tbody>
-              {users.map((u) => (
-                <tr
-                  key={u.id}
-                  style={styles.clickableRow} // <-- NUEVO: Estilo clickeable
-                  onClick={() => handleRowClick(u)} // <-- NUEVO: Abre modal
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#f8f9fa";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "transparent";
-                  }}
-                  title={`Ver detalles de ${u.first_name} ${u.last_name}`}>
-                  {/* Columna: Avatar + Nombre */}
-                  {/* Column: Avatar + Name */}
-                  <td style={styles.td}>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                      }}>
-                      <Avatar
-                        src={u.profile_picture}
-                        firstName={u.first_name}
-                        lastName={u.last_name}
-                        size={35}
-                      />
-                      <span>
-                        {u.first_name} {u.last_name}
-                      </span>
-                    </div>
-                  </td>
-
-                  {/* Columna: Gimnasio (con logo, solo Admin) */}
-                  {/* Column: Gym (with logo, Admin only) */}
-                  {isAdmin && "gym_name" in u && (
+        <>
+          <div style={styles.tableContainer}>
+            <table style={styles.table}>
+              <thead>
+                <tr>
+                  <th style={styles.th}>Nombre</th>
+                  {isAdmin && <th style={styles.th}>Gimnasio</th>}
+                  {!isAdmin && <th style={styles.th}>Fecha de Registro</th>}
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((u) => (
+                  <tr
+                    key={u.id}
+                    style={styles.clickableRow}
+                    onClick={() => handleRowClick(u)}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "#f8f9fa";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                    }}
+                    title={`Ver detalles de ${u.first_name} ${u.last_name}`}>
                     <td style={styles.td}>
                       <div
                         style={{
@@ -559,36 +497,59 @@ export const UsersManagementPage = () => {
                           gap: "10px",
                         }}>
                         <Avatar
-                          src={(u as UserWithGym).logo_url}
-                          firstName={u.gym_name}
-                          lastName=""
+                          src={u.profile_picture}
+                          firstName={u.first_name}
+                          lastName={u.last_name}
                           size={35}
                         />
                         <span>
-                          {u.gym_name}
-                          {(u as UserWithGym).is_gym_deleted && " (Eliminado)"}
+                          {u.first_name} {u.last_name}
                         </span>
                       </div>
                     </td>
-                  )}
-
-                  {/* Columna: Fecha de Registro */}
-                  {/* Column: Registration Date */}
-                  {!isAdmin && (
-                    <td style={styles.td}>{formatDate(u.registered_at)}</td>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                    {isAdmin && "gym_name" in u && (
+                      <td style={styles.td}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
+                          }}>
+                          <Avatar
+                            src={(u as UserWithGym).logo_url}
+                            firstName={u.gym_name}
+                            lastName=""
+                            size={35}
+                          />
+                          <span>
+                            {u.gym_name}
+                            {(u as UserWithGym).is_gym_deleted && " (Eliminado)"}
+                          </span>
+                        </div>
+                      </td>
+                    )}
+                    {!isAdmin && (
+                      <td style={styles.td}>{formatDate(u.registered_at)}</td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <PaginationControls
+            currentPage={currentPage}
+            totalPages={totalPages}
+            itemsPerPage={itemsPerPage}
+            onPageChange={goToPage}
+            onItemsPerPageChange={changeItemsPerPage}
+          />
+        </>
       )}
 
-      {/* Renderizar el modal / Render the modal --- */}
       <UserDetailModal
         isOpen={showDetailModal}
         onClose={handleCloseModal}
-        user={selectedUser as UserWithGym | null} // Asegurar el tipo / Ensure type
+        user={selectedUser as UserWithGym | null}
         onDelete={handleDeleteUser}
         isDeleting={isDeleting}
       />

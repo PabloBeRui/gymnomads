@@ -88,47 +88,60 @@ const createVisit = async (req, res) => {
  * ======================================== */
 const getVisitsByUser = async (req, res) => {
   try {
-    // 1. Obtener el ID del usuario de los parámetros de la URL
-    // 1. Get the user ID from the URL parameters
+    // 1. Obtener el ID del usuario y paginación
+    // 1. Get user ID and pagination
     const { userId } = req.params;
+    const { page = 1, limit = 10 } = req.query;
+    const offset = (page - 1) * limit;
 
-    // 2. Medida de seguridad: un usuario solo puede ver su propio historial
-    // 2. Security measure: a user can only view their own history
-    if (req.user.userId !== parseInt(userId)) {
+    // 2. Medida de seguridad
+    // 2. Security measure
+    if (req.user.userId !== parseInt(userId) && req.user.role !== 'admin') {
       return res.status(403).json({ message: "Acceso prohibido" });
     }
 
-    // 3. Unir tabla 'visits' con 'gyms' para obtener datos del gimnasio
-    // 3. Join 'visits' table with 'gyms' to get gym data
-    // --- CORREGIDO: Añadido g.logo_url ---
-    // --- FIXED: Added g.logo_url ---
-    const [visits] = await db.query(
-      `SELECT 
-        visits.id, 
-        visits.visited_at, 
-        g.name AS gym_name, 
-        g.city,
-        g.logo_url
-       FROM visits 
-       JOIN gyms g ON visits.gym_id = g.id 
-       WHERE visits.user_id = ? 
-       ORDER BY visits.visited_at DESC`,
-      [userId]
-    );
+    // 3. Construir consulta base
+    // 3. Build base query
+    const baseQuery = `
+      FROM visits 
+      JOIN gyms g ON visits.gym_id = g.id 
+      WHERE visits.user_id = ?
+    `;
+    const params = [userId];
 
-    // --- NUEVO: 4. Construir URLs completas para logos / NEW: 4. Build full URLs for logos ---
+    // 4. Ejecutar query de conteo
+    // 4. Execute count query
+    const [totalResult] = await db.query(`SELECT COUNT(visits.id) as total ${baseQuery}`, params);
+    const total = totalResult[0].total;
+
+    // 5. Construir y ejecutar query de datos
+    // 5. Build and execute data query
+    const dataQuery = `
+      SELECT 
+        visits.id, visits.visited_at, g.name AS gym_name, g.city, g.logo_url
+      ${baseQuery}
+      ORDER BY visits.visited_at DESC
+      LIMIT ?
+      OFFSET ?
+    `;
+    const [visits] = await db.query(dataQuery, [...params, parseInt(limit), parseInt(offset)]);
+
+    // 6. Construir URLs completas
+    // 6. Build full URLs
     const baseUrl = process.env.BASE_URL || "";
     const visitsWithUrls = visits.map((visit) => {
       if (visit.logo_url) {
-        const logoPath = visit.logo_url.replace(/\\/g, "/");
-        visit.logo_url = `${baseUrl}/${logoPath}`;
+        visit.logo_url = `${baseUrl}/${visit.logo_url.replace(/\\/g, "/")}`;
       }
       return visit;
     });
 
-    // 5. Devolver lista de visitas
-    // 5. Return visits list
-    res.status(200).json(visitsWithUrls);
+    // 7. Devolver resultados
+    // 7. Return results
+    res.status(200).json({
+      data: visitsWithUrls,
+      total,
+    });
   } catch (error) {
     console.error(`error: ${error}`);
     res.status(500).json({ message: "Error interno del servidor" });
@@ -141,41 +154,54 @@ const getVisitsByUser = async (req, res) => {
  * ======================================== */
 const getVisitsByGym = async (req, res) => {
   try {
-    // 1. Obtener el ID del gimnasio de los parámetros de la URL
-    // 1. Get the gym ID from the URL parameters
+    // 1. Obtener ID del gimnasio y paginación
+    // 1. Get gym ID and pagination
     const { gymId } = req.params;
+    const { page = 1, limit = 10 } = req.query;
+    const offset = (page - 1) * limit;
 
-    // 2. Unir 'visits' con 'users' para obtener datos del visitante
-    // 2. Join 'visits' with 'users' to get visitor data
-    // --- CORREGIDO: Añadido u.profile_picture ---
-    // --- FIXED: Added u.profile_picture ---
-    const [visits] = await db.query(
-      `SELECT 
-        visits.id, 
-        visits.visited_at, 
-        u.first_name, 
-        u.last_name,
-        u.profile_picture
-       FROM visits 
-       JOIN users u ON visits.user_id = u.id 
-       WHERE visits.gym_id = ? 
-       ORDER BY visits.visited_at DESC`,
-      [gymId]
-    );
+    // 2. Construir consulta base
+    // 2. Build base query
+    const baseQuery = `
+      FROM visits 
+      JOIN users u ON visits.user_id = u.id 
+      WHERE visits.gym_id = ?
+    `;
+    const params = [gymId];
 
-    // --- NUEVO: 3. Construir URLs completas para avatares / NEW: 3. Build full URLs for avatars ---
+    // 3. Ejecutar query de conteo
+    // 3. Execute count query
+    const [totalResult] = await db.query(`SELECT COUNT(visits.id) as total ${baseQuery}`, params);
+    const total = totalResult[0].total;
+
+    // 4. Construir y ejecutar query de datos
+    // 4. Build and execute data query
+    const dataQuery = `
+      SELECT 
+        visits.id, visits.visited_at, u.first_name, u.last_name, u.profile_picture
+      ${baseQuery}
+      ORDER BY visits.visited_at DESC
+      LIMIT ?
+      OFFSET ?
+    `;
+    const [visits] = await db.query(dataQuery, [...params, parseInt(limit), parseInt(offset)]);
+
+    // 5. Construir URLs completas
+    // 5. Build full URLs
     const baseUrl = process.env.BASE_URL || "";
     const visitsWithUrls = visits.map((visit) => {
       if (visit.profile_picture) {
-        const imagePath = visit.profile_picture.replace(/\\/g, "/");
-        visit.profile_picture = `${baseUrl}/${imagePath}`;
+        visit.profile_picture = `${baseUrl}/${visit.profile_picture.replace(/\\/g, "/")}`;
       }
       return visit;
     });
 
-    // 4. Devolver lista de visitantes
-    // 4. Return visitors list
-    res.status(200).json(visitsWithUrls);
+    // 6. Devolver resultados
+    // 6. Return results
+    res.status(200).json({
+      data: visitsWithUrls,
+      total,
+    });
   } catch (error) {
     console.error(`error: ${error}`);
     res.status(500).json({ message: "Error interno del servidor" });
@@ -188,51 +214,64 @@ const getVisitsByGym = async (req, res) => {
  * ======================================== */
 const getMyVisits = async (req, res) => {
   try {
-    // 1. Obtener el ID del usuario del token
+    // 1. Obtener el ID del usuario y parámetros
+    // 1. Get user ID and parameters
     const userId = req.user.userId;
+    const { gym_name, page = 1, limit = 10 } = req.query;
+    const offset = (page - 1) * limit;
 
-    // 2. Obtener filtro opcional de la query string
-    const { gym_name } = req.query;
-
-    // 3. Construir consulta SQL dinámica
-    let query = `
-      SELECT 
-        v.id,
-        v.gym_id,
-        v.visited_at AS visit_date,
-        g.name AS gym_name,
-        g.city AS gym_city,
-        g.logo_url AS gym_logo_url
+    // 2. Construir consulta base
+    // 2. Build base query
+    let baseQuery = `
       FROM visits v
       JOIN gyms g ON v.gym_id = g.id
       WHERE v.user_id = ?
     `;
-
     const params = [userId];
+    let filterClause = "";
 
-    // Añadir filtro si se proporciona
+    // 3. Aplicar filtro
+    // 3. Apply filter
     if (gym_name) {
-      query += ` AND g.name LIKE ?`;
+      filterClause += ` AND g.name LIKE ?`;
       params.push(`%${gym_name}%`);
     }
+    baseQuery += filterClause;
 
-    query += ` ORDER BY v.visited_at DESC`;
+    // 4. Ejecutar query de conteo
+    // 4. Execute count query
+    const [totalResult] = await db.query(`SELECT COUNT(v.id) as total ${baseQuery}`, params);
+    const total = totalResult[0].total;
 
-    // 4. Ejecutar la consulta
-    const [visits] = await db.query(query, params);
+    // 5. Construir y ejecutar query de datos
+    // 5. Build and execute data query
+    const dataQuery = `
+      SELECT 
+        v.id, v.gym_id, v.visited_at AS visit_date, g.name AS gym_name,
+        g.city AS gym_city, g.logo_url AS gym_logo_url
+      ${baseQuery}
+      ORDER BY v.visited_at DESC
+      LIMIT ?
+      OFFSET ?
+    `;
+    const [visits] = await db.query(dataQuery, [...params, parseInt(limit), parseInt(offset)]);
 
-    // 5. Construir URLs completas para logos
+    // 6. Construir URLs completas
+    // 6. Build full URLs
     const baseUrl = process.env.BASE_URL || "";
     const visitsWithUrls = visits.map((visit) => {
       if (visit.gym_logo_url) {
-        const logoPath = visit.gym_logo_url.replace(/\\/g, "/");
-        visit.gym_logo_url = `${baseUrl}/${logoPath}`;
+        visit.gym_logo_url = `${baseUrl}/${visit.gym_logo_url.replace(/\\/g, "/")}`;
       }
       return visit;
     });
 
-    // 6. Devolver resultados
-    res.status(200).json(visitsWithUrls);
+    // 7. Devolver resultados
+    // 7. Return results
+    res.status(200).json({
+      data: visitsWithUrls,
+      total,
+    });
   } catch (error) {
     console.error("Error al obtener mis visitas:", error);
     res.status(500).json({ message: "Error interno del servidor" });
@@ -253,86 +292,82 @@ const getAllVisits = async (req, res) => {
         .json({ message: "Acceso prohibido. Solo administradores." });
     }
 
-    // 2. Obtener parámetros de filtro opcionales de la query string
-    // 2. Get optional filter parameters from query string
-    const { gym_id, user_search, gym_status } = req.query;
+    // 2. Obtener parámetros de filtro y paginación
+    // 2. Get filter and pagination parameters
+    const { gym_id, user_search, gym_status, page = 1, limit = 10 } = req.query;
+    const offset = (page - 1) * limit;
 
-    // 3. Construir consulta SQL dinámica con JOINs
-    // 3. Build dynamic SQL query with JOINs
-    let query = `
-      SELECT 
-        visits.id,
-        visits.user_id,
-        visits.gym_id,
-        visits.visited_at AS visit_date,
-        CONCAT(u.first_name, ' ', u.last_name) AS user_name,
-        u.email AS user_email,
-        u.profile_picture AS user_profile_picture,
-        g.name AS gym_name,
-        g.city AS gym_city,
-        g.logo_url AS gym_logo_url,
-        g.is_deleted AS is_gym_deleted
+    // 3. Construir la parte base de la consulta
+    // 3. Build the base part of the query
+    let baseQuery = `
       FROM visits
       JOIN users u ON visits.user_id = u.id
       JOIN gyms g ON visits.gym_id = g.id
       WHERE 1=1
     `;
-
     const params = [];
+    let filterClause = "";
 
-    // 4. Aplicar filtro por estado del gimnasio (activo, eliminado o todos)
-    // 4. Apply filter by gym status (active, deleted, or all)
+    // 4. Aplicar filtros
+    // 4. Apply filters
     if (gym_status === "deleted") {
-      query += " AND g.is_deleted = 1";
+      filterClause += " AND g.is_deleted = 1";
     } else if (gym_status === "active") {
-      query += " AND g.is_deleted = 0";
+      filterClause += " AND g.is_deleted = 0";
     }
-    // Si gym_status no se proporciona, no se añade filtro de is_deleted, devolviendo todos.
-    // If gym_status is not provided, no is_deleted filter is added, returning all.
 
-    // 5. Aplicar filtro por gimnasio (si se proporciona)
-    // 5. Apply filter by gym (if provided)
     if (gym_id) {
-      query += ` AND visits.gym_id = ?`;
+      filterClause += ` AND visits.gym_id = ?`;
       params.push(gym_id);
     }
 
-    // 6. Aplicar filtro de búsqueda de usuario por nombre o email (si se proporciona)
-    // 6. Apply user search filter by name or email (if provided)
     if (user_search) {
-      query += ` AND (
-        CONCAT(u.first_name, ' ', u.last_name) LIKE ? 
-        OR u.email LIKE ?
-      )`;
+      filterClause += ` AND (CONCAT(u.first_name, ' ', u.last_name) LIKE ? OR u.email LIKE ?)`;
       const searchPattern = `%${user_search}%`;
       params.push(searchPattern, searchPattern);
     }
 
-    // 7. Ordenar por fecha de visita descendente
-    // 7. Order by visit date descending
-    query += ` ORDER BY visits.visited_at DESC`;
+    baseQuery += filterClause;
 
-    // 8. Ejecutar la consulta
-    // 8. Execute the query
-    const [visits] = await db.query(query, params);
+    // 5. Ejecutar query de conteo
+    // 5. Execute count query
+    const [totalResult] = await db.query(`SELECT COUNT(visits.id) as total ${baseQuery}`, params);
+    const total = totalResult[0].total;
 
-    // ---  9. Construir URLs completas para imágenes /  9. Build full URLs for images ---
+    // 6. Construir y ejecutar query de datos paginados
+    // 6. Build and execute paginated data query
+    const dataQuery = `
+      SELECT 
+        visits.id, visits.user_id, visits.gym_id, visits.visited_at AS visit_date,
+        CONCAT(u.first_name, ' ', u.last_name) AS user_name, u.email AS user_email,
+        u.profile_picture AS user_profile_picture, g.name AS gym_name, g.city AS gym_city,
+        g.logo_url AS gym_logo_url, g.is_deleted AS is_gym_deleted
+      ${baseQuery}
+      ORDER BY visits.visited_at DESC
+      LIMIT ?
+      OFFSET ?
+    `;
+    const [visits] = await db.query(dataQuery, [...params, parseInt(limit), parseInt(offset)]);
+
+    // 7. Construir URLs completas para imágenes
+    // 7. Build full URLs for images
     const baseUrl = process.env.BASE_URL || "";
     const visitsWithUrls = visits.map((visit) => {
       if (visit.user_profile_picture) {
-        const imagePath = visit.user_profile_picture.replace(/\\/g, "/");
-        visit.user_profile_picture = `${baseUrl}/${imagePath}`;
+        visit.user_profile_picture = `${baseUrl}/${visit.user_profile_picture.replace(/\\/g, "/")}`;
       }
       if (visit.gym_logo_url) {
-        const logoPath = visit.gym_logo_url.replace(/\\/g, "/");
-        visit.gym_logo_url = `${baseUrl}/${logoPath}`;
+        visit.gym_logo_url = `${baseUrl}/${visit.gym_logo_url.replace(/\\/g, "/")}`;
       }
       return visit;
     });
 
-    // 10. Devolver resultados
-    // 10. Return results
-    res.status(200).json(visitsWithUrls);
+    // 8. Devolver resultados paginados
+    // 8. Return paginated results
+    res.status(200).json({
+      data: visitsWithUrls,
+      total,
+    });
   } catch (error) {
     console.error("Error al obtener visitas:", error);
     res.status(500).json({ message: "Error interno del servidor" });
@@ -345,95 +380,74 @@ const getAllVisits = async (req, res) => {
  * ======================================== */
 const getManagerGymVisits = async (req, res) => {
   try {
-    // 1. Verificar que el usuario sea manager
-    // 1. Verify user is manager
-    if (req.user.role !== "manager") {
+    // 1. Verificar rol y obtener ID del gimnasio
+    // 1. Verify role and get gym ID
+    if (req.user.role !== "manager" || !req.user.home_gym_id) {
       return res
         .status(403)
-        .json({ message: "Acceso prohibido. Solo managers." });
+        .json({ message: "Acceso prohibido o no tienes un gimnasio asignado." });
     }
+    const gymId = req.user.home_gym_id;
 
-    // 2. Obtener el home_gym_id del manager
-    // 2. Get the manager's home_gym_id
-    const [managerData] = await db.query(
-      "SELECT home_gym_id FROM users WHERE id = ?",
-      [req.user.userId]
-    );
+    // 2. Obtener parámetros de filtro y paginación
+    // 2. Get filter and pagination parameters
+    const { user_search, page = 1, limit = 10 } = req.query;
+    const offset = (page - 1) * limit;
 
-    if (!managerData || !managerData[0] || !managerData[0].home_gym_id) {
-      return res
-        .status(404)
-        .json({ message: "No tienes un gimnasio asignado." });
-    }
-
-    const gymId = managerData[0].home_gym_id;
-
-    // 3. Obtener parámetros de filtro opcionales de la query string
-    // 3. Get optional filter parameters from query string
-    const { user_search } = req.query;
-
-    // 4. Construir consulta SQL para obtener visitas del gimnasio del manager
-    // 4. Build SQL query to get visits from manager's gym
-    // ---  Añadidos alias u/g y campos profile_picture/logo_url ---
-    // ---  Added u/g aliases and profile_picture/logo_url fields ---
-    let query = `
-      SELECT 
-        visits.id,
-        visits.user_id,
-        visits.gym_id,
-        visits.visited_at AS visit_date,
-        CONCAT(u.first_name, ' ', u.last_name) AS user_name,
-        u.email AS user_email,
-        u.profile_picture AS user_profile_picture,
-        g.name AS gym_name,
-        g.city AS gym_city,
-        g.logo_url AS gym_logo_url
+    // 3. Construir consulta base
+    // 3. Build base query
+    let baseQuery = `
       FROM visits
       JOIN users u ON visits.user_id = u.id
-      JOIN gyms g ON visits.gym_id = g.id
       WHERE visits.gym_id = ?
     `;
-
     const params = [gymId];
+    let filterClause = "";
 
-    // 5. Aplicar filtro de búsqueda de usuario (si se proporciona)
-    // 5. Apply user search filter (if provided)
+    // 4. Aplicar filtro de búsqueda
+    // 4. Apply search filter
     if (user_search) {
-      query += ` AND (
-        CONCAT(u.first_name, ' ', u.last_name) LIKE ? 
-        OR u.email LIKE ?
-      )`;
+      filterClause += ` AND (CONCAT(u.first_name, ' ', u.last_name) LIKE ? OR u.email LIKE ?)`;
       const searchPattern = `%${user_search}%`;
       params.push(searchPattern, searchPattern);
     }
+    baseQuery += filterClause;
 
-    // 6. Ordenar por fecha de visita descendente
-    // 6. Order by visit date descending
-    query += ` ORDER BY visits.visited_at DESC`;
+    // 5. Ejecutar query de conteo
+    // 5. Execute count query
+    const [totalResult] = await db.query(`SELECT COUNT(visits.id) as total ${baseQuery}`, params);
+    const total = totalResult[0].total;
 
-    // 7. Ejecutar la consulta
-    // 7. Execute the query
-    const [visits] = await db.query(query, params);
+    // 6. Construir y ejecutar query de datos paginados
+    // 6. Build and execute paginated data query
+    const dataQuery = `
+      SELECT 
+        visits.id, visits.user_id, visits.gym_id, visits.visited_at AS visit_date,
+        CONCAT(u.first_name, ' ', u.last_name) AS user_name, u.email AS user_email,
+        u.profile_picture AS user_profile_picture
+      ${baseQuery}
+      ORDER BY visits.visited_at DESC
+      LIMIT ?
+      OFFSET ?
+    `;
+    const [visits] = await db.query(dataQuery, [...params, parseInt(limit), parseInt(offset)]);
 
-    // ---  8. Construir URLs completas para imágenes /  8. Build full URLs for images ---
+    // 7. Construir URLs completas
+    // 7. Build full URLs
     const baseUrl = process.env.BASE_URL || "";
     const visitsWithUrls = visits.map((visit) => {
       if (visit.user_profile_picture) {
-        // <-- CORREGIDO
-        const imagePath = visit.user_profile_picture.replace(/\\/g, "/");
-        visit.user_profile_picture = `${baseUrl}/${imagePath}`; // <-- CORREGIDO
-      }
-      if (visit.gym_logo_url) {
-        // <-- CORREGIDO
-        const logoPath = visit.gym_logo_url.replace(/\\/g, "/");
-        visit.gym_logo_url = `${baseUrl}/${logoPath}`; // <-- CORREGIDO
+        visit.user_profile_picture = `${baseUrl}/${visit.user_profile_picture.replace(/\\/g, "/")}`;
       }
       return visit;
     });
 
-    // 9. Devolver resultados
-    // 9. Return results
-    res.status(200).json(visitsWithUrls);
+    // 8. Devolver resultados
+    // 8. Return results
+    res.status(200).json({
+      data: visitsWithUrls,
+      total,
+    });
   } catch (error) {
     console.error("Error al obtener visitas del gimnasio:", error);
     res.status(500).json({ message: "Error interno del servidor" });

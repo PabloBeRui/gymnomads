@@ -1,28 +1,3 @@
-/**
- * =============================================================================
- * PÁGINA: ManagersManagementPage
- * =============================================================================
- *
- * Página para gestionar y visualizar gerentes (managers) registrados.
- * - Solo Admin: puede ver todos los managers y filtrar por búsqueda global.
- * - Permite ver y editar información de managers (nombre, apellidos, teléfono).
- *
- * IMPORTANTE: Los managers NO se pueden eliminar directamente desde esta página.
- * Solo se eliminan al eliminar el gimnasio asociado (acción en CASCADE).
- * Para eliminar un manager, ir a la página de gestión de gimnasios.
- *
- * Page to manage and view registered managers.
- * - Admin only: can see all managers and filter by global search.
- * - Allows viewing and editing manager information (name, last name, phone).
- *
- * IMPORTANT: Managers CANNOT be deleted directly from this page.
- * They are only deleted when the associated gym is deleted (CASCADE action).
- * To delete a manager, go to the gym management page.
- *
- *
- * =============================================================================
- */
-
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getAllManagers, updateManager } from "../services/user-services";
@@ -34,6 +9,8 @@ import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
 import { ManagerDetailsModal } from "../components/modals/ManagerDetailsModal";
 import { Avatar } from "../components/Avatar";
+import { usePagination } from "../hooks/use-pagination";
+import { PaginationControls } from "../components/ui/PaginationControls";
 
 /* =============================================================================
    ESTILOS (inline)
@@ -178,6 +155,17 @@ export const ManagersManagementPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Hook de paginación / Pagination hook
+  const {
+    currentPage,
+    itemsPerPage,
+    totalItems,
+    totalPages,
+    setTotalItems,
+    goToPage,
+    changeItemsPerPage,
+  } = usePagination();
+
   // Estado de filtro único / Single filter state
   const [searchTerm, setSearchTerm] = useState<string>("");
 
@@ -205,13 +193,14 @@ export const ManagersManagementPage = () => {
     setIsLoading(true);
 
     try {
-      // Obtener todos los managers con búsqueda global
-      // Get all managers with global search
       const filters = {
         search: searchTerm.trim() || undefined,
+        page: currentPage,
+        limit: itemsPerPage,
       };
-      const managersData = await getAllManagers(token, filters);
-      setManagers(managersData);
+      const response = await getAllManagers(token, filters);
+      setManagers(response.data);
+      setTotalItems(response.total);
     } catch (err) {
       const msg = handleApiError(err, "Error al cargar los managers.");
       setError(msg);
@@ -227,25 +216,19 @@ export const ManagersManagementPage = () => {
   // Efecto con debounce para cargar managers cuando cambie el filtro
   // Effect with debounce to load managers when filter changes
   useEffect(() => {
-    // Debounce de 500ms para no saturar el backend
-    // 500ms debounce to avoid overwhelming the backend
     const timeoutId = setTimeout(() => {
       fetchManagers();
     }, 500);
 
-    // Limpiar timeout si el filtro cambia antes de que se ejecute
-    // Clear timeout if filter changes before execution
     return () => clearTimeout(timeoutId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchTerm]); // Se ejecuta cuando cambia el filtro / Runs when filter changes
+  }, [searchTerm, currentPage, itemsPerPage]);
 
   // Limpiar filtro / Clear filter
   const handleClearFilter = () => {
     setSearchTerm("");
+    goToPage(1);
   };
-
-  // Calcular estadísticas / Calculate statistics
-  const totalManagers = managers.length;
 
   // Manejar click en fila para ver detalles / Handle row click to view details
   const handleRowClick = (manager: ManagerWithGym) => {
@@ -264,24 +247,12 @@ export const ManagersManagementPage = () => {
     }
 
     try {
-      // Actualizar manager en el backend
-      // Update manager in backend
       const response = await updateManager(token, managerId, updatedData);
-
-      // Mostrar mensaje de éxito
-      // Show success message
       toast.success(response.message || "Manager actualizado correctamente.");
-
-      // Actualizar la lista local de managers
-      // Update local managers list
       setManagers((prev) =>
         prev.map((m) => (m.id === managerId ? response.user : m))
       );
-
-      // Actualizar el manager seleccionado en el modal
-      // Update selected manager in modal
       setSelectedManager(response.user);
-
       if (import.meta.env.DEV) {
         console.log("Manager actualizado:", response.user);
       }
@@ -291,8 +262,6 @@ export const ManagersManagementPage = () => {
       if (import.meta.env.DEV) {
         console.error("Error actualizando manager:", msg);
       }
-      // Re-lanzar el error para que el modal lo maneje
-      // Re-throw the error for the modal to handle
       throw err;
     }
   };
@@ -308,7 +277,6 @@ export const ManagersManagementPage = () => {
     return (
       <div style={styles.loadingContainer}>
         <p>Cargando managers...</p>
-        {/* TODO: Spinner */}
       </div>
     );
   }
@@ -345,7 +313,7 @@ export const ManagersManagementPage = () => {
       {/* Estadísticas / Statistics */}
       <div style={styles.statsContainer}>
         <div style={styles.statCard}>
-          <div style={styles.statNumber}>{totalManagers}</div>
+          <div style={styles.statNumber}>{totalItems}</div>
           <div style={styles.statLabel}>
             {isLoading ? "Cargando..." : "Total de Managers"}
           </div>
@@ -354,7 +322,6 @@ export const ManagersManagementPage = () => {
 
       {/* Filtro único / Single filter */}
       <div style={styles.filtersContainer}>
-        {/* Búsqueda global / Global search */}
         <div style={styles.filterGroup}>
           <label htmlFor="searchFilter" style={styles.label}>
             Buscar Manager
@@ -372,7 +339,6 @@ export const ManagersManagementPage = () => {
           </small>
         </div>
 
-        {/* Botón de limpiar filtro / Clear filter button */}
         {searchTerm && (
           <button
             onClick={handleClearFilter}
@@ -387,7 +353,6 @@ export const ManagersManagementPage = () => {
       {managers.length === 0 ? (
         <div style={styles.emptyState}>
           {searchTerm ? (
-            // Si hay búsqueda activa / If search is active
             <>
               <p>🔍 No se encontraron managers con el criterio de búsqueda.</p>
               <button
@@ -401,77 +366,81 @@ export const ManagersManagementPage = () => {
               </button>
             </>
           ) : (
-            // Si no hay búsqueda / If no search
             <p>📭 Aún no hay managers registrados.</p>
           )}
         </div>
       ) : (
-        <div style={styles.tableContainer}>
-          <table style={styles.table}>
-            <thead>
-              <tr>
-                <th style={styles.th}>Manager</th>
-                <th style={styles.th}>Gimnasio</th>
-              </tr>
-            </thead>
-            <tbody>
-              {managers.map((manager) => (
-                <tr
-                  key={manager.id}
-                  style={styles.clickableRow}
-                  onClick={() => handleRowClick(manager)}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#f8f9fa";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "transparent";
-                  }}
-                  title="Click para ver detalles completos (email, teléfono, etc.)">
-                  {/* --- COLUMNA MANAGER (CON AVATAR) --- */}
-                  <td style={styles.td}>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                      }}>
-                      <Avatar
-                        src={manager.profile_picture}
-                        firstName={manager.first_name}
-                        lastName={manager.last_name}
-                        size={35}
-                      />
-                      <span>
-                        {manager.first_name} {manager.last_name}
-                      </span>
-                    </div>
-                  </td>
-
-                  {/* --- COLUMNA GIMNASIO (CON LOGO) --- */}
-                  <td style={styles.td}>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                      }}>
-                      <Avatar
-                        src={manager.logo_url}
-                        firstName={manager.gym_name} // Fallback: Iniciales del nombre del gym
-                        lastName="" // Dejar vacío o usar la ciudad
-                        size={35}
-                      />
-                      <span>{manager.gym_name}</span>
-                    </div>
-                  </td>
+        <>
+          <div style={styles.tableContainer}>
+            <table style={styles.table}>
+              <thead>
+                <tr>
+                  <th style={styles.th}>Manager</th>
+                  <th style={styles.th}>Gimnasio</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {managers.map((manager) => (
+                  <tr
+                    key={manager.id}
+                    style={styles.clickableRow}
+                    onClick={() => handleRowClick(manager)}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "#f8f9fa";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                    }}
+                    title="Click para ver detalles completos (email, teléfono, etc.)">
+                    <td style={styles.td}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                        }}>
+                        <Avatar
+                          src={manager.profile_picture}
+                          firstName={manager.first_name}
+                          lastName={manager.last_name}
+                          size={35}
+                        />
+                        <span>
+                          {manager.first_name} {manager.last_name}
+                        </span>
+                      </div>
+                    </td>
+                    <td style={styles.td}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                        }}>
+                        <Avatar
+                          src={manager.logo_url}
+                          firstName={manager.gym_name}
+                          lastName=""
+                          size={35}
+                        />
+                        <span>{manager.gym_name}</span>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <PaginationControls
+            currentPage={currentPage}
+            totalPages={totalPages}
+            itemsPerPage={itemsPerPage}
+            onPageChange={goToPage}
+            onItemsPerPageChange={changeItemsPerPage}
+          />
+        </>
       )}
 
-      {/* Modal de detalles del manager / Manager details modal */}
       <ManagerDetailsModal
         isOpen={showDetailsModal}
         onClose={handleCloseDetailsModal}

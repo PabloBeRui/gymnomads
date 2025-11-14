@@ -1,21 +1,3 @@
-/**
- * =============================================================================
- * PÁGINA: VisitsManagementPage
- * =============================================================================
- *
- * Página para gestionar y visualizar visitas a gimnasios.
- * - Admin: puede ver todas las visitas y filtrar por gimnasio y usuario.
- * - Manager: solo ve visitas de su gimnasio, puede filtrar por usuario.
- * - Filtros automáticos con debounce 500ms. Tabla limpia.
- *
- * Page to manage and view gym visits.
- * - Admin: can see all visits and filter by gym and user.
- * - Manager: only sees visits from their gym, can filter by user.
- * - Automatic filters with 500ms debounce. Clean table.
- *
- * =============================================================================
- */
-
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getAllVisits, getManagerGymVisits } from "../services/visit-services";
@@ -29,7 +11,9 @@ import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
 import { Avatar } from "../components/Avatar";
 import { VisitsDetailsModal } from "../components/modals/VisitsDetailsModal";
-import { VisitsStatsModal } from "../components/modals/VisitsStatsModal"; //modal de estadísticas  / stats modal
+import { VisitsStatsModal } from "../components/modals/VisitsStatsModal";
+import { usePagination } from "../hooks/use-pagination";
+import { PaginationControls } from "../components/ui/PaginationControls";
 
 /* =============================================================================
     ESTILOS (inline)
@@ -190,6 +174,17 @@ export const VisitsManagementPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Hook de paginación / Pagination hook
+  const {
+    currentPage,
+    itemsPerPage,
+    totalItems,
+    totalPages,
+    setTotalItems,
+    goToPage,
+    changeItemsPerPage,
+  } = usePagination();
+
   // States de filtros / Filter states
   const [selectedGymId, setSelectedGymId] = useState<string>("");
   const [userSearch, setUserSearch] = useState<string>("");
@@ -202,18 +197,16 @@ export const VisitsManagementPage = () => {
     null
   );
 
-  // --- State para el modal de estadísticas ---
-  // --- State for stats modal ---
   const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
 
   // Cargar gimnasios (solo para admin) / Load gyms (admin only)
   useEffect(() => {
-    if (!isAdmin) return;
+    if (!isAdmin || !token) return;
 
     const fetchGyms = async () => {
       try {
-        const gymsData = await getAllGyms();
-        setGyms(gymsData);
+        const gymsData = await getAllGyms(token, { limit: 1000 });
+        setGyms(gymsData.data);
       } catch (err) {
         const msg = handleApiError(err, "Error al cargar gimnasios.");
         toast.error("No se pudieron cargar los gimnasios.");
@@ -224,9 +217,8 @@ export const VisitsManagementPage = () => {
     };
 
     fetchGyms();
-  }, [isAdmin]);
+  }, [isAdmin, token]);
 
-  // Filtrar gimnasios según el término de búsqueda / Filter gyms by search term
   const filteredGyms = gyms.filter(
     (gym) =>
       gym.name.toLowerCase().includes(gymSearchTerm.toLowerCase()) ||
@@ -244,35 +236,32 @@ export const VisitsManagementPage = () => {
     setError(null);
     setIsLoading(true);
     try {
-      let visitsData: VisitWithDetails[];
+      let response;
+      const baseFilters: VisitsFilters = {
+        page: currentPage,
+        limit: itemsPerPage,
+        user_search: userSearch.trim() || undefined,
+      };
 
       if (isAdmin) {
-        // Admin: obtener todas las visitas con filtros opcionales
         const gymIdAsNumber = Number(selectedGymId);
-        const filters: VisitsFilters = {
-          user_search: userSearch.trim() || undefined,
-        };
+        const adminFilters: VisitsFilters = { ...baseFilters };
 
         if (selectedGymId === "deleted") {
-          filters.gym_status = "deleted";
+          adminFilters.gym_status = "deleted";
         } else if (gymIdAsNumber > 0) {
-          filters.gym_id = gymIdAsNumber;
-          filters.gym_status = "active";
+          adminFilters.gym_id = gymIdAsNumber;
+          adminFilters.gym_status = "active";
         }
-        // Si selectedGymId es "", no se añade gym_status, y el backend devuelve todos.
-
-        visitsData = await getAllVisits(token, filters);
+        response = await getAllVisits(token, adminFilters);
       } else if (isManager) {
-        // Manager: obtener solo visitas de su gimnasio
-        const filters = {
-          user_search: userSearch.trim() || undefined,
-        };
-        visitsData = await getManagerGymVisits(token, filters);
+        response = await getManagerGymVisits(token, baseFilters);
       } else {
         throw new Error("No tienes permisos para ver esta página.");
       }
 
-      setVisits(visitsData);
+      setVisits(response.data);
+      setTotalItems(response.total);
     } catch (err) {
       const msg = handleApiError(err, "Error al cargar las visitas.");
       setError(msg);
@@ -285,32 +274,22 @@ export const VisitsManagementPage = () => {
     }
   };
 
-  // --- Efecto con debounce /  Effect with debounce ---
-  // Cargar visitas al cambiar los filtros, con debounce
-  // Load visits when filters change, with debounce
   useEffect(() => {
-    // Debounce de 500ms para no saturar el backend
-    // 500ms debounce to avoid overwhelming the backend
     const timeoutId = setTimeout(() => {
       fetchVisits();
     }, 500);
 
-    // Limpiar timeout si los filtros cambian antes de que se ejecute
-    // Clear timeout if filters change before execution
     return () => clearTimeout(timeoutId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedGymId, userSearch]); // Se ejecuta cuando cambian los filtros / Runs when filters change
+  }, [selectedGymId, userSearch, currentPage, itemsPerPage]);
 
-  // ---  Limpiar filtros /  Clear filters ---
-  // Ya no llama a fetchVisits() directamente, el useEffect lo detectará
-  // No longer calls fetchVisits() directly, useEffect will detect it
   const handleClearFilters = () => {
     setSelectedGymId("");
     setUserSearch("");
     setGymSearchTerm("");
+    goToPage(1);
   };
 
-  // Lógica del Modal (abrir/cerrar) / Modal Logic (open/close)
   const handleRowClick = (visit: VisitWithDetails) => {
     setSelectedVisit(visit);
     setShowDetailModal(true);
@@ -320,20 +299,14 @@ export const VisitsManagementPage = () => {
     setSelectedVisit(null);
   };
 
-  // Calcular estadísticas / Calculate statistics
-  const totalVisits = visits.length;
-
-  // Render loading
   if (isLoading && visits.length === 0) {
     return (
       <div style={styles.loadingContainer}>
         <p>Cargando visitas...</p>
-        {/* TODO: Spinner */}
       </div>
     );
   }
 
-  // Render error
   if (error && visits.length === 0) {
     return (
       <div style={styles.container}>
@@ -342,10 +315,8 @@ export const VisitsManagementPage = () => {
     );
   }
 
-  // Render principal / Main render
   return (
     <div style={styles.container}>
-      {/* Encabezado / Header */}
       <div style={styles.header}>
         <h1 style={styles.title}>
           {isAdmin ? "Gestión de Visitas" : "Visitas a mi Gimnasio"}
@@ -357,33 +328,28 @@ export const VisitsManagementPage = () => {
         </p>
       </div>
 
-      {/* --- Tarjeta de estadísticas clicable --- */}
-      {/* ---  Clickable stats card --- */}
       <div style={styles.statsContainer}>
         <div
           style={styles.statCard}
-          onClick={() => setIsStatsModalOpen(true)} // <-- AÑADIDO
-          title="Ver estadísticas detalladas" // <-- AÑADIDO
+          onClick={() => setIsStatsModalOpen(true)}
+          title="Ver estadísticas detalladas"
           onMouseEnter={(e) =>
             (e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)")
           }
           onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}>
-          <div style={styles.statNumber}>{totalVisits}</div>
+          <div style={styles.statNumber}>{totalItems}</div>
           <div style={styles.statLabel}>
             {isLoading ? "Cargando..." : "Total de Visitas"}
           </div>
         </div>
       </div>
 
-      {/* Filtros / Filters */}
       <div style={styles.filtersContainer}>
-        {/* Filtro por gimnasio (solo admin) / Gym filter (admin only) */}
         {isAdmin && (
           <div style={styles.filterGroup}>
             <label htmlFor="gymFilter" style={styles.label}>
               Filtrar por Gimnasio
             </label>
-
             <input
               type="text"
               placeholder="🔍 Buscar por nombre o ciudad..."
@@ -391,7 +357,6 @@ export const VisitsManagementPage = () => {
               onChange={(e) => setGymSearchTerm(e.target.value)}
               style={styles.gymSearchInput}
             />
-
             <select
               id="gymFilter"
               value={selectedGymId}
@@ -409,7 +374,6 @@ export const VisitsManagementPage = () => {
                 </option>
               ))}
             </select>
-
             {gymSearchTerm && filteredGyms.length === 0 && (
               <small style={styles.noResultsText}>
                 No se encontraron gimnasios
@@ -418,7 +382,6 @@ export const VisitsManagementPage = () => {
           </div>
         )}
 
-        {/* Filtro por usuario (común para admin y manager) / User filter (common for admin and manager) */}
         <div style={styles.filterGroup}>
           <label htmlFor="userFilter" style={styles.label}>
             Buscar por Usuario
@@ -427,14 +390,12 @@ export const VisitsManagementPage = () => {
             id="userFilter"
             type="text"
             value={userSearch}
-            onChange={(e) => setUserSearch(e.target.value)} // <-- Dispara el useEffect
+            onChange={(e) => setUserSearch(e.target.value)}
             placeholder="Nombre o email..."
             style={styles.input}
-            // onKeyPress eliminado / onKeyPress removed
           />
         </div>
 
-        {/* Botón de limpiar filtros / Clear filters button */}
         <button
           onClick={handleClearFilters}
           style={styles.clearButton}
@@ -443,12 +404,9 @@ export const VisitsManagementPage = () => {
         </button>
       </div>
 
-      {/* Tabla de visitas / Visits table */}
-
       {visits.length === 0 ? (
         <div style={styles.emptyState}>
           {userSearch || selectedGymId ? (
-            // Si hay filtros activos / If filters are active
             <>
               <p>🔍 No se encontraron visitas con los filtros aplicados.</p>
               <button
@@ -462,54 +420,33 @@ export const VisitsManagementPage = () => {
               </button>
             </>
           ) : (
-            // Si no hay filtros / If no filters
             <p>📭 Aún no hay visitas registradas.</p>
           )}
         </div>
       ) : (
-        <div style={styles.tableContainer}>
-          <table style={styles.table}>
-            <thead>
-              <tr>
-                <th style={styles.th}>Usuario</th>
-                {isAdmin && <th style={styles.th}>Gimnasio Visitado</th>}
-                <th style={styles.th}>Fecha de Visita</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {visits.map((visit) => (
-                <tr
-                  key={visit.id}
-                  style={styles.clickableRow}
-                  onClick={() => handleRowClick(visit)}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#f8f9fa";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "transparent";
-                  }}
-                  title={`Ver detalles de la visita #${visit.id}`}>
-                  {/* Columna: Avatar + Nombre Usuario */}
-                  <td style={styles.td}>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                      }}>
-                      <Avatar
-                        src={visit.user_profile_picture}
-                        firstName={visit.user_name || "Usuario"}
-                        lastName={""}
-                        size={35}
-                      />
-                      <span>{visit.user_name || "N/A"}</span>
-                    </div>
-                  </td>
-
-                  {/* Columna: Gimnasio (solo Admin) */}
-                  {isAdmin && (
+        <>
+          <div style={styles.tableContainer}>
+            <table style={styles.table}>
+              <thead>
+                <tr>
+                  <th style={styles.th}>Usuario</th>
+                  {isAdmin && <th style={styles.th}>Gimnasio Visitado</th>}
+                  <th style={styles.th}>Fecha de Visita</th>
+                </tr>
+              </thead>
+              <tbody>
+                {visits.map((visit) => (
+                  <tr
+                    key={visit.id}
+                    style={styles.clickableRow}
+                    onClick={() => handleRowClick(visit)}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "#f8f9fa";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                    }}
+                    title={`Ver detalles de la visita #${visit.id}`}>
                     <td style={styles.td}>
                       <div
                         style={{
@@ -518,43 +455,63 @@ export const VisitsManagementPage = () => {
                           gap: "10px",
                         }}>
                         <Avatar
-                          src={visit.gym_logo_url}
-                          firstName={visit.gym_name || "Gimnasio"}
+                          src={visit.user_profile_picture}
+                          firstName={visit.user_name || "Usuario"}
                           lastName={""}
                           size={35}
                         />
-                        <span>
-                          {visit.gym_name || "N/A"}
-                          {visit.is_gym_deleted && " (Eliminado)"}
-                        </span>
+                        <span>{visit.user_name || "N/A"}</span>
                       </div>
                     </td>
-                  )}
-
-                  {/* Columna: Fecha de Visita */}
-                  <td style={styles.td}>
-                    {new Date(visit.visit_date).toLocaleDateString("es-ES", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "2-digit",
-                    })}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                    {isAdmin && (
+                      <td style={styles.td}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
+                          }}>
+                          <Avatar
+                            src={visit.gym_logo_url}
+                            firstName={visit.gym_name || "Gimnasio"}
+                            lastName={""}
+                            size={35}
+                          />
+                          <span>
+                            {visit.gym_name || "N/A"}
+                            {visit.is_gym_deleted && " (Eliminado)"}
+                          </span>
+                        </div>
+                      </td>
+                    )}
+                    <td style={styles.td}>
+                      {new Date(visit.visit_date).toLocaleDateString("es-ES", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "2-digit",
+                      })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <PaginationControls
+            currentPage={currentPage}
+            totalPages={totalPages}
+            itemsPerPage={itemsPerPage}
+            onPageChange={goToPage}
+            onItemsPerPageChange={changeItemsPerPage}
+          />
+        </>
       )}
 
-      {/* Renderizar el modal de detalles / Render the details modal */}
       <VisitsDetailsModal
         isOpen={showDetailModal}
         onClose={handleCloseModal}
         visit={selectedVisit}
       />
 
-      {/* --- Modal de Estadísticas --- */}
-      {/* --- Stats Modal --- */}
       <VisitsStatsModal
         isOpen={isStatsModalOpen}
         onClose={() => setIsStatsModalOpen(false)}

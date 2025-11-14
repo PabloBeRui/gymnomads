@@ -122,7 +122,7 @@ export const getMyVisits = async (
 export const getAllVisits = async (
   token: string,
   filters?: VisitsFilters
-): Promise<VisitWithDetails[]> => {
+): Promise<{ data: VisitWithDetails[]; total: number }> => {
   try {
     // Construir query params si hay filtros
     // Build query params if there are filters
@@ -143,13 +143,19 @@ export const getAllVisits = async (
     if (filters?.gym_status) {
       params.append("gym_status", filters.gym_status);
     }
+    if (filters?.page) {
+      params.append("page", filters.page.toString());
+    }
+    if (filters?.limit) {
+      params.append("limit", filters.limit.toString());
+    }
 
     const queryString = params.toString();
     const url = `${API_URL}/visits${queryString ? `?${queryString}` : ""}`;
 
     // Realizar petición GET al endpoint de visitas
     // Perform GET request to the visits endpoint
-    const response = await axios.get<VisitWithDetails[]>(url, {
+    const response = await axios.get<{ data: VisitWithDetails[]; total: number }>(url, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -176,8 +182,8 @@ export const getAllVisits = async (
 
 export const getManagerGymVisits = async (
   token: string,
-  filters?: Omit<VisitsFilters, "gym_id"> // Manager no puede filtrar por gym_id / Manager cannot filter by gym_id
-): Promise<VisitWithDetails[]> => {
+  filters?: Omit<VisitsFilters, "gym_id">
+): Promise<{ data: VisitWithDetails[]; total: number }> => {
   try {
     // Construir query params si hay filtros
     // Build query params if there are filters
@@ -192,6 +198,12 @@ export const getManagerGymVisits = async (
     if (filters?.end_date) {
       params.append("end_date", filters.end_date);
     }
+    if (filters?.page) {
+      params.append("page", filters.page.toString());
+    }
+    if (filters?.limit) {
+      params.append("limit", filters.limit.toString());
+    }
 
     const queryString = params.toString();
     const url = `${API_URL}/visits/my-gym${
@@ -200,7 +212,7 @@ export const getManagerGymVisits = async (
 
     // Realizar petición GET al endpoint de visitas del gimnasio del manager
     // Perform GET request to the manager's gym visits endpoint
-    const response = await axios.get<VisitWithDetails[]>(url, {
+    const response = await axios.get<{ data: VisitWithDetails[]; total: number }>(url, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

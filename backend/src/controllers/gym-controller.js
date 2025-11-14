@@ -3,33 +3,53 @@ const bcrypt = require("bcrypt");
 const fs = require("fs/promises");
 
 /* ========================================
- * Obtener todos los gimnasios o filtrar por ciudad
- * Get all gyms or filter by city
+ * Obtener todos los gimnasios con filtros y paginación
+ * Get all gyms with filters and pagination
  * ======================================== */
 const getAllGyms = async (req, res) => {
   try {
-    // 1. Obtener filtro de ciudad de la query string (opcional)
-    // 1. Get city filter from query string (optional)
-    const { city } = req.query;
+    // 1. Obtener filtros y paginación de la query string
+    // 1. Get filters and pagination from query string
+    const { city, search, page = 1, limit = 10 } = req.query;
+    const offset = (page - 1) * limit;
 
-    // 2. Construir query base
-    // 2. Build base query
-    // --- Añadido 'is_deleted = 0' para ocultar gimnasios borrados ---
-    // --- Added 'is_deleted = 0' to hide deleted gyms ---
-    let query = "SELECT * FROM gyms WHERE id != 1 AND is_deleted = 0";
+    // 2. Construir query base y de conteo
+    // 2. Build base and count query
+    let baseQuery = "FROM gyms WHERE id != 1 AND is_deleted = 0";
     const params = [];
+    let filterClause = "";
 
-    // 3. Aplicar filtro por ciudad si se proporciona
-    // 3. Apply city filter if provided
+    // 3. Aplicar filtros
+    // 3. Apply filters
     if (city) {
-      query += " AND city = ?";
+      filterClause += " AND city = ?";
       params.push(city);
     }
 
-    // 4. Ejecutar la consulta y devolver resultados
-    // 4. Execute the query and return results
-    const [rows] = await db.query(query, params);
-    res.status(200).json(rows);
+    if (search) {
+      filterClause += " AND (name LIKE ? OR city LIKE ?)";
+      const searchTerm = `%${search}%`;
+      params.push(searchTerm, searchTerm);
+    }
+
+    baseQuery += filterClause;
+
+    // 4. Ejecutar query de conteo
+    // 4. Execute count query
+    const [totalResult] = await db.query(`SELECT COUNT(*) as total ${baseQuery}`, params);
+    const total = totalResult[0].total;
+
+    // 5. Construir y ejecutar query de datos paginados
+    // 5. Build and execute paginated data query
+    const dataQuery = `SELECT * ${baseQuery} ORDER BY name ASC LIMIT ? OFFSET ?`;
+    const [rows] = await db.query(dataQuery, [...params, parseInt(limit), parseInt(offset)]);
+
+    // 6. Devolver resultados paginados
+    // 6. Return paginated results
+    res.status(200).json({
+      data: rows,
+      total,
+    });
   } catch (error) {
     console.error(`Error: ${error}`);
     res.status(500).json({ message: "error interno del servidor" });
@@ -343,65 +363,68 @@ const deleteGym = async (req, res) => {
 };
 
 /* ========================================
- * Obtener usuarios de un gimnasio con búsqueda opcional (Admin/Manager)
- * Get users from a gym with optional search (Admin/Manager)
+ * Obtener usuarios de un gimnasio con búsqueda y paginación (Admin/Manager)
+ * Get users from a gym with search and pagination (Admin/Manager)
  * ======================================== */
 const getUsersByGym = async (req, res) => {
   try {
-    // 1. Obtener el ID del gimnasio de los parámetros de la URL
-    // 1. Get the gym ID from the URL parameters
+    // 1. Obtener IDs y parámetros de la petición
+    // 1. Get IDs and parameters from the request
     const { gymId } = req.params;
+    const { search, page = 1, limit = 10 } = req.query;
+    const offset = (page - 1) * limit;
 
-    // 2. Obtener parámetro de búsqueda de la query string (opcional)
-    // 2. Get search parameter from query string (optional)
-    const { search } = req.query;
-
-    // 3. Construir query base para obtener usuarios del gimnasio
-    // 3. Build base query to get gym users
-    let query = `
-      SELECT 
-        id, 
-        first_name, 
-        last_name, 
-        email, 
-        role, 
-        registered_at,
-        profile_picture
+    // 2. Construir query base y de conteo
+    // 2. Build base and count query
+    let baseQuery = `
       FROM users 
       WHERE home_gym_id = ? AND role = 'user'
     `;
     const params = [gymId];
+    let filterClause = "";
 
-    // 4. Aplicar filtro de búsqueda por nombre o email (si se proporciona)
-    // 4. Apply search filter by name or email (if provided)
+    // 3. Aplicar filtro de búsqueda
+    // 3. Apply search filter
     if (search) {
-      query += " AND (first_name LIKE ? OR last_name LIKE ? OR email LIKE ?)";
+      filterClause += " AND (first_name LIKE ? OR last_name LIKE ? OR email LIKE ?)";
       const searchTerm = `%${search}%`;
       params.push(searchTerm, searchTerm, searchTerm);
     }
 
-    // 5. Ordenar por fecha de registro descendente
-    // 5. Order by registration date descending
-    query += " ORDER BY registered_at DESC";
+    baseQuery += filterClause;
 
-    // 6. Ejecutar la consulta
-    // 6. Execute the query
-    const [users] = await db.query(query, params);
+    // 4. Ejecutar query de conteo
+    // 4. Execute count query
+    const [totalResult] = await db.query(`SELECT COUNT(*) as total ${baseQuery}`, params);
+    const total = totalResult[0].total;
 
-    // 7. Construir URLs completas para las imágenes de perfil
-    // 7. Build full URLs for profile pictures
+    // 5. Construir y ejecutar query de datos paginados
+    // 5. Build and execute paginated data query
+    const dataQuery = `
+      SELECT id, first_name, last_name, email, role, registered_at, profile_picture
+      ${baseQuery}
+      ORDER BY registered_at DESC
+      LIMIT ?
+      OFFSET ?
+    `;
+    const [users] = await db.query(dataQuery, [...params, parseInt(limit), parseInt(offset)]);
+
+    // 6. Construir URLs completas para las imágenes
+    // 6. Build full URLs for images
     const baseUrl = process.env.BASE_URL || "";
     const usersWithFullUrls = users.map((user) => {
       if (user.profile_picture) {
-        const imagePath = user.profile_picture.replace(/\\/g, "/");
-        user.profile_picture = `${baseUrl}/${imagePath}`;
+        user.profile_picture = `${baseUrl}/${user.profile_picture.replace(/\\/g, "/")}`;
       }
       return user;
     });
 
-    // 8. Devolver resultados con URLs completas
-    // 8. Return results with full URLs
-    res.status(200).json(usersWithFullUrls);
+    // 7. Devolver resultados paginados
+    // 7. Return paginated results
+    res.status(200).json({
+      data: usersWithFullUrls,
+      total,
+    });
   } catch (error) {
     console.error(`Error al obtener usuarios del gimnasio: ${error}`);
     res.status(500).json({ message: "error interno del servidor" });

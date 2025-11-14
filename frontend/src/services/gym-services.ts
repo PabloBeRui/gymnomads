@@ -23,26 +23,47 @@ const API_URL = import.meta.env.VITE_API_BASE_URL;
  * API CALL: Get all gyms
  * ======================================== */
 
-export const getAllGyms = async (): Promise<Gym[]> => {
+interface GetAllGymsFilters {
+  city?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+}
+
+export const getAllGyms = async (
+  token: string,
+  filters?: GetAllGymsFilters
+): Promise<{ data: Gym[]; total: number }> => {
   try {
-    // Realizar petición GET al endpoint específico de gimnasios.
-    // Perform a GET request to the specific gyms endpoint.
+    const params = new URLSearchParams();
+    if (filters?.city) {
+      params.append("city", filters.city);
+    }
+    if (filters?.search) {
+      params.append("search", filters.search);
+    }
+    if (filters?.page) {
+      params.append("page", filters.page.toString());
+    }
+    if (filters?.limit) {
+      params.append("limit", filters.limit.toString());
+    }
 
-    const response = await axios.get(`${API_URL}/gyms`);
-
-    // Devolver los datos de la respuesta (array de gimnasios).
-    // Return the data from the response (array of gyms).
+    const url = `${API_URL}/gyms${
+      params.toString() ? `?${params.toString()}` : ""
+    }`;
+    const response = await axios.get<{ data: Gym[]; total: number }>(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     return response.data;
   } catch (error) {
-    // Usar el manejador centralizado con un mensaje por defecto específico para obtener gimnasios.
-    // Use the centralized handler with a default message specific to fetching gyms.
     const errorMessage = handleApiError(
       error,
       "No se pudieron cargar los gimnasios."
     );
-    // Lanzar un nuevo error con el mensaje procesado.
-    // Throw a new error with the processed message.
     throw new Error(errorMessage);
   }
 };

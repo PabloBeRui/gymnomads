@@ -275,6 +275,8 @@ interface GetAllUsersFilters {
   gym_id?: number;
   search?: string;
   gym_status?: "active" | "deleted";
+  page?: number;
+  limit?: number;
 }
 
 // Obtener todos los usuarios con role='user' (solo Admin)
@@ -282,7 +284,7 @@ interface GetAllUsersFilters {
 export const getAllUsers = async (
   token: string,
   filters?: GetAllUsersFilters
-): Promise<UserWithGym[]> => {
+): Promise<{ data: UserWithGym[]; total: number }> => {
   // Comprobar si hay token
   // Check if token exists
   if (!token) {
@@ -302,13 +304,19 @@ export const getAllUsers = async (
     if (filters?.gym_status) {
       params.append("gym_status", filters.gym_status);
     }
+    if (filters?.page) {
+      params.append("page", filters.page.toString());
+    }
+    if (filters?.limit) {
+      params.append("limit", filters.limit.toString());
+    }
 
     // Realizar petición GET al endpoint '/users' con filtros opcionales
     // Perform GET request to '/users' endpoint with optional filters
     const url = `${API_URL}/users${
       params.toString() ? `?${params.toString()}` : ""
     }`;
-    const response = await axios.get<UserWithGym[]>(url, {
+    const response = await axios.get<{ data: UserWithGym[]; total: number }>(url, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -340,6 +348,8 @@ export const getAllUsers = async (
 interface GetAllManagersFilters {
   city?: string;
   search?: string;
+  page?: number;
+  limit?: number;
 }
 
 // Obtener todos los managers con role='manager' (solo Admin)
@@ -347,7 +357,7 @@ interface GetAllManagersFilters {
 export const getAllManagers = async (
   token: string,
   filters?: GetAllManagersFilters
-): Promise<ManagerWithGym[]> => {
+): Promise<{ data: ManagerWithGym[]; total: number }> => {
   // Comprobar si hay token
   // Check if token exists
   if (!token) {
@@ -364,13 +374,19 @@ export const getAllManagers = async (
     if (filters?.search) {
       params.append("search", filters.search);
     }
+    if (filters?.page) {
+      params.append("page", filters.page.toString());
+    }
+    if (filters?.limit) {
+      params.append("limit", filters.limit.toString());
+    }
 
     // Realizar petición GET al endpoint '/users/managers' con filtros opcionales
     // Perform GET request to '/users/managers' endpoint with optional filters
     const url = `${API_URL}/users/managers${
       params.toString() ? `?${params.toString()}` : ""
     }`;
-    const response = await axios.get<ManagerWithGym[]>(url, {
+    const response = await axios.get<{ data: ManagerWithGym[]; total: number }>(url, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -401,6 +417,8 @@ export const getAllManagers = async (
 // Interface for optional filters of getUsersByGym
 interface GetUsersByGymFilters {
   search?: string;
+  page?: number;
+  limit?: number;
 }
 
 // Obtener usuarios de un gimnasio específico (Admin puede ver cualquier gym, Manager solo el suyo)
@@ -409,7 +427,7 @@ export const getUsersByGym = async (
   token: string,
   gymId: number,
   filters?: GetUsersByGymFilters
-): Promise<GymUser[]> => {
+): Promise<{ data: GymUser[]; total: number }> => {
   // Comprobar si hay token
   // Check if token exists
   if (!token) {
@@ -423,13 +441,19 @@ export const getUsersByGym = async (
     if (filters?.search) {
       params.append("search", filters.search);
     }
+    if (filters?.page) {
+      params.append("page", filters.page.toString());
+    }
+    if (filters?.limit) {
+      params.append("limit", filters.limit.toString());
+    }
 
     // Realizar petición GET al endpoint '/gyms/:gymId/users' con filtros opcionales
     // Perform GET request to '/gyms/:gymId/users' endpoint with optional filters
     const url = `${API_URL}/gyms/${gymId}/users${
       params.toString() ? `?${params.toString()}` : ""
     }`;
-    const response = await axios.get<GymUser[]>(url, {
+    const response = await axios.get<{ data: GymUser[]; total: number }>(url, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
