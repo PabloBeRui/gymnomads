@@ -1,58 +1,50 @@
 /**
  * =============================================================================
  * COMPONENTE: VisitsDetailsModal
+ * COMPONENT:  VisitsDetailsModal
  * =============================================================================
  *
  * Modal de "solo vista" para mostrar los detalles de una visita específica.
- * - Muestra Avatar/info del usuario y Logo/info del gimnasio.
+ * - Muestra la información del usuario (para admin/manager).
+ * - Muestra el gimnasio de Origen y/o Destino en un layout horizontal.
  * - Muestra la fecha exacta de la visita.
- * - Cierre con ESC o click fuera del modal.
  *
  * View-only modal to display details of a specific visit.
- * - Shows User Avatar/info and Gym Logo/info.
+ * - Shows User info (for admin/manager).
+ * - Shows Origin and/or Destination gym in a horizontal layout.
  * - Shows the exact date of the visit.
- * - Close with ESC or click outside modal.
  *
  * =============================================================================
  */
 
-import { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback } from "react"; // <--- React importado
 import type { VisitWithDetails } from "../../interfaces/visit-interfaces";
 import { Avatar } from "../Avatar";
-import { CloseButton } from "../ui/CloseButton"; // Importar el nuevo componente
+import { CloseButton } from "../ui/CloseButton";
+// --- NUEVO: Importar icono de flecha ---
+// --- NEW: Import arrow icon ---
+import { FaArrowRight } from "react-icons/fa";
 
 /* =============================================================================
-   INTERFACES
-   ============================================================================= */
+    INTERFACES
+    ============================================================================= */
 
 interface VisitsDetailsModalProps {
-  // Visibilidad del modal
-  // Modal visibility
+  // (Interfaz de props sin cambios)
   isOpen: boolean;
-
-  // Función al cerrar el modal
-  // Function on close
   onClose: () => void;
-
-  // Datos de la visita a mostrar
-  // Visit data to display
   visit: VisitWithDetails | null;
-
-  // Modo de vista para adaptar el contenido
-  // View mode to adapt content
   viewMode?: "user" | "admin" | "manager";
-
-  // Tipo de visita para gerentes (recibida o enviada)
-  // Visit type for managers (received or sent)
   visitType?: "received" | "sent";
 }
 
 /* =============================================================================
-   ESTILOS (similares a ManagerDetailsModal)
-   STYLES (similar to ManagerDetailsModal)
-   ============================================================================= */
+    ESTILOS (similares a ManagerDetailsModal)
+    STYLES (similar to ManagerDetailsModal)
+    ============================================================================= */
 const styles: { [key: string]: React.CSSProperties } = {
   modalOverlay: {
+    /* ... (sin cambios) ... */
     position: "fixed",
     top: 0,
     left: 0,
@@ -65,6 +57,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     zIndex: 1000,
   },
   modalContent: {
+    /* ... (sin cambios) ... */
     backgroundColor: "white",
     padding: "30px",
     borderRadius: "8px",
@@ -73,9 +66,10 @@ const styles: { [key: string]: React.CSSProperties } = {
     maxHeight: "90vh",
     overflowY: "auto",
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-    position: "relative", // Añadido para posicionar el botón de cierre
+    position: "relative",
   },
   modalHeader: {
+    /* ... (sin cambios) ... */
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
@@ -84,11 +78,13 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderBottom: "2px solid #dee2e6",
   },
   modalTitle: {
+    /* ... (sin cambios) ... */
     fontSize: "1.5rem",
     color: "#333",
     margin: 0,
   },
   profileHeader: {
+    /* ... (sin cambios) ... */
     display: "flex",
     alignItems: "center",
     gap: "20px",
@@ -97,55 +93,105 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderBottom: "1px solid #e5e7eb",
   },
   profileInfo: {
+    /* ... (sin cambios) ... */
     flex: 1,
     display: "flex",
     flexDirection: "column",
     gap: "5px",
   },
   profileName: {
+    /* ... (sin cambios) ... */
     fontSize: "1.5rem",
     fontWeight: "bold",
     color: "#333",
     margin: 0,
   },
   profileEmail: {
+    /* ... (sin cambios) ... */
     fontSize: "1rem",
     color: "#6c757d",
     margin: 0,
   },
   infoSection: {
+    /* ... (sin cambios) ... */
     marginBottom: "20px",
   },
-  infoRow: {
+  
+
+  // --- ESTILOS para el layout horizontal ---
+  // ---  STYLES for horizontal layout ---
+  journeyContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center", // Centrar si hay un solo bloque
+    gap: "10px",
+    marginBottom: "20px",
+  },
+  gymInfoBlock: {
+    flex: 1, // Cada bloque toma espacio equitativo
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    textAlign: "center",
+    padding: "15px",
+    backgroundColor: "#f8f9fa",
+    borderRadius: "8px",
+    gap: "8px", // Espacio interno
+  },
+  gymInfoLabel: {
+    fontSize: "0.9rem",
+    fontWeight: "bold",
+    color: "#495057",
+  },
+  gymInfoName: {
+    fontSize: "1rem",
+    fontWeight: "600",
+    color: "#212529",
+  },
+  gymInfoCity: {
+    fontSize: "0.9rem",
+    color: "#6c757d",
+  },
+  journeyArrow: {
+    fontSize: "1.5rem",
+    color: "#6c757d",
+    flexShrink: 0, // Evitar que la flecha se encoja
+  },
+  
+
+  // Estilo para la fila de la fecha (reemplaza a infoRow)
+  // Style for date row (replaces infoRow)
+  dateRow: {
     display: "flex",
     flexDirection: "column",
     marginBottom: "15px",
   },
-  label: {
+  dateLabel: {
     fontSize: "0.9rem",
     fontWeight: "bold",
     color: "#495057",
     marginBottom: "5px",
   },
-  value: {
+  dateValue: {
     fontSize: "1rem",
     color: "#212529",
     padding: "8px 12px",
     backgroundColor: "#f8f9fa",
     borderRadius: "4px",
-    display: "flex", // <-- Añadido para alinear avatar
-    alignItems: "center", // <-- Añadido para alinear avatar
-    gap: "10px", // <-- Añadido para alinear avatar
   },
+  // --- FIN ESTILO FECHA ---
+
   buttonContainer: {
+    /* ... (sin cambios) ... */
     display: "flex",
     gap: "10px",
-    justifyContent: "flex-end", // Botones a la derecha
+    justifyContent: "flex-end",
     marginTop: "20px",
     paddingTop: "15px",
     borderTop: "1px solid #dee2e6",
   },
   button: {
+    /* ... (sin cambios) ... */
     padding: "10px 20px",
     fontSize: "1rem",
     border: "none",
@@ -153,14 +199,49 @@ const styles: { [key: string]: React.CSSProperties } = {
     cursor: "pointer",
   },
   closeBtn: {
+    /* ... (sin cambios) ... */
     backgroundColor: "#6c757d",
     color: "white",
   },
 };
 
+// =============================================================================
+//    SUB-COMPONENTE INTERNO: GymInfoBlock
+//    INTERNAL SUB-COMPONENT: GymInfoBlock
+// =============================================================================
+// (Usamos React.memo para optimización, aunque no es crítico aquí)
+// (We use React.memo for optimization, though not critical here)
+const GymInfoBlock = React.memo(
+  ({
+    label,
+    logoSrc,
+    name,
+    city,
+  }: {
+    label: string;
+    logoSrc?: string | null;
+    name?: string | null;
+    city?: string | null;
+  }) => (
+    <div style={styles.gymInfoBlock}>
+      <label style={styles.gymInfoLabel}>{label}</label>
+      <Avatar
+        src={logoSrc}
+        firstName={name || "Gimnasio"}
+        lastName=""
+        size={40} // Tamaño de avatar ligeramente más grande
+      />
+      <div>
+        <span style={styles.gymInfoName}>{name || "N/A"}</span>
+        <div style={styles.gymInfoCity}>{city || "N/A"}</div>
+      </div>
+    </div>
+  )
+);
+
 /* =============================================================================
-   COMPONENTE: VisitsDetailsModal
-   ============================================================================= */
+    COMPONENTE: VisitsDetailsModal
+    ============================================================================= */
 export const VisitsDetailsModal = ({
   isOpen,
   onClose,
@@ -257,56 +338,51 @@ export const VisitsDetailsModal = ({
           {/* Contenido del modal (solo vista) */}
           {/* Modal content (view-only) */}
           <div style={styles.infoSection}>
-            {showOriginGym && (
-              <>
-                <div style={styles.infoRow}>
-                  <label style={styles.label}>Gimnasio de Origen:</label>
-                  <div style={styles.value}>
-                    <Avatar
-                      src={visit.origin_gym_logo_url}
-                      firstName={visit.origin_gym_name || "Gimnasio"}
-                      lastName=""
-                      size={30}
-                    />
-                    <span>{visit.origin_gym_name || "N/A"}</span>
-                  </div>
-                </div>
-                <div style={styles.infoRow}>
-                  <label style={styles.label}>Ciudad de Origen:</label>
-                  <div style={styles.value}>{visit.origin_gym_city || "N/A"}</div>
-                </div>
-              </>
-            )}
+            {/* --- INICIO DE REFACTORIZACIÓN DE LAYOUT --- */}
+            {/* --- START OF LAYOUT REFACTORING --- */}
 
-            {showDestinationGym && (
-              <>
-                <div style={styles.infoRow}>
-                  <label style={styles.label}>Gimnasio de Destino:</label>
-                  <div style={styles.value}>
-                    <Avatar
-                      src={visit.destination_gym_logo_url || visit.gym_logo_url}
-                      firstName={visit.destination_gym_name || visit.gym_name || "Gimnasio"}
-                      lastName=""
-                      size={30}
-                    />
-                    <span>
-                      {visit.destination_gym_name || visit.gym_name || "N/A"}
-                      {visit.is_gym_deleted === true && " (Eliminado)"}
-                    </span>
-                  </div>
-                </div>
-                <div style={styles.infoRow}>
-                  <label style={styles.label}>Ciudad de Destino:</label>
-                  <div style={styles.value}>
-                      {visit.destination_gym_city || visit.gym_city || "N/A"}
-                  </div>
-                </div>
-              </>
-            )}
+            <div style={styles.journeyContainer}>
+              {/* Mostrar bloque de Origen si es necesario */}
+              {/* Show Origin block if needed */}
+              {showOriginGym && (
+                <GymInfoBlock
+                  label="GIMNASIO DE ORIGEN"
+                  logoSrc={visit.origin_gym_logo_url}
+                  name={visit.origin_gym_name}
+                  city={visit.origin_gym_city}
+                />
+              )}
 
-            <div style={styles.infoRow}>
-              <label style={styles.label}>Fecha y Hora de la Visita:</label>
-              <div style={styles.value}>{formatFullDate(visit.visit_date)}</div>
+              {/* Mostrar flecha solo si AMBOS bloques se muestran (vista Admin) */}
+              {/* Show arrow only if BOTH blocks are shown (Admin view) */}
+              {showOriginGym && showDestinationGym && (
+                <FaArrowRight style={styles.journeyArrow} />
+              )}
+
+              {/* Mostrar bloque de Destino si es necesario */}
+              {/* Show Destination block if needed */}
+              {showDestinationGym && (
+                <GymInfoBlock
+                  label="GIMNASIO DE DESTINO"
+                  logoSrc={visit.destination_gym_logo_url || visit.gym_logo_url}
+                  name={
+                    visit.destination_gym_name || visit.gym_name || "N/A"
+                  }
+                  city={
+                    visit.destination_gym_city || visit.gym_city || "N/A"
+                  }
+                />
+              )}
+            </div>
+            
+            {/* --- FIN DE REFACTORIZACIÓN DE LAYOUT --- */}
+            {/* --- END OF LAYOUT REFACTORING --- */}
+
+            <div style={styles.dateRow}>
+              <label style={styles.dateLabel}>Fecha y Hora de la Visita:</label>
+              <div style={styles.dateValue}>
+                {formatFullDate(visit.visit_date)}
+              </div>
             </div>
           </div>
 
