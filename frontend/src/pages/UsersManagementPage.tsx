@@ -16,6 +16,7 @@ import { Avatar } from "../components/Avatar";
 import { UserDetailModal } from "../components/modals/UserDetailModal";
 import { usePagination } from "../hooks/usePagination";
 import { PaginationControls } from "../components/ui/PaginationControls";
+import { FilterInput } from "../components/forms/FilterInput";
 import {
   SortableTable,
   type ColumnDefinition,
@@ -470,19 +471,12 @@ export const UsersManagementPage = () => {
           </div>
         )}
 
-        <div style={styles.filterGroup}>
-          <label htmlFor="searchFilter" style={styles.label}>
-            Buscar Usuario
-          </label>
-          <input
-            id="searchFilter"
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Nombre o email..."
-            style={styles.input}
-          />
-        </div>
+        <FilterInput
+          label="Buscar Usuario"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Nombre o email..."
+        />
 
         <button
           onClick={handleClearFilters}

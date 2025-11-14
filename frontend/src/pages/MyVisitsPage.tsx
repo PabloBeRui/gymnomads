@@ -9,6 +9,7 @@ import { Avatar } from "../components/Avatar";
 import { VisitsStatsModal } from "../components/modals/VisitsStatsModal";
 import { usePagination } from "../hooks/usePagination";
 import { PaginationControls } from "../components/ui/PaginationControls";
+import { FilterInput } from "../components/forms/FilterInput";
 import {
   SortableTable,
   type ColumnDefinition,
@@ -275,12 +276,14 @@ export const MyVisitsPage = () => {
       {/* Filtro de búsqueda */}
       {/* Search filter */}
       <div style={styles.filtersContainer}>
-        <input
-          type="text"
+        <FilterInput
+          label="Buscar Visitas por Gimnasio"
           value={gymSearch}
-          onChange={handleSearchChange}
+          onChange={(e) => {
+            setGymSearch(e.target.value);
+            goToPage(1); // Resetear a la primera página con cada nueva búsqueda
+          }}
           placeholder="🔍 Buscar por nombre de gimnasio..."
-          style={styles.input}
         />
       </div>
 

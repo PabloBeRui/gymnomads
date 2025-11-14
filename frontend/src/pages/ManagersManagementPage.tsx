@@ -11,6 +11,7 @@ import { ManagerDetailsModal } from "../components/modals/ManagerDetailsModal";
 import { Avatar } from "../components/Avatar";
 import { usePagination } from "../hooks/usePagination";
 import { PaginationControls } from "../components/ui/PaginationControls";
+import { FilterInput } from "../components/forms/FilterInput";
 import {
   SortableTable,
   type ColumnDefinition,
@@ -337,22 +338,13 @@ export const ManagersManagementPage = () => {
 
       {/* Filtro único / Single filter */}
       <div style={styles.filtersContainer}>
-        <div style={styles.filterGroup}>
-          <label htmlFor="searchFilter" style={styles.label}>
-            Buscar Manager
-          </label>
-          <input
-            id="searchFilter"
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Manager, Gimnasio, Ciudad"
-            style={styles.input}
-          />
-          <small style={{ color: "#6c757d", fontSize: "0.85em" }}>
-            La búsqueda filtra por todos los campos visibles
-          </small>
-        </div>
+        <FilterInput
+          label="Buscar Manager"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Manager, Gimnasio, Ciudad"
+          helpText="La búsqueda filtra por todos los campos visibles"
+        />
 
         {searchTerm && (
           <button

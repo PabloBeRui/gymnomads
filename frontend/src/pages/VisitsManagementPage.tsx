@@ -14,6 +14,7 @@ import { VisitsDetailsModal } from "../components/modals/VisitsDetailsModal";
 import { VisitsStatsModal } from "../components/modals/VisitsStatsModal";
 import { usePagination } from "../hooks/usePagination";
 import { PaginationControls } from "../components/ui/PaginationControls";
+import { FilterInput } from "../components/forms/FilterInput";
 import {
   SortableTable,
   type ColumnDefinition,
@@ -391,12 +392,12 @@ export const VisitsManagementPage = () => {
             <label htmlFor="gymFilter" style={styles.label}>
               Filtrar por Gimnasio
             </label>
-            <input
+          <FilterInput
               type="text"
               placeholder="🔍 Buscar por nombre o ciudad..."
               value={gymSearchTerm}
               onChange={(e) => setGymSearchTerm(e.target.value)}
-              style={styles.gymSearchInput}
+              id="gymSearchFilter" // Añadir un ID explícito para este input
             />
             <select
               id="gymFilter"
@@ -423,19 +424,12 @@ export const VisitsManagementPage = () => {
           </div>
         )}
 
-        <div style={styles.filterGroup}>
-          <label htmlFor="userFilter" style={styles.label}>
-            Buscar por Usuario
-          </label>
-          <input
-            id="userFilter"
-            type="text"
-            value={userSearch}
-            onChange={(e) => setUserSearch(e.target.value)}
-            placeholder="Nombre o email..."
-            style={styles.input}
-          />
-        </div>
+        <FilterInput
+          label="Buscar por Usuario"
+          value={userSearch}
+          onChange={(e) => setUserSearch(e.target.value)}
+          placeholder="Nombre o email..."
+        />
 
         <button
           onClick={handleClearFilters}
