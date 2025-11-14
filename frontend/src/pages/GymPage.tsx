@@ -30,7 +30,7 @@ import { CloseButton } from "../components/ui/CloseButton"; // Importar el botó
 // Importar el WeatherWidget ---
 // -Import the WeatherWidget ---
 
-import { WeatherWidget } from "../components/widgets/weatherWidget";
+import { WeatherWidget } from "../components/widgets/WeatherWidget";
 
 // --- Componente de Mapa / Map Component ---
 import { GymMap } from "../components/GymMap";

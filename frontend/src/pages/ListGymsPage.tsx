@@ -1,3 +1,23 @@
+/* =============================================================================
+   PÁGINA: ListGymsPage
+   PAGE:     ListGymsPage
+   =============================================================================
+ *
+ * Muestra una lista de gimnasios con un orden inicial que depende del rol del
+ * usuario. Permite la búsqueda y paginación.
+ * - Admin: ve los gimnasios ordenados alfabéticamente con paginación de backend.
+ * - Manager: ve su gimnasio primero, y el resto de forma aleatoria.
+ * - User/Guest: ve los gimnasios en orden aleatorio.
+ *
+ * Displays a list of gyms with an initial order that depends on the user's
+ * role. Allows searching and pagination.
+ * - Admin: sees gyms sorted alphabetically with backend pagination.
+ * - Manager: sees their own gym first, with the rest in random order.
+ * - User/Guest: sees gyms in a random order.
+ *
+ * =============================================================================
+ */
+
 import { useState, useEffect } from "react";
 import { getAllGyms, deleteGym } from "../services/gym-services";
 import { useAuth } from "../context/AuthContext";
@@ -8,6 +28,8 @@ import { handleApiError } from "../utils/error-handler";
 import { ConfirmationModal } from "../components/modals/ConfirmationModal";
 import { usePagination } from "../hooks/usePagination";
 import { PaginationControls } from "../components/ui/PaginationControls";
+import { sortGymsByRole } from "../utils/gym-sorter";
+
 
 /* =============================================================================
    ESTILOS (inline)
@@ -48,9 +70,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     flex: "1 1 300px",
     boxSizing: "border-box",
     backgroundColor: "white",
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between'
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
   },
   gymLogo: {
     width: "100%",
@@ -77,24 +99,31 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: "none",
     borderRadius: "4px",
   },
-  noResultsText: { color: "#666", fontStyle: "italic", width: '100%', textAlign: 'center', padding: '40px 0' },
+  noResultsText: {
+    color: "#666",
+    fontStyle: "italic",
+    width: "100%",
+    textAlign: "center",
+    padding: "40px 0",
+  },
 };
 
-/* =============================================================================
-   COMPONENTE: ListGymsPage
-   COMPONENT: ListGymsPage
-   ============================================================================= */
+
 export const ListGymsPage = () => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
+  const isAdmin = user?.role === "admin";
 
-  // Estados del componente / Component states
-  const [gyms, setGyms] = useState<Gym[]>([]);
+  // Estados del componente
+  // Component states
+  const [gyms, setGyms] = useState<Gym[]>([]); // Gimnasios para la página actual // Gyms for the current page
+  const [unpaginatedGyms, setUnpaginatedGyms] = useState<Gym[]>([]); // Lista completa para no-admins // Full list for non-admins
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  // Hook de paginación / Pagination hook
+  // Hook de paginación
+  // Pagination hook
   const {
     currentPage,
     itemsPerPage,
@@ -104,32 +133,49 @@ export const ListGymsPage = () => {
     changeItemsPerPage,
   } = usePagination();
 
-  // Estados para modal de eliminación / States for delete modal
+  // Estados para modal de eliminación
+  // States for delete modal
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [gymToDelete, setGymToDelete] = useState<Gym | null>(null);
 
   const backendBaseUrl =
     import.meta.env.VITE_BACKEND_BASE_URL || window.location.origin;
 
+  // Efecto para obtener los datos de los gimnasios
+  // Effect to fetch gym data
   useEffect(() => {
     const fetchGyms = async () => {
       setError(null);
       setIsLoading(true);
       try {
-        const filters = {
-          search: searchTerm.trim() || undefined,
-          page: currentPage,
-          limit: itemsPerPage,
-        };
-        // El token es ahora opcional en el servicio
-        // The token is now optional in the service
-        const response = await getAllGyms(token || undefined, filters);
-        
-        // Validar que la respuesta contiene un array de datos
-        // Validate that the response contains a data array
-        const validData = Array.isArray(response.data) ? response.data : [];
-        setGyms(validData);
-        setTotalItems(response.total || 0);
+        const commonFilters = { search: searchTerm.trim() || undefined };
+        let response;
+
+        if (isAdmin) {
+          // Admin: usa paginación del backend y ordena por nombre
+          // Admin: uses backend pagination and sorts by name
+          const adminFilters = {
+            ...commonFilters,
+            page: currentPage,
+            limit: itemsPerPage,
+            orderBy: "name_asc" as const,
+          };
+          // El token de useAuth puede ser string | null. Usamos ?? undefined para asegurar que sea string | undefined.
+          // The token from useAuth can be string | null. We use ?? undefined to ensure it's string | undefined.
+          response = await getAllGyms(token ?? undefined, adminFilters);
+          setGyms(response.data);
+          setTotalItems(response.total);
+        } else {
+          // No-Admin: obtiene todos los gimnasios para ordenar en el frontend
+          // Non-Admin: gets all gyms to sort on the frontend
+          const userFilters = { ...commonFilters, limit: 1000 }; // Límite alto // High limit
+          // El token de useAuth puede ser string | null. Usamos ?? undefined para asegurar que sea string | undefined.
+          // The token from useAuth can be string | null. We use ?? undefined to ensure it's string | undefined.
+          response = await getAllGyms(token ?? undefined, userFilters);
+          const sortedGyms = sortGymsByRole(response.data, user);
+          setUnpaginatedGyms(sortedGyms);
+          setTotalItems(sortedGyms.length);
+        }
       } catch (err) {
         const msg = handleApiError(
           err,
@@ -137,10 +183,8 @@ export const ListGymsPage = () => {
         );
         setError(msg);
         toast.error(msg);
-        // Asegurar que gyms siempre sea un array en caso de error
-        // Ensure gyms is always an array in case of an error
         setGyms([]);
-        if (import.meta.env.DEV) console.error("Error fetching gyms:", err);
+        setUnpaginatedGyms([]);
       } finally {
         setIsLoading(false);
       }
@@ -148,7 +192,18 @@ export const ListGymsPage = () => {
 
     const timeoutId = setTimeout(fetchGyms, 500);
     return () => clearTimeout(timeoutId);
-  }, [currentPage, itemsPerPage, searchTerm, token, setTotalItems]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTerm, user, isAdmin, token, ...(isAdmin ? [currentPage, itemsPerPage] : [])]);
+
+  // Efecto para manejar la paginación en el frontend para no-admins
+  // Effect to handle frontend pagination for non-admins
+  useEffect(() => {
+    if (!isAdmin) {
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      setGyms(unpaginatedGyms.slice(startIndex, endIndex));
+    }
+  }, [currentPage, itemsPerPage, unpaginatedGyms, isAdmin]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -171,10 +226,12 @@ export const ListGymsPage = () => {
         page: currentPage,
         limit: itemsPerPage,
       };
-      const response = await getAllGyms(token, filters);
+      // El token de useAuth puede ser string | null. Usamos ?? undefined para asegurar que sea string | undefined.
+      // The token from useAuth can be string | null. We use ?? undefined to ensure it's string | undefined.
+      const response = await getAllGyms(token ?? undefined, filters);
       setGyms(response.data);
       setTotalItems(response.total);
-      
+
       toast.success(`Gimnasio "${gymToDelete.name}" eliminado con éxito.`);
       setShowDeleteModal(false);
       setGymToDelete(null);
