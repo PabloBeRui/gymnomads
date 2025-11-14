@@ -16,6 +16,10 @@ import { Avatar } from "../components/Avatar";
 import { UserDetailModal } from "../components/modals/UserDetailModal";
 import { usePagination } from "../hooks/usePagination";
 import { PaginationControls } from "../components/ui/PaginationControls";
+import {
+  SortableTable,
+  type ColumnDefinition,
+} from "../components/ui/SortableTable";
 
 /* =============================================================================
    ESTILOS (inline)
@@ -79,32 +83,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
-  },
-  tableContainer: {
-    overflowX: "auto",
-    backgroundColor: "white",
-    borderRadius: "8px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-  },
-  th: {
-    padding: "15px",
-    textAlign: "left",
-    backgroundColor: "#f8f9fa",
-    borderBottom: "2px solid #dee2e6",
-    fontWeight: "bold",
-    color: "#495057",
-  },
-  td: {
-    padding: "12px 15px",
-    borderBottom: "1px solid #dee2e6",
-  },
-  clickableRow: {
-    cursor: "pointer",
-    transition: "background-color 0.2s",
   },
   loadingContainer: {
     padding: "40px",
@@ -351,6 +329,65 @@ export const UsersManagementPage = () => {
     }
   };
 
+  // --- Definición de columnas para la tabla ---
+  // --- Column definitions for the table ---
+  const userColumns: ColumnDefinition<UserWithGym | GymUser>[] = [
+    {
+      key: "first_name",
+      header: "Nombre",
+      render: (u) => (
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <Avatar
+            src={u.profile_picture}
+            firstName={u.first_name}
+            lastName={u.last_name}
+            size={35}
+          />
+          <span>
+            {u.first_name} {u.last_name}
+          </span>
+        </div>
+      ),
+    },
+    // Añadir columnas condicionalmente / Conditionally add columns
+    ...(isAdmin
+      ? [
+          {
+            key: "gym_name" as keyof (UserWithGym | GymUser),
+            header: "Gimnasio",
+            render: (u: UserWithGym | GymUser) => {
+              const userWithGym = u as UserWithGym;
+              return (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                  }}>
+                  <Avatar
+                    src={userWithGym.logo_url}
+                    firstName={userWithGym.gym_name}
+                    lastName=""
+                    size={35}
+                  />
+                  <span>
+                    {userWithGym.gym_name}
+                    {userWithGym.is_gym_deleted && " (Eliminado)"}
+                  </span>
+                </div>
+              );
+            },
+          },
+        ]
+      : [
+          {
+            key: "registered_at" as keyof (UserWithGym | GymUser),
+            header: "Fecha de Registro",
+            render: (u: UserWithGym | GymUser) => formatDate(u.registered_at),
+          },
+        ]),
+  ];
+
   // Render loading
   if (isLoading && users.length === 0) {
     return (
@@ -477,75 +514,12 @@ export const UsersManagementPage = () => {
         </div>
       ) : (
         <>
-          <div style={styles.tableContainer}>
-            <table style={styles.table}>
-              <thead>
-                <tr>
-                  <th style={styles.th}>Nombre</th>
-                  {isAdmin && <th style={styles.th}>Gimnasio</th>}
-                  {!isAdmin && <th style={styles.th}>Fecha de Registro</th>}
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((u) => (
-                  <tr
-                    key={u.id}
-                    style={styles.clickableRow}
-                    onClick={() => handleRowClick(u)}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "#f8f9fa";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "transparent";
-                    }}
-                    title={`Ver detalles de ${u.first_name} ${u.last_name}`}>
-                    <td style={styles.td}>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "10px",
-                        }}>
-                        <Avatar
-                          src={u.profile_picture}
-                          firstName={u.first_name}
-                          lastName={u.last_name}
-                          size={35}
-                        />
-                        <span>
-                          {u.first_name} {u.last_name}
-                        </span>
-                      </div>
-                    </td>
-                    {isAdmin && "gym_name" in u && (
-                      <td style={styles.td}>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "10px",
-                          }}>
-                          <Avatar
-                            src={(u as UserWithGym).logo_url}
-                            firstName={u.gym_name}
-                            lastName=""
-                            size={35}
-                          />
-                          <span>
-                            {u.gym_name}
-                            {(u as UserWithGym).is_gym_deleted && " (Eliminado)"}
-                          </span>
-                        </div>
-                      </td>
-                    )}
-                    {!isAdmin && (
-                      <td style={styles.td}>{formatDate(u.registered_at)}</td>
-                    )}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <SortableTable
+            data={users}
+            columns={userColumns}
+            initialSortConfig={{ key: "first_name", direction: "ascending" }}
+            onRowClick={handleRowClick}
+          />
           <PaginationControls
             currentPage={currentPage}
             totalPages={totalPages}

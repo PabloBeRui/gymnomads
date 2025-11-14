@@ -9,6 +9,10 @@ import { Avatar } from "../components/Avatar";
 import { VisitsStatsModal } from "../components/modals/VisitsStatsModal";
 import { usePagination } from "../hooks/usePagination";
 import { PaginationControls } from "../components/ui/PaginationControls";
+import {
+  SortableTable,
+  type ColumnDefinition,
+} from "../components/ui/SortableTable";
 
 /* =============================================================================
     ESTILOS (inline)
@@ -23,27 +27,6 @@ const styles: { [key: string]: React.CSSProperties } = {
   title: {
     fontSize: "2rem",
     marginBottom: "20px",
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-    backgroundColor: "white",
-    borderRadius: "8px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-  },
-  th: {
-    padding: "15px",
-    textAlign: "left",
-    backgroundColor: "#f8f9fa",
-    borderBottom: "2px solid #dee2e6",
-  },
-  td: {
-    padding: "12px 15px",
-    borderBottom: "1px solid #dee2e6",
-  },
-  clickableRow: {
-    cursor: "pointer",
-    transition: "background-color 0.2s",
   },
   loading: {
     textAlign: "center",
@@ -203,38 +186,58 @@ export const MyVisitsPage = () => {
   }, [token, gymSearch, currentPage, itemsPerPage]);
 
   // =============================================================================
-  // Manejadores de Eventos
-  // Event Handlers
+  // Manejadores de Eventos y Definiciones de Columnas
+  // Event Handlers and Column Definitions
   // =============================================================================
 
-  // Manejar click en una fila para abrir el modal de detalles
-  // Handle click on a row to open the details modal
   const handleRowClick = (visit: VisitWithDetails) => {
     setSelectedVisit(visit);
     setShowDetailModal(true);
   };
 
-  // Cerrar el modal de detalles
-  // Close the details modal
   const handleCloseModal = () => {
     setShowDetailModal(false);
     setSelectedVisit(null);
   };
 
-  // Manejar cambio en el input de búsqueda
-  // Handle change in the search input
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setGymSearch(e.target.value);
     goToPage(1); // Resetear a la primera página con cada nueva búsqueda
   };
+
+  const myVisitsColumns: ColumnDefinition<VisitWithDetails>[] = [
+    {
+      key: "gym_name",
+      header: "Gimnasio",
+      render: (visit) => (
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <Avatar
+            src={visit.gym_logo_url}
+            firstName={visit.gym_name || "Gimnasio"}
+            lastName=""
+            size={35}
+          />
+          <span>{visit.gym_name || "N/A"}</span>
+        </div>
+      ),
+    },
+    {
+      key: "visit_date",
+      header: "Fecha",
+      render: (visit) =>
+        new Date(visit.visit_date).toLocaleDateString("es-ES", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "2-digit",
+        }),
+    },
+  ];
 
   // =============================================================================
   // Renderizado Condicional
   // Conditional Rendering
   // =============================================================================
 
-  // Mostrar estado de carga inicial
-  // Show initial loading state
   if (isLoading && visits.length === 0) {
     return <div style={styles.loading}>Cargando tus visitas...</div>;
   }
@@ -297,58 +300,12 @@ export const MyVisitsPage = () => {
         )
       ) : (
         <>
-          {/* Tabla de visitas */}
-          {/* Visits table */}
-          <table style={styles.table}>
-            <thead>
-              <tr>
-                <th style={styles.th}>Gimnasio</th>
-                <th style={styles.th}>Fecha</th>
-              </tr>
-            </thead>
-            <tbody>
-              {visits.map((visit) => (
-                <tr
-                  key={visit.id}
-                  style={styles.clickableRow}
-                  onClick={() => handleRowClick(visit)}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#f8f9fa";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "transparent";
-                  }}
-                  title={`Ver detalles de la visita`}>
-                  <td style={styles.td}>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                      }}>
-                      <Avatar
-                        src={visit.gym_logo_url}
-                        firstName={visit.gym_name || "Gimnasio"}
-                        lastName=""
-                        size={35}
-                      />
-                      <span>{visit.gym_name || "N/A"}</span>
-                    </div>
-                  </td>
-                  <td style={styles.td}>
-                    {new Date(visit.visit_date).toLocaleDateString("es-ES", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "2-digit",
-                    })}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          {/* Controles de paginación */}
-          {/* Pagination controls */}
+          <SortableTable
+            data={visits}
+            columns={myVisitsColumns}
+            initialSortConfig={{ key: "visit_date", direction: "descending" }}
+            onRowClick={handleRowClick}
+          />
           <PaginationControls
             currentPage={currentPage}
             totalPages={totalPages}

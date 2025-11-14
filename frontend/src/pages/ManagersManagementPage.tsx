@@ -11,6 +11,10 @@ import { ManagerDetailsModal } from "../components/modals/ManagerDetailsModal";
 import { Avatar } from "../components/Avatar";
 import { usePagination } from "../hooks/usePagination";
 import { PaginationControls } from "../components/ui/PaginationControls";
+import {
+  SortableTable,
+  type ColumnDefinition,
+} from "../components/ui/SortableTable";
 
 /* =============================================================================
    ESTILOS (inline)
@@ -68,28 +72,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: "4px",
     cursor: "pointer",
   },
-  tableContainer: {
-    overflowX: "auto",
-    backgroundColor: "white",
-    borderRadius: "8px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-  },
-  th: {
-    padding: "15px",
-    textAlign: "left",
-    backgroundColor: "#f8f9fa",
-    borderBottom: "2px solid #dee2e6",
-    fontWeight: "bold",
-    color: "#495057",
-  },
-  td: {
-    padding: "12px 15px",
-    borderBottom: "1px solid #dee2e6",
-  },
   loadingContainer: {
     padding: "40px",
     textAlign: "center",
@@ -127,10 +109,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: "0.9rem",
     color: "#6c757d",
     marginTop: "5px",
-  },
-  clickableRow: {
-    cursor: "pointer",
-    transition: "background-color 0.2s",
   },
   warningBox: {
     padding: "15px",
@@ -272,6 +250,43 @@ export const ManagersManagementPage = () => {
     setSelectedManager(null);
   };
 
+  // --- Definición de columnas para la tabla ---
+  // --- Column definitions for the table ---
+  const managerColumns: ColumnDefinition<ManagerWithGym>[] = [
+    {
+      key: "first_name",
+      header: "Manager",
+      render: (manager) => (
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <Avatar
+            src={manager.profile_picture}
+            firstName={manager.first_name}
+            lastName={manager.last_name}
+            size={35}
+          />
+          <span>
+            {manager.first_name} {manager.last_name}
+          </span>
+        </div>
+      ),
+    },
+    {
+      key: "gym_name",
+      header: "Gimnasio",
+      render: (manager) => (
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <Avatar
+            src={manager.logo_url}
+            firstName={manager.gym_name}
+            lastName=""
+            size={35}
+          />
+          <span>{manager.gym_name}</span>
+        </div>
+      ),
+    },
+  ];
+
   // Render loading
   if (isLoading && managers.length === 0) {
     return (
@@ -371,66 +386,12 @@ export const ManagersManagementPage = () => {
         </div>
       ) : (
         <>
-          <div style={styles.tableContainer}>
-            <table style={styles.table}>
-              <thead>
-                <tr>
-                  <th style={styles.th}>Manager</th>
-                  <th style={styles.th}>Gimnasio</th>
-                </tr>
-              </thead>
-              <tbody>
-                {managers.map((manager) => (
-                  <tr
-                    key={manager.id}
-                    style={styles.clickableRow}
-                    onClick={() => handleRowClick(manager)}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "#f8f9fa";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "transparent";
-                    }}
-                    title="Click para ver detalles completos (email, teléfono, etc.)">
-                    <td style={styles.td}>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "10px",
-                        }}>
-                        <Avatar
-                          src={manager.profile_picture}
-                          firstName={manager.first_name}
-                          lastName={manager.last_name}
-                          size={35}
-                        />
-                        <span>
-                          {manager.first_name} {manager.last_name}
-                        </span>
-                      </div>
-                    </td>
-                    <td style={styles.td}>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "10px",
-                        }}>
-                        <Avatar
-                          src={manager.logo_url}
-                          firstName={manager.gym_name}
-                          lastName=""
-                          size={35}
-                        />
-                        <span>{manager.gym_name}</span>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <SortableTable
+            data={managers}
+            columns={managerColumns}
+            initialSortConfig={{ key: "first_name", direction: "ascending" }}
+            onRowClick={handleRowClick}
+          />
           <PaginationControls
             currentPage={currentPage}
             totalPages={totalPages}

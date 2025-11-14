@@ -14,6 +14,10 @@ import { VisitsDetailsModal } from "../components/modals/VisitsDetailsModal";
 import { VisitsStatsModal } from "../components/modals/VisitsStatsModal";
 import { usePagination } from "../hooks/usePagination";
 import { PaginationControls } from "../components/ui/PaginationControls";
+import {
+  SortableTable,
+  type ColumnDefinition,
+} from "../components/ui/SortableTable";
 
 /* =============================================================================
     ESTILOS (inline)
@@ -77,32 +81,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
-  },
-  tableContainer: {
-    overflowX: "auto",
-    backgroundColor: "white",
-    borderRadius: "8px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-  },
-  th: {
-    padding: "15px",
-    textAlign: "left",
-    backgroundColor: "#f8f9fa",
-    borderBottom: "2px solid #dee2e6",
-    fontWeight: "bold",
-    color: "#495057",
-  },
-  td: {
-    padding: "12px 15px",
-    borderBottom: "1px solid #dee2e6",
-  },
-  clickableRow: {
-    cursor: "pointer",
-    transition: "background-color 0.2s",
   },
   loadingContainer: {
     padding: "40px",
@@ -303,6 +281,65 @@ export const VisitsManagementPage = () => {
     setSelectedVisit(null);
   };
 
+  // --- Definición de columnas para la tabla ---
+  // --- Column definitions for the table ---
+  const visitColumns: ColumnDefinition<VisitWithDetails>[] = [
+    {
+      key: "user_name",
+      header: "Usuario",
+      render: (visit) => (
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <Avatar
+            src={visit.user_profile_picture}
+            firstName={visit.user_name || "Usuario"}
+            lastName={""}
+            size={35}
+          />
+          <span>{visit.user_name || "N/A"}</span>
+        </div>
+      ),
+    },
+    // Añadir columna de gimnasio solo para admin
+    // Add gym column only for admin
+    ...(isAdmin
+      ? [
+          {
+            key: "gym_name" as keyof VisitWithDetails,
+            header: "Gimnasio Visitado",
+            render: (visit: VisitWithDetails) => (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                }}>
+                <Avatar
+                  src={visit.gym_logo_url}
+                  firstName={visit.gym_name || "Gimnasio"}
+                  lastName={""}
+                  size={35}
+                />
+                <span>
+                  {visit.gym_name || "N/A"}
+                  {visit.is_gym_deleted && " (Eliminado)"}
+                </span>
+              </div>
+            ),
+          },
+        ]
+      : []),
+    {
+      key: "visit_date",
+      header: "Fecha de Visita",
+      render: (visit) =>
+        new Date(visit.visit_date).toLocaleDateString("es-ES", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "2-digit",
+        }),
+    },
+  ];
+
   if (isLoading && visits.length === 0) {
     return (
       <div style={styles.loadingContainer}>
@@ -429,77 +466,12 @@ export const VisitsManagementPage = () => {
         </div>
       ) : (
         <>
-          <div style={styles.tableContainer}>
-            <table style={styles.table}>
-              <thead>
-                <tr>
-                  <th style={styles.th}>Usuario</th>
-                  {isAdmin && <th style={styles.th}>Gimnasio Visitado</th>}
-                  <th style={styles.th}>Fecha de Visita</th>
-                </tr>
-              </thead>
-              <tbody>
-                {visits.map((visit) => (
-                  <tr
-                    key={visit.id}
-                    style={styles.clickableRow}
-                    onClick={() => handleRowClick(visit)}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "#f8f9fa";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "transparent";
-                    }}
-                    title={`Ver detalles de la visita #${visit.id}`}>
-                    <td style={styles.td}>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "10px",
-                        }}>
-                        <Avatar
-                          src={visit.user_profile_picture}
-                          firstName={visit.user_name || "Usuario"}
-                          lastName={""}
-                          size={35}
-                        />
-                        <span>{visit.user_name || "N/A"}</span>
-                      </div>
-                    </td>
-                    {isAdmin && (
-                      <td style={styles.td}>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "10px",
-                          }}>
-                          <Avatar
-                            src={visit.gym_logo_url}
-                            firstName={visit.gym_name || "Gimnasio"}
-                            lastName={""}
-                            size={35}
-                          />
-                          <span>
-                            {visit.gym_name || "N/A"}
-                            {visit.is_gym_deleted && " (Eliminado)"}
-                          </span>
-                        </div>
-                      </td>
-                    )}
-                    <td style={styles.td}>
-                      {new Date(visit.visit_date).toLocaleDateString("es-ES", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "2-digit",
-                      })}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <SortableTable
+            data={visits}
+            columns={visitColumns}
+            initialSortConfig={{ key: "visit_date", direction: "descending" }}
+            onRowClick={handleRowClick}
+          />
           <PaginationControls
             currentPage={currentPage}
             totalPages={totalPages}
