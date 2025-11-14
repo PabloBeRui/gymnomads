@@ -4,6 +4,8 @@ import {
   getAllUsers,
   getUsersByGym,
   deleteUser,
+  type GetAllUsersFilters,
+  type GetUsersByGymFilters,
 } from "../services/user-services";
 import { getAllGyms } from "../services/gym-services";
 import type { UserWithGym, GymUser } from "../interfaces/user-interfaces";
@@ -204,10 +206,14 @@ export const UsersManagementPage = () => {
         // Pedir una cantidad alta para asegurar que traemos todos para el filtro
         // Request a high amount to ensure we fetch all for the filter
         const gymsData = await getAllGyms(token, { limit: 1000 });
-        setGyms(gymsData.data);
+        // Validar que gymsData.data es un array / Validar que gymsData.data es un array
+        const validGymsData = Array.isArray(gymsData.data) ? gymsData.data : [];
+        setGyms(validGymsData);
       } catch (err) {
         const msg = handleApiError(err, "Error al cargar gimnasios.");
         toast.error("No se pudieron cargar los gimnasios.");
+        // Ensure gyms is always an array / Asegurar que gyms siempre es un array
+        setGyms([]);
         if (import.meta.env.DEV) {
           console.error("Error al cargar gimnasios:", msg);
         }
@@ -240,7 +246,7 @@ export const UsersManagementPage = () => {
 
       if (isAdmin) {
         const gymIdAsNumber = Number(selectedGymId);
-        const filters: any = {
+        const filters: GetAllUsersFilters = {
           search: searchTerm.trim() || undefined,
           page: currentPage,
           limit: itemsPerPage,
@@ -255,7 +261,7 @@ export const UsersManagementPage = () => {
 
         response = await getAllUsers(token, filters);
       } else if (isManager && user?.home_gym_id) {
-        const filters = {
+        const filters: GetUsersByGymFilters = {
           search: searchTerm.trim() || undefined,
           page: currentPage,
           limit: itemsPerPage,
@@ -265,12 +271,16 @@ export const UsersManagementPage = () => {
         throw new Error("No tienes permisos para ver esta página.");
       }
 
-      setUsers(response.data);
-      setTotalItems(response.total);
+      // Validate that response.data is an array / Validar que response.data es un array
+      const validData = Array.isArray(response.data) ? response.data : [];
+      setUsers(validData);
+      setTotalItems(response.total || 0);
     } catch (err) {
       const msg = handleApiError(err, "Error al cargar los usuarios.");
       setError(msg);
       toast.error("No se pudieron cargar los usuarios.");
+      // Ensure users is always an array / Asegurar que users siempre es un array
+      setUsers([]);
       if (import.meta.env.DEV) {
         console.error("Error al cargar usuarios:", msg);
       }

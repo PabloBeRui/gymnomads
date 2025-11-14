@@ -111,10 +111,8 @@ export const ListGymsPage = () => {
   const backendBaseUrl =
     import.meta.env.VITE_BACKEND_BASE_URL || window.location.origin;
 
-  // Cargar gimnasios / Load gyms
   useEffect(() => {
     const fetchGyms = async () => {
-      if (!token) return;
       setError(null);
       setIsLoading(true);
       try {
@@ -123,9 +121,15 @@ export const ListGymsPage = () => {
           page: currentPage,
           limit: itemsPerPage,
         };
-        const response = await getAllGyms(token, filters);
-        setGyms(response.data);
-        setTotalItems(response.total);
+        // El token es ahora opcional en el servicio
+        // The token is now optional in the service
+        const response = await getAllGyms(token || undefined, filters);
+        
+        // Validar que la respuesta contiene un array de datos
+        // Validate that the response contains a data array
+        const validData = Array.isArray(response.data) ? response.data : [];
+        setGyms(validData);
+        setTotalItems(response.total || 0);
       } catch (err) {
         const msg = handleApiError(
           err,
@@ -133,6 +137,9 @@ export const ListGymsPage = () => {
         );
         setError(msg);
         toast.error(msg);
+        // Asegurar que gyms siempre sea un array en caso de error
+        // Ensure gyms is always an array in case of an error
+        setGyms([]);
         if (import.meta.env.DEV) console.error("Error fetching gyms:", err);
       } finally {
         setIsLoading(false);

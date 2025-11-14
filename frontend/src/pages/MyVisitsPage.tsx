@@ -151,7 +151,12 @@ export const MyVisitsPage = () => {
   // Función para obtener las visitas desde el backend
   // Function to fetch visits from the backend
   const fetchVisits = async () => {
-    if (!token) return;
+    if (!token) {
+      // Si no hay token, no hacer nada y asegurar que el estado de carga es falso.
+      // If there is no token, do nothing and ensure the loading state is false.
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
     try {
       // Llamar al servicio con filtros de búsqueda y paginación
@@ -162,15 +167,19 @@ export const MyVisitsPage = () => {
         currentPage,
         itemsPerPage
       );
-      // Actualizar el estado con los datos y el total de elementos
-      // Update the state with the data and total number of items
-      setVisits(response.data);
-      setTotalItems(response.total);
+      // Validar que la respuesta contiene un array de datos
+      // Validate that the response contains a data array
+      const validData = Array.isArray(response.data) ? response.data : [];
+      setVisits(validData);
+      setTotalItems(response.total || 0);
     } catch (error) {
       // Manejar errores de la API y mostrar notificación
       // Handle API errors and show notification
       const msg = handleApiError(error, "Error al cargar tus visitas.");
       toast.error(msg);
+      // Asegurar que visits siempre sea un array en caso de error
+      // Ensure visits is always an array in case of an error
+      setVisits([]);
     } finally {
       // Finalizar el estado de carga
       // Finalize the loading state

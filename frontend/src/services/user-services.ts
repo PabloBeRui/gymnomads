@@ -271,7 +271,7 @@ export const uploadProfilePicture = async (
 
 // Interfaz para los filtros opcionales de getAllUsers
 // Interface for optional filters of getAllUsers
-interface GetAllUsersFilters {
+export interface GetAllUsersFilters {
   gym_id?: number;
   search?: string;
   gym_status?: "active" | "deleted";
@@ -345,7 +345,7 @@ export const getAllUsers = async (
 
 // Interfaz para los filtros opcionales de getAllManagers
 // Interface for optional filters of getAllManagers
-interface GetAllManagersFilters {
+export interface GetAllManagersFilters {
   city?: string;
   search?: string;
   page?: number;
@@ -415,7 +415,7 @@ export const getAllManagers = async (
 
 // Interfaz para los filtros opcionales de getUsersByGym
 // Interface for optional filters of getUsersByGym
-interface GetUsersByGymFilters {
+export interface GetUsersByGymFilters {
   search?: string;
   page?: number;
   limit?: number;

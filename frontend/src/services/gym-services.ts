@@ -31,7 +31,7 @@ interface GetAllGymsFilters {
 }
 
 export const getAllGyms = async (
-  token: string,
+  token?: string,
   filters?: GetAllGymsFilters
 ): Promise<{ data: Gym[]; total: number }> => {
   try {
@@ -52,10 +52,16 @@ export const getAllGyms = async (
     const url = `${API_URL}/gyms${
       params.toString() ? `?${params.toString()}` : ""
     }`;
+
+    // Configurar cabeceras condicionalmente
+    // Conditionally set headers
+    const headers: { [key: string]: string } = {};
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
     const response = await axios.get<{ data: Gym[]; total: number }>(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers,
     });
 
     return response.data;

@@ -206,10 +206,12 @@ export const VisitsManagementPage = () => {
     const fetchGyms = async () => {
       try {
         const gymsData = await getAllGyms(token, { limit: 1000 });
-        setGyms(gymsData.data);
+        const validGyms = Array.isArray(gymsData.data) ? gymsData.data : [];
+        setGyms(validGyms);
       } catch (err) {
         const msg = handleApiError(err, "Error al cargar gimnasios.");
         toast.error("No se pudieron cargar los gimnasios.");
+        setGyms([]);
         if (import.meta.env.DEV) {
           console.error("Error al cargar gimnasios:", msg);
         }
@@ -260,12 +262,14 @@ export const VisitsManagementPage = () => {
         throw new Error("No tienes permisos para ver esta página.");
       }
 
-      setVisits(response.data);
-      setTotalItems(response.total);
+      const validVisits = Array.isArray(response.data) ? response.data : [];
+      setVisits(validVisits);
+      setTotalItems(response.total || 0);
     } catch (err) {
       const msg = handleApiError(err, "Error al cargar las visitas.");
       setError(msg);
       toast.error("No se pudieron cargar las visitas.");
+      setVisits([]);
       if (import.meta.env.DEV) {
         console.error("Error al cargar visitas:", msg);
       }

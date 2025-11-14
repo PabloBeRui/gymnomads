@@ -111,18 +111,29 @@ export const RegisterUserPage: React.FC = () => {
   useEffect(() => {
     const loadGyms = async () => {
       try {
-        const gymsData = await executeLoadGyms(() => getAllGyms());
+        // Llamar a getAllGyms con un límite alto para traer todos los gimnasios para el selector.
+        // Call getAllGyms with a high limit to fetch all gyms for the selector.
+        const response = await executeLoadGyms(() => getAllGyms(undefined, { limit: 1000 }));
+        
+        // Validar que la respuesta contiene un array de datos.
+        // Validate that the response contains a data array.
+        const gymsData = Array.isArray(response.data) ? response.data : [];
         setGyms(gymsData);
 
-        // Seleccionar primer gimnasio por defecto si existe / Select first gym by default if any
+        // Seleccionar primer gimnasio por defecto si existe.
+        // Select first gym by default if it exists.
         if (gymsData.length > 0 && homeGymId === 0) {
           setHomeGymId(gymsData[0].id);
         }
       } catch (err) {
-        // useApiCall ya muestra toast en caso de error / useApiCall already shows toast on error
+        // useApiCall ya muestra toast en caso de error.
+        // useApiCall already shows a toast on error.
         if (import.meta.env.DEV) {
           console.error("⚠️ Error: ", err);
         }
+        // Asegurar que gyms siempre sea un array en caso de error.
+        // Ensure gyms is always an array in case of an error.
+        setGyms([]);
       }
     };
     loadGyms();

@@ -177,12 +177,6 @@ export const ManagersManagementPage = () => {
 
   // Cargar managers / Load managers
   const fetchManagers = async () => {
-    if (!token) {
-      setError("No estás autenticado.");
-      setIsLoading(false);
-      return;
-    }
-
     if (!isAdmin) {
       setError("No tienes permisos para ver esta página.");
       setIsLoading(false);
@@ -198,13 +192,19 @@ export const ManagersManagementPage = () => {
         page: currentPage,
         limit: itemsPerPage,
       };
-      const response = await getAllManagers(token, filters);
-      setManagers(response.data);
-      setTotalItems(response.total);
+      const response = await getAllManagers(token!, filters);
+      // Validar que la respuesta contiene un array de datos
+      // Validate that the response contains a data array
+      const validData = Array.isArray(response.data) ? response.data : [];
+      setManagers(validData);
+      setTotalItems(response.total || 0);
     } catch (err) {
       const msg = handleApiError(err, "Error al cargar los managers.");
       setError(msg);
       toast.error("No se pudieron cargar los managers.");
+      // Asegurar que managers siempre sea un array en caso de error
+      // Ensure managers is always an array in case of an error
+      setManagers([]);
       if (import.meta.env.DEV) {
         console.error("Error al cargar managers:", msg);
       }
