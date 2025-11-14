@@ -18,6 +18,7 @@
 
 import { useEffect, useCallback } from "react";
 import type { VisitWithDetails } from "../../interfaces/visit-interfaces";
+import type { Gym } from "../../interfaces/gym-interfaces";
 import { Avatar } from "../Avatar";
 import { CloseButton } from "../ui/CloseButton"; // Importar el nuevo componente
 
@@ -37,6 +38,17 @@ interface VisitsDetailsModalProps {
   // Datos de la visita a mostrar
   // Visit data to display
   visit: VisitWithDetails | null;
+
+  // Gimnasio de respaldo para vistas de manager/usuario.
+  // Se utiliza cuando la información del gimnasio (nombre, ciudad, logo) no está
+  // directamente disponible en el objeto 'visit' (por ejemplo, en la vista de manager,
+  // donde las visitas son siempre del mismo gimnasio y la API no lo repite en cada visita).
+  //
+  // Fallback gym for manager/user views.
+  // Used when gym information (name, city, logo) is not directly available
+  // in the 'visit' object (e.g., in the manager's view, where visits are always
+  // from the same gym and the API does not repeat it for each visit).
+  fallbackGym?: Gym | null;
 
   // Modo de vista para adaptar el contenido
   // View mode to adapt content
@@ -161,6 +173,7 @@ export const VisitsDetailsModal = ({
   isOpen,
   onClose,
   visit,
+  fallbackGym,
   viewMode = "admin", // Por defecto, modo admin
 }: VisitsDetailsModalProps) => {
   // Manejar cierre del modal
@@ -200,6 +213,10 @@ export const VisitsDetailsModal = ({
 
   if (!isOpen || !visit) return null;
 
+  const gymName = visit.gym_name || fallbackGym?.name || "N/A";
+  const gymCity = visit.gym_city || fallbackGym?.city || "N/A";
+  const gymLogo = visit.gym_logo_url || fallbackGym?.logo_url;
+
   return (
     <>
       <div
@@ -216,7 +233,10 @@ export const VisitsDetailsModal = ({
               🎟️ Detalle de la Visita
               {viewMode === "admin" && ` (ID: ${visit.id})`}
             </h2>
-            <CloseButton onClick={handleClose} ariaLabel="Cerrar detalles de la visita" />
+            <CloseButton
+              onClick={handleClose}
+              ariaLabel="Cerrar detalles de la visita"
+            />
           </div>
 
           {/* Header con Avatar, nombre y email del USUARIO (solo en modo admin) */}
@@ -243,18 +263,18 @@ export const VisitsDetailsModal = ({
               <label style={styles.label}>Gimnasio Visitado:</label>
               <div style={styles.value}>
                 <Avatar
-                  src={visit.gym_logo_url}
-                  firstName={visit.gym_name || "Gimnasio"}
+                  src={gymLogo}
+                  firstName={gymName}
                   lastName=""
                   size={30}
                 />
-                <span>{visit.gym_name || "N/A"}</span>
+                <span>{gymName}</span>
               </div>
             </div>
 
             <div style={styles.infoRow}>
               <label style={styles.label}>Ciudad del Gimnasio:</label>
-              <div style={styles.value}>{visit.gym_city || "N/A"}</div>
+              <div style={styles.value}>{gymCity}</div>
             </div>
 
             <div style={styles.infoRow}>

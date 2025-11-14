@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getAllVisits, getManagerGymVisits } from "../services/visit-services";
-import { getAllGyms } from "../services/gym-services";
+import { getAllGyms, getGymById } from "../services/gym-services";
 import type {
   VisitWithDetails,
   VisitsFilters,
@@ -150,6 +150,7 @@ export const VisitsManagementPage = () => {
   // States del componente / Component states
   const [visits, setVisits] = useState<VisitWithDetails[]>([]);
   const [gyms, setGyms] = useState<Gym[]>([]);
+  const [managerGym, setManagerGym] = useState<Gym | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -199,6 +200,30 @@ export const VisitsManagementPage = () => {
 
     fetchGyms();
   }, [isAdmin, token]);
+
+  // Cargar detalles del gimnasio del manager (solo para manager)
+  // Load manager's gym details (manager only)
+  useEffect(() => {
+    if (!isManager || !user?.home_gym_id) return;
+
+    const fetchManagerGym = async () => {
+      try {
+        const gymData = await getGymById(user.home_gym_id);
+        setManagerGym(gymData);
+      } catch (err) {
+        const msg = handleApiError(
+          err,
+          "Error al cargar los detalles de tu gimnasio."
+        );
+        toast.error(msg);
+        if (import.meta.env.DEV) {
+          console.error("Error al cargar el gimnasio del manager:", msg);
+        }
+      }
+    };
+
+    fetchManagerGym();
+  }, [isManager, user?.home_gym_id]);
 
   const filteredGyms = gyms.filter(
     (gym) =>
@@ -389,10 +414,9 @@ export const VisitsManagementPage = () => {
       <div style={styles.filtersContainer}>
         {isAdmin && (
           <div style={styles.filterGroup}>
-            <label htmlFor="gymFilter" style={styles.label}>
-              Filtrar por Gimnasio
-            </label>
-          <FilterInput
+            <label htmlFor="gymFilter" style={styles.label}></label>
+            <FilterInput
+              label="Buscar Gimnasio"
               type="text"
               placeholder="🔍 Buscar por nombre o ciudad..."
               value={gymSearchTerm}
@@ -480,6 +504,7 @@ export const VisitsManagementPage = () => {
         isOpen={showDetailModal}
         onClose={handleCloseModal}
         visit={selectedVisit}
+        fallbackGym={managerGym}
       />
 
       <VisitsStatsModal

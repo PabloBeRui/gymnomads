@@ -342,30 +342,33 @@ export const GymPage = () => {
 
       {/* Botón "Visitar" solo para usuarios (no en su gym de origen) */}
       {/* "Visit" button only for users (not in their home gym) */}
-      {user && user.role === "user" && gym && user.home_gym_id !== gym.id && (
-        <button
-          style={{
-            ...styles.visitButton,
-            ...(isProcessing ? styles.visitButtonDisabled : {}),
-          }}
-          onClick={handleVisitClick}
-          disabled={isProcessing}
-          aria-label={`Registrar visita a ${gym.name}`}
-          onMouseEnter={(e) => {
-            if (!isProcessing) {
-              (e.target as HTMLButtonElement).style.backgroundColor =
-                styles.visitButtonHover.backgroundColor || "";
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!isProcessing) {
-              (e.target as HTMLButtonElement).style.backgroundColor =
-                styles.visitButton.backgroundColor || "";
-            }
-          }}>
-          {isProcessing ? "Registrando visita..." : "Visitar"}
-        </button>
-      )}
+      {user &&
+        user.role === "user" &&
+        gym &&
+        (!user.home_gym_id || user.home_gym_id !== gym.id) && (
+          <button
+            style={{
+              ...styles.visitButton,
+              ...(isProcessing ? styles.visitButtonDisabled : {}),
+            }}
+            onClick={handleVisitClick}
+            disabled={isProcessing}
+            aria-label={`Registrar visita a ${gym.name}`}
+            onMouseEnter={(e) => {
+              if (!isProcessing) {
+                (e.target as HTMLButtonElement).style.backgroundColor =
+                  styles.visitButtonHover.backgroundColor || "";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isProcessing) {
+                (e.target as HTMLButtonElement).style.backgroundColor =
+                  styles.visitButton.backgroundColor || "";
+              }
+            }}>
+            {isProcessing ? "Registrando visita..." : "Visitar"}
+          </button>
+        )}
 
       {/* Añadir el Modal de Confirmación */}
       {/* Add the Confirmation Modal */}
