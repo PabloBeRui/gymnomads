@@ -24,9 +24,14 @@ import { VisitsManagementPage } from "./pages/VisitsManagementPage";
 import { UsersManagementPage } from "./pages/UsersManagementPage";
 import { ManagersManagementPage } from "./pages/ManagersManagementPage";
 import { MyVisitsPage } from "./pages/MyVisitsPage";
+import { PrivacyPolicyPage } from "./pages/Legal/PrivacyPolicyPage";
+import { TermsOfServicePage } from "./pages/Legal/TermsOfServicePage";
+import { CookiesPolicyPage } from "./pages/Legal/CookiesPolicyPage";
+import { LegalNoticePage } from "./pages/Legal/LegalNoticePage";
 
 // Importar el hook de autenticación / Import the authentication hook
 import { useAuth } from "./context/AuthContext";
+
 
 // Importar el protector de rutas / Import the route protector
 import { ProtectedRoute } from "./router/ProtectedRoute";
@@ -154,6 +159,10 @@ function App() {
           <Route path="/gyms" element={<ListGymsPage />} />
           <Route path="/gyms/:id" element={<GymPage />} />
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+          <Route path="/terms-conditions" element={<TermsOfServicePage />} />
+          <Route path="/cookies-policy" element={<CookiesPolicyPage />} />
+          <Route path="/legal-notice" element={<LegalNoticePage />} />
 
           {/* ========================================
               RUTAS PROTEGIDAS: Autenticación requerida -User
