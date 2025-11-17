@@ -28,10 +28,12 @@ import { PrivacyPolicyPage } from "./pages/Legal/PrivacyPolicyPage";
 import { TermsOfServicePage } from "./pages/Legal/TermsOfServicePage";
 import { CookiesPolicyPage } from "./pages/Legal/CookiesPolicyPage";
 import { LegalNoticePage } from "./pages/Legal/LegalNoticePage";
+import { AboutUsPage } from "./pages/AboutUs/AboutUsPage";
+import { FaqPage } from "./pages/AboutUs/FaqPage";
+import { JoinUsPage } from "./pages/AboutUs/JoinUsPage";
 
 // Importar el hook de autenticación / Import the authentication hook
 import { useAuth } from "./context/AuthContext";
-
 
 // Importar el protector de rutas / Import the route protector
 import { ProtectedRoute } from "./router/ProtectedRoute";
@@ -62,9 +64,10 @@ function App() {
     return <div>Cargando...</div>; // TODO Spinner
   }
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <div
+      style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <Toaster position="bottom-left" richColors closeButton />
-      
+
       <header>
         <h1>GymNomads Frontend</h1>
         {/* Crear enlaces de navegación simples */}
@@ -163,6 +166,9 @@ function App() {
           <Route path="/terms-conditions" element={<TermsOfServicePage />} />
           <Route path="/cookies-policy" element={<CookiesPolicyPage />} />
           <Route path="/legal-notice" element={<LegalNoticePage />} />
+          <Route path="/about-us" element={<AboutUsPage />} />
+          <Route path="/faq" element={<FaqPage />} />
+          <Route path="/join" element={<JoinUsPage />} />
 
           {/* ========================================
               RUTAS PROTEGIDAS: Autenticación requerida -User
@@ -178,7 +184,8 @@ function App() {
               RUTAS PROTEGIDAS: Admin y Manager
               PROTECTED ROUTES: Admin and Manager
               ======================================== */}
-          <Route element={<ProtectedRoute allowedRoles={["admin", "manager"]} />}>
+          <Route
+            element={<ProtectedRoute allowedRoles={["admin", "manager"]} />}>
             <Route path="/gyms/edit/:id" element={<EditGymPage />} />
             <Route path="/visits/manage" element={<VisitsManagementPage />} />
             <Route path="/users/manage" element={<UsersManagementPage />} />
