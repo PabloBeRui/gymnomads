@@ -39,8 +39,30 @@ const createVisit = async (req, res) => {
         });
     }
 
-    // 5. Comprobar si ya existe una visita para este usuario/gimnasio HOY
-    // 5. Check if a visit for this user/gym already exists TODAY
+    // 5. Lógica de negocio: un usuario no puede realizar más de 10 visitas al mes
+    // 5. Business logic: a user cannot make more than 10 visits per month
+    if (req.user.role === 'user') {
+      const [monthlyVisitsResult] = await db.query(
+        `SELECT COUNT(id) as count FROM visits 
+         WHERE user_id = ? 
+         AND gym_id != ? 
+         AND YEAR(visited_at) = YEAR(CURDATE()) 
+         AND MONTH(visited_at) = MONTH(CURDATE())`,
+        [user_id, req.user.home_gym_id]
+      );
+
+      const monthlyVisits = monthlyVisitsResult[0].count;
+
+      if (monthlyVisits >= 10) {
+        console.log('403 Forbidden: el usuario ha alcanzado el límite de visitas mensuales');
+        return res.status(403).json({
+          message: 'Has alcanzado el límite de 10 visitas a otros gimnasios este mes.',
+        });
+      }
+    }
+
+    // 6. Comprobar si ya existe una visita para este usuario/gimnasio HOY
+    // 6. Check if a visit for this user/gym already exists TODAY
     // (CURDATE() compara solo la fecha, ignorando la hora)
     // (CURDATE() compares only the date, ignoring the time)
 
@@ -49,8 +71,8 @@ const createVisit = async (req, res) => {
       [user_id, gym_id]
     );
 
-    // 6. Si ya existe, devolver el ID de esa visita (200 OK)
-    // 6. If it already exists, return that visit's ID (200 OK)
+    // 7. Si ya existe, devolver el ID de esa visita (200 OK)
+    // 7. If it already exists, return that visit's ID (200 OK)
     if (existingVisit.length > 0) {
       console.log(
         "200 OK: Visita existente encontrada para hoy. Devolviendo ID existente."
@@ -63,15 +85,15 @@ const createVisit = async (req, res) => {
 
     // --- FIN DE LA MODIFICACIÓN ---
 
-    // 7. Si no existe, insertar la nueva visita en la base de datos
-    // 7. If it doesn't exist, insert the new visit into the database
+    // 8. Si no existe, insertar la nueva visita en la base de datos
+    // 8. If it doesn't exist, insert the new visit into the database
     const [result] = await db.query(
       "INSERT INTO visits (user_id, gym_id) VALUES (?, ?)",
       [user_id, gym_id]
     );
 
-    // 8. Enviar respuesta de éxito (201 Created)
-    // 8. Send success response (201 Created)
+    // 9. Enviar respuesta de éxito (201 Created)
+    // 9. Send success response (201 Created)
     res.status(201).json({
       message: "Visita registrada con éxito",
       visitId: result.insertId, // Devolvemos el ID de la nueva visita

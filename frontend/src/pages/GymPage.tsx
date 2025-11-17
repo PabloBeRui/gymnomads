@@ -18,9 +18,10 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getGymById } from "../services/gym-services";
-import { createVisit } from "../services/visit-services";
+import { createVisit, getVisitsStats } from "../services/visit-services";
 import { useAuth } from "../context/AuthContext";
 import type { Gym } from "../interfaces/gym-interfaces";
+import type { VisitStats } from "../interfaces/visit-interfaces";
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
 // modal de confirmación / confirmation modal
@@ -146,6 +147,9 @@ export const GymPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
+  // Estado para las estadísticas de visitas del usuario
+  // State for user's visit statistics
+  const [visitStats, setVisitStats] = useState<VisitStats | null>(null);
 
   // Fallback para backendBaseUrl
   // Fallback for backendBaseUrl
@@ -155,7 +159,7 @@ export const GymPage = () => {
   // Cargar datos del gimnasio al montar
   // Load gym data on mount
   useEffect(() => {
-    const fetchGym = async () => {
+    const fetchGymAndStats = async () => {
       // Validar que el ID existe
       // Validate that ID exists
       if (!id) {
@@ -168,30 +172,46 @@ export const GymPage = () => {
       setIsLoading(true);
 
       try {
+        // Obtener datos del gimnasio
+        // Get gym data
         const gymData = await getGymById(Number(id));
         setGym(gymData);
+
+        // Si el usuario es de tipo 'user', obtener sus estadísticas de visita
+        // If the user is of type 'user', get their visit statistics
+        if (token && user?.role === 'user') {
+          const stats = await getVisitsStats(token);
+          setVisitStats(stats);
+        }
+
       } catch (err) {
         const msg = handleApiError(
           err,
-          "Hubo un problema al cargar los datos del gimnasio."
+          "Hubo un problema al cargar los datos."
         );
         setError(msg);
         toast.error(msg);
-        if (import.meta.env.DEV) console.error("Error fetching gym:", err);
+        if (import.meta.env.DEV) console.error("Error fetching data:", err);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchGym();
-  }, [id]);
+    fetchGymAndStats();
+  }, [id, token, user]);
 
   // --- Manejar la confirmación y registro de visita ---
   // --- Handle visit confirmation and registration ---
 
-  // PASO 1: Abrir el modal de confirmación
-  // STEP 1: Open confirmation modal
+  // PASO 1: Abrir el modal de confirmación, comprobando el límite de visitas
+  // STEP 1: Open confirmation modal, checking visit limit
   const handleVisitClick = () => {
+    // Comprobar si el usuario ha alcanzado el límite de visitas mensuales
+    // Check if the user has reached the monthly visit limit
+    if (visitStats && visitStats.thisMonth >= 10) {
+      toast.error("Has alcanzado el límite de 10 visitas a otros gimnasios este mes.");
+      return;
+    }
     setShowConfirmModal(true);
   };
 
@@ -270,6 +290,14 @@ export const GymPage = () => {
       }`
     : "/images/gym-image/default-gym-image.jpg";
 
+  // Condición para mostrar el botón de visita
+  // Condition to show the visit button
+  const canVisit = user &&
+    user.role === 'user' &&
+    gym &&
+    user.home_gym_id !== gym.id &&
+    user.home_gym_city?.toLowerCase() !== gym.city?.toLowerCase();
+
   // Render principal
   return (
     <div style={styles.container}>
@@ -340,12 +368,9 @@ export const GymPage = () => {
         )}
       </div>
 
-      {/* Botón "Visitar" solo para usuarios (no en su gym de origen) */}
-      {/* "Visit" button only for users (not in their home gym) */}
-      {user &&
-        user.role === "user" &&
-        gym &&
-        (!user.home_gym_id || user.home_gym_id !== gym.id) && (
+      {/* Botón "Visitar" solo para usuarios (no en su gym de origen y no en su ciudad) */}
+      {/* "Visit" button only for users (not in their home gym and not in their city) */}
+      {canVisit && (
           <button
             style={{
               ...styles.visitButton,

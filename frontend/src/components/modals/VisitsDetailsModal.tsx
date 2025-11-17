@@ -338,8 +338,7 @@ export const VisitsDetailsModal = ({
           {/* Contenido del modal (solo vista) */}
           {/* Modal content (view-only) */}
           <div style={styles.infoSection}>
-            {/* --- INICIO DE REFACTORIZACIÓN DE LAYOUT --- */}
-            {/* --- START OF LAYOUT REFACTORING --- */}
+           
 
             <div style={styles.journeyContainer}>
               {/* Mostrar bloque de Origen si es necesario */}
@@ -375,8 +374,7 @@ export const VisitsDetailsModal = ({
               )}
             </div>
             
-            {/* --- FIN DE REFACTORIZACIÓN DE LAYOUT --- */}
-            {/* --- END OF LAYOUT REFACTORING --- */}
+           
 
             <div style={styles.dateRow}>
               <label style={styles.dateLabel}>Fecha y Hora de la Visita:</label>

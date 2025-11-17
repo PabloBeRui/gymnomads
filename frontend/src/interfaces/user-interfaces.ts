@@ -61,6 +61,7 @@ export interface User {
   phone?: string | null;
   profile_picture?: string | null; // URL de la imagen de perfil / Profile picture URL
   home_gym_id: number;
+  home_gym_city: string; // Ciudad del gimnasio del usuario / User's home gym city
   registered_at: string; // O Date / Or Date
   role: string;
 }

@@ -91,10 +91,23 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: "#007bff",
     margin: "0 0 5px 0",
   },
+  // Estilo para el número cuando se alcanza el límite
+  // Style for the number when the limit is reached
+  statNumberError: {
+    color: '#dc3545', // Rojo
+  },
   statLabel: {
     fontSize: "1rem",
     color: "#495057",
     margin: 0,
+  },
+  // Estilo para el mensaje de límite alcanzado
+  // Style for the limit reached message
+  limitMessage: {
+    fontSize: '0.8rem',
+    color: '#dc3545',
+    marginTop: '5px',
+    fontWeight: 'bold',
   },
   loadingText: {
     textAlign: "center",
@@ -252,6 +265,8 @@ export const VisitsStatsModal: React.FC<VisitsStatsModalProps> = ({
         {/* Show stats (if not loading and no error) */}
         {!isLoading && !error && stats && (
           <>
+            {/* --- Vista para Manager --- */}
+            {/* --- Manager View --- */}
             {viewMode === "manager" ? (
               statsViewMode === "received" ? (
                 <>
@@ -265,15 +280,15 @@ export const VisitsStatsModal: React.FC<VisitsStatsModalProps> = ({
                   </h3>
                   <div style={styles.statsContainer}>
                     <div style={styles.statBox}>
-                      <p style={styles.statNumber}>{stats.todayReceived}</p>
+                      <p style={styles.statNumber}>{stats.todayReceived ?? 0}</p>
                       <p style={styles.statLabel}>Hoy</p>
                     </div>
                     <div style={styles.statBox}>
-                      <p style={styles.statNumber}>{stats.thisMonthReceived}</p>
+                      <p style={styles.statNumber}>{stats.thisMonthReceived ?? 0}</p>
                       <p style={styles.statLabel}>Este Mes</p>
                     </div>
                     <div style={styles.statBox}>
-                      <p style={styles.statNumber}>{stats.totalReceived}</p>
+                      <p style={styles.statNumber}>{stats.totalReceived ?? 0}</p>
                       <p style={styles.statLabel}>Totales</p>
                     </div>
                   </div>
@@ -290,32 +305,37 @@ export const VisitsStatsModal: React.FC<VisitsStatsModalProps> = ({
                   </h3>
                   <div style={styles.statsContainer}>
                     <div style={styles.statBox}>
-                      <p style={styles.statNumber}>{stats.todaySent}</p>
+                      <p style={styles.statNumber}>{stats.todaySent ?? 0}</p>
                       <p style={styles.statLabel}>Hoy</p>
                     </div>
                     <div style={styles.statBox}>
-                      <p style={styles.statNumber}>{stats.thisMonthSent}</p>
+                      <p style={styles.statNumber}>{stats.thisMonthSent ?? 0}</p>
                       <p style={styles.statLabel}>Este Mes</p>
                     </div>
                     <div style={styles.statBox}>
-                      <p style={styles.statNumber}>{stats.totalSent}</p>
+                      <p style={styles.statNumber}>{stats.totalSent ?? 0}</p>
                       <p style={styles.statLabel}>Totales</p>
                     </div>
                   </div>
                 </>
               )
             ) : (
+              /* --- Vista para Usuario y Admin (Estadísticas generales) --- */
+              /* --- User and Admin View (General Statistics) --- */
               <div style={styles.statsContainer}>
                 <div style={styles.statBox}>
-                  <p style={styles.statNumber}>{stats.today}</p>
+                  <p style={styles.statNumber}>{stats.today ?? 0}</p>
                   <p style={styles.statLabel}>Visitas Hoy</p>
                 </div>
                 <div style={styles.statBox}>
-                  <p style={styles.statNumber}>{stats.thisMonth}</p>
+                  <p style={{...styles.statNumber, ...((stats.thisMonth ?? 0) >= 10 ? styles.statNumberError : {})}}>{stats.thisMonth ?? 0}</p>
                   <p style={styles.statLabel}>Visitas este Mes</p>
+                  {(stats.thisMonth ?? 0) >= 10 && (
+                    <p style={styles.limitMessage}>Máximo de visitas mensuales completado</p>
+                  )}
                 </div>
                 <div style={styles.statBox}>
-                  <p style={styles.statNumber}>{stats.total}</p>
+                  <p style={styles.statNumber}>{stats.total ?? 0}</p>
                   <p style={styles.statLabel}>Visitas Totales</p>
                 </div>
               </div>

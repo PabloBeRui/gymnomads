@@ -125,10 +125,15 @@ const getProfile = async (req, res) => {
     // 1. Get the user ID from the middleware
     const userId = req.user.userId;
 
-    // 2. Buscar al usuario en la base de datos
-    // 2. Find the user in the database
+    // 2. Buscar al usuario en la base de datos, uniendo con la tabla de gimnasios para obtener la ciudad
+    // 2. Find the user in the database, joining with the gyms table to get the city
     const [users] = await db.query(
-      "SELECT id, first_name, last_name, email, phone, home_gym_id, profile_picture, role, registered_at FROM users WHERE id = ?",
+      `SELECT 
+        u.id, u.first_name, u.last_name, u.email, u.phone, u.home_gym_id, 
+        u.profile_picture, u.role, u.registered_at, g.city as home_gym_city
+       FROM users u
+       LEFT JOIN gyms g ON u.home_gym_id = g.id
+       WHERE u.id = ?`,
       [userId]
     );
 

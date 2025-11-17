@@ -276,8 +276,8 @@ export const UserDetailModal = ({
               <div style={styles.value}>{user.phone || "No especificado"}</div>
             </div>
 
-           {/* --- INICIO MODIFICACIÓN: Mostrar ciudad al Admin --- */}
-            {/* --- START MODIFICATION: Show city to Admin --- */}
+           {/* ---  Mostrar ciudad al Admin --- */}
+            {/* ---  Show city to Admin --- */}
             {authUser?.role === "admin" && (
               // El Admin SÍ ve el gimnasio de origen y la ciudad
               // Admin DOES see the home gym and city
@@ -306,7 +306,7 @@ export const UserDetailModal = ({
             )}
             {/* El Manager NO ve este bloque (es redundante) */}
             {/* Manager DOES NOT see this block (it's redundant) */}
-            {/* --- FIN MODIFICACIÓN --- */}
+            
 
             <div style={styles.infoRow}>
               <label style={styles.label}>Miembro desde:</label>
