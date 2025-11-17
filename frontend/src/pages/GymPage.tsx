@@ -208,7 +208,7 @@ export const GymPage = () => {
   const handleVisitClick = () => {
     // Comprobar si el usuario ha alcanzado el límite de visitas mensuales
     // Check if the user has reached the monthly visit limit
-    if (visitStats && visitStats.thisMonth >= 10) {
+    if ((visitStats?.thisMonth ?? 0) >= 10) {
       toast.error("Has alcanzado el límite de 10 visitas a otros gimnasios este mes.");
       return;
     }
