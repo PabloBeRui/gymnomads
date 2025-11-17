@@ -98,9 +98,9 @@ const styles: { [key: string]: React.CSSProperties } = {
 export const JoinUsPage = () => {
   return (
     <div style={styles.pageContainer}>
-      {/* Botón de cierre con comportamiento por defecto (navigate(-1)) */}
-      {/* Close button with default behavior (navigate(-1)) */}
-      <CloseButton />
+      {/* Botón de cierre ahora redirige a la página principal */}
+      {/* Close button now redirects to the main page */}
+      <CloseButton navigateTo="/" />
 
       <h1 style={styles.title}>Únete a la Revolución del Fitness</h1>
 

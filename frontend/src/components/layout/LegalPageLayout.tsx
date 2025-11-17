@@ -49,7 +49,7 @@ const styles: { [key: string]: React.CSSProperties } = {
 export const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({ title, children }) => {
   return (
     <div style={styles.container}>
-      <CloseButton />
+      <CloseButton navigateTo="/" />
       <h1 style={styles.title}>{title}</h1>
       <div style={styles.content}>
         {children}

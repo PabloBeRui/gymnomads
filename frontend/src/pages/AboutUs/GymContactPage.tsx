@@ -119,7 +119,7 @@ export const GymContactPage = () => {
 
   return (
     <div style={styles.pageContainer}>
-      <CloseButton />
+      <CloseButton navigateTo="/" />
       <h1 style={styles.title}>Contacta con Nosotros</h1>
       <p style={styles.subtitle}>
         ¿Eres un gimnasio y quieres unirte a nuestra red? Rellena el siguiente
