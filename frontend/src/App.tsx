@@ -6,7 +6,6 @@ import { Toaster } from "sonner";
 import { Routes, Route, Link } from "react-router-dom";
 
 //Componentes / Components
-import { ApiTest } from "./components/ApiTest";
 import { Avatar } from "./components/Avatar";
 import Footer from "./components/layout/Footer"; // Importar el nuevo Footer
 import { CookieConsentModal } from "./components/ui/CookieConsentModal";
@@ -32,6 +31,8 @@ import { AboutUsPage } from "./pages/AboutUs/AboutUsPage";
 import { FaqPage } from "./pages/AboutUs/FaqPage";
 import { JoinUsPage } from "./pages/AboutUs/JoinUsPage";
 import { GymContactPage } from "./pages/AboutUs/GymContactPage";
+import { LandingPage } from "./pages/LandingPage/LandingPage";
+
 
 // Importar el hook de autenticación / Import the authentication hook
 import { useAuth } from "./context/AuthContext";
@@ -157,7 +158,7 @@ function App() {
               RUTAS PÚBLICAS
               PUBLIC ROUTES
               ======================================== */}
-          <Route path="/" element={<ApiTest />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/register" element={<RegisterUserPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/gyms" element={<ListGymsPage />} />
