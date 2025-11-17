@@ -20,6 +20,7 @@
     "react-icons": "^5.5.0",
     "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.9.4",
+    "sass": "^1.94.0",
     "sonner": "^2.0.7"
   },
   "devDependencies": {

@@ -1,0 +1,43 @@
+/* =============================================================================
+   ARCHIVO SASS PRINCIPAL (index.scss)
+   MAIN SASS FILE (index.scss)
+   ============================================================================= */
+
+/* 1. DEFINE TUS VARIABLES PRIMERO
+   ============================================================================= */
+// Aquí redefinimos los colores base de Bootstrap ANTES de importarlo.
+// We redefine Bootstrap's base colors HERE before importing it.
+
+// (Puedes cambiar estos códigos de color por los de tu paleta de diseño)
+$primary: #0d6efd; // El azul por defecto
+$success: #198754; // El verde por defecto
+$danger: #dc3545; // El rojo por defecto
+$warning: #ffc107; // El amarillo por defecto
+$info: #0dcaf0; // El cian por defecto
+$light: #f8f9fa; // El gris claro por defecto
+$dark: #1a202c; // Tu gris oscuro del footer
+
+// También puedes cambiar fuentes, bordes, etc.
+// $font-family-base: 'Roboto', sans-serif;
+// $border-radius: 0.5rem;
+
+/* 2. IMPORTA EL SASS DE BOOTSTRAP
+   ============================================================================= */
+// Ahora Bootstrap se "compilará" usando tus variables de arriba.
+// Bootstrap will now "compile" using your variables from above.
+@import "bootstrap/scss/bootstrap";
+
+/* ==========================================================================
+   Leaflet – Estilos base de la librería de mapas interactivos
+   Necesario para que los mapas de OpenStreetMap (y otros proveedores) 
+   se vean correctamente: marcadores, zoom, capas, popups, etc.
+   https://leafletjs.com
+   ========================================================================== */
+
+/* 
+   Leaflet – Base styles for the interactive map library
+   Required so OpenStreetMap maps (and other tile providers) 
+   display correctly: markers, zoom controls, popups, tiles, etc.
+   https://leafletjs.com
+*/
+@import "leaflet/dist/leaflet.css";
