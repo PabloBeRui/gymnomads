@@ -135,7 +135,7 @@ export const JoinUsPage = () => {
         {/* --- Tarjeta 2: Soy un Gimnasio --- */}
         {/* --- card 2: Gym --- */}
         <Link
-          to="/contact" 
+          to="/gym-contact" 
           style={styles.ctaCard}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = styles.ctaCardHover.transform || '';

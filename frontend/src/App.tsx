@@ -31,6 +31,7 @@ import { LegalNoticePage } from "./pages/Legal/LegalNoticePage";
 import { AboutUsPage } from "./pages/AboutUs/AboutUsPage";
 import { FaqPage } from "./pages/AboutUs/FaqPage";
 import { JoinUsPage } from "./pages/AboutUs/JoinUsPage";
+import { GymContactPage } from "./pages/AboutUs/GymContactPage";
 
 // Importar el hook de autenticación / Import the authentication hook
 import { useAuth } from "./context/AuthContext";
@@ -169,6 +170,7 @@ function App() {
           <Route path="/about-us" element={<AboutUsPage />} />
           <Route path="/faq" element={<FaqPage />} />
           <Route path="/join" element={<JoinUsPage />} />
+          <Route path="/gym-contact" element={<GymContactPage />} />
 
           {/* ========================================
               RUTAS PROTEGIDAS: Autenticación requerida -User
