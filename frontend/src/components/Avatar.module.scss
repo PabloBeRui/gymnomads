@@ -6,16 +6,26 @@
  */
 
 .avatarContainer {
+  /* Forma y alineación del contenido / Shape and content alignment */
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--bs-white);
-  font-weight: 600;
   overflow: hidden;
   flex-shrink: 0;
+
+  /* Color y fuente para las iniciales / Color and font for initials */
+  color: var(--bs-white);
+  font-weight: 600;
+
+  /* Comportamiento del usuario / User behavior */
   user-select: none;
   transition: transform 0.2s ease;
+
+  /* Tamaño controlado por variable CSS, con un fallback / Size controlled by CSS variable, with a fallback */
+  width: var(--avatar-size, 40px);
+  height: var(--avatar-size, 40px);
+  font-size: calc(var(--avatar-size, 40px) * 0.4);
 }
 
 .avatarContainer.clickable {

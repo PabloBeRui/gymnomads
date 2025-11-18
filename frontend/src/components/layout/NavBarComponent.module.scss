@@ -5,12 +5,49 @@
  * =============================================================================
  */
 
-/* No hay estilos específicos en este componente que no puedan ser manejados
-   directamente por las clases de Bootstrap o por estilos globales.
-   Este archivo se crea para mantener la consistencia, pero puede permanecer
-   vacío si no se requieren estilos personalizados. */
+// Define el tamaño del avatar en la barra de navegación y lo hace responsive.
+// Defines the size of the avatar in the navbar and makes it responsive.
+.navAvatar {
+    --avatar-size: 50px; // Tamaño base para escritorio, ajustado para mejor proporción. / Base size for desktop, adjusted for better proportion.
+    
+    // En el menú hamburguesa, el avatar es ligeramente más pequeño.
+    // In the hamburger menu, the avatar is slightly smaller.
+    @media (max-width: 991.98px) {
+        --avatar-size: 40px;
+    }
+}
 
-/* No specific styles in this component that cannot be handled directly
-   by Bootstrap classes or global styles.
-   This file is created for consistency, but can remain empty if no
-   custom styles are required. */
+// Estilos para el menú superpuesto en la vista móvil.
+// Styles for the overlay menu in the mobile view.
+.mobileOverlay {
+    // Estos estilos se aplican solo en la vista de navbar colapsado (móvil/tablet).
+    // These styles apply only in the collapsed navbar view (mobile/tablet).
+    @media (max-width: 991.98px) {
+        
+        // Se aplica mientras la animación de colapso está ocurriendo y cuando está visible.
+        // Applies while the collapse animation is occurring and when it is visible.
+        &.collapsing, &.show {
+            position: absolute;
+            top: 100%; // Se posiciona justo debajo del navbar. / Positions right below the navbar.
+            right: 0;
+            left: 0; // Ocupa todo el ancho. / Occupies the full width.
+            z-index: 1021; // Se asegura de que esté por encima del contenido. / Ensures it's on top of the content.
+
+            // Estilo del fondo del overlay.
+            // Overlay background style.
+            background: rgba(33, 37, 41, 0.6); // Fondo oscuro con 60% de opacidad. / Dark background with 60% opacity.
+            backdrop-filter: blur(5px); // Efecto de desenfoque para el fondo. / Blur effect for the background.
+            padding: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        // El contenedor de los enlaces de navegación.
+        // The container for the navigation links.
+        .nav {
+            // Fuerza a los elementos a alinearse a la derecha.
+            // Forces items to align to the right.
+            align-items: flex-end; 
+            width: 100%;
+        }
+    }
+}
