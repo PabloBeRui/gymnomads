@@ -6,17 +6,22 @@
  *
  * Componente reutilizable para mostrar códigos QR estilizados.
  * Utiliza 'qr-code-styling' para generar un QR con logo.
+ * Refactorizado para usar SASS Modules.
  *
  * Reusable component to display stylized QR codes.
  * Uses 'qr-code-styling' to generate a QR with a logo.
+ * Refactored to use SASS Modules.
  *
  * =============================================================================
  */
 
-// ---  imports de React y la librería ---
-// ---  React imports and the library ---
+// ---  imports de React y la librería --- / ---  React imports and the library ---
 import React, { useEffect, useRef } from "react";
 import QRCodeStyling from "qr-code-styling";
+
+// Importar el módulo SCSS / Import the SCSS module
+import styles from "./QRCodeComponent.module.scss";
+import clsx from "clsx"; // Importar clsx / Import clsx
 
 /* =============================================================================
     PROPS
@@ -35,37 +40,6 @@ interface QRCodeComponentProps {
   // Texto alternativo (opcional) / Alt text (optional)
   altText?: string;
 }
-
-/* =============================================================================
-    ESTILOS (inline)
-    STYLES (inline)
-    ============================================================================= */
-const styles: { [key: string]: React.CSSProperties } = {
-  qrContainer: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  // ---  Estilo para el contenedor que tendrá el canvas del QR ---
-  // ---  Style for the container that will hold the QR canvas ---
-  qrCodeWrapper: {
-    backgroundColor: "#ffffff", // Fondo blanco / White background
-    border: "1px solid #eee", // Borde sutil / Subtle border
-    borderRadius: "12px", // Bordes redondeados / Rounded borders
-    display: "flex", // Centrar el canvas si es necesario / Center the canvas if needed
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "16px", // Espacio interno / Internal padding
-    boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-  },
-  qrInfo: {
-    fontSize: "0.85rem",
-    color: "#999",
-    marginTop: "10px",
-    fontStyle: "italic",
-  },
-};
 
 /* =============================================================================
     COMPONENTE: QRCodeComponent
@@ -127,10 +101,10 @@ export const QRCodeComponent = ({
   // --- END QR-CODE-STYLING LOGIC ---
 
   return (
-    <div style={styles.qrContainer}>
+    <div className={styles.qrContainer}>
       <div
         ref={qrRef}
-        style={styles.qrCodeWrapper} // Usamos el nuevo estilo wrapper / Using the new wrapper style
+        className={styles.qrCodeWrapper} // Usamos el nuevo estilo wrapper / Using the new wrapper style
         aria-label={altText}
         role="img"
       />
@@ -138,7 +112,7 @@ export const QRCodeComponent = ({
       {/* Información de desarrollo (se mantiene de tu código original) */}
       {/* Development info (kept from your original code) */}
       {import.meta.env.DEV && (
-        <p style={styles.qrInfo}>
+        <p className={styles.qrInfo}>
           Dev: QR data = "{data.substring(0, 30)}
           {data.length > 30 ? "..." : ""}"
         </p>

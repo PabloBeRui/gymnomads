@@ -4,7 +4,10 @@
  * =============================================================================
  *
  * Página para editar gimnasios existentes.
+ * Refactorizado para usar React-Bootstrap y SASS Modules.
+ *
  * Page to edit existing gyms.
+ * Refactored to use React-Bootstrap and SASS Modules.
  *
  * Permisos / Permissions:
  * - Admin: puede editar SOLO datos de texto (nombre, dirección, coordenadas)
@@ -60,46 +63,12 @@ import type { Gym } from "../interfaces/gym-interfaces";
 // Utilidades / Utilities
 import { handleApiError } from "../utils/error-handler";
 
-/* =============================================================================
-   ESTILOS / Inline styles
-   ============================================================================= */
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    padding: "20px",
-    maxWidth: "800px",
-    margin: "20px auto",
-    border: "1px solid #ccc",
-    borderRadius: "8px",
-  },
-  formGroup: { marginBottom: "15px" },
-  label: { display: "block", marginBottom: "5px", fontWeight: "bold" },
-  input: {
-    width: "100%",
-    padding: "8px",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    boxSizing: "border-box",
-  },
-  disabledInput: { backgroundColor: "#e9ecef", cursor: "not-allowed" },
-  button: {
-    padding: "10px 15px",
-    backgroundColor: "#28a745",
-    color: "white",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-    marginTop: "10px",
-  },
-  cancelButton: { backgroundColor: "#6c757d", marginLeft: "10px" },
-  errorText: { color: "red", fontSize: "0.9em", marginTop: "10px" },
-  previewImage: {
-    maxWidth: "200px",
-    maxHeight: "150px",
-    marginTop: "10px",
-    display: "block",
-    border: "1px solid #eee",
-  },
-};
+// Importar componentes de React-Bootstrap / Import React-Bootstrap components
+import { Container, Form, Button, Alert, Spinner } from "react-bootstrap";
+
+// Importar el módulo SCSS / Import the SCSS module
+import styles from "./EditGymPage.module.scss";
+import clsx from "clsx"; // Importar clsx / Import clsx
 
 /* =============================================================================
    COMPONENTE: EditGymPage
@@ -347,118 +316,112 @@ export const EditGymPage = () => {
   /* ===========================================================================
      RENDER
      =========================================================================== */
-  if (isLoading) return <div style={styles.container}>Cargando...</div>;
+  if (isLoading) return (
+    <Container className="text-center mt-5">
+      <Spinner animation="border" role="status">
+        <span className="visually-hidden">Cargando...</span>
+      </Spinner>
+    </Container>
+  );
 
   const displayError = loadError || formError;
 
   if (displayError || !originalGymData) {
     return (
-      <div style={styles.container}>
-        <p style={styles.errorText}>{displayError || "No se encontró el gimnasio."}</p>
-        <button onClick={() => navigate("/gyms")} style={styles.button}>
+      <Container className={styles.container}>
+        <Alert variant="danger">{displayError || "No se encontró el gimnasio."}</Alert>
+        <Button onClick={() => navigate("/gyms")} variant="primary">
           Volver a la lista
-        </button>
-      </div>
+        </Button>
+      </Container>
     );
   }
 
   return (
-    <div style={styles.container}>
+    <Container className={styles.container}>
       <h2>
         Editar Gimnasio: {originalGymData.name} (ID: {id})
       </h2>
 
-      <form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit}>
         {/* TEXT FIELDS (Admin only) / CAMPOS DE TEXTO (solo Admin) */}
-        <div style={styles.formGroup}>
-          <label htmlFor="name" style={styles.label}>
-            Nombre:
-          </label>
-          <input
+        <Form.Group className="mb-3">
+          <Form.Label>Nombre:</Form.Label>
+          <Form.Control
             id="name"
             name="name"
             type="text"
             value={name}
             onChange={handleChange}
-            style={isManagerEditing ? { ...styles.input, ...styles.disabledInput } : styles.input}
+            className={clsx({ [styles.disabledInput]: isManagerEditing })}
             disabled={isManagerEditing}
             required
           />
-        </div>
+        </Form.Group>
 
-        <div style={styles.formGroup}>
-          <label htmlFor="address" style={styles.label}>
-            Dirección:
-          </label>
-          <input
+        <Form.Group className="mb-3">
+          <Form.Label>Dirección:</Form.Label>
+          <Form.Control
             id="address"
             name="address"
             type="text"
             value={address}
             onChange={handleChange}
-            style={isManagerEditing ? { ...styles.input, ...styles.disabledInput } : styles.input}
+            className={clsx({ [styles.disabledInput]: isManagerEditing })}
             disabled={isManagerEditing}
             required
           />
-        </div>
+        </Form.Group>
 
-        <div style={styles.formGroup}>
-          <label htmlFor="city" style={styles.label}>
-            Ciudad:
-          </label>
-          <input
+        <Form.Group className="mb-3">
+          <Form.Label>Ciudad:</Form.Label>
+          <Form.Control
             id="city"
             name="city"
             type="text"
             value={city}
             onChange={handleChange}
-            style={isManagerEditing ? { ...styles.input, ...styles.disabledInput } : styles.input}
+            className={clsx({ [styles.disabledInput]: isManagerEditing })}
             disabled={isManagerEditing}
             required
           />
-        </div>
+        </Form.Group>
 
-        <div style={styles.formGroup}>
-          <label htmlFor="latitude" style={styles.label}>
-            Latitud:
-          </label>
-          <input
+        <Form.Group className="mb-3">
+          <Form.Label>Latitud:</Form.Label>
+          <Form.Control
             id="latitude"
             name="latitude"
             type="number"
             step="any"
             value={latitude}
             onChange={handleChange}
-            style={isManagerEditing ? { ...styles.input, ...styles.disabledInput } : styles.input}
+            className={clsx({ [styles.disabledInput]: isManagerEditing })}
             disabled={isManagerEditing}
             required
           />
-        </div>
+        </Form.Group>
 
-        <div style={styles.formGroup}>
-          <label htmlFor="longitude" style={styles.label}>
-            Longitud:
-          </label>
-          <input
+        <Form.Group className="mb-3">
+          <Form.Label>Longitud:</Form.Label>
+          <Form.Control
             id="longitude"
             name="longitude"
             type="number"
             step="any"
             value={longitude}
             onChange={handleChange}
-            style={isManagerEditing ? { ...styles.input, ...styles.disabledInput } : styles.input}
+            className={clsx({ [styles.disabledInput]: isManagerEditing })}
             disabled={isManagerEditing}
             required
           />
-        </div>
+        </Form.Group>
 
         {/* IMAGES SECTION (Manager edits, Admin sees read-only previews) */}
-        <div style={styles.formGroup}>
+        <Form.Group className="mb-3">
           {isManagerEditing ? (
             <>
-              <label htmlFor="logoFile" style={styles.label}>
-                Logo
-              </label>
+              <Form.Label>Logo</Form.Label>
               <input
                 id="logoFile"
                 type="file"
@@ -479,16 +442,14 @@ export const EditGymPage = () => {
               />
             </>
           ) : (
-            logoUpload.previewUrl && <img src={logoUpload.previewUrl} alt="Logo actual" style={styles.previewImage} />
+            logoUpload.previewUrl && <img src={logoUpload.previewUrl} alt="Logo actual" className={styles.previewImage} />
           )}
-        </div>
+        </Form.Group>
 
-        <div style={styles.formGroup}>
+        <Form.Group className="mb-3">
           {isManagerEditing ? (
             <>
-              <label htmlFor="mainImageFile" style={styles.label}>
-                Imagen Principal
-              </label>
+              <Form.Label>Imagen Principal</Form.Label>
               <input
                 id="mainImageFile"
                 type="file"
@@ -509,21 +470,21 @@ export const EditGymPage = () => {
               />
             </>
           ) : (
-            mainImageUpload.previewUrl && <img src={mainImageUpload.previewUrl} alt="Imagen principal actual" style={styles.previewImage} />
+            mainImageUpload.previewUrl && <img src={mainImageUpload.previewUrl} alt="Imagen principal actual" className={styles.previewImage} />
           )}
-        </div>
+        </Form.Group>
 
         {/* ERROR MESSAGE & BUTTONS */}
-        {displayError && <p style={styles.errorText}>{displayError}</p>}
+        {displayError && <Alert variant="danger">{displayError}</Alert>}
 
-        <button type="submit" style={styles.button} disabled={isSubmitting || anyImageUploading}>
+        <Button type="submit" variant="primary" disabled={isSubmitting || anyImageUploading}>
           {isSubmitting || anyImageUploading ? "Guardando..." : isManagerEditing ? "Guardar Imágenes" : "Guardar Cambios"}
-        </button>
+        </Button>
 
-        <button type="button" onClick={() => navigate("/gyms")} style={{ ...styles.button, ...styles.cancelButton }}>
+        <Button type="button" variant="secondary" onClick={() => navigate("/gyms")} className="ms-2">
           Cancelar
-        </button>
-      </form>
-    </div>
+        </Button>
+      </Form>
+    </Container>
   );
 };

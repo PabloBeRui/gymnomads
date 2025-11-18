@@ -7,10 +7,12 @@
  * Página para mostrar los detalles de un gimnasio específico.
  * Muestra información del gimnasio, mapa (OSM), widget de tiempo (Open-Meteo)
  * y permite a los usuarios (role='user') registrar una visita.
+ * Refactorizado para usar React-Bootstrap y SASS Modules.
  *
  * Page to display details of a specific gym.
  * Shows gym info, map (OSM), weather widget (Open-Meteo), and allows
  * users (role='user') to register a visit.
+ * Refactored to use React-Bootstrap and SASS Modules.
  *
  * =============================================================================
  */
@@ -28,107 +30,18 @@ import { handleApiError } from "../utils/error-handler";
 import { ConfirmationModal } from "../components/modals/ConfirmationModal";
 import { CloseButton } from "../components/ui/CloseButton"; // Importar el botón de cierre
 
-// Importar el WeatherWidget ---
-// -Import the WeatherWidget ---
-
+// Importar el WeatherWidget --- / -Import the WeatherWidget ---
 import { WeatherWidget } from "../components/widgets/WeatherWidget";
 
 // --- Componente de Mapa / Map Component ---
 import { GymMap } from "../components/GymMap";
 
-/* =============================================================================
-    ESTILOS (inline)
-    STYLES (inline)
-    ============================================================================= */
+// Importar componentes de React-Bootstrap / Import React-Bootstrap components
+import { Container, Button, Spinner, Alert } from "react-bootstrap";
 
-// (Tu objeto 'styles' original se mantiene intacto)
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    padding: "20px",
-    maxWidth: "900px",
-    margin: "0 auto",
-    position: "relative",
-  },
-  loadingContainer: {
-    padding: "20px",
-    textAlign: "center",
-  },
-  errorText: {
-    color: "red",
-    padding: "20px",
-  },
-  gymHeader: {
-    marginBottom: "30px",
-    textAlign: "center",
-  },
-  gymLogo: {
-    width: "200px",
-    height: "200px",
-    objectFit: "contain",
-    marginBottom: "20px",
-    border: "2px solid #eee",
-    borderRadius: "8px",
-    padding: "10px",
-  },
-  gymName: {
-    fontSize: "2rem",
-    marginBottom: "10px",
-    color: "#333",
-  },
-  gymAddress: {
-    fontSize: "1.1rem",
-    color: "#666",
-    marginBottom: "5px",
-  },
-  gymCity: {
-    fontSize: "1.1rem",
-    color: "#666",
-    fontWeight: "bold",
-  },
-  gymImage: {
-    width: "100%",
-    height: "400px",
-    objectFit: "cover",
-    borderRadius: "8px",
-    marginBottom: "30px",
-  },
-  visitButton: {
-    width: "100%",
-    padding: "15px",
-    fontSize: "1.2rem",
-    backgroundColor: "#28a745",
-    color: "white",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontWeight: "bold",
-    transition: "background-color 0.3s",
-  },
-  visitButtonHover: {
-    backgroundColor: "#218838",
-  },
-  visitButtonDisabled: {
-    backgroundColor: "#6c757d",
-    cursor: "not-allowed",
-  },
-  // Contenedor para el botón de cierre (derecha) ---
-  // Container for close button (right) ---
-  closeButtonContainer: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    padding: "20px",
-  },
-
-  //  Contenedor para el widget de tiempo (izquierda) ---
-  // Container for weather widget (left) ---
-  weatherWidgetContainer: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    padding: "20px",
-  },
-};
+// Importar el módulo SCSS / Import the SCSS module
+import styles from "./GymPage.module.scss";
+import clsx from "clsx"; // Importar clsx / Import clsx
 
 /* =============================================================================
     COMPONENTE: GymPage
@@ -256,21 +169,25 @@ export const GymPage = () => {
   // Render loading
   if (isLoading) {
     return (
-      <div style={styles.loadingContainer}>
-        <p>Cargando datos del gimnasio...</p>
-        {/* TODO: Spinner */}
-      </div>
+      <Container className={clsx(styles.loadingContainer, "text-center mt-5")}>
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Cargando datos del gimnasio...</span>
+        </Spinner>
+      </Container>
     );
   }
 
   // Render error
   if (error || !gym) {
     return (
-      <div style={styles.container}>
-        <div style={styles.errorText}>
+      <Container className={styles.container}>
+        <Alert variant="danger">
           {error || "No se encontró el gimnasio."}
-        </div>
-      </div>
+        </Alert>
+        <Button onClick={() => navigate("/gyms")} variant="primary">
+          Volver a la lista
+        </Button>
+      </Container>
     );
   }
 
@@ -300,11 +217,11 @@ export const GymPage = () => {
 
   // Render principal
   return (
-    <div style={styles.container}>
+    <Container className={styles.container}>
       {/*  Contenedor para widgets ---
          Container for widgets ---
       */}
-      <div style={styles.widgetsContainer}>
+      <div className={styles.widgetsContainer}>
         {/* Botón de cierre importado */}
         {/* Imported close button */}
         <CloseButton navigateTo="/gyms" />
@@ -318,20 +235,20 @@ export const GymPage = () => {
 
       {/* Encabezado con logo y nombre */}
       {/* Header with logo and name */}
-      <div style={styles.gymHeader}>
+      <div className={styles.gymHeader}>
         <img
           src={logoSrc}
           alt={`Logo de ${gym.name}`}
-          style={styles.gymLogo}
+          className={styles.gymLogo}
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             target.onerror = null;
             target.src = "/images/gym-logo/default-gym-logo.png";
           }}
         />
-        <h1 style={styles.gymName}>{gym.name}</h1>
-        <p style={styles.gymAddress}>{gym.address}</p>
-        <p style={styles.gymCity}>{gym.city}</p>
+        <h1 className={styles.gymName}>{gym.name}</h1>
+        <p className={styles.gymAddress}>{gym.address}</p>
+        <p className={styles.gymCity}>{gym.city}</p>
       </div>
 
       {/* Imagen principal del gimnasio */}
@@ -339,7 +256,7 @@ export const GymPage = () => {
       <img
         src={mainImageSrc}
         alt={`Imagen de ${gym.name}`}
-        style={styles.gymImage}
+        className={styles.gymImage}
         onError={(e) => {
           const target = e.target as HTMLImageElement;
           target.onerror = null;
@@ -348,8 +265,8 @@ export const GymPage = () => {
       />
 
       {/* --- Map --- */}
-      <div style={{ marginBottom: "30px" }}>
-        <h3 style={{ marginBottom: "15px" }}>Ubicación</h3>
+      <div className="mb-4">
+        <h3 className="mb-3">Ubicación</h3>
 
         {/* --- lat/lon not null --- */}
         {gym.latitude && gym.longitude ? (
@@ -362,37 +279,23 @@ export const GymPage = () => {
         ) : (
           // Fallback si no hay coordenadas en la BBDD
           // Fallback if no coordinates are in the DB
-          <p style={{ ...styles.errorText, padding: 0 }}>
+          <Alert variant="warning" className="p-2">
             Ubicación no disponible en el mapa.
-          </p>
+          </Alert>
         )}
       </div>
 
       {/* Botón "Visitar" solo para usuarios (no en su gym de origen y no en su ciudad) */}
       {/* "Visit" button only for users (not in their home gym and not in their city) */}
       {canVisit && (
-          <button
-            style={{
-              ...styles.visitButton,
-              ...(isProcessing ? styles.visitButtonDisabled : {}),
-            }}
+          <Button
+            className={styles.visitButton}
             onClick={handleVisitClick}
             disabled={isProcessing}
             aria-label={`Registrar visita a ${gym.name}`}
-            onMouseEnter={(e) => {
-              if (!isProcessing) {
-                (e.target as HTMLButtonElement).style.backgroundColor =
-                  styles.visitButtonHover.backgroundColor || "";
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!isProcessing) {
-                (e.target as HTMLButtonElement).style.backgroundColor =
-                  styles.visitButton.backgroundColor || "";
-              }
-            }}>
+          >
             {isProcessing ? "Registrando visita..." : "Visitar"}
-          </button>
+          </Button>
         )}
 
       {/* Añadir el Modal de Confirmación */}
@@ -410,6 +313,6 @@ export const GymPage = () => {
         variant="info" // Usamos 'info' (azul)
         isLoading={isProcessing}
       />
-    </div>
+    </Container>
   );
 };

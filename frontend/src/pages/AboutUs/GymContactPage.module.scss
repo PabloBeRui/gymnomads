@@ -1,0 +1,30 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: GymContactPage
+ * STYLES FOR: GymContactPage
+ * =============================================================================
+ */
+
+.pageContainer {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 30px;
+  position: relative;
+  background-color: var(--bs-white);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.title {
+  font-size: 2rem;
+  color: var(--bs-gray-800);
+  margin-bottom: 15px;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: var(--bs-gray-600);
+  line-height: 1.6;
+  margin-bottom: 30px;
+}

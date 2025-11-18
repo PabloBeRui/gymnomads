@@ -1,3 +1,12 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { HeroSlide } from '../../components/landing/HeroSlide';
+import { InfoSlide } from '../../components/landing/InfoSlide';
+
+// Importar el módulo SCSS / Import the SCSS module
+import styles from "./LandingPage.module.scss";
+// import clsx from "clsx"; // Importar clsx / Import clsx
+
 /**
  * =============================================================================
  * PÁGINA: LandingPage
@@ -7,60 +16,20 @@
  * Descripción: La página de inicio principal ("/") de la aplicación.
  * Actúa como un contenedor de pantalla completa con "scroll-snapping"
  * para guiar al usuario a través de una serie de diapositivas (slides).
+ * Refactorizado para usar SASS Modules.
  *
  * Description: The main landing page ("/") of the application.
  * Acts as a full-screen container with "scroll-snapping"
  * to guide the user through a series of slides.
+ * Refactored to use SASS Modules.
  *
  * =============================================================================
  */
 
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { HeroSlide } from '../../components/landing/HeroSlide';
-import { InfoSlide } from '../../components/landing/InfoSlide';
 
-/* =============================================================================
-    ESTILOS (inline)
-    STYLES (inline)
-    ============================================================================= */
-const styles: { [key: string]: React.CSSProperties } = {
-  // 1. El contenedor principal para el scroll-snapping
-  // 1. The main container for scroll-snapping
-  pageContainer: {
-    height: '100vh', // Ocupar la altura completa del viewport
-    width: '100%',
-    overflowY: 'scroll', // Permitir scroll vertical
-    scrollSnapType: 'y mandatory', // La magia del snap vertical
-  },
-  
-  // 2. Estilo para el botón CTA (Llamada a la Acción)
-  // 2. Style for the CTA (Call to Action) button
-  ctaButton: {
-    padding: '12px 30px',
-    fontSize: '1.1rem',
-    fontWeight: '600',
-    color: '#fff',
-    backgroundColor: '#007bff', // Color primario (configurable)
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    textDecoration: 'none',
-    transition: 'transform 0.2s, background-color 0.2s',
-  },
-  ctaButtonHover: {
-    backgroundColor: '#0056b3',
-    transform: 'scale(1.05)',
-  }
-};
-
-/* =============================================================================
-    COMPONENTE: LandingPage
-    COMPONENT:  LandingPage
-    ============================================================================= */
 export const LandingPage: React.FC = () => {
   return (
-    <div style={styles.pageContainer}>
+    <div className={styles.pageContainer}>
       
       {/* Slide 1: El Héroe con la animación */}
       {/* Slide 1: The Hero with the animation */}
@@ -83,7 +52,7 @@ export const LandingPage: React.FC = () => {
       />
 
       {/* Slide 4: "Repite" (con el botón CTA) */}
-      {/* Slide 4: "Repeat" (with the CTA button) */}
+      {/* Slide 4: "Repeat" (con el botón CTA) */}
       <InfoSlide
         title="Repite"
         text="Mantén tu rutina. Haz crecer la comunidad. Conviértete en un auténtico GymNomad."
@@ -93,15 +62,7 @@ export const LandingPage: React.FC = () => {
         {/* The Call to Action (CTA) */}
         <Link
           to="/gyms" // Enlace a la página de listado de gimnasios
-          style={styles.ctaButton}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = styles.ctaButtonHover.backgroundColor || '';
-            e.currentTarget.style.transform = styles.ctaButtonHover.transform || '';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = styles.ctaButton.backgroundColor || '';
-            e.currentTarget.style.transform = '';
-          }}
+          className={styles.ctaButton}
         >
           Explorar Gimnasios
         </Link>

@@ -7,12 +7,12 @@
  * Componente de pie de página reutilizable para toda la aplicación.
  * Muestra información de la empresa, enlaces de navegación, perfiles de redes
  * sociales y el aviso de derechos de autor. Está dividido en varias columnas
- * para una mejor organización del contenido.
+ * para una mejor organización del contenido. Refactorizado con SASS Modules.
  *
  * Reusable footer component for the entire application.
  * Displays company information, navigation links, social media profiles, and
  * the copyright notice. It is divided into several columns for better content
- * organization.
+ * organization. Refactored with SASS Modules.
  *
  * =============================================================================
  */
@@ -20,209 +20,94 @@
 import React from "react";
 import { FaGithub, FaWhatsapp, FaMicrosoft } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { Container, Row, Col } from "react-bootstrap"; // Importar componentes de React-Bootstrap / Import React-Bootstrap components
+import styles from "./Footer.module.scss"; // Importar el módulo SCSS / Import the SCSS module
+import clsx from "clsx"; // Importar clsx / Import clsx
 
 const Footer: React.FC = () => {
-  // Estilos para el contenedor principal del footer. // Styles for the main footer container.
-  const footerStyle: React.CSSProperties = {
-    backgroundColor: "#1a202c", // Un gris oscuro y moderno // A dark, modern gray
-    color: "#e2e8f0", // Un color de texto claro que contrasta bien // A light text color that contrasts well
-    padding: "4rem 2rem",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    width: "100%",
-    boxSizing: "border-box",
-  };
-
-  // Estilos para el contenedor de las columnas de enlaces. // Styles for the link columns container.
-  const columnsContainerStyle: React.CSSProperties = {
-    display: "flex",
-    justifyContent: "space-around",
-    flexWrap: "wrap",
-    width: "100%",
-    maxWidth: "1200px",
-    marginBottom: "2rem",
-  };
-
-  // Estilos para cada columna individual. // Styles for each individual column.
-  const columnStyle: React.CSSProperties = {
-    display: "flex",
-    flexDirection: "column",
-    minWidth: "200px",
-    marginBottom: "2rem",
-  };
-
-  // Estilos para los títulos de las columnas. // Styles for the column titles.
-  const titleStyle: React.CSSProperties = {
-    fontSize: "1.1rem",
-    fontWeight: "bold",
-    marginBottom: "1rem",
-    color: "#a0aec0", // Un color de acento sutil // A subtle accent color
-    textTransform: "uppercase",
-  };
-
-  // Estilos para los enlaces del footer. // Styles for the footer links.
-  const linkStyle: React.CSSProperties = {
-    color: "#e2e8f0",
-    textDecoration: "none",
-    marginBottom: "0.5rem",
-    transition: "color 0.3s ease",
-  };
-
-  // Estilos para la sección de redes sociales. // Styles for the social media section.
-  const socialContainerStyle: React.CSSProperties = {
-    display: "flex",
-    gap: "1.5rem",
-    marginBottom: "2rem",
-  };
-
-  // Estilos para los iconos de redes sociales. // Styles for the social media icons.
-  const socialIconStyle: React.CSSProperties = {
-    fontSize: "2rem",
-    transition: "transform 0.3s ease",
-  };
-
-  // Estilos para la sección de derechos de autor. // Styles for the copyright section.
-  const copyrightStyle: React.CSSProperties = {
-    borderTop: "1px solid #4a5568",
-    paddingTop: "1.5rem",
-    width: "100%",
-    maxWidth: "1200px",
-    textAlign: "center",
-    fontSize: "0.9rem",
-    color: "#a0aec0",
-  };
-
   //WHATSAPP
-
-  // 1. Definir el mensaje de texto
-  // 1. Define the text message
+  // 1. Definir el mensaje de texto / Define the text message
   const whatsappMessage =
     "Hola, he visto tu proyecto GymNomads y me gustaría contactar contigo.";
 
-  // 2. Codificar el mensaje para la URL
-  // 2. Encode the message for the URL
+  // 2. Codificar el mensaje para la URL / Encode the message for the URL
   const encodedMessage = encodeURIComponent(whatsappMessage);
 
-  // 3. Crear el enlace completo
-  // 3. Create the full link
+  // 3. Crear el enlace completo / Create the full link
   const whatsappLink = `https://wa.me/34670025720?text=${encodedMessage}`;
 
   return (
-    <footer style={footerStyle}>
-      <div style={columnsContainerStyle}>
-        {/* Columna: Sobre Nosotros */}
-        <div style={columnStyle}>
-          <h3 style={titleStyle}>Sobre Nosotros</h3>
-          <Link
-            to="/about-us"
-            style={linkStyle}
-            onMouseOver={(e) => (e.currentTarget.style.color = "#ffffff")}
-            onMouseOut={(e) => (e.currentTarget.style.color = "#e2e8f0")}>
-            Quiénes somos
-          </Link>
-          <Link
-            to="/faq"
-            style={linkStyle}
-            onMouseOver={(e) => (e.currentTarget.style.color = "#ffffff")}
-            onMouseOut={(e) => (e.currentTarget.style.color = "#e2e8f0")}>
-            Preguntas Frecuentes
-          </Link>
-          <Link
-            to="/join"
-            style={linkStyle}
-            onMouseOver={(e) => (e.currentTarget.style.color = "#ffffff")}
-            onMouseOut={(e) => (e.currentTarget.style.color = "#e2e8f0")}>
-            Únete a Gymnomads
-          </Link>
-        </div>
+    <footer className={styles.footer}>
+      <Container className={styles.columnsContainer}>
+        <Row className="justify-content-around w-100">
+          {/* Columna: Sobre Nosotros / Column: About Us */}
+          <Col xs={12} md={4} lg={3} className={styles.column}>
+            <h3 className={styles.title}>Sobre Nosotros</h3>
+            <Link to="/about-us" className={styles.link}>
+              Quiénes somos
+            </Link>
+            <Link to="/faq" className={styles.link}>
+              Preguntas Frecuentes
+            </Link>
+            <Link to="/join" className={styles.link}>
+              Únete a Gymnomads
+            </Link>
+          </Col>
 
-        {/* Columna: Legal */}
-        <div style={columnStyle}>
-          <h3 style={titleStyle}>Páginas Legales</h3>
-          <Link
-            to="/privacy-policy"
-            style={linkStyle}
-            onMouseOver={(e) => (e.currentTarget.style.color = "#ffffff")}
-            onMouseOut={(e) => (e.currentTarget.style.color = "#e2e8f0")}>
-            Política de privacidad
-          </Link>
-          <Link
-            to="/terms-conditions"
-            style={linkStyle}
-            onMouseOver={(e) => (e.currentTarget.style.color = "#ffffff")}
-            onMouseOut={(e) => (e.currentTarget.style.color = "#e2e8f0")}>
-            Términos y condiciones
-          </Link>
-          <Link
-            to="/cookies-policy"
-            style={linkStyle}
-            onMouseOver={(e) => (e.currentTarget.style.color = "#ffffff")}
-            onMouseOut={(e) => (e.currentTarget.style.color = "#e2e8f0")}>
-            Política de Cookies
-          </Link>
-          <Link
-            to="/legal-notice"
-            style={linkStyle}
-            onMouseOver={(e) => (e.currentTarget.style.color = "#ffffff")}
-            onMouseOut={(e) => (e.currentTarget.style.color = "#e2e8f0")}>
-            Aviso Legal
-          </Link>
-        </div>
+          {/* Columna: Legal / Column: Legal */}
+          <Col xs={12} md={4} lg={3} className={styles.column}>
+            <h3 className={styles.title}>Páginas Legales</h3>
+            <Link to="/privacy-policy" className={styles.link}>
+              Política de privacidad
+            </Link>
+            <Link to="/terms-conditions" className={styles.link}>
+              Términos y condiciones
+            </Link>
+            <Link to="/cookies-policy" className={styles.link}>
+              Política de Cookies
+            </Link>
+            <Link to="/legal-notice" className={styles.link}>
+              Aviso Legal
+            </Link>
+          </Col>
 
-        {/* Columna: Contacto */}
-        <div style={columnStyle}>
-          <h3 style={titleStyle}>Contacto</h3>
-          <div style={socialContainerStyle}>
-            <a
-              href="https://github.com/PabloBeRui"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ ...linkStyle, ...socialIconStyle }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.transform = "scale(1.2)")
-              }
-              onMouseOut={(e) =>
-                (e.currentTarget.style.transform = "scale(1)")
-              }>
-              <FaGithub />
-            </a>
-            <a
-              href={whatsappLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ ...linkStyle, ...socialIconStyle }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.transform = "scale(1.2)")
-              }
-              onMouseOut={(e) =>
-                (e.currentTarget.style.transform = "scale(1)")
-              }>
-              <FaWhatsapp />
-            </a>
-            <a
-              href="msteams:l/chat/0/0?users=pablo.bellon.ruibal@gmail.com"
-              style={{ ...linkStyle, ...socialIconStyle }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.transform = "scale(1.2)")
-              }
-              onMouseOut={(e) =>
-                (e.currentTarget.style.transform = "scale(1)")
-              }>
-              <FaMicrosoft />
-            </a>
-          </div>
-        </div>
-      </div>
+          {/* Columna: Contacto / Column: Contact */}
+          <Col xs={12} md={4} lg={3} className={styles.column}>
+            <h3 className={styles.title}>Contacto</h3>
+            <div className={styles.socialContainer}>
+              <a
+                href="https://github.com/PabloBeRui"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={clsx(styles.link, styles.socialIcon)}
+                aria-label="Perfil de GitHub">
+                <FaGithub />
+              </a>
+              <a
+                href={whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={clsx(styles.link, styles.socialIcon)}
+                aria-label="Contactar por WhatsApp">
+                <FaWhatsapp />
+              </a>
+              <a
+                href="msteams:l/chat/0/0?users=pablo.bellon.ruibal@gmail.com"
+                className={clsx(styles.link, styles.socialIcon)}
+                aria-label="Contactar por Microsoft Teams">
+                <FaMicrosoft />
+              </a>
+            </div>
+          </Col>
+        </Row>
+      </Container>
 
-      <div style={copyrightStyle}>
+      <div className={styles.copyright}>
         <a
           href="https://github.com/PabloBeRui"
           target="_blank"
           rel="noopener noreferrer"
-          style={linkStyle}
-          onMouseOver={(e) => (e.currentTarget.style.color = "#ffffff")}
-          onMouseOut={(e) => (e.currentTarget.style.color = "#a0aec0")}>
+          className={styles.link}>
           © pablobellon 2025
         </a>
       </div>

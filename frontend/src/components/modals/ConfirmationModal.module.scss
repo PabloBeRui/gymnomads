@@ -1,0 +1,63 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: ConfirmationModal
+ * STYLES FOR: ConfirmationModal
+ * =============================================================================
+ */
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.modalContent {
+  background-color: var(--bs-white);
+  padding: 30px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.2s ease-in-out;
+}
+
+.modalTitle {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: var(--bs-gray-800);
+}
+
+.modalText {
+  font-size: 1rem;
+  margin-bottom: 20px;
+  color: var(--bs-gray-600);
+  line-height: 1.5;
+}
+
+.warningText {
+  font-size: 1rem;
+  margin-bottom: 15px;
+  font-weight: bold;
+  line-height: 1.5;
+}
+
+.noteText {
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  color: var(--bs-gray-600);
+  font-style: italic;
+}
+
+.modalButtons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}

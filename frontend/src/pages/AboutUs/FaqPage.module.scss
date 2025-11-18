@@ -1,0 +1,24 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: FaqPage
+ * STYLES FOR: FaqPage
+ * =============================================================================
+ */
+
+.disclaimer {
+  background-color: var(--bs-warning-bg-subtle);
+  border: 1px solid var(--bs-warning-border-subtle);
+  padding: 15px;
+  border-radius: 4px;
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: var(--bs-warning-text-emphasis);
+  text-align: left;
+}
+
+.answer {
+  padding-left: 1.5rem;
+  border-left: 3px solid var(--bs-primary);
+  color: var(--bs-body-color);
+  margin: 0.5rem 0 1.5rem 0;
+}

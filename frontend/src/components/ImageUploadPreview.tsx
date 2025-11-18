@@ -4,7 +4,10 @@
  * =============================================================================
  *
  * Componente reutilizable para mostrar preview de imágenes antes de subirlas.
+ * Refactorizado para usar SASS Modules.
+ *
  * Reusable component to show image previews before uploading.
+ * Refactored to use SASS Modules.
  *
  * Características / Features:
  * - Muestra imagen de preview o imagen por defecto / Shows preview or default image
@@ -23,6 +26,10 @@
  */
 
 import React from "react";
+
+// Importar el módulo SCSS / Import the SCSS module
+import styles from "./ImageUploadPreview.module.scss";
+import clsx from "clsx"; // Importar clsx / Import clsx
 
 /**
  * =============================================================================
@@ -87,49 +94,20 @@ export const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = ({
   // --- Determinar URL a mostrar / Determine URL to display ---
   const imageUrl = previewUrl || defaultImage;
 
-  // --- Estilos / Styles ---
-
-  /**
-   * Estilo del contenedor
-   * Container style
-   */
-  const containerStyle: React.CSSProperties = {
-    display: "inline-block",
-    textAlign: "center",
-  };
-
-  /**
-   * Estilo de la imagen
-   * Image style
-   */
-  const imageStyle: React.CSSProperties = {
-    width: `${size}px`,
-    height: `${size}px`,
-    borderRadius: shape === "circle" ? "50%" : "8px",
-    objectFit: "cover",
-    border: "2px solid #ddd",
-    cursor: onClick ? "pointer" : "default",
-    transition: "all 0.3s ease",
-    ...style, // ✅ Aplicar estilos personalizados
-  };
-
-  /**
-   * Estilo del texto de ayuda
-   * Help text style
-   */
-  const helpTextStyle: React.CSSProperties = {
-    marginTop: "8px",
-    fontSize: "0.9em",
-    color: "#666",
-    fontStyle: "italic",
-  };
-
   // --- Renderizado / Rendering ---
 
   return (
-    <div style={containerStyle}>
-      <img src={imageUrl} alt={altText} style={imageStyle} onClick={onClick} />
-      {showHelpText && <p style={helpTextStyle}>{helpText}</p>}
+    <div className={styles.container} style={style}>
+      <img
+        src={imageUrl}
+        alt={altText}
+        className={clsx(styles.image, styles[shape], {
+          [styles.clickable]: onClick,
+        })}
+        style={{ width: `${size}px`, height: `${size}px` }}
+        onClick={onClick}
+      />
+      {showHelpText && <p className={styles.helpText}>{helpText}</p>}
     </div>
   );
 };

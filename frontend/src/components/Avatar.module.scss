@@ -1,0 +1,33 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: Avatar
+ * STYLES FOR: Avatar
+ * =============================================================================
+ */
+
+.avatarContainer {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bs-white);
+  font-weight: 600;
+  overflow: hidden;
+  flex-shrink: 0;
+  user-select: none;
+  transition: transform 0.2s ease;
+}
+
+.avatarContainer.clickable {
+  cursor: pointer;
+}
+
+.avatarContainer.clickable:hover {
+  transform: scale(1.05);
+}
+
+.avatarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

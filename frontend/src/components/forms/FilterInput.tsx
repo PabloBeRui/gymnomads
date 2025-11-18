@@ -6,16 +6,19 @@
  *
  * Componente reutilizable para campos de entrada de filtro/búsqueda.
  * Encapsula la etiqueta, el campo de entrada y el texto de ayuda opcional,
- * aplicando estilos consistentes.
+ * aplicando estilos consistentes con React-Bootstrap y SASS Modules.
  *
  * Reusable component for filter/search input fields.
  * Encapsulates the label, input field, and optional help text,
- * applying consistent styling.
+ * applying consistent styling with React-Bootstrap and SASS Modules.
  *
  * =============================================================================
  */
 
 import React from "react";
+import { Form } from "react-bootstrap"; // Importar componentes de React-Bootstrap / Import React-Bootstrap components
+import styles from "./FilterInput.module.scss"; // Importar el módulo SCSS / Import the SCSS module
+import clsx from "clsx"; // Importar clsx / Import clsx
 
 // Interfaz para las props del componente FilterInput.
 // Interface for FilterInput component props.
@@ -25,38 +28,9 @@ interface FilterInputProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   helpText?: string;
-  type?: string; // Por ejemplo, "text", "email", "password" // e.g., "text", "email", "password"
-  id?: string; // ID para la accesibilidad, si no se provee, se genera uno. // ID for accessibility, if not provided, one is generated.
+  type?: string; // Por ejemplo, "text", "email", "password" / e.g., "text", "email", "password"
+  id?: string; // ID para la accesibilidad, si no se provee, se genera uno. / ID for accessibility, if not provided, one is generated.
 }
-
-// Estilos (inline) para el componente, consistentes con el proyecto.
-// Inline styles for the component, consistent with the project.
-const styles: { [key: string]: React.CSSProperties } = {
-  filterGroup: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "5px",
-    flex: "1 1 200px", // Permite que el grupo se flexione en contenedores. // Allows the group to flex in containers.
-  },
-  label: {
-    fontSize: "0.9rem",
-    fontWeight: "bold",
-    color: "#495057",
-  },
-  input: {
-    padding: "10px",
-    fontSize: "1rem",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    minWidth: "200px",
-    width: "100%", // Asegura que el input ocupe el espacio disponible. // Ensures the input takes available space.
-  },
-  helpText: {
-    fontSize: "0.85em",
-    color: "#6c757d",
-    marginTop: "2px",
-  },
-};
 
 export const FilterInput: React.FC<FilterInputProps> = ({
   label,
@@ -72,19 +46,16 @@ export const FilterInput: React.FC<FilterInputProps> = ({
   const inputId = id || `filter-input-${label.replace(/\s+/g, "-").toLowerCase()}`;
 
   return (
-    <div style={styles.filterGroup}>
-      <label htmlFor={inputId} style={styles.label}>
-        {label}
-      </label>
-      <input
-        id={inputId}
+    <Form.Group className={clsx("mb-3", styles.filterGroup)} controlId={inputId}>
+      <Form.Label className="small fw-bold text-secondary">{label}</Form.Label>
+      <Form.Control
         type={type}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        style={styles.input}
+        className={styles.input}
       />
-      {helpText && <small style={styles.helpText}>{helpText}</small>}
-    </div>
+      {helpText && <Form.Text muted>{helpText}</Form.Text>}
+    </Form.Group>
   );
 };

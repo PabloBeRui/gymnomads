@@ -8,11 +8,13 @@
  * Utiliza la API de Open-Meteo y las coordenadas (lat/lon) para obtener
  * los datos. Falla silenciosamente (muestra un espacio vacío) si la API
  * no responde o da un error, para no interrumpir la UI principal.
+ * Refactorizado para usar SASS Modules.
  *
  * Reusable component to display a 3-day weather forecast.
  * It uses the Open-Meteo API and coordinates (lat/lon) to fetch
  * the data. It fails silently (shows an empty space) if the API
  * doesn't respond or returns an error, to avoid breaking the main UI.
+ * Refactored to use SASS Modules.
  *
  * Props:
  * - latitude: Latitud del punto a consultar / Latitude of the point to query
@@ -22,9 +24,12 @@
  */
 
 import React, { useState, useEffect } from "react";
-// Importar nuestro traductor de iconos
-// Import our icon translator
+// Importar nuestro traductor de iconos / Import our icon translator
 import { getWeatherIcon } from "../../utils/weather-utils";
+
+// Importar el módulo SCSS / Import the SCSS module
+import styles from "./WeatherWidget.module.scss";
+// import clsx from "clsx"; // Importar clsx / Import clsx
 
 // Definir las props que recibirá: latitud y longitud
 // Define the props it will receive: latitude and longitude
@@ -76,7 +81,7 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
         setWeatherData(data.daily);
       } catch (error) {
         console.error("Error fetching weather:", error);
-        setWeatherData(null); // Resetear en caso de error
+        setWeatherData(null); // Resetear en caso de error / Reset in case of error
       } finally {
         setIsLoading(false);
       }
@@ -95,23 +100,10 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
   // --- Renderizado ---
   // --- Rendering ---
 
-  // Definir un estilo para el placeholder (carga y error)
-  // Define a style for the placeholder (loading and error)
-  // Altura aprox: (label 0.85rem + gap 5px + icon 30px + gap 5px + temp 0.85rem) ≈ 68px
-  // Approx height: (label 0.85rem + gap 5px + icon 30px + gap 5px + temp 0.85rem) ≈ 68px
-  const placeholderStyle: React.CSSProperties = {
-    height: "68px", // Altura fija para evitar saltos de layout
-    fontSize: "0.8rem",
-    color: "#666",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-start",
-  };
-
   // Renderizar estado de carga
   // Render loading state
   if (isLoading) {
-    return <div style={placeholderStyle}>Cargando tiempo...</div>;
+    return <div className={styles.placeholder}>Cargando tiempo...</div>;
   }
 
   // Renderizar estado de error (falla silenciosa)
@@ -119,7 +111,7 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
   if (!weatherData || !weatherData.time || weatherData.time.length === 0) {
     // Devolver el placeholder vacío, que ocupa el mismo espacio
     // Return the empty placeholder, which occupies the same space
-    return <div style={placeholderStyle} aria-hidden="true"></div>;
+    return <div className={styles.placeholder} aria-hidden="true"></div>;
   }
 
   // Definir array para los nombres de los días
@@ -129,28 +121,14 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
   return (
     // Contenedor principal: horizontal
     // Main container: horizontal
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row", // Días uno al lado del otro
-        gap: "15px", // Espacio entre días
-        alignItems: "center",
-      }}>
+    <div className={styles.weatherContainer}>
       {weatherData.time.map((time, index) => (
         // Contenedor de día: vertical y centrado
         // Day container: vertical and centered
-        <div
-          key={time}
-          style={{
-            display: "flex",
-            flexDirection: "column", // (Hoy / Icono / Temp)
-            alignItems: "center",
-            gap: "5px",
-            fontSize: "0.85rem",
-          }}>
+        <div key={time} className={styles.dayContainer}>
           {/* Etiqueta del día (Hoy, Mañana, Pasado) */}
           {/* Day label (Today, Tomorrow, After) */}
-          <span style={{ fontWeight: "500" }}>{dayLabels[index]}</span>
+          <span className={styles.dayLabel}>{dayLabels[index]}</span>
 
           {/* Icono del tiempo */}
           {/* Weather icon */}

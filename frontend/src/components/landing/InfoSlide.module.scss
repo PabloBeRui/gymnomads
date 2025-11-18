@@ -1,0 +1,38 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: InfoSlide
+ * STYLES FOR: InfoSlide
+ * =============================================================================
+ */
+
+.slide {
+  height: 100vh; // Ocupar toda la altura del viewport / Occupy full viewport height
+  width: 100%;
+  scroll-snap-align: start; // Clave para el scroll-snapping / Key for scroll-snapping
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  box-sizing: border-box; // Asegurar que el padding no desborde / Ensure padding does not overflow
+  text-align: center;
+  transition: background-color 0.5s ease; // Transición suave de color / Smooth color transition
+}
+
+.title {
+  font-size: clamp(2.5rem, 5vw, 4rem); // Tamaño de fuente responsive / Responsive font size
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: var(--bs-dark); // Color de texto oscuro por defecto / Default dark text color
+}
+
+.text {
+  font-size: clamp(1rem, 2.5vw, 1.25rem); // Tamaño de fuente responsive / Responsive font size
+  color: var(--bs-secondary);
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+.childrenContainer {
+  margin-top: 2.5rem;
+}

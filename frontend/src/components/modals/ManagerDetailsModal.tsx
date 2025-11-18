@@ -1,9 +1,11 @@
 /**
  * =============================================================================
  * COMPONENTE: ManagerDetailsModal
+ * COMPONENT: ManagerDetailsModal
  * =============================================================================
  *
  * Modal para visualizar y editar la información de un manager.
+ * Refactorizado para usar React-Bootstrap y SASS Modules.
  *
  * FUNCIONALIDADES:
  * - Visualizar todos los datos del manager (nombre, apellidos, email, teléfono, gimnasio)
@@ -18,6 +20,7 @@
  * Solo se elimina al eliminar el gimnasio asociado (acción en CASCADE).
  *
  * Modal to view and edit manager information.
+ * Refactored to use React-Bootstrap and SASS Modules.
  *
  * FEATURES:
  * - View all manager data (name, last name, email, phone, gym)
@@ -37,7 +40,12 @@
 import { useState, useEffect, useCallback } from "react";
 import type { ManagerWithGym } from "../../interfaces/user-interfaces";
 import { Avatar } from "../Avatar";
-import { CloseButton } from "../ui/CloseButton"; // Importar el nuevo componente
+import { CloseButton } from "../ui/CloseButton"; // Importar el nuevo componente / Import the new component
+
+// Importar componentes de React-Bootstrap / Import React-Bootstrap components
+import { Modal, Form, Button, Row, Col } from "react-bootstrap";
+import styles from "./ManagerDetailsModal.module.scss"; // Importar el módulo SCSS / Import the SCSS module
+import clsx from "clsx"; // Importar clsx / Import clsx
 
 /* =============================================================================
    INTERFACES
@@ -63,158 +71,6 @@ export interface UpdateManagerData {
   last_name: string;
   phone?: string;
 }
-
-/* =============================================================================
-   ESTILOS (inline)
-   STYLES (inline)
-   ============================================================================= */
-
-const styles: { [key: string]: React.CSSProperties } = {
-  modalOverlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 1000,
-    animation: "fadeIn 0.2s ease-in-out",
-  },
-  modalContent: {
-    backgroundColor: "white",
-    padding: "30px",
-    borderRadius: "8px",
-    maxWidth: "600px",
-    width: "90%",
-    maxHeight: "90vh",
-    overflowY: "auto",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-    animation: "slideIn 0.2s ease-in-out",
-    position: "relative", // Añadido para posicionar el botón de cierre
-  },
-  modalHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "20px",
-    paddingBottom: "15px",
-    borderBottom: "2px solid #dee2e6",
-  },
-  modalTitle: {
-    fontSize: "1.5rem",
-    color: "#333",
-    margin: 0,
-  },
-  // Header con Avatar y datos principales / Header with Avatar and main data
-  profileHeader: {
-    display: "flex",
-    alignItems: "center",
-    gap: "20px",
-    marginBottom: "30px",
-    paddingBottom: "20px",
-    borderBottom: "1px solid #e5e7eb",
-  },
-  // Información junto al avatar / Info next to avatar
-  profileInfo: {
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
-    gap: "5px",
-  },
-  // Nombre completo del manager / Manager's full name
-  profileName: {
-    fontSize: "1.5rem",
-    fontWeight: "bold",
-    color: "#333",
-    margin: 0,
-  },
-  // Email del manager / Manager's email
-  profileEmail: {
-    fontSize: "1rem",
-    color: "#6c757d",
-    margin: 0,
-  },
-  infoSection: {
-    marginBottom: "20px",
-  },
-  infoRow: {
-    display: "flex",
-    flexDirection: "column",
-    marginBottom: "15px",
-  },
-  label: {
-    fontSize: "0.9rem",
-    fontWeight: "bold",
-    color: "#495057",
-    marginBottom: "5px",
-  },
-  value: {
-    fontSize: "1rem",
-    color: "#212529",
-    padding: "8px 12px",
-    backgroundColor: "#f8f9fa",
-    borderRadius: "4px",
-  },
-  input: {
-    fontSize: "1rem",
-    padding: "8px 12px",
-    border: "1px solid #ced4da",
-    borderRadius: "4px",
-    width: "100%",
-    boxSizing: "border-box",
-  },
-  lockedValue: {
-    fontSize: "1rem",
-    color: "#6c757d",
-    padding: "8px 12px",
-    backgroundColor: "#e9ecef",
-    borderRadius: "4px",
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-  },
-  helperText: {
-    fontSize: "0.85rem",
-    color: "#6c757d",
-    marginTop: "5px",
-  },
-  errorText: {
-    fontSize: "0.85rem",
-    color: "#dc3545",
-    marginTop: "5px",
-  },
-  buttonContainer: {
-    display: "flex",
-    gap: "10px",
-    justifyContent: "flex-end",
-    marginTop: "20px",
-    paddingTop: "15px",
-    borderTop: "1px solid #dee2e6",
-  },
-  button: {
-    padding: "10px 20px",
-    fontSize: "1rem",
-    border: "none",
-    borderRadius: "4px",
-    cursor: "pointer",
-    transition: "background-color 0.2s",
-  },
-  editButton: {
-    backgroundColor: "#007bff",
-    color: "white",
-  },
-  saveButton: {
-    backgroundColor: "#28a745",
-    color: "white",
-  },
-  cancelButton: {
-    backgroundColor: "#6c757d",
-    color: "white",
-  },
-};
 
 /* =============================================================================
    COMPONENTE: ManagerDetailsModal
@@ -243,7 +99,7 @@ export const ManagerDetailsModal = ({
   }>({});
 
   // Validar campos / Validate fields
-  const validateFields = (): boolean => {
+  const validateFields = useCallback((): boolean => {
     const newErrors: { firstName?: string; lastName?: string } = {};
 
     if (firstName.trim().length < 2) {
@@ -256,7 +112,7 @@ export const ManagerDetailsModal = ({
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [firstName, lastName]);
 
   // Manejar guardado / Handle save
   const handleSave = async () => {
@@ -348,182 +204,150 @@ export const ManagerDetailsModal = ({
 
   // Render del modal / Modal render
   return (
-    <div
-      style={styles.modalOverlay}
-      onClick={handleClose}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modal-title">
-      <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        {/* Header del modal / Modal header */}
-        <div style={styles.modalHeader}>
-          <h2 id="modal-title" style={styles.modalTitle}>
-            👤 Información del Manager
-          </h2>
-          <CloseButton onClick={handleClose} ariaLabel="Cerrar información del manager" />
-        </div>
-
+    <Modal show={isOpen} onHide={handleClose} centered size="lg">
+      <Modal.Header className={styles.modalHeader}>
+        <Modal.Title className={styles.modalTitle}>
+          👤 Información del Manager
+        </Modal.Title>
+        <CloseButton onClick={handleClose} ariaLabel="Cerrar información del manager" />
+      </Modal.Header>
+      <Modal.Body>
         {/* Header con Avatar, nombre y email / Header with Avatar, name and email */}
-        <div style={styles.profileHeader}>
+        <div className={styles.profileHeader}>
           <Avatar
             src={manager.profile_picture}
             firstName={manager.first_name}
             lastName={manager.last_name}
             size={100}
           />
-          <div style={styles.profileInfo}>
-            <h3 style={styles.profileName}>
+          <div className={styles.profileInfo}>
+            <h3 className={styles.profileName}>
               {manager.first_name} {manager.last_name}
             </h3>
-            <p style={styles.profileEmail}>{manager.email}</p>
+            <p className={styles.profileEmail}>{manager.email}</p>
           </div>
         </div>
 
         {/* Contenido del modal (campos editables) / Modal content (editable fields) */}
-        <div style={styles.infoSection}>
-          {/* Nombre / First Name */}
-          <div style={styles.infoRow}>
-            <label style={styles.label}>Nombre:</label>
-            {isEditMode ? (
-              <>
-                <input
-                  type="text"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  style={{
-                    ...styles.input,
-                    borderColor: errors.firstName ? "#dc3545" : "#ced4da",
-                  }}
-                  placeholder="Ej: Pablo"
-                  disabled={isSaving}
-                />
-                {errors.firstName && (
-                  <span style={styles.errorText}>{errors.firstName}</span>
+        <Form className={styles.infoSection}>
+          <Row>
+            {/* Nombre / First Name */}
+            <Col md={6} className={styles.infoRow}>
+              <Form.Group controlId="managerFirstName">
+                <Form.Label className={styles.label}>Nombre:</Form.Label>
+                {isEditMode ? (
+                  <>
+                    <Form.Control
+                      type="text"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      isInvalid={!!errors.firstName}
+                      placeholder="Ej: Pablo"
+                      disabled={isSaving}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.firstName}
+                    </Form.Control.Feedback>
+                  </>
+                ) : (
+                  <div className={styles.value}>{manager.first_name}</div>
                 )}
-              </>
-            ) : (
-              <div style={styles.value}>{manager.first_name}</div>
-            )}
-          </div>
+              </Form.Group>
+            </Col>
 
-          {/* Apellidos / Last Name */}
-          <div style={styles.infoRow}>
-            <label style={styles.label}>Apellidos:</label>
-            {isEditMode ? (
-              <>
-                <input
-                  type="text"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  style={{
-                    ...styles.input,
-                    borderColor: errors.lastName ? "#dc3545" : "#ced4da",
-                  }}
-                  placeholder="Ej: Bernabéu Ruiz"
-                  disabled={isSaving}
-                />
-                {errors.lastName && (
-                  <span style={styles.errorText}>{errors.lastName}</span>
+            {/* Apellidos / Last Name */}
+            <Col md={6} className={styles.infoRow}>
+              <Form.Group controlId="managerLastName">
+                <Form.Label className={styles.label}>Apellidos:</Form.Label>
+                {isEditMode ? (
+                  <>
+                    <Form.Control
+                      type="text"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      isInvalid={!!errors.lastName}
+                      placeholder="Ej: Bernabéu Ruiz"
+                      disabled={isSaving}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.lastName}
+                    </Form.Control.Feedback>
+                  </>
+                ) : (
+                  <div className={styles.value}>{manager.last_name}</div>
                 )}
-              </>
-            ) : (
-              <div style={styles.value}>{manager.last_name}</div>
-            )}
-          </div>
+              </Form.Group>
+            </Col>
+          </Row>
 
-          {/* Email (no editable) */}
-          <div style={styles.infoRow}>
-            <label style={styles.label}>Email:</label>
-            <div style={styles.lockedValue}>🔒 {manager.email}</div>
-            <span style={styles.helperText}>
+          {/* Email (no editable) / Email (not editable) */}
+          <Form.Group controlId="managerEmail" className={styles.infoRow}>
+            <Form.Label className={styles.label}>Email:</Form.Label>
+            <div className={styles.lockedValue}>
+              🔒 {manager.email}
+            </div>
+            <Form.Text className={styles.helperText}>
               El email está vinculado al gimnasio y no se puede modificar.
-            </span>
-          </div>
+            </Form.Text>
+          </Form.Group>
 
           {/* Teléfono / Phone */}
-          <div style={styles.infoRow}>
-            <label style={styles.label}>Teléfono:</label>
+          <Form.Group controlId="managerPhone" className={styles.infoRow}>
+            <Form.Label className={styles.label}>Teléfono:</Form.Label>
             {isEditMode ? (
               <>
-                <input
+                <Form.Control
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  style={styles.input}
                   placeholder="Ej: +34 666 555 444"
                   disabled={isSaving}
                 />
-                <span style={styles.helperText}>Opcional</span>
+                <Form.Text className={styles.helperText}>Opcional</Form.Text>
               </>
             ) : (
-              <div style={styles.value}>
+              <div className={styles.value}>
                 {manager.phone || "No especificado"}
               </div>
             )}
-          </div>
+          </Form.Group>
 
-          {/* Gimnasio (no editable) */}
-          <div style={styles.infoRow}>
-            <label style={styles.label}>Gimnasio:</label>
-            <div style={styles.value}>{manager.gym_name}</div>
-          </div>
+          {/* Gimnasio (no editable) / Gym (not editable) */}
+          <Form.Group controlId="managerGym" className={styles.infoRow}>
+            <Form.Label className={styles.label}>Gimnasio:</Form.Label>
+            <div className={styles.value}>{manager.gym_name}</div>
+          </Form.Group>
 
-          {/* Ciudad (no editable) */}
-          <div style={styles.infoRow}>
-            <label style={styles.label}>Ciudad:</label>
-            <div style={styles.value}>{manager.gym_city}</div>
-          </div>
-        </div>
-
-        {/* Botones de acción / Action buttons */}
-        <div style={styles.buttonContainer}>
-          {isEditMode ? (
-            // Modo edición: Guardar y Cancelar / Edit mode: Save and Cancel
-            <>
-              <button
-                style={{ ...styles.button, ...styles.cancelButton }}
-                onClick={handleCancelEdit}
-                disabled={isSaving}>
-                Cancelar
-              </button>
-              <button
-                style={{ ...styles.button, ...styles.saveButton }}
-                onClick={handleSave}
-                disabled={isSaving}
-                onMouseEnter={(e) => {
-                  if (!isSaving) {
-                    e.currentTarget.style.backgroundColor = "#218838";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "#28a745";
-                }}>
-                {isSaving ? "Guardando..." : "💾 Guardar Cambios"}
-              </button>
-            </>
-          ) : (
-            // Modo vista: Editar y Cerrar / View mode: Edit and Close
-            <>
-              <button
-                style={{ ...styles.button, ...styles.cancelButton }}
-                onClick={handleClose}>
-                Cerrar
-              </button>
-              <button
-                style={{ ...styles.button, ...styles.editButton }}
-                onClick={() => setIsEditMode(true)}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#0056b3";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "#007bff";
-                }}>
-                ✏️ Editar Información
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-    </div>
+          {/* Ciudad (no editable) / City (not editable) */}
+          <Form.Group controlId="managerCity" className={styles.infoRow}>
+            <Form.Label className={styles.label}>Ciudad:</Form.Label>
+            <div className={styles.value}>{manager.gym_city}</div>
+          </Form.Group>
+        </Form>
+      </Modal.Body>
+      <Modal.Footer className={styles.buttonContainer}>
+        {isEditMode ? (
+          // Modo edición: Guardar y Cancelar / Edit mode: Save and Cancel
+          <>
+            <Button variant="secondary" onClick={handleCancelEdit} disabled={isSaving}>
+              Cancelar
+            </Button>
+            <Button variant="success" onClick={handleSave} disabled={isSaving}>
+              {isSaving ? "Guardando..." : "💾 Guardar Cambios"}
+            </Button>
+          </>
+        ) : (
+          // Modo vista: Editar y Cerrar / View mode: Edit and Close
+          <>
+            <Button variant="secondary" onClick={handleClose}>
+              Cerrar
+            </Button>
+            <Button variant="primary" onClick={() => setIsEditMode(true)}>
+              ✏️ Editar Información
+            </Button>
+          </>
+        )}
+      </Modal.Footer>
+    </Modal>
   );
 };

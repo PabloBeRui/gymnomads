@@ -1,0 +1,63 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: PaginationControls
+ * STYLES FOR: PaginationControls
+ * =============================================================================
+ */
+
+.paginationContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.selectorContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pageButtonsContainer {
+  display: flex;
+  align-items: center;
+}
+
+.pageButton {
+  margin: 0 4px;
+  padding: 8px 12px;
+  border: 1px solid var(--bs-gray-300);
+  border-radius: 4px;
+  background: var(--bs-white);
+  cursor: pointer;
+  min-width: 40px;
+  text-align: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.pageButton:hover:not(:disabled) {
+  background: var(--bs-light);
+  border-color: var(--bs-gray-400);
+}
+
+.pageButton.active {
+  background: var(--bs-primary);
+  color: var(--bs-white);
+  border-color: var(--bs-primary);
+  font-weight: bold;
+}
+
+.pageButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.ellipsis {
+  margin: 0 4px;
+  padding: 8px 12px;
+  border: none;
+  cursor: default;
+  color: var(--bs-gray-600);
+}

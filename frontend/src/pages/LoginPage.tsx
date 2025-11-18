@@ -4,7 +4,10 @@
  * =============================================================================
  *
  * Página de inicio de sesión.
+ * Refactorizado para usar React-Bootstrap y SASS Modules.
+ *
  * Login page.
+ * Refactored to use React-Bootstrap and SASS Modules.
  *
  * Flujo / Flow:
  * - Rellena email y contraseña, pulsa Iniciar Sesión.
@@ -25,40 +28,12 @@ import { handleApiError } from "../utils/error-handler";
 // Types
 import type { LoginData, LoginResponse } from "../interfaces/user-interfaces";
 
-/* =============================================================================
-   ESTILOS (inline)
-   ============================================================================= */
-const styles: { [key: string]: React.CSSProperties } = {
-  container: { padding: 20, maxWidth: 720, margin: "20px auto" },
-  formGroup: { marginBottom: 12 },
-  label: { display: "block", marginBottom: 6, fontWeight: 600 },
-  input: {
-    width: "100%",
-    padding: "8px 10px",
-    borderRadius: 4,
-    border: "1px solid #ccc",
-    boxSizing: "border-box",
-  },
-  button: {
-    marginTop: 12,
-    padding: "8px 12px",
-    backgroundColor: "#007bff",
-    color: "white",
-    border: "none",
-    borderRadius: 4,
-    cursor: "pointer",
-  },
-  linkButton: {
-    background: "none",
-    border: "none",
-    color: "blue",
-    textDecoration: "underline",
-    cursor: "pointer",
-    padding: 0,
-    margin: 0,
-  },
-  errorText: { color: "red", marginTop: 8 },
-};
+// Importar componentes de React-Bootstrap / Import React-Bootstrap components
+import { Container, Form, Button, Alert, Spinner } from "react-bootstrap";
+
+// Importar el módulo SCSS / Import the SCSS module
+import styles from "./LoginPage.module.scss";
+import clsx from "clsx"; // Importar clsx / Import clsx
 
 /* =============================================================================
    COMPONENTE: LoginPage
@@ -121,18 +96,14 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <h2>Iniciar Sesión</h2>
-      <form onSubmit={handleSubmit} aria-label="Formulario de inicio de sesión">
-        <div style={styles.formGroup}>
-          <label htmlFor="email" style={styles.label}>
-            Email
-          </label>
-          <input
-            id="email"
-            aria-label="Email"
-            style={styles.input}
+    <Container className={styles.container}>
+      <h2 className="mb-4">Iniciar Sesión</h2>
+      <Form onSubmit={handleSubmit} aria-label="Formulario de inicio de sesión">
+        <Form.Group className="mb-3" controlId="email">
+          <Form.Label>Email</Form.Label>
+          <Form.Control
             type="email"
+            placeholder="tu@email.com"
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
@@ -140,19 +111,15 @@ export const LoginPage: React.FC = () => {
             }}
             required
             disabled={loading}
-            placeholder="tu@email.com"
+            aria-label="Email"
           />
-        </div>
+        </Form.Group>
 
-        <div style={styles.formGroup}>
-          <label htmlFor="password" style={styles.label}>
-            Contraseña
-          </label>
-          <input
-            id="password"
-            aria-label="Contraseña"
-            style={styles.input}
+        <Form.Group className="mb-3" controlId="password">
+          <Form.Label>Contraseña</Form.Label>
+          <Form.Control
             type="password"
+            placeholder="Tu contraseña"
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
@@ -160,27 +127,41 @@ export const LoginPage: React.FC = () => {
             }}
             required
             disabled={loading}
-            placeholder="Tu contraseña"
+            aria-label="Contraseña"
           />
-        </div>
+        </Form.Group>
 
-        {error && <p style={styles.errorText}>{error}</p>}
+        {error && <Alert variant="danger">{error}</Alert>}
 
-        <button type="submit" style={styles.button} disabled={loading} aria-busy={loading}>
-          {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
-        </button>
-      </form>
+        <Button variant="primary" type="submit" disabled={loading} className="w-100 mt-3">
+          {loading ? (
+            <>
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+              />
+              <span className="visually-hidden">Iniciando sesión...</span>
+            </>
+          ) : (
+            "Iniciar Sesión"
+          )}
+        </Button>
+      </Form>
 
-      <p style={{ marginTop: 12 }}>
+      <p className="mt-3">
         ¿No tienes cuenta?{" "}
-        <button
+        <Button
+          variant="link"
           onClick={() => navigate("/register")}
           disabled={loading}
-          style={styles.linkButton}
+          className={clsx(styles.linkButton, { "text-muted": loading })}
           aria-disabled={loading}>
           Regístrate aquí
-        </button>
+        </Button>
       </p>
-    </div>
+    </Container>
   );
 };

@@ -1,3 +1,17 @@
+/**
+ * =============================================================================
+ * PÁGINA: MyVisitsPage
+ * =============================================================================
+ *
+ * Página para mostrar las visitas de un usuario.
+ * Refactorizado para usar React-Bootstrap y SASS Modules.
+ *
+ * Page to display user visits.
+ * Refactored to use React-Bootstrap and SASS Modules.
+ *
+ * =============================================================================
+ */
+
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getMyVisits } from "../services/visit-services";
@@ -15,65 +29,12 @@ import {
   type ColumnDefinition,
 } from "../components/ui/SortableTable";
 
-/* =============================================================================
-    ESTILOS (inline)
-    STYLES (inline)
-    ============================================================================= */
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    padding: "20px",
-    maxWidth: "1000px",
-    margin: "0 auto",
-  },
-  title: {
-    fontSize: "2rem",
-    marginBottom: "20px",
-  },
-  loading: {
-    textAlign: "center",
-    padding: "40px",
-  },
-  empty: {
-    textAlign: "center",
-    padding: "40px",
-    color: "#6c757d",
-  },
-  filtersContainer: {
-    marginBottom: "20px",
-  },
-  input: {
-    padding: "10px",
-    fontSize: "1rem",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    width: "100%",
-    maxWidth: "400px",
-  },
-  statsContainer: {
-    display: "flex",
-    gap: "20px",
-    marginBottom: "30px",
-  },
-  statCard: {
-    flex: "1 1 200px",
-    padding: "20px",
-    backgroundColor: "#f8f9fa",
-    borderRadius: "8px",
-    border: "1px solid #dee2e6",
-    cursor: "pointer",
-    transition: "box-shadow 0.2s",
-  },
-  statNumber: {
-    fontSize: "2rem",
-    fontWeight: "bold",
-    color: "#007bff",
-  },
-  statLabel: {
-    fontSize: "0.9rem",
-    color: "#6c757d",
-    marginTop: "5px",
-  },
-};
+// Importar componentes de React-Bootstrap / Import React-Bootstrap components
+import { Container, Row, Col, Card, Spinner, Alert } from "react-bootstrap";
+
+// Importar el módulo SCSS / Import the SCSS module
+import styles from "./MyVisitsPage.module.scss";
+import clsx from "clsx"; // Importar clsx / Import clsx
 
 /* =============================================================================
     COMPONENTE: MyVisitsPage
@@ -211,7 +172,7 @@ export const MyVisitsPage = () => {
       key: "gym_name",
       header: "Gimnasio",
       render: (visit) => (
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div className="d-flex align-items-center gap-2">
           <Avatar
             src={visit.gym_logo_url}
             firstName={visit.gym_name || "Gimnasio"}
@@ -243,7 +204,13 @@ export const MyVisitsPage = () => {
   // =============================================================================
 
   if (isLoading && visits.length === 0) {
-    return <div style={styles.loading}>Cargando tus visitas...</div>;
+    return (
+      <Container className={clsx(styles.loading, "text-center mt-5")}>
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Cargando tus visitas...</span>
+        </Spinner>
+      </Container>
+    );
   }
 
   // =============================================================================
@@ -251,34 +218,39 @@ export const MyVisitsPage = () => {
   // Main Rendering
   // =============================================================================
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>Mis Visitas</h1>
+    <Container className={styles.container}>
+      <h1 className={styles.title}>Mis Visitas</h1>
 
       {/* Tarjeta de estadísticas que abre un modal */}
       {/* Statistics card that opens a modal */}
-      <div style={styles.statsContainer}>
-        <div
-          style={styles.statCard}
-          onClick={() => setIsStatsModalOpen(true)}
-          title="Ver estadísticas detalladas"
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)")
-          }
-          onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}>
-          {/* Usar el total de items del hook de paginación */}
-          {/* Use the total items from the pagination hook */}
-          <div style={styles.statNumber}>{totalItems}</div>
-          <div style={styles.statLabel}>
-            {isLoading && visits.length === 0
-              ? "Cargando..."
-              : "Total de Visitas"}
-          </div>
-        </div>
-      </div>
+      <Row className={clsx(styles.statsContainer, "mb-4")}>
+        <Col xs={12} md={6} lg={4}>
+          <Card
+            className={styles.statCard}
+            onClick={() => setIsStatsModalOpen(true)}
+            title="Ver estadísticas detalladas"
+            role="button"
+            tabIndex={0}
+            onKeyPress={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                setIsStatsModalOpen(true);
+              }
+            }}>
+            <Card.Body>
+              <Card.Title className={styles.statNumber}>{totalItems}</Card.Title>
+              <Card.Text className={styles.statLabel}>
+                {isLoading && visits.length === 0
+                  ? "Cargando..."
+                  : "Total de Visitas"}
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
 
       {/* Filtro de búsqueda */}
       {/* Search filter */}
-      <div style={styles.filtersContainer}>
+      <div className={clsx(styles.filtersContainer, "mb-4")}>
         <FilterInput
           label="Buscar Visitas por Gimnasio"
           value={gymSearch}
@@ -289,17 +261,19 @@ export const MyVisitsPage = () => {
 
       {/* Indicador de carga durante la búsqueda */}
       {/* Loading indicator during search */}
-      {isLoading && <p style={styles.loading}>Buscando...</p>}
+      {isLoading && <p className="text-center text-muted">Buscando...</p>}
 
       {/* Estado vacío o sin resultados */}
       {/* Empty state or no results */}
       {!isLoading && visits.length === 0 ? (
         gymSearch ? (
-          <p style={styles.empty}>
+          <Alert variant="info" className={styles.empty}>
             No se encontraron visitas para "{gymSearch}".
-          </p>
+          </Alert>
         ) : (
-          <p style={styles.empty}>Aún no has visitado ningún gimnasio.</p>
+          <Alert variant="info" className={styles.empty}>
+            Aún no has visitado ningún gimnasio.
+          </Alert>
         )
       ) : (
         <>
@@ -332,6 +306,6 @@ export const MyVisitsPage = () => {
         onClose={() => setIsStatsModalOpen(false)}
         viewMode="user"
       />
-    </div>
+    </Container>
   );
 };

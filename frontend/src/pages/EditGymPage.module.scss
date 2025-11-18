@@ -1,0 +1,27 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: EditGymPage
+ * STYLES FOR: EditGymPage
+ * =============================================================================
+ */
+
+.container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 20px auto;
+  border: 1px solid var(--bs-gray-300);
+  border-radius: 8px;
+}
+
+.disabledInput {
+  background-color: var(--bs-gray-200);
+  cursor: not-allowed;
+}
+
+.previewImage {
+  max-width: 200px;
+  max-height: 150px;
+  margin-top: 10px;
+  display: block;
+  border: 1px solid var(--bs-gray-200);
+}

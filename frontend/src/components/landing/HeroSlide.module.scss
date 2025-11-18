@@ -1,0 +1,48 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: HeroSlide
+ * STYLES FOR: HeroSlide
+ * =============================================================================
+ */
+
+.slide {
+  height: 100vh;
+  width: 100%;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  box-sizing: border-box;
+  text-align: center;
+  background-color: var(--bs-white); // Fondo blanco para la primera / White background for the first
+}
+
+.brandName {
+  font-size: clamp(3rem, 6vw, 5rem);
+  font-weight: bold;
+  color: var(--bs-dark); // Oscuro / Dark
+  margin: 0;
+}
+
+.taglineContainer {
+  display: flex;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  color: var(--bs-secondary); // Gris medio / Medium gray
+  margin-top: 1rem;
+  gap: 1rem; // Espacio entre palabras / Space between words
+  height: 60px; // Altura fija para evitar "saltos" / Fixed height to prevent "jumps"
+  align-items: center;
+}
+
+.taglineWord {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.taglineWordVisible {
+  opacity: 1;
+  transform: translateY(0);
+}

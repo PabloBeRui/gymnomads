@@ -1,0 +1,40 @@
+/**
+ * =============================================================================
+ * Estilos para la página de gestión de visitas (VisitsManagementPage)
+ * Styles for the Visits Management Page (VisitsManagementPage)
+ * =============================================================================
+ */
+
+// Contenedor para el avatar y el texto, asegura alineación vertical
+// Container for the avatar and text, ensures vertical alignment
+.avatarCell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+// Tarjeta de estadística individual
+// Individual statistic card
+.statCard {
+    cursor: pointer; // Indica que la tarjeta es clickeable / Indicates the card is clickable
+    transition: box-shadow 0.2s ease-in-out; // Transición suave para el hover / Smooth transition for hover
+
+    &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); // Sombra al pasar el ratón / Shadow on hover
+    }
+}
+
+// Estilo para el botón de filtro activo
+// Style for the active filter button
+.activeFilterButton {
+    background-color: var(--bs-primary); 
+    border-color: var(--bs-primary); 
+}
+
+// Estilo para la opción de "Gimnasios Eliminados" en el selector
+// Style for the "Deleted Gyms" option in the select
+.deletedOption {
+    background-color: #ffebee; // Fondo rojo claro / Light red background
+    color: #c62828; // Texto rojo oscuro / Dark red text
+    font-weight: bold; // Texto en negrita / Bold text
+}

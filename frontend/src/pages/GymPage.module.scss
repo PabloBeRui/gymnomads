@@ -1,0 +1,100 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: GymPage
+ * STYLES FOR: GymPage
+ * =============================================================================
+ */
+
+.container {
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.loadingContainer {
+  padding: 20px;
+  text-align: center;
+}
+
+.gymHeader {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.gymLogo {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  margin-bottom: 20px;
+  border: 2px solid var(--bs-gray-200);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.gymName {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  color: var(--bs-gray-800);
+}
+
+.gymAddress {
+  font-size: 1.1rem;
+  color: var(--bs-gray-600);
+  margin-bottom: 5px;
+}
+
+.gymCity {
+  font-size: 1.1rem;
+  color: var(--bs-gray-600);
+  font-weight: bold;
+}
+
+.gymImage {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.visitButton {
+  width: 100%;
+  padding: 15px;
+  font-size: 1.2rem;
+  background-color: var(--bs-success);
+  color: var(--bs-white);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.visitButton:hover:not(:disabled) {
+  background-color: var(--bs-success-dark); /* Define a darker shade for success in your variables */
+}
+
+.visitButton:disabled {
+  background-color: var(--bs-gray-500);
+  cursor: not-allowed;
+}
+
+.widgetsContainer {
+  position: relative;
+  margin-bottom: 20px; /* Adjust as needed */
+}
+
+.closeButtonContainer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 20px;
+}
+
+.weatherWidgetContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 20px;
+}

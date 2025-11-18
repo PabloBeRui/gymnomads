@@ -7,28 +7,21 @@
  * Página que muestra la información "Sobre Nosotros" de Gymnomads.
  * Utiliza el layout reutilizable `LegalPageLayout` para mantener la consistencia
  * visual con otras páginas legales e informativas.
+ * Refactorizado para usar SASS Modules.
  *
  * Page that displays the Gymnomads "About Us" information.
  * It uses the reusable `LegalPageLayout` to maintain visual consistency
  * with other legal and informational pages.
+ * Refactored to use SASS Modules.
  *
  * =============================================================================
  */
 
 import { LegalPageLayout } from "../../components/layout/LegalPageLayout";
 
-// Estilo para el bloque de descargo de responsabilidad
-// Style for the disclaimer block
-const disclaimerStyle: React.CSSProperties = {
-  backgroundColor: "#fffbe6",
-  border: "1px solid #ffe58f",
-  padding: "15px",
-  borderRadius: "4px",
-  marginTop: "20px",
-  fontSize: "0.9rem",
-  color: "#6d4f00",
-  textAlign: "left",
-};
+// Importar el módulo SCSS / Import the SCSS module
+import styles from "./AboutUsPage.module.scss";
+// import clsx from "clsx"; // Importar clsx / Import clsx
 
 export const AboutUsPage = () => {
   return (
@@ -69,7 +62,7 @@ export const AboutUsPage = () => {
           </li>
         </ol>
 
-        <div style={disclaimerStyle}>
+        <div className={styles.disclaimer}>
           <strong>Nota del Desarrollador:</strong> Este es un texto de marcador
           de posición. El contenido es ficticio y ha sido generado para simular
           la página "Sobre Nosotros" de este proyecto académico.

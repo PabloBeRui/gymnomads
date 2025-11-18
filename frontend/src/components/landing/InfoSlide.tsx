@@ -6,10 +6,11 @@
  *
  * Descripción: Componente reutilizable que representa una "diapositiva" de
  * pantalla completa para la landing page. Está diseñado para usarse con
- * scroll-snapping.
+ * scroll-snapping. Refactorizado con SASS Modules.
  *
  * Description: Reusable component representing a full-screen "slide"
  * for the landing page. Designed to be used with scroll-snapping.
+ * Refactored with SASS Modules.
  *
  * Props:
  * - title: El título principal de la diapositiva. / The main title of the slide.
@@ -21,6 +22,9 @@
  */
 
 import React from "react";
+import { Container } from "react-bootstrap"; // Importar componentes de React-Bootstrap / Import React-Bootstrap components
+import styles from "./InfoSlide.module.scss"; // Importar el módulo SCSS / Import the SCSS module
+import clsx from "clsx"; // Importar clsx / Import clsx
 
 /* =============================================================================
     INTERFACES
@@ -29,45 +33,8 @@ interface InfoSlideProps {
   title: string;
   text: string;
   backgroundColor: string;
-  children?: React.ReactNode; // Para el botón en la última slide
+  children?: React.ReactNode; // Para el botón en la última slide / For the button on the last slide
 }
-
-/* =============================================================================
-    ESTILOS (inline)
-    STYLES (inline)
-    ============================================================================= */
-const styles: { [key: string]: React.CSSProperties } = {
-  slide: {
-    height: "100vh", // Ocupar toda la altura del viewport
-    width: "100%",
-    scrollSnapAlign: "start", // Clave para el scroll-snapping
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: "2rem",
-    boxSizing: "border-box", // Asegurar que el padding no desborde
-    textAlign: "center",
-    transition: "background-color 0.5s ease", // Transición suave de color
-  },
-  title: {
-    fontSize: "clamp(2.5rem, 5vw, 4rem)", // Tamaño de fuente responsive
-    fontWeight: "bold",
-    marginBottom: "1rem",
-    color: "#222", // Color de texto oscuro por defecto
-  },
-  text: {
-    fontSize: "clamp(1rem, 2.5vw, 1.25rem)", // Tamaño de fuente responsive
-    color: "#444",
-    maxWidth: "600px",
-    lineHeight: 1.6,
-  },
-  // Estilo para el contenedor del botón (opcional)
-  // Style for the (optional) button container
-  childrenContainer: {
-    marginTop: "2.5rem",
-  },
-};
 
 /* =============================================================================
     COMPONENTE: InfoSlide
@@ -80,15 +47,14 @@ export const InfoSlide: React.FC<InfoSlideProps> = ({
   children,
 }) => {
   return (
-    // Aplicar el color de fondo dinámicamente
-    // Apply the background color dynamically
-    <div style={{ ...styles.slide, backgroundColor }}>
-      <h2 style={styles.title}>{title}</h2>
-      <p style={styles.text}>{text}</p>
+    // Aplicar el color de fondo dinámicamente / Apply the background color dynamically
+    <Container fluid className={clsx(styles.slide, "d-flex flex-column justify-content-center align-items-center p-4")} style={{ backgroundColor }}>
+      <h2 className={clsx(styles.title, "text-dark")}>{title}</h2>
+      <p className={clsx(styles.text, "text-secondary")}>{text}</p>
 
       {/* Renderizar contenido extra (como el botón CTA) si existe */}
       {/* Render extra content (like the CTA button) if it exists */}
-      {children && <div style={styles.childrenContainer}>{children}</div>}
-    </div>
+      {children && <div className={styles.childrenContainer}>{children}</div>}
+    </Container>
   );
 };

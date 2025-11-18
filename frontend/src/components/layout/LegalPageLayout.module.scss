@@ -1,0 +1,27 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: LegalPageLayout
+ * STYLES FOR: LegalPageLayout
+ * =============================================================================
+ */
+
+.container {
+  position: relative; // Necesario para el posicionamiento absoluto del CloseButton / Needed for absolute positioning of CloseButton
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem 4rem;
+  background-color: var(--bs-white);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  line-height: 1.6;
+}
+
+.title {
+  margin-bottom: 2rem;
+  text-align: center;
+  color: var(--bs-dark);
+}
+
+.content {
+  color: var(--bs-secondary);
+}

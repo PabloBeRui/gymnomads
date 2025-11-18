@@ -1,20 +1,26 @@
 /**
  * =============================================================================
  * COMPONENTE: ConfirmationModal
+ * COMPONENT: ConfirmationModal
  * =============================================================================
  *
  * Modal reutilizable para confirmación de acciones críticas (eliminar, etc.).
  * - Permite cerrar haciendo click fuera del modal (en el overlay)
  * - Permite cerrar presionando la tecla ESC
- *  *  *
+ * Refactorizado para usar React-Bootstrap y SASS Modules.
+ *
  * Reusable modal for confirming critical actions (delete, etc.).
  * - Allows closing by clicking outside the modal (on the overlay)
  * - Allows closing by pressing the ESC key
- *  *  *
+ * Refactored to use React-Bootstrap and SASS Modules.
+ *
  * =============================================================================
  */
 
 import { useEffect } from "react";
+import { Modal, Button } from "react-bootstrap"; // Importar componentes de React-Bootstrap / Import React-Bootstrap components
+import styles from "./ConfirmationModal.module.scss"; // Importar el módulo SCSS / Import the SCSS module
+import clsx from "clsx"; // Importar clsx / Import clsx
 
 /* =============================================================================
    INTERFACES
@@ -56,99 +62,6 @@ interface ConfirmationModalProps {
 }
 
 /* =============================================================================
-   ESTILOS (inline)
-   STYLES (inline)
-   ============================================================================= */
-
-const styles: { [key: string]: React.CSSProperties } = {
-  modalOverlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 1000,
-    animation: "fadeIn 0.2s ease-in-out",
-  },
-  modalContent: {
-    backgroundColor: "white",
-    padding: "30px",
-    borderRadius: "8px",
-    maxWidth: "500px",
-    width: "90%",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-    animation: "slideIn 0.2s ease-in-out",
-  },
-  modalTitle: {
-    fontSize: "1.5rem",
-    marginBottom: "15px",
-    color: "#333",
-  },
-  modalText: {
-    fontSize: "1rem",
-    marginBottom: "20px",
-    color: "#666",
-    lineHeight: "1.5",
-  },
-  warningText: {
-    fontSize: "1rem",
-    marginBottom: "15px",
-    fontWeight: "bold",
-    lineHeight: "1.5",
-  },
-  noteText: {
-    fontSize: "0.9rem",
-    marginBottom: "20px",
-    color: "#666",
-    fontStyle: "italic",
-  },
-  modalButtons: {
-    display: "flex",
-    gap: "10px",
-    justifyContent: "flex-end",
-  },
-  modalButton: {
-    padding: "10px 20px",
-    fontSize: "1rem",
-    border: "none",
-    borderRadius: "4px",
-    cursor: "pointer",
-    transition: "background-color 0.2s",
-  },
-  cancelButton: {
-    backgroundColor: "#6c757d",
-    color: "white",
-  },
-};
-
-/* =============================================================================
-   VARIANTES DE COLOR
-   COLOR VARIANTS
-   ============================================================================= */
-
-const variantColors = {
-  danger: {
-    text: "#dc3545",
-    button: "#dc3545",
-    buttonHover: "#c82333",
-  },
-  warning: {
-    text: "#fd7e14",
-    button: "#fd7e14",
-    buttonHover: "#e66a00",
-  },
-  info: {
-    text: "#0dcaf0",
-    button: "#0dcaf0",
-    buttonHover: "#0ab0d1",
-  },
-};
-
-/* =============================================================================
    COMPONENTE: ConfirmationModal
    COMPONENT: ConfirmationModal
    ============================================================================= */
@@ -166,9 +79,6 @@ export const ConfirmationModal = ({
   variant = "danger",
   isLoading = false,
 }: ConfirmationModalProps) => {
-  // Obtener colores según la variante / Get colors based on variant
-  const colors = variantColors[variant];
-
   // Manejar tecla ESC para cerrar el modal / Handle ESC key to close modal
   useEffect(() => {
     // Función para detectar tecla ESC / Function to detect ESC key
@@ -187,76 +97,46 @@ export const ConfirmationModal = ({
     };
   }, [isOpen, onCancel]);
 
-  // No renderizar si el modal no está abierto / Don't render if modal is not open
-  if (!isOpen) return null;
+  // Determinar la variante de color del botón de confirmación / Determine the color variant of the confirmation button
+  let confirmButtonVariant: string;
+  switch (variant) {
+    case "danger":
+      confirmButtonVariant = "danger";
+      break;
+    case "warning":
+      confirmButtonVariant = "warning";
+      break;
+    case "info":
+      confirmButtonVariant = "info";
+      break;
+    default:
+      confirmButtonVariant = "danger";
+  }
 
-  // Render del modal / Modal render
   return (
-    <div
-      style={styles.modalOverlay}
-      onClick={onCancel} // Click en overlay cierra el modal / Click on overlay closes modal
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modal-title">
-      <div
-        style={styles.modalContent}
-        onClick={(e) => e.stopPropagation()} // Evitar que el click cierre el modal / Prevent click from closing modal
-      >
-        {/* Título del modal / Modal title */}
-        <h2 id="modal-title" style={styles.modalTitle}>
-          {title}
-        </h2>
+    <Modal show={isOpen} onHide={onCancel} centered>
+      <Modal.Header closeButton>
+        <Modal.Title className={styles.modalTitle}>{title}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <p className={styles.modalText}>{message}</p>
 
-        {/* Mensaje principal / Main message */}
-        <p style={styles.modalText}>{message}</p>
-
-        {/* Mensaje de advertencia (opcional) / Warning message (optional) */}
         {warningMessage && (
-          <p
-            style={{
-              ...styles.warningText,
-              color: colors.text,
-            }}>
+          <p className={clsx(styles.warningText, `text-${variant}`)}>
             {warningMessage}
           </p>
         )}
 
-        {/* Nota adicional (opcional) / Additional note (optional) */}
-        {note && <p style={styles.noteText}>{note}</p>}
-
-        {/* Botones de acción / Action buttons */}
-        <div style={styles.modalButtons}>
-          {/* Botón cancelar / Cancel button */}
-          <button
-            style={styles.modalButton}
-            onClick={onCancel}
-            disabled={isLoading}
-            aria-label="Cancelar acción">
-            {cancelText}
-          </button>
-
-          {/* Botón confirmar / Confirm button */}
-          <button
-            style={{
-              ...styles.modalButton,
-              backgroundColor: colors.button,
-              color: "white",
-            }}
-            onClick={onConfirm}
-            disabled={isLoading}
-            onMouseEnter={(e) => {
-              if (!isLoading) {
-                e.currentTarget.style.backgroundColor = colors.buttonHover;
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = colors.button;
-            }}
-            aria-label="Confirmar acción">
-            {isLoading ? "Procesando..." : confirmText}
-          </button>
-        </div>
-      </div>
-    </div>
+        {note && <p className={styles.noteText}>{note}</p>}
+      </Modal.Body>
+      <Modal.Footer className={styles.modalButtons}>
+        <Button variant="secondary" onClick={onCancel} disabled={isLoading}>
+          {cancelText}
+        </Button>
+        <Button variant={confirmButtonVariant} onClick={onConfirm} disabled={isLoading}>
+          {isLoading ? "Procesando..." : confirmText}
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 };

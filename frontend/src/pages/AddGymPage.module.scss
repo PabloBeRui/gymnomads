@@ -1,0 +1,50 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: AddGymPage
+ * STYLES FOR: AddGymPage
+ * =============================================================================
+ */
+
+.container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 20px auto;
+  border: 1px solid var(--bs-gray-300);
+  border-radius: 8px;
+}
+
+.managerSection {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: var(--bs-light);
+  border-radius: 8px;
+  border: 2px solid var(--bs-primary);
+}
+
+.sectionTitle {
+  margin-top: 0;
+  color: var(--bs-primary);
+}
+
+.emailPreview {
+  font-size: 0.9em;
+  color: var(--bs-gray-600);
+  margin-bottom: 15px;
+}
+
+.helperText {
+  color: var(--bs-gray-600);
+  font-size: 0.85em;
+}
+
+.passwordMatch {
+  color: var(--bs-success);
+  font-size: 0.85em;
+  margin-top: 5px;
+}
+
+.passwordMismatch {
+  color: var(--bs-danger);
+  font-size: 0.85em;
+  margin-top: 5px;
+}

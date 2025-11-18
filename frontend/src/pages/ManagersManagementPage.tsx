@@ -1,3 +1,19 @@
+/**
+ * =============================================================================
+ * PÁGINA: ManagersManagementPage
+ * =============================================================================
+ *
+ * Muestra una lista de managers con un orden inicial que depende del rol del
+ * usuario. Permite la búsqueda y paginación.
+ * Refactorizado para usar React-Bootstrap y SASS Modules.
+ *
+ * Displays a list of managers with an initial order that depends on the user's
+ * role. Allows searching and pagination.
+ * Refactored to use React-Bootstrap and SASS Modules.
+ *
+ * =============================================================================
+ */
+
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getAllManagers, updateManager } from "../services/user-services";
@@ -17,109 +33,12 @@ import {
   type ColumnDefinition,
 } from "../components/ui/SortableTable";
 
-/* =============================================================================
-   ESTILOS (inline)
-   STYLES (inline)
-   ============================================================================= */
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    padding: "20px",
-    maxWidth: "1400px",
-    margin: "0 auto",
-  },
-  header: {
-    marginBottom: "30px",
-  },
-  title: {
-    fontSize: "2rem",
-    marginBottom: "10px",
-    color: "#333",
-  },
-  subtitle: {
-    fontSize: "1rem",
-    color: "#666",
-  },
-  filtersContainer: {
-    display: "flex",
-    gap: "15px",
-    marginBottom: "30px",
-    flexWrap: "wrap",
-    alignItems: "flex-end",
-  },
-  filterGroup: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "5px",
-    flex: "1 1 300px",
-  },
-  label: {
-    fontSize: "0.9rem",
-    fontWeight: "bold",
-    color: "#495057",
-  },
-  input: {
-    padding: "10px",
-    fontSize: "1rem",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    width: "100%",
-  },
-  clearButton: {
-    padding: "10px 20px",
-    fontSize: "1rem",
-    backgroundColor: "#6c757d",
-    color: "white",
-    border: "none",
-    borderRadius: "4px",
-    cursor: "pointer",
-  },
-  loadingContainer: {
-    padding: "40px",
-    textAlign: "center",
-  },
-  errorText: {
-    color: "red",
-    padding: "20px",
-    textAlign: "center",
-  },
-  emptyState: {
-    padding: "40px",
-    textAlign: "center",
-    color: "#6c757d",
-    fontSize: "1.1rem",
-  },
-  statsContainer: {
-    display: "flex",
-    gap: "20px",
-    marginBottom: "30px",
-    flexWrap: "wrap",
-  },
-  statCard: {
-    flex: "1 1 200px",
-    padding: "20px",
-    backgroundColor: "#f8f9fa",
-    borderRadius: "8px",
-    border: "1px solid #dee2e6",
-  },
-  statNumber: {
-    fontSize: "2rem",
-    fontWeight: "bold",
-    color: "#007bff",
-  },
-  statLabel: {
-    fontSize: "0.9rem",
-    color: "#6c757d",
-    marginTop: "5px",
-  },
-  warningBox: {
-    padding: "15px",
-    backgroundColor: "#fff3cd",
-    border: "1px solid #ffeeba",
-    borderRadius: "8px",
-    marginBottom: "20px",
-    color: "#856404",
-  },
-};
+// Importar componentes de React-Bootstrap / Import React-Bootstrap components
+import { Container, Row, Col, Card, Button,  Spinner, Alert } from "react-bootstrap";
+
+// Importar el módulo SCSS / Import the SCSS module
+import styles from "./ManagersManagementPage.module.scss";
+import clsx from "clsx"; // Importar clsx / Import clsx
 
 /* =============================================================================
    COMPONENTE: ManagersManagementPage
@@ -258,7 +177,7 @@ export const ManagersManagementPage = () => {
       key: "first_name",
       header: "Manager",
       render: (manager) => (
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div className="d-flex align-items-center gap-2">
           <Avatar
             src={manager.profile_picture}
             firstName={manager.first_name}
@@ -275,7 +194,7 @@ export const ManagersManagementPage = () => {
       key: "gym_name",
       header: "Gimnasio",
       render: (manager) => (
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div className="d-flex align-items-center gap-2">
           <Avatar
             src={manager.logo_url}
             firstName={manager.gym_name}
@@ -291,28 +210,30 @@ export const ManagersManagementPage = () => {
   // Render loading
   if (isLoading && managers.length === 0) {
     return (
-      <div style={styles.loadingContainer}>
-        <p>Cargando managers...</p>
-      </div>
+      <Container className={clsx(styles.loadingContainer, "text-center mt-5")}>
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Cargando managers...</span>
+        </Spinner>
+      </Container>
     );
   }
 
   // Render error
   if (error && managers.length === 0) {
     return (
-      <div style={styles.container}>
-        <div style={styles.errorText}>{error}</div>
-      </div>
+      <Container className="mt-4">
+        <Alert variant="danger">{error}</Alert>
+      </Container>
     );
   }
 
   // Render principal / Main render
   return (
-    <div style={styles.container}>
+    <Container className={styles.container}>
       {/* Encabezado / Header */}
-      <div style={styles.header}>
-        <h1 style={styles.title}>Gestión de Managers</h1>
-        <p style={styles.subtitle}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Gestión de Managers</h1>
+        <p className={styles.subtitle}>
           Visualiza, edita y filtra todos los gerentes registrados en la
           plataforma. Haz click en una fila para ver y editar detalles completos
           (incluido email y teléfono).
@@ -320,24 +241,28 @@ export const ManagersManagementPage = () => {
       </div>
 
       {/* Advertencia sobre eliminación / Warning about deletion */}
-      <div style={styles.warningBox}>
+      <Alert variant="warning" className={styles.warningBox}>
         <strong>ℹ️ Nota importante:</strong> Los managers no se pueden eliminar
         directamente desde esta página. Para eliminar un manager, debes eliminar
         el gimnasio asociado desde la página de gestión de gimnasios.
-      </div>
+      </Alert>
 
       {/* Estadísticas / Statistics */}
-      <div style={styles.statsContainer}>
-        <div style={styles.statCard}>
-          <div style={styles.statNumber}>{totalItems}</div>
-          <div style={styles.statLabel}>
-            {isLoading ? "Cargando..." : "Total de Managers"}
-          </div>
-        </div>
-      </div>
+      <Row className={clsx(styles.statsContainer, "mb-4")}>
+        <Col xs={12} md={6} lg={4}>
+          <Card className={styles.statCard}>
+            <Card.Body>
+              <Card.Title className={styles.statNumber}>{totalItems}</Card.Title>
+              <Card.Text className={styles.statLabel}>
+                {isLoading ? "Cargando..." : "Total de Managers"}
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
 
       {/* Filtro único / Single filter */}
-      <div style={styles.filtersContainer}>
+      <div className={clsx(styles.filtersContainer, "mb-4")}>
         <FilterInput
           label="Buscar Manager"
           value={searchTerm}
@@ -347,30 +272,28 @@ export const ManagersManagementPage = () => {
         />
 
         {searchTerm && (
-          <button
+          <Button
             onClick={handleClearFilter}
-            style={styles.clearButton}
+            variant="secondary"
+            className={styles.clearButton}
             disabled={isLoading}>
             Limpiar Búsqueda
-          </button>
+          </Button>
         )}
       </div>
 
       {/* Tabla de managers / Managers table */}
       {managers.length === 0 ? (
-        <div style={styles.emptyState}>
+        <div className={styles.emptyState}>
           {searchTerm ? (
             <>
               <p>🔍 No se encontraron managers con el criterio de búsqueda.</p>
-              <button
+              <Button
                 onClick={handleClearFilter}
-                style={{
-                  ...styles.clearButton,
-                  marginTop: "15px",
-                  cursor: "pointer",
-                }}>
+                variant="secondary"
+                className="mt-3">
                 Limpiar búsqueda
-              </button>
+              </Button>
             </>
           ) : (
             <p>📭 Aún no hay managers registrados.</p>
@@ -400,6 +323,6 @@ export const ManagersManagementPage = () => {
         manager={selectedManager}
         onSave={handleSaveManager}
       />
-    </div>
+    </Container>
   );
 };

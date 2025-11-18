@@ -1,27 +1,30 @@
 /**
  * =============================================================================
- * COMPONENTE: Navbar
- * COMPONENT:  Navbar
+ * COMPONENTE: NavbarComponent
+ * COMPONENT:  NavbarComponent
  * =============================================================================
  *
  * Descripción: Barra de navegación principal y responsive de la aplicación.
  * Utiliza React-Bootstrap y React-Router para la navegación y muestra
  * enlaces condicionales basados en el estado de autenticación y el rol del usuario.
+ * Refactorizado con SASS Modules.
  *
  * Description: Main responsive navigation bar for the application.
  * Uses React-Bootstrap and React-Router for navigation and displays
  * conditional links based on authentication state and user role.
+ * Refactored with SASS Modules.
  *
  * =============================================================================
  */
 
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { Avatar } from "../Avatar"; // Asumiendo que Avatar está en 'components'
+import { Avatar } from "../Avatar"; // Asumiendo que Avatar está en 'components' / Assuming Avatar is in 'components'
 
-// Importar componentes de React-Bootstrap
-// Import React-Bootstrap components
+// Importar componentes de React-Bootstrap / Import React-Bootstrap components
 import { Navbar, Nav, Container, NavDropdown } from "react-bootstrap";
+// import styles from "./NavBarComponent.module.scss"; // Importar el módulo SCSS / Import the SCSS module
+// import clsx from "clsx"; // Importar clsx / Import clsx
 
 export const NavbarComponent = () => {
   // Obtener el estado de autenticación y la función logout del contexto.
@@ -29,25 +32,21 @@ export const NavbarComponent = () => {
   const { user, token, logout } = useAuth();
 
   return (
-    // 'sticky="top"' mantiene el navbar pegado arriba
-    // 'sticky="top"' keeps the navbar fixed at the top
+    // 'sticky="top"' mantiene el navbar pegado arriba / 'sticky="top"' keeps the navbar fixed at the top
     <Navbar bg="dark" variant="dark" expand="lg" sticky="top">
       <Container>
-        {/* --- Marca/Logo --- */}
+        {/* --- Marca/Logo --- / --- Brand/Logo --- */}
         <Navbar.Brand as={Link} to="/">
           GymNomads
         </Navbar.Brand>
 
-        {/* --- Botón Hamburguesa (se muestra en móvil) --- */}
-        {/* --- Hamburger Button (shows on mobile) --- */}
+        {/* --- Botón Hamburguesa (se muestra en móvil) --- / --- Hamburger Button (shows on mobile) --- */}
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
 
-        {/* --- Contenido Colapsable --- */}
-        {/* --- Collapsible Content --- */}
+        {/* --- Contenido Colapsable --- / --- Collapsible Content --- */}
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            {/* Enlaces que todos ven */}
-            {/* Links everyone sees */}
+            {/* Enlaces que todos ven / Links everyone sees */}
             <Nav.Link as={Link} to="/">
               Home
             </Nav.Link>
@@ -56,14 +55,12 @@ export const NavbarComponent = () => {
             </Nav.Link>
           </Nav>
 
-          {/* --- Lógica de Autenticación (derecha) --- */}
-          {/* --- Authentication Logic (right) --- */}
+          {/* --- Lógica de Autenticación (derecha) --- / --- Authentication Logic (right) --- */}
           <Nav>
             {token && user ? (
-              // --- ESTADO AUTENTICADO ---
-              // --- AUTHENTICATED STATE ---
+              // --- ESTADO AUTENTICADO --- / --- AUTHENTICATED STATE ---
               <>
-                {/* Enlaces de Usuario/Manager/Admin */}
+                {/* Enlaces de Usuario/Manager/Admin / User/Manager/Admin Links */}
                 {user.role === "user" && (
                   <Nav.Link as={Link} to="/my-visits">
                     Mis Visitas
@@ -87,8 +84,7 @@ export const NavbarComponent = () => {
                   </Nav.Link>
                 )}
 
-                {/* --- Menú de Perfil (Dropdown) --- */}
-                {/* --- Profile Menu (Dropdown) --- */}
+                {/* --- Menú de Perfil (Dropdown) --- / --- Profile Menu (Dropdown) --- */}
                 <NavDropdown
                   title={
                     <Avatar
@@ -99,7 +95,7 @@ export const NavbarComponent = () => {
                     />
                   }
                   id="basic-nav-dropdown"
-                  align="end" // Alinea el menú a la derecha
+                  align="end" // Alinea el menú a la derecha / Aligns the menu to the right
                 >
                   <NavDropdown.Item as={Link} to="/profile">
                     Perfil ({user.first_name})
@@ -111,8 +107,7 @@ export const NavbarComponent = () => {
                 </NavDropdown>
               </>
             ) : (
-              // --- ESTADO NO AUTENTICADO ---
-              // --- NON-AUTHENTICATED STATE ---
+              // --- ESTADO NO AUTENTICADO --- / --- NON-AUTHENTICATED STATE ---
               <>
                 <Nav.Link as={Link} to="/register-user">
                   Registro

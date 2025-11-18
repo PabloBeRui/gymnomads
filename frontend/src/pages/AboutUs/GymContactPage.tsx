@@ -6,9 +6,11 @@
  *
  * Descripción: Página con un formulario para que los gimnasios interesados
  * puedan contactar para unirse a la red Gymnomads.
+ * Refactorizado para usar React-Bootstrap y SASS Modules.
  *
  * Detailed description: Page with a form for interested gyms to contact
  * to join the Gymnomads network.
+ * Refactored to use React-Bootstrap and SASS Modules.
  *
  * =============================================================================
  */
@@ -16,75 +18,12 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 import { CloseButton } from "../../components/ui/CloseButton";
 
-/* =============================================================================
-    ESTILOS (inline)
-    STYLES (inline)
-    ============================================================================= */
-const styles: { [key: string]: React.CSSProperties } = {
-  pageContainer: {
-    maxWidth: "600px",
-    margin: "40px auto",
-    padding: "30px",
-    position: "relative",
-    backgroundColor: "#fff",
-    borderRadius: "8px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-    textAlign: "center",
-  },
-  title: {
-    fontSize: "2rem",
-    color: "#333",
-    marginBottom: "15px",
-  },
-  subtitle: {
-    fontSize: "1rem",
-    color: "#555",
-    lineHeight: 1.6,
-    marginBottom: "30px",
-  },
-  formInput: {
-    width: "100%",
-    padding: "10px",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    boxSizing: "border-box",
-    marginBottom: "15px",
-    fontSize: "1rem",
-  },
-  formTextarea: {
-    width: "100%",
-    padding: "10px",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    boxSizing: "border-box",
-    minHeight: "100px",
-    marginBottom: "15px",
-    fontSize: "1rem",
-  },
-  formLabel: {
-    display: "block",
-    textAlign: "left",
-    marginBottom: "5px",
-    fontWeight: "600",
-    color: "#333",
-  },
-  submitButton: {
-    width: "100%",
-    padding: "12px 25px",
-    fontSize: "1.1rem",
-    fontWeight: "600",
-    color: "#fff",
-    backgroundColor: "rgb(0, 123, 255)", 
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-    transition: "background-color 0.2s",
-  },
-  submitButtonDisabled: {
-    backgroundColor: "#6c757d",
-    cursor: "not-allowed",
-  },
-};
+// Importar componentes de React-Bootstrap / Import React-Bootstrap components
+import { Container, Form, Button } from "react-bootstrap";
+
+// Importar el módulo SCSS / Import the SCSS module
+import styles from "./GymContactPage.module.scss";
+// import clsx from "clsx"; // Importar clsx / Import clsx
 
 export const GymContactPage = () => {
   const [gymName, setGymName] = useState("");
@@ -97,7 +36,7 @@ export const GymContactPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-       setIsSubmitting(true);
+    setIsSubmitting(true);
 
     // Simulación de envío a un API
     // API submission simulation
@@ -118,87 +57,72 @@ export const GymContactPage = () => {
   };
 
   return (
-    <div style={styles.pageContainer}>
+    <Container className={styles.pageContainer}>
       <CloseButton navigateTo="/" />
-      <h1 style={styles.title}>Contacta con Nosotros</h1>
-      <p style={styles.subtitle}>
+      <h1 className={styles.title}>Contacta con Nosotros</h1>
+      <p className={styles.subtitle}>
         ¿Eres un gimnasio y quieres unirte a nuestra red? Rellena el siguiente
         formulario y nos pondremos en contacto contigo.
       </p>
-      <form onSubmit={handleSubmit} style={{ textAlign: "left" }}>
-        <div>
-          <label style={styles.formLabel} htmlFor="gymName">
-            Nombre del Gimnasio
-          </label>
-          <input
-            id="gymName"
+      <Form onSubmit={handleSubmit} className="text-start">
+        <Form.Group className="mb-3" controlId="gymName">
+          <Form.Label>Nombre del Gimnasio</Form.Label>
+          <Form.Control
             type="text"
             value={gymName}
             onChange={(e) => setGymName(e.target.value)}
-            style={styles.formInput}
             required
           />
-        </div>
-        <div>
-          <label style={styles.formLabel} htmlFor="address">
-            Dirección
-          </label>
-          <input
-            id="address"
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="address">
+          <Form.Label>Dirección</Form.Label>
+          <Form.Control
             type="text"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            style={styles.formInput}
             required
           />
-        </div>
-        <div>
-          <label style={styles.formLabel} htmlFor="email">
-            Email de Contacto
-          </label>
-          <input
-            id="email"
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="email">
+          <Form.Label>Email de Contacto</Form.Label>
+          <Form.Control
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            style={styles.formInput}
             required
           />
-        </div>
-        <div>
-          <label style={styles.formLabel} htmlFor="phone">
-            Teléfono de Contacto
-          </label>
-          <input
-            id="phone"
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="phone">
+          <Form.Label>Teléfono de Contacto</Form.Label>
+          <Form.Control
             type="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            style={styles.formInput}
             required
           />
-        </div>
-        <div>
-          <label style={styles.formLabel} htmlFor="observations">
-            Observaciones o Dudas (Opcional)
-          </label>
-          <textarea
-            id="observations"
+        </Form.Group>
+
+        <Form.Group className="mb-4" controlId="observations">
+          <Form.Label>Observaciones o Dudas (Opcional)</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={3}
             value={observations}
             onChange={(e) => setObservations(e.target.value)}
-            style={styles.formTextarea}
           />
-        </div>
-        <button
+        </Form.Group>
+
+        <Button
+          variant="primary"
           type="submit"
           disabled={isSubmitting}
-          style={{
-            ...styles.submitButton,
-            ...(isSubmitting ? styles.submitButtonDisabled : {}),
-          }}>
+          className="w-100">
           {isSubmitting ? "Enviando..." : "Enviar Solicitud"}
-        </button>
-      </form>
-    </div>
+        </Button>
+      </Form>
+    </Container>
   );
 };
