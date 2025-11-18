@@ -3,28 +3,40 @@
    MAIN SASS FILE (index.scss)
    ============================================================================= */
 
-/* 1. DEFINE TUS VARIABLES PRIMERO
+/* 1. DEFINIR VARIABLES PRIMERO
+   1. DEFINE YOUR VARIABLES FIRST
    ============================================================================= */
-// Aquí redefinimos los colores base de Bootstrap ANTES de importarlo.
-// We redefine Bootstrap's base colors HERE before importing it.
 
-// (Puedes cambiar estos códigos de color por los de tu paleta de diseño)
-$primary: #0d6efd; // El azul por defecto
-$success: #198754; // El verde por defecto
-$danger: #dc3545; // El rojo por defecto
-$warning: #ffc107; // El amarillo por defecto
-$info: #0dcaf0; // El cian por defecto
-$light: #f8f9fa; // El gris claro por defecto
-$dark: #1a202c; // Tu gris oscuro del footer
+// redefinir los colores base de Bootstrap ANTES de importarlo.
+// Redefine Bootstrap's base colors HERE *before* importing it so they take effect.
 
-// También puedes cambiar fuentes, bordes, etc.
+$primary: #0d6efd; // Default blue / Azul por defecto de Bootstrap
+$success: #198754; // Default green / Verde por defecto
+$danger: #dc3545; // Default red / Rojo por defecto
+$warning: #ffc107; // Default yellow / Amarillo por defecto
+$info: #0dcaf0; // Default cyan / Cian por defecto
+$light: #f8f9fa; // Default light gray / Gris claro por defecto
+$dark: #1a202c; // Dark gray used in footer and dark components
+// Gris oscuro usado en el footer y componentes oscuros
+
+// ? sobrescribir otras variables de Bootstrap aquí:
+// ?override other Bootstrap variables here:
 // $font-family-base: 'Roboto', sans-serif;
 // $border-radius: 0.5rem;
+// $enable-shadows: true;
+// $spacer: 1.5rem;
 
-/* 2. IMPORTA EL SASS DE BOOTSTRAP
+// -----------------------------------------------------------------------------
+// Next step: Import Bootstrap (after variable overrides)
+// Próximo paso: Importar Bootstrap (después de sobrescribir las variables)
+// @import "bootstrap/scss/bootstrap";
+// -----------------------------------------------------------------------------
+
+/* 2. IMPORTAR EL SASS DE BOOTSTRAP
+   2. IMPORTT BOOTSTRAP SASS
    ============================================================================= */
-// Ahora Bootstrap se "compilará" usando tus variables de arriba.
-// Bootstrap will now "compile" using your variables from above.
+// Ahora Bootstrap se "compilará" usando las variables de arriba.
+// Bootstrap will now "compile" using the variables from above.
 @import "bootstrap/scss/bootstrap";
 
 /* ==========================================================================
@@ -41,3 +53,8 @@ $dark: #1a202c; // Tu gris oscuro del footer
    https://leafletjs.com
 */
 @import "leaflet/dist/leaflet.css";
+
+
+/* ==========================================================================
+   ESTILOS GLOBALES - GLOBAL-STYLES
+   ========================================================================== */
