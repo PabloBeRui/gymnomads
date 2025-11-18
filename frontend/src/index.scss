@@ -6,55 +6,84 @@
 /* 1. DEFINIR VARIABLES PRIMERO
    1. DEFINE YOUR VARIABLES FIRST
    ============================================================================= */
-
 // redefinir los colores base de Bootstrap ANTES de importarlo.
 // Redefine Bootstrap's base colors HERE *before* importing it so they take effect.
 
-$primary: #0d6efd; // Default blue / Azul por defecto de Bootstrap
-$success: #198754; // Default green / Verde por defecto
-$danger: #dc3545; // Default red / Rojo por defecto
-$warning: #ffc107; // Default yellow / Amarillo por defecto
-$info: #0dcaf0; // Default cyan / Cian por defecto
-$light: #f8f9fa; // Default light gray / Gris claro por defecto
-$dark: #1a202c; // Dark gray used in footer and dark components
-// Gris oscuro usado en el footer y componentes oscuros
+// Colores primarios (se mantienen tus definiciones)
+// Primary Colors (your definitions are kept)
+$primary: #0d6efd; 
+$success: #198754; 
+$danger: #dc3545; 
+$warning: #ffc107; 
+$info: #0dcaf0; 
+$light: #f8f9fa; 
+$dark: #1a202c; 
 
-// ? sobrescribir otras variables de Bootstrap aquí:
-// ?override other Bootstrap variables here:
-// $font-family-base: 'Roboto', sans-serif;
-// $border-radius: 0.5rem;
-// $enable-shadows: true;
-// $spacer: 1.5rem;
 
-// -----------------------------------------------------------------------------
-// Next step: Import Bootstrap (after variable overrides)
-// Próximo paso: Importar Bootstrap (después de sobrescribir las variables)
-// @import "bootstrap/scss/bootstrap";
-// -----------------------------------------------------------------------------
+// Tipografía
+// Typography
+$font-family-base: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+$font-size-base: 1rem; // Tamaño base (16px) / Base size (16px)
+
+// Bordes y Sombras
+// Borders and Shadows
+$border-radius: 0.375rem; // Radio de borde global (para botones, cards, inputs) / Global border radius (for buttons, cards, inputs)
+$enable-shadows: true;    // Habilitar sombras predefinidas de Bootstrap / Enable predefined Bootstrap shadows
+
+// Espaciado
+// Spacing
+$spacer: 1rem; // Base para márgenes y paddings (p.ej., 'p-1' será 0.25rem) / Base for margins and paddings (e.g., 'p-1' will be 0.25rem)
+
+// Habilitar un mapa de espaciadores más grande para utilidades (p.ej. 'mt-5')
+// Enable a larger spacer map for utilities (e.g. 'mt-5')
+$spacers: (
+  0: 0,
+  1: $spacer * .25,
+  2: $spacer * .5,
+  3: $spacer,
+  4: $spacer * 1.5,
+  5: $spacer * 3,
+);
 
 /* 2. IMPORTAR EL SASS DE BOOTSTRAP
-   2. IMPORTT BOOTSTRAP SASS
+   2. IMPORT BOOTSTRAP SASS
    ============================================================================= */
-// Ahora Bootstrap se "compilará" usando las variables de arriba.
-// Bootstrap will now "compile" using the variables from above.
+// Ahora Bootstrap se "compilará" usando nuestras variables.
+// Bootstrap will now "compile" using our variables.
 @import "bootstrap/scss/bootstrap";
 
-/* ==========================================================================
-   Leaflet – Estilos base de la librería de mapas interactivos
-   Necesario para que los mapas de OpenStreetMap (y otros proveedores) 
-   se vean correctamente: marcadores, zoom, capas, popups, etc.
-   https://leafletjs.com
-   ========================================================================== */
+/* 3. ESTILOS GLOBALES
+   3. GLOBAL STYLES
+   ============================================================================= */
 
-/* 
+/* Leaflet – Estilos base de la librería de mapas interactivos
    Leaflet – Base styles for the interactive map library
-   Required so OpenStreetMap maps (and other tile providers) 
-   display correctly: markers, zoom controls, popups, tiles, etc.
-   https://leafletjs.com
 */
 @import "leaflet/dist/leaflet.css";
 
+/* Estilos base de la aplicación
+   Base application styles
+*/
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden; // Prevenir scroll horizontal / Prevent horizontal scroll
+}
 
-/* ==========================================================================
-   ESTILOS GLOBALES - GLOBAL-STYLES
-   ========================================================================== */
+body {
+  background-color: $light; // Usar nuestra variable de Bootstrap / Use our Bootstrap variable
+  color: $dark;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Asegurar que el layout de App.tsx (flex-column) funcione
+// Ensure the App.tsx layout (flex-column) works
+#root, .d-flex.flex-column.min-vh-100 {
+  min-height: 100vh;
+}
+
+main {
+  flex: 1; // Asegurar que el contenido principal ocupe el espacio / Ensure the main content occupies the space
+  width: 100%;
+}
