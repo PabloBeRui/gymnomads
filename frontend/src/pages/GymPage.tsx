@@ -214,119 +214,107 @@ export const GymPage = () => {
     user.home_gym_city?.toLowerCase() !== gym.city?.toLowerCase();
 
   // Render principal
-            return (
-              <Container className="py-5">
-                <Row className="justify-content-center">
-                  <Col lg={10} xl={9}>
-                    <Row className="justify-content-between align-items-center mb-4">
-                      <Col xs="auto">
-                          {gym.latitude && gym.longitude && (
-                              <WeatherWidget latitude={gym.latitude} longitude={gym.longitude} />
-                          )}
-                      </Col>
-                      <Col xs="auto">
-                          <div className="d-flex align-items-center gap-3">
-                              <img src={logoSrc} alt={`Logo de ${gym.name}`} className={styles.gymLogoSmall} />
-                              <CloseButton navigateTo="/gyms" />
-                          </div>
-                      </Col>
-                    </Row>
-          
-                    {/* --- Hero Image y Detalles Principales --- */}
-                    {/* --- Hero Image and Main Details --- */}
-                    <Card className="mb-4 shadow-sm border-0">
-                      <div className={styles.heroImageWrapper}>
-                        <Card.Img variant="top" src={mainImageSrc} alt={`Imagen principal de ${gym.name}`} className={styles.heroImage} />
-                        <div className={styles.heroOverlay}>
-                          <div className="d-flex align-items-center mb-2">
-                            <h1 className="text-white fw-bold mb-0">{gym.name}</h1>
-                          </div>
-                          <p className="text-white mb-0 fs-5">
-                            <i className="bi bi-geo-alt-fill me-2"></i>
-                            {gym.address}, {gym.city}
-                          </p>
-                        </div>
-                      </div>
-                      <Card.Body className="p-4">
-                        <Row className="align-items-center">
-                          <Col md={8}>
-                              {/* Contenido principal como el botón de visita se muestra aquí */}
-                          </Col>
-                          <Col md={4} className="text-md-end mt-3 mt-md-0">
-                            {canVisit && (
-                              <Button
-                                variant="primary"
-                                onClick={handleVisitClick}
-                                disabled={isProcessing}
-                                className="w-100"
-                              >
-                                {isProcessing ? (
-                                  <>
-                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
-                                    Registrando...
-                                  </>
-                                ) : (
-                                  <>
-                                    <i className="bi bi-person-walking me-2"></i>Visitar
-                                  </>
-                                )}
-                              </Button>
-                            )}
-                            {user?.role === "admin" || (user?.role === "manager" && user.home_gym_id === gym.id) ? (
-                              <Button
-                                variant="outline-secondary"
-                                className="w-100 mt-2"
-                                onClick={() => navigate(`/gyms/edit/${gym.id}`)}
-                              >
-                                <i className="bi bi-pencil-fill me-2"></i>Editar Gimnasio
-                              </Button>
-                            ) : null}
-                          </Col>
-                        </Row>
-                      </Card.Body>
-                    </Card>
-          
-                    {/* --- Secciones de Detalles y Ubicación --- */}
-                    {/* --- Details and Location Sections --- */}
-                    <Row>
-                      <Col lg={12} className="mb-4">
-                        <Card className="h-100 shadow-sm border-0">
-                          <Card.Body>
-                            <h4 className="fw-bold mb-3">Ubicación</h4>
-                            {gym.latitude && gym.longitude ? (
-                              <GymMap
-                                lat={gym.latitude}
-                                lon={gym.longitude}
-                                gymName={gym.name}
-                                logoUrl={logoSrc}
-                              />
-                            ) : (
-                              <Alert variant="warning" className="p-3 text-center">
-                                Ubicación no disponible en el mapa.
-                              </Alert>
-                            )}
-                          </Card.Body>
-                        </Card>
-                      </Col>
-                    </Row>
-                  </Col>
-                </Row>
-          
-          
-                {/* Modal de Confirmación */}
-                {/* Confirmation Modal */}
-                <ConfirmationModal
-                  isOpen={showConfirmModal}
-                  onCancel={handleCancelVisit}
-                  onConfirm={handleConfirmVisit}
-                  title="Confirmar Visita"
-                  message={`¿Estás seguro de que quieres registrar una visita a ${
-                    gym?.name || "este gimnasio"
-                  }?`}
-                  note="Esto contará como una visita válida para el día de hoy."
-                  confirmText={isProcessing ? "Registrando..." : "Confirmar Visita"}
-                  variant="info"
-                  isLoading={isProcessing}
-                />
-              </Container>
-            );}
+                  return (
+                    <div className={styles.pageWrapper} onClick={() => navigate("/gyms")}>
+                        <Container className={`${styles.contentContainer} py-4`} onClick={(e) => e.stopPropagation()}>
+                            <Row className="justify-content-center">
+                                <Col lg={11}>
+                                    <Row className="justify-content-between align-items-center mb-4">
+                                        <Col xs="auto">
+                                            {gym.latitude && gym.longitude && (
+                                                <WeatherWidget latitude={gym.latitude} longitude={gym.longitude} />
+                                            )}
+                                        </Col>
+                                        <Col xs="auto">
+                                            <div className="d-flex align-items-center gap-3">
+                                                <img src={logoSrc} alt={`Logo de ${gym.name}`} className={styles.gymLogoSmall} />
+                                                <CloseButton navigateTo="/gyms" />
+                                            </div>
+                                        </Col>
+                                    </Row>
+                
+                                    {/* --- Hero Image y Detalles Principales --- */}
+                                    <Card className="mb-4 shadow-sm border-0">
+                                        <div className={styles.heroImageWrapper}>
+                                        <Card.Img variant="top" src={mainImageSrc} alt={`Imagen principal de ${gym.name}`} className={styles.heroImage} />
+                                        <div className={styles.heroOverlay}>
+                                            <div className="d-flex align-items-center mb-2">
+                                            <h1 className="text-white fw-bold mb-0">{gym.name}</h1>
+                                            </div>
+                                            <p className="text-white mb-0 fs-5">
+                                            <i className="bi bi-geo-alt-fill me-2"></i>
+                                            {gym.address}, {gym.city}
+                                            </p>
+                                        </div>
+                                        </div>
+                                        <Card.Body className="p-4">
+                                        <Row className="align-items-center">
+                                            <Col md={8}>
+                                                {/* Contenido principal como el botón de visita se muestra aquí */}
+                                            </Col>
+                                            <Col md={4} className="text-md-end mt-3 mt-md-0">
+                                            {canVisit && (
+                                                <Button
+                                                variant="primary"
+                                                onClick={handleVisitClick}
+                                                disabled={isProcessing}
+                                                className="w-100"
+                                                >
+                                                {isProcessing ? (
+                                                    <>
+                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+                                                    Registrando...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                    <i className="bi bi-person-walking me-2"></i>Visitar
+                                                    </>
+                                                )}
+                                                </Button>
+                                            )}
+                                                                                        </Col>
+                                        </Row>
+                                        </Card.Body>
+                                    </Card>
+                
+                                    {/* --- Secciones de Detalles y Ubicación --- */}
+                                    <Row>
+                                        <Col lg={12} className="mb-4">
+                                        <Card className="h-100 shadow-sm border-0">
+                                            <Card.Body>
+                                            <h4 className="fw-bold mb-3">Ubicación</h4>
+                                            {gym.latitude && gym.longitude ? (
+                                                <GymMap
+                                                lat={gym.latitude}
+                                                lon={gym.longitude}
+                                                gymName={gym.name}
+                                                logoUrl={logoSrc}
+                                                />
+                                            ) : (
+                                                <Alert variant="warning" className="p-3 text-center">
+                                                Ubicación no disponible en el mapa.
+                                                </Alert>
+                                            )}
+                                            </Card.Body>
+                                        </Card>
+                                        </Col>
+                                    </Row>
+                                </Col>
+                            </Row>
+                        </Container>
+                        {/* El modal se deja fuera del contenedor principal para que la lógica de stopPropagation no interfiera */}
+                        <ConfirmationModal
+                            isOpen={showConfirmModal}
+                            onCancel={handleCancelVisit}
+                            onConfirm={handleConfirmVisit}
+                            title="Confirmar Visita"
+                            message={`¿Estás seguro de que quieres registrar una visita a ${
+                            gym?.name || "este gimnasio"
+                            }?`}
+                            note="Esto contará como una visita válida para el día de hoy."
+                            confirmText={isProcessing ? "Registrando..." : "Confirmar Visita"}
+                            variant="info"
+                            isLoading={isProcessing}
+                        />
+                    </div>
+                  );}

@@ -311,27 +311,37 @@ export const ListGymsPage = () => {
                                         <Card.Footer className="bg-white border-top-0 text-end">
                                             <Button
                                                 variant="outline-secondary"
-                                                size="sm"
-                                                className="me-2 rounded-pill"
+                                                className="me-2"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     navigate(`/gyms/edit/${gym.id}`);
                                                 }}
                                             >
-                                                <i className="bi bi-pencil-fill"></i>
+                                                <i className="bi bi-pencil-fill me-2"></i>Editar
                                             </Button>
                                             {isAdmin && (
-                                                <Button
-                                                    variant="outline-danger"
-                                                    size="sm"
-                                                    className="rounded-pill"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleDelete(gym);
-                                                    }}
-                                                >
-                                                   <i className="bi bi-trash-fill"></i>
-                                                </Button>
+                                                <>
+                                                    <Button
+                                                        variant="outline-danger"
+                                                        className="me-2"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleDelete(gym);
+                                                        }}
+                                                    >
+                                                        <i className="bi bi-trash-fill me-2"></i>Borrar
+                                                    </Button>
+                                                    {/* TODO: Implement suspend gym functionality */}
+                                                    <Button
+                                                        variant="outline-warning"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            // Future suspend logic here
+                                                        }}
+                                                    >
+                                                        <i className="bi bi-pause-circle-fill me-2"></i>Suspender
+                                                    </Button>
+                                                </>
                                             )}
                                         </Card.Footer>
                                     )}
