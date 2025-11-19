@@ -126,9 +126,7 @@ export const NavbarComponent = () => {
           {/* NAV 1: Enlaces principales (siempre visibles en el collapse) */}
           {/* NAV 1: Main links (always visible in the collapse) */}
           <Nav className="me-auto" onSelect={() => setExpanded(false)}>
-            <Nav.Link as={Link} to="/" eventKey="7">
-              Home
-            </Nav.Link>
+
             <Nav.Link as={Link} to="/gyms" eventKey="8">
               Gimnasios
             </Nav.Link>
@@ -141,11 +139,24 @@ export const NavbarComponent = () => {
             className="align-items-center"
             onSelect={() => setExpanded(false)}>
             {token && user ? (
-              // En escritorio: muestra el avatar (oculto en móvil)
-              // On desktop: show the avatar (hidden on mobile)
-              <div className="d-none d-lg-block ms-lg-4">
-                {renderAvatarDropdown()}
-              </div>
+              <>
+                {/* En escritorio: muestra el avatar (oculto en móvil) */}
+                {/* On desktop: show the avatar (hidden on mobile) */}
+                <div className="d-none d-lg-block ms-lg-4">
+                  {renderAvatarDropdown()}
+                </div>
+                {/* En móvil: muestra un enlace de logout en el menú */}
+                {/* On mobile: show a logout link in the menu */}
+                <Nav.Link
+                  className="d-lg-none"
+                  onClick={() => {
+                    logout();
+                    setExpanded(false);
+                  }}
+                  eventKey="11">
+                  Cerrar Sesión
+                </Nav.Link>
+              </>
             ) : (
               // Para todos los tamaños: muestra Login/Registro si no está logueado.
               // For all sizes: show Login/Register if not logged in.
