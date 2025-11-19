@@ -52,7 +52,7 @@ export const Avatar: React.FC<AvatarProps> = ({
 
     // Estilos dinámicos: ahora solo para el color de fondo y la variable de tamaño.
     // Dynamic styles: now only for background color and the size variable.
-    const dynamicStyles: React.CSSProperties = {
+    const dynamicStyles: React.CSSProperties & { [key: string]: string | number } = {
         backgroundColor: showImage ? "transparent" : backgroundColor,
     };
 
