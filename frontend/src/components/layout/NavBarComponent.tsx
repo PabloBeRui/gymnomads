@@ -94,42 +94,87 @@ export const NavbarComponent = () => {
   };
 
   return (
+    // Componente principal de la barra de navegación.
+    // Main navigation bar component.
     <Navbar
-      fixed="top"
-      expand="lg"
-      expanded={expanded}
-      onToggle={() => setExpanded((prev) => !prev)}
-      className={clsx(styles.navbar, scrolled ? styles.navbarScrolled : styles.navbarTransparent)}
+      fixed="top" // Fija la barra de navegación en la parte superior. // Fixes the navbar to the top.
+      expand="lg" // Expande la barra de navegación en pantallas grandes y superiores. // Expands the navbar on large screens and above.
+      expanded={expanded} // Controla el estado expandido/colapsado. // Controls expanded/collapsed state.
+      onToggle={() => setExpanded((prev) => !prev)} // Maneja la alternancia del menú. // Handles menu toggling.
+      className={clsx(styles.navbar, scrolled ? styles.navbarScrolled : styles.navbarTransparent)} // Aplica estilos dinámicos según el scroll. // Applies dynamic styles based on scroll.
     >
-      <Container>
-        <div className="d-lg-none">
-            {token && user && renderAvatarDropdown()}
-        </div>
-        <Navbar.Brand as={Link} to="/" onClick={() => setExpanded(false)} className={styles.navbarBrand}>
+      {/* Contenedor principal de la barra de navegación. */}
+      {/* Main container for the navigation bar. */}
+      <Container className="d-flex align-items-center justify-content-between">
+        {/* Mobile-only Avatar Link */}
+        {token && user ? (
+            <Link to="/profile" className="d-lg-none d-flex align-items-center me-2"> {/* d-flex align-items-center for vertical alignment */}
+              <Avatar
+                src={user.profile_picture}
+                firstName={user.first_name}
+                lastName={user.last_name}
+                className={styles.navAvatar} // Reuse existing navAvatar styling for size
+              />
+            </Link>
+        ) : (
+            <div className="d-lg-none me-2" style={{ width: '40px' }}></div> // Placeholder for alignment
+        )}
+        {/* Marca de la aplicación (logo/nombre). */}
+        {/* Application brand (logo/name). */}
+        <Navbar.Brand as={Link} to="/" onClick={() => setExpanded(false)} className={clsx(styles.navbarBrand, "mx-auto", "mx-lg-0")}>
           GymNomads
         </Navbar.Brand>
-        <Navbar.Toggle aria-controls="responsive-navbar-nav" className={styles.navbarToggle} />
-        
+        {/* Botón de alternancia para el menú responsivo (hamburguesa). */}
+        {/* Toggle button for responsive menu (hamburger). */}
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" className={clsx(styles.navbarToggle, "ms-auto")} /> {/* ms-auto to push to right */}
+        {/* Contenido colapsable de la barra de navegación. */}
+        {/* Collapsible content of the navigation bar. */}
         <Navbar.Collapse id="responsive-navbar-nav">
+          {/* Enlaces de navegación. */}
+          {/* Navigation links. */}
           <Nav className="ms-auto align-items-center" onSelect={() => setExpanded(false)}>
+            {/* Enlace a la página de gimnasios. */}
+            {/* Link to gyms page. */}
             <Nav.Item>
                 <Nav.Link as={NavLink} to="/gyms" className={styles.navLink}>Gimnasios</Nav.Link>
             </Nav.Item>
 
+            {/* Renderiza enlaces autenticados o de inicio de sesión/registro. */}
+            {/* Renders authenticated or login/register links. */}
             {token && user ? (
               <>
+                {/* Enlaces específicos para roles de usuario autenticado. */}
+                {/* Specific links for authenticated user roles. */}
                 {renderAuthenticatedLinks()}
+                {/* Dropdown del avatar (visible en desktop). */}
+                {/* Avatar dropdown (visible en desktop). */}
                 <Nav.Item className="d-none d-lg-block">{renderAvatarDropdown()}</Nav.Item>
               </>
             ) : (
               <>
+                {/* Enlace para iniciar sesión. */}
+                {/* Link to login. */}
                 <Nav.Item>
                     <Nav.Link as={NavLink} to="/login" className={styles.navLink}>Login</Nav.Link>
                 </Nav.Item>
+                {/* Botón para registrarse. */}
+                {/* Button to register. */}
                 <Nav.Item>
                     <Button onClick={() => navigate('/register')} variant="primary" size="sm" className="ms-lg-2">Regístrate</Button>
                 </Nav.Item>
               </>
+            )}
+
+            {/* Links para menú hamburguesa en móvil */}
+            {token && user && (
+              <div className="d-lg-none mt-3 border-top pt-3">
+                <Nav.Link onClick={() => navigate('/profile')} className={styles.navLink}>
+                    <i className="bi bi-person-fill me-2"></i>Perfil
+                </Nav.Link>
+                <Nav.Link onClick={logout} className={styles.navLink}>
+                    <i className="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                </Nav.Link>
+              </div>
             )}
           </Nav>
         </Navbar.Collapse>
