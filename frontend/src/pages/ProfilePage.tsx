@@ -19,7 +19,7 @@ import clsx from "clsx";
 
 // Importar componentes de Bootstrap
 // Import Bootstrap components
-import { Container, Form, Button, Spinner } from "react-bootstrap";
+import { Container, Form, Button, Spinner,Row,Col,Card } from "react-bootstrap";
 
 // Importar contexto / Import context
 import { useAuth } from "../context/AuthContext";
@@ -341,13 +341,22 @@ export const ProfilePage: React.FC = () => {
                 {user.role !== "admin" && (
                     <Form.Group className="mb-3">
                         <Form.Label className="fw-bold">Gimnasio:</Form.Label>
-                        <Form.Control
-                            type="text"
-                            value={gymFetchError || gymName || "Cargando..."}
-                            disabled
-                            readOnly
-                            className={styles.disabledFormControl}
-                        />
+                        <div className={`${styles.disabledFormControl} d-flex align-items-center`}>
+                            {gymFetchError ? (
+                                <span className="text-danger">{gymFetchError}</span>
+                             ) : gymName ? (
+                                <>
+                                    <img
+                                        src={gymLogoUrl ? `${backendBaseUrl}/${gymLogoUrl.replace(/^\/+/, "")}` : "/images/gym-logo/default-gym-logo.png"}
+                                        alt={`Logo de ${gymName}`}
+                                        className={styles.gymLogo}
+                                    />
+                                    <span>{gymName}</span>
+                                </>
+                            ) : (
+                                "Cargando..."
+                            )}
+                        </div>
                     </Form.Group>
                 )}
               </Form>
