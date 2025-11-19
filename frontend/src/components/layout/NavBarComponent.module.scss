@@ -77,6 +77,12 @@
      border-radius: $border-radius-lg;
      box-shadow: $box-shadow-lg;
      padding: 0.5rem 0;
+
+     // Ensure right alignment on mobile
+     @media (max-width: 991.98px) { // Bootstrap's 'lg' breakpoint
+       right: 0 !important;
+       left: auto !important;
+     }
    }
    :global(.dropdown-item) {
      color: rgba($light, 0.8); // Color claro para los items del dropdown // Light color for dropdown items

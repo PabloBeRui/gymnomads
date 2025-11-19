@@ -13,7 +13,7 @@
  * =============================================================================
  */
 import { useState, useEffect } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { Avatar } from "../Avatar";
 import { Navbar, Nav, Container, NavDropdown,Button } from "react-bootstrap";
@@ -22,6 +22,7 @@ import clsx from "clsx";
 
 export const NavbarComponent = () => {
   const { user, token, logout } = useAuth();
+  const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -76,7 +77,7 @@ export const NavbarComponent = () => {
         align="end"
         className={styles.avatarDropdown}
       >
-        <NavDropdown.Item as={Link} to="/profile">
+        <NavDropdown.Item onClick={() => navigate('/profile')}>
             <i className="bi bi-person-fill me-2"></i>Perfil ({user.first_name})
         </NavDropdown.Item>
         <NavDropdown.Divider />
@@ -101,10 +102,14 @@ export const NavbarComponent = () => {
       className={clsx(styles.navbar, scrolled ? styles.navbarScrolled : styles.navbarTransparent)}
     >
       <Container>
+        <div className="d-lg-none">
+            {token && user && renderAvatarDropdown()}
+        </div>
         <Navbar.Brand as={Link} to="/" onClick={() => setExpanded(false)} className={styles.navbarBrand}>
           GymNomads
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" className={styles.navbarToggle} />
+        
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="ms-auto align-items-center" onSelect={() => setExpanded(false)}>
             <Nav.Item>
@@ -122,21 +127,9 @@ export const NavbarComponent = () => {
                     <Nav.Link as={NavLink} to="/login" className={styles.navLink}>Login</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Button as={Link} to="/register" variant="primary" size="sm" className="ms-lg-2">Regístrate</Button>
+                    <Button onClick={() => navigate('/register')} variant="primary" size="sm" className="ms-lg-2">Regístrate</Button>
                 </Nav.Item>
               </>
-            )}
-
-            {/* Links para menú hamburguesa en móvil */}
-            {token && user && (
-              <div className="d-lg-none mt-3 border-top pt-3">
-                <Nav.Link as={Link} to="/profile" className={styles.navLink}>
-                    <i className="bi bi-person-fill me-2"></i>Perfil
-                </Nav.Link>
-                <Nav.Link onClick={logout} className={styles.navLink}>
-                    <i className="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
-                </Nav.Link>
-              </div>
             )}
           </Nav>
         </Navbar.Collapse>
