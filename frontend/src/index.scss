@@ -3,32 +3,43 @@
    MAIN SASS FILE (index.scss)
    ============================================================================= */
 
-/* 1. DEFINIR VARIABLES PRIMERO
-   1. DEFINE YOUR VARIABLES FIRST
+/* 1. IMPORTAR FUENTES Y ICONOS
+   1. IMPORT FONTS AND ICONS
    ============================================================================= */
-// redefinir los colores base de Bootstrap ANTES de importarlo.
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css');
+
+
+/* 2. DEFINIR VARIABLES PRIMERO
+   2. DEFINE YOUR VARIABLES FIRST
+   ============================================================================= */
+// Redefinir los colores base de Bootstrap ANTES de importarlo.
 // Redefine Bootstrap's base colors HERE *before* importing it so they take effect.
 
-// Colores primarios (se mantienen tus definiciones)
-// Primary Colors (your definitions are kept)
-$primary: #0d6efd; 
-$success: #198754; 
-$danger: #dc3545; 
-$warning: #ffc107; 
-$info: #0dcaf0; 
-$light: #f8f9fa; 
-$dark: #1a202c; 
-
+// Nueva paleta de colores "Cool Slate"
+// New "Cool Slate" color palette
+$primary: #4A90E2; // Azul profesional / Professional blue
+$secondary: #6c757d; // Gris neutral (estándar) / Neutral gray (standard)
+$success: #50E3C2; // Verde menta moderno / Modern mint green
+$danger: #E95E5E; // Rojo suave / Soft red
+$warning: #F5A623; // Naranja cálido / Warm orange
+$info: #4A90E2;    // Azul (igual que el primario) / Blue (same as primary)
+$light: #F7F9FC; // Gris muy claro para fondos / Very light gray for backgrounds
+$dark: #242A32;   // Gris oscuro para texto / Dark slate gray for text
 
 // Tipografía
 // Typography
-$font-family-base: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+$font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
 $font-size-base: 1rem; // Tamaño base (16px) / Base size (16px)
 
 // Bordes y Sombras
 // Borders and Shadows
-$border-radius: 0.375rem; // Radio de borde global (para botones, cards, inputs) / Global border radius (for buttons, cards, inputs)
+$border-radius: 0.5rem; // Bordes más redondeados / Softer, more rounded corners
 $enable-shadows: true;    // Habilitar sombras predefinidas de Bootstrap / Enable predefined Bootstrap shadows
+$box-shadow-sm: 0 .125rem .25rem rgba($dark, .075);
+$box-shadow:    0 .5rem 1rem rgba($dark, .15);
+$box-shadow-lg: 0 1rem 3rem rgba($dark, .175);
+
 
 // Espaciado
 // Spacing
@@ -45,15 +56,15 @@ $spacers: (
   5: $spacer * 3,
 );
 
-/* 2. IMPORTAR EL SASS DE BOOTSTRAP
-   2. IMPORT BOOTSTRAP SASS
+/* 3. IMPORTAR EL SASS DE BOOTSTRAP
+   3. IMPORT BOOTSTRAP SASS
    ============================================================================= */
 // Ahora Bootstrap se "compilará" usando nuestras variables.
 // Bootstrap will now "compile" using our variables.
 @import "bootstrap/scss/bootstrap";
 
-/* 3. ESTILOS GLOBALES
-   3. GLOBAL STYLES
+/* 4. ESTILOS GLOBALES
+   4. GLOBAL STYLES
    ============================================================================= */
 
 /* Leaflet – Estilos base de la librería de mapas interactivos
@@ -86,4 +97,28 @@ body {
 main {
   flex: 1; // Asegurar que el contenido principal ocupe el espacio / Ensure the main content occupies the space
   width: 100%;
+  padding-top: $spacer * 1.5;
+  padding-bottom: $spacer * 1.5;
+}
+
+// Sobrescribir estilos de componentes globales aquí
+// Override global component styles here
+
+.card {
+  border: none; // Quitar bordes de las tarjetas para un look más limpio, la sombra es suficiente.
+  // Remove card borders for a cleaner look, the shadow is enough.
+}
+
+.btn-primary {
+    // Degradado sutil para el botón principal
+    // Subtle gradient for the primary button
+    background-image: linear-gradient(to right, $primary 0%, darken($primary, 5%) 50%, $primary 100%);
+    background-size: 200% auto;
+    border: none;
+    transition: 0.5s;
+
+    &:hover {
+        background-position: right center; // Cambiar dirección en hover
+        // Change direction on hover
+    }
 }

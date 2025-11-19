@@ -29,11 +29,11 @@ import { handleApiError } from "../utils/error-handler";
 import type { LoginData, LoginResponse } from "../interfaces/user-interfaces";
 
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
-import { Container, Form, Button, Alert, Spinner } from "react-bootstrap";
+import { Container, Form, Button, Alert, Spinner,Card } from "react-bootstrap";
 
 // Importar el módulo SCSS / Import the SCSS module
 import styles from "./LoginPage.module.scss";
-import clsx from "clsx"; // Importar clsx / Import clsx
+// import clsx from "clsx"; // Importar clsx / Import clsx
 
 /* =============================================================================
    COMPONENTE: LoginPage
@@ -96,72 +96,79 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <Container className={styles.container}>
-      <h2 className="mb-4">Iniciar Sesión</h2>
-      <Form onSubmit={handleSubmit} aria-label="Formulario de inicio de sesión">
-        <Form.Group className="mb-3" controlId="email">
-          <Form.Label>Email</Form.Label>
-          <Form.Control
-            type="email"
-            placeholder="tu@email.com"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              handleInputChange();
-            }}
-            required
-            disabled={loading}
-            aria-label="Email"
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="password">
-          <Form.Label>Contraseña</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Tu contraseña"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              handleInputChange();
-            }}
-            required
-            disabled={loading}
-            aria-label="Contraseña"
-          />
-        </Form.Group>
-
-        {error && <Alert variant="danger">{error}</Alert>}
-
-        <Button variant="primary" type="submit" disabled={loading} className="w-100 mt-3">
-          {loading ? (
-            <>
-              <Spinner
-                as="span"
-                animation="border"
-                size="sm"
-                role="status"
-                aria-hidden="true"
+    <Container className="d-flex align-items-center justify-content-center min-vh-100">
+      <Card className={`p-4 shadow-lg ${styles.loginCard}`}>
+        <Card.Body>
+          <h2 className="text-center mb-4 fw-bold">Iniciar Sesión</h2>
+          <Form onSubmit={handleSubmit} aria-label="Formulario de inicio de sesión">
+            <Form.Group className="mb-3" controlId="email">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="tu@email.com"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  handleInputChange();
+                }}
+                required
+                disabled={loading}
+                aria-label="Email"
+                className={styles.formControl}
               />
-              <span className="visually-hidden">Iniciando sesión...</span>
-            </>
-          ) : (
-            "Iniciar Sesión"
-          )}
-        </Button>
-      </Form>
+            </Form.Group>
 
-      <p className="mt-3">
-        ¿No tienes cuenta?{" "}
-        <Button
-          variant="link"
-          onClick={() => navigate("/register")}
-          disabled={loading}
-          className={clsx(styles.linkButton, { "text-muted": loading })}
-          aria-disabled={loading}>
-          Regístrate aquí
-        </Button>
-      </p>
+            <Form.Group className="mb-3" controlId="password">
+              <Form.Label>Contraseña</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Tu contraseña"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  handleInputChange();
+                }}
+                required
+                disabled={loading}
+                aria-label="Contraseña"
+                className={styles.formControl}
+              />
+            </Form.Group>
+
+            {error && <Alert variant="danger">{error}</Alert>}
+
+            <Button variant="primary" type="submit" disabled={loading} className="w-100 mt-3">
+              {loading ? (
+                <>
+                  <Spinner
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                    className="me-2"
+                  />
+                  <span>Iniciando sesión...</span>
+                </>
+              ) : (
+                "Iniciar Sesión"
+              )}
+            </Button>
+          </Form>
+
+          <p className="mt-3 text-center">
+            ¿No tienes cuenta?{" "}
+            <Button
+              variant="link"
+              onClick={() => navigate("/register")}
+              disabled={loading}
+              className={`p-0 ${styles.linkButton}`}
+              aria-disabled={loading}>
+              Regístrate aquí
+            </Button>
+          </p>
+        </Card.Body>
+      </Card>
     </Container>
   );
 };

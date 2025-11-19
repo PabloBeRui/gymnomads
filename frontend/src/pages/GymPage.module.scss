@@ -5,96 +5,39 @@
  * =============================================================================
  */
 
-.container {
-  padding: 20px;
-  max-width: 900px;
-  margin: 0 auto;
-  position: relative;
+.heroImageWrapper {
+    position: relative;
+    height: 350px; // Altura fija para la imagen hero / Fixed height for hero image
+    overflow: hidden;
+    border-radius: var(--bs-border-radius-lg); // Bordes redondeados / Rounded corners
+    box-shadow: var(--bs-box-shadow); // Sombra sutil / Subtle shadow
 }
 
-.loadingContainer {
-  padding: 20px;
-  text-align: center;
+.heroImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; // La imagen cubre el área / Image covers the area
 }
 
-.gymHeader {
-  margin-bottom: 30px;
-  text-align: center;
+.heroOverlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+    color: white;
+    padding: 1.5rem;
+    padding-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
 }
 
-.gymLogo {
-  width: 200px;
-  height: 200px;
-  object-fit: contain;
-  margin-bottom: 20px;
-  border: 2px solid var(--bs-gray-200);
-  border-radius: 8px;
-  padding: 10px;
-}
-
-.gymName {
-  font-size: 2rem;
-  margin-bottom: 10px;
-  color: var(--bs-gray-800);
-}
-
-.gymAddress {
-  font-size: 1.1rem;
-  color: var(--bs-gray-600);
-  margin-bottom: 5px;
-}
-
-.gymCity {
-  font-size: 1.1rem;
-  color: var(--bs-gray-600);
-  font-weight: bold;
-}
-
-.gymImage {
-  width: 100%;
-  height: 400px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 30px;
-}
-
-.visitButton {
-  width: 100%;
-  padding: 15px;
-  font-size: 1.2rem;
-  background-color: var(--bs-success);
-  color: var(--bs-white);
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s;
-}
-
-.visitButton:hover:not(:disabled) {
-  background-color: var(--bs-success-dark); /* Define a darker shade for success in your variables */
-}
-
-.visitButton:disabled {
-  background-color: var(--bs-gray-500);
-  cursor: not-allowed;
-}
-
-.widgetsContainer {
-  position: relative;
-  margin-bottom: 20px; /* Adjust as needed */
-}
-
-.closeButtonContainer {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 20px;
-}
-
-.weatherWidgetContainer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 20px;
+.gymLogoSmall {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: var(--bs-border-radius);
+    padding: 5px;
 }

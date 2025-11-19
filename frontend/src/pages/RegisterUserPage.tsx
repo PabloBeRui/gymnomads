@@ -44,7 +44,7 @@ import {
 
 // Importar el módulo SCSS para mantener la consistencia, aunque esté vacío.
 // Import the SCSS module for consistency, even if it's empty.
-import "./RegisterUserPage.module.scss";
+import styles from "./RegisterUserPage.module.scss";
 
 export const RegisterUserPage: React.FC = () => {
     // Hooks de navegación y contexto de autenticación.
@@ -195,22 +195,25 @@ export const RegisterUserPage: React.FC = () => {
     const isSubmitting = isRegistering || isUploading;
 
     return (
-        <Container className="py-5">
-            <Row className="justify-content-center">
-                <Col md={8} lg={7} xl={6}>
-                    <Card>
-                        <Card.Body className="p-4 p-md-5">
+        <Container className="d-flex align-items-center justify-content-center min-vh-100 py-5">
+            <Row className="justify-content-center w-100">
+                <Col md={10} lg={8} xl={7}>
+                    <Card className={`p-4 shadow-lg ${styles.registerCard}`}>
+                        <Card.Body>
                             <div className="text-center mb-4">
-                                <h2 className="h3 fw-bold">Crear una cuenta</h2>
+                                <h2 className="text-center mb-4 fw-bold">Crear una cuenta</h2>
                                 <p className="text-muted">
-                                    ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
+                                    ¿Ya tienes cuenta?{" "}
+                                    <Link to="/login" className={styles.linkText}>
+                                        Inicia sesión
+                                    </Link>
                                 </p>
                             </div>
                             <Form onSubmit={handleRegister}>
                                 {/* Sección para la subida de imagen de perfil */}
                                 {/* Profile picture upload section */}
-                                <div className="text-center mb-4">
-                                    <Form.Label htmlFor="profile-pic-upload">
+                                <Form.Group className="mb-4 text-center" controlId="profilePic">
+                                    <Form.Label className="d-block mb-3">
                                         Foto de perfil (opcional)
                                     </Form.Label>
                                     <input
@@ -231,7 +234,7 @@ export const RegisterUserPage: React.FC = () => {
                                         showHelpText
                                         helpText="Haz clic para seleccionar"
                                     />
-                                </div>
+                                </Form.Group>
 
                                 <Row>
                                     <Col md={6}>
@@ -242,6 +245,7 @@ export const RegisterUserPage: React.FC = () => {
                                                 value={firstName}
                                                 onChange={(e) => setFirstName(e.target.value)}
                                                 required
+                                                className={styles.formControl}
                                             />
                                         </Form.Group>
                                     </Col>
@@ -253,6 +257,7 @@ export const RegisterUserPage: React.FC = () => {
                                                 value={lastName}
                                                 onChange={(e) => setLastName(e.target.value)}
                                                 required
+                                                className={styles.formControl}
                                             />
                                         </Form.Group>
                                     </Col>
@@ -265,6 +270,7 @@ export const RegisterUserPage: React.FC = () => {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
+                                        className={styles.formControl}
                                     />
                                 </Form.Group>
 
@@ -277,6 +283,7 @@ export const RegisterUserPage: React.FC = () => {
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
                                                 required
+                                                className={styles.formControl}
                                             />
                                         </Form.Group>
                                     </Col>
@@ -290,6 +297,7 @@ export const RegisterUserPage: React.FC = () => {
                                                     setConfirmPassword(e.target.value)
                                                 }
                                                 required
+                                                className={styles.formControl}
                                             />
                                         </Form.Group>
                                     </Col>
@@ -301,6 +309,7 @@ export const RegisterUserPage: React.FC = () => {
                                         type="tel"
                                         value={phone}
                                         onChange={(e) => setPhone(e.target.value)}
+                                        className={styles.formControl}
                                     />
                                 </Form.Group>
 
@@ -309,15 +318,16 @@ export const RegisterUserPage: React.FC = () => {
                                     {/* Muestra un spinner mientras se cargan los gimnasios */}
                                     {/* Shows a spinner while gyms are loading */}
                                     {isLoadingGyms ? (
-                                        <div className="text-center">
+                                        <div className="text-center py-2">
                                             <Spinner animation="border" size="sm" />
-                                            <span className="ms-2">Cargando gimnasios...</span>
+                                            <span className="ms-2 text-muted">Cargando gimnasios...</span>
                                         </div>
                                     ) : (
                                         <Form.Select
                                             value={homeGymId}
                                             onChange={(e) => setHomeGymId(Number(e.target.value))}
                                             required
+                                            className={styles.formControl}
                                         >
                                             {gyms.map((g) => (
                                                 <option key={g.id} value={g.id}>
@@ -330,7 +340,7 @@ export const RegisterUserPage: React.FC = () => {
 
                                 {/* Botón de envío principal */}
                                 {/* Main submit button */}
-                                <div className="d-grid">
+                                <div className="d-grid mt-4">
                                     <Button
                                         variant="primary"
                                         type="submit"
@@ -345,8 +355,9 @@ export const RegisterUserPage: React.FC = () => {
                                                     size="sm"
                                                     role="status"
                                                     aria-hidden="true"
+                                                    className="me-2"
                                                 />
-                                                <span className="ms-2">Registrando...</span>
+                                                <span>Registrando...</span>
                                             </>
                                         ) : (
                                             "Crear Cuenta"

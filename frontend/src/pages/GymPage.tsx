@@ -37,7 +37,7 @@ import { WeatherWidget } from "../components/widgets/WeatherWidget";
 import { GymMap } from "../components/GymMap";
 
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
-import { Container, Button, Spinner, Alert } from "react-bootstrap";
+import { Container, Button, Spinner, Alert, Col, Card,Row } from "react-bootstrap";
 
 // Importar el módulo SCSS / Import the SCSS module
 import styles from "./GymPage.module.scss";
@@ -194,17 +194,15 @@ export const GymPage = () => {
   // Construcción de URLs de imágenes con fallbacks
   // Building image URLs with fallbacks
   const logoSrc = gym.logo_url
-    ? `${backendBaseUrl}/${
-        gym.logo_url.startsWith("/") ? gym.logo_url.substring(1) : gym.logo_url
-      }`
+    ? `${backendBaseUrl}/${gym.logo_url.startsWith("/") ? gym.logo_url.substring(1) : gym.logo_url
+    }`
     : "/images/gym-logo/default-gym-logo.png";
 
   const mainImageSrc = gym.main_image_url
-    ? `${backendBaseUrl}/${
-        gym.main_image_url.startsWith("/")
-          ? gym.main_image_url.substring(1)
-          : gym.main_image_url
-      }`
+    ? `${backendBaseUrl}/${gym.main_image_url.startsWith("/")
+      ? gym.main_image_url.substring(1)
+      : gym.main_image_url
+    }`
     : "/images/gym-image/default-gym-image.jpg";
 
   // Condición para mostrar el botón de visita
@@ -216,103 +214,119 @@ export const GymPage = () => {
     user.home_gym_city?.toLowerCase() !== gym.city?.toLowerCase();
 
   // Render principal
-  return (
-    <Container className={styles.container}>
-      {/*  Contenedor para widgets ---
-         Container for widgets ---
-      */}
-      <div className={styles.widgetsContainer}>
-        {/* Botón de cierre importado */}
-        {/* Imported close button */}
-        <CloseButton navigateTo="/gyms" />
-
-        {/* Widget de tiempo (se renderiza solo si hay lat/lon) */}
-        {/* Weather widget (renders only if lat/lon exist) */}
-        {gym.latitude && gym.longitude && (
-          <WeatherWidget latitude={gym.latitude} longitude={gym.longitude} />
-        )}
-      </div>
-
-      {/* Encabezado con logo y nombre */}
-      {/* Header with logo and name */}
-      <div className={styles.gymHeader}>
-        <img
-          src={logoSrc}
-          alt={`Logo de ${gym.name}`}
-          className={styles.gymLogo}
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.onerror = null;
-            target.src = "/images/gym-logo/default-gym-logo.png";
-          }}
-        />
-        <h1 className={styles.gymName}>{gym.name}</h1>
-        <p className={styles.gymAddress}>{gym.address}</p>
-        <p className={styles.gymCity}>{gym.city}</p>
-      </div>
-
-      {/* Imagen principal del gimnasio */}
-      {/* Main gym image */}
-      <img
-        src={mainImageSrc}
-        alt={`Imagen de ${gym.name}`}
-        className={styles.gymImage}
-        onError={(e) => {
-          const target = e.target as HTMLImageElement;
-          target.onerror = null;
-          target.src = "/images/gym-image/default-gym-image.jpg";
-        }}
-      />
-
-      {/* --- Map --- */}
-      <div className="mb-4">
-        <h3 className="mb-3">Ubicación</h3>
-
-        {/* --- lat/lon not null --- */}
-        {gym.latitude && gym.longitude ? (
-          <GymMap
-            lat={gym.latitude}
-            lon={gym.longitude}
-            gymName={gym.name}
-            logoUrl={logoSrc}
-          />
-        ) : (
-          // Fallback si no hay coordenadas en la BBDD
-          // Fallback if no coordinates are in the DB
-          <Alert variant="warning" className="p-2">
-            Ubicación no disponible en el mapa.
-          </Alert>
-        )}
-      </div>
-
-      {/* Botón "Visitar" solo para usuarios (no en su gym de origen y no en su ciudad) */}
-      {/* "Visit" button only for users (not in their home gym and not in their city) */}
-      {canVisit && (
-          <Button
-            className={styles.visitButton}
-            onClick={handleVisitClick}
-            disabled={isProcessing}
-            aria-label={`Registrar visita a ${gym.name}`}
-          >
-            {isProcessing ? "Registrando visita..." : "Visitar"}
-          </Button>
-        )}
-
-      {/* Añadir el Modal de Confirmación */}
-      {/* Add the Confirmation Modal */}
-      <ConfirmationModal
-        isOpen={showConfirmModal}
-        onCancel={handleCancelVisit}
-        onConfirm={handleConfirmVisit}
-        title="Confirmar Visita"
-        message={`¿Estás seguro de que quieres registrar una visita a ${
-          gym?.name || "este gimnasio"
-        }?`}
-        note="Esto contará como una visita válida para el día de hoy."
-        confirmText={isProcessing ? "Registrando..." : "Confirmar Visita"}
-        variant="info" // Usamos 'info' (azul)
-        isLoading={isProcessing}
-      />
-    </Container>
-  );
-};
+            return (
+              <Container className="py-5">
+                <Row className="justify-content-center">
+                  <Col lg={10} xl={9}>
+                    <Row className="justify-content-between align-items-center mb-4">
+                      <Col xs="auto">
+                          {gym.latitude && gym.longitude && (
+                              <WeatherWidget latitude={gym.latitude} longitude={gym.longitude} />
+                          )}
+                      </Col>
+                      <Col xs="auto">
+                          <div className="d-flex align-items-center gap-3">
+                              <img src={logoSrc} alt={`Logo de ${gym.name}`} className={styles.gymLogoSmall} />
+                              <CloseButton navigateTo="/gyms" />
+                          </div>
+                      </Col>
+                    </Row>
+          
+                    {/* --- Hero Image y Detalles Principales --- */}
+                    {/* --- Hero Image and Main Details --- */}
+                    <Card className="mb-4 shadow-sm border-0">
+                      <div className={styles.heroImageWrapper}>
+                        <Card.Img variant="top" src={mainImageSrc} alt={`Imagen principal de ${gym.name}`} className={styles.heroImage} />
+                        <div className={styles.heroOverlay}>
+                          <div className="d-flex align-items-center mb-2">
+                            <h1 className="text-white fw-bold mb-0">{gym.name}</h1>
+                          </div>
+                          <p className="text-white mb-0 fs-5">
+                            <i className="bi bi-geo-alt-fill me-2"></i>
+                            {gym.address}, {gym.city}
+                          </p>
+                        </div>
+                      </div>
+                      <Card.Body className="p-4">
+                        <Row className="align-items-center">
+                          <Col md={8}>
+                              {/* Contenido principal como el botón de visita se muestra aquí */}
+                          </Col>
+                          <Col md={4} className="text-md-end mt-3 mt-md-0">
+                            {canVisit && (
+                              <Button
+                                variant="primary"
+                                onClick={handleVisitClick}
+                                disabled={isProcessing}
+                                className="w-100"
+                              >
+                                {isProcessing ? (
+                                  <>
+                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+                                    Registrando...
+                                  </>
+                                ) : (
+                                  <>
+                                    <i className="bi bi-person-walking me-2"></i>Visitar
+                                  </>
+                                )}
+                              </Button>
+                            )}
+                            {user?.role === "admin" || (user?.role === "manager" && user.home_gym_id === gym.id) ? (
+                              <Button
+                                variant="outline-secondary"
+                                className="w-100 mt-2"
+                                onClick={() => navigate(`/gyms/edit/${gym.id}`)}
+                              >
+                                <i className="bi bi-pencil-fill me-2"></i>Editar Gimnasio
+                              </Button>
+                            ) : null}
+                          </Col>
+                        </Row>
+                      </Card.Body>
+                    </Card>
+          
+                    {/* --- Secciones de Detalles y Ubicación --- */}
+                    {/* --- Details and Location Sections --- */}
+                    <Row>
+                      <Col lg={12} className="mb-4">
+                        <Card className="h-100 shadow-sm border-0">
+                          <Card.Body>
+                            <h4 className="fw-bold mb-3">Ubicación</h4>
+                            {gym.latitude && gym.longitude ? (
+                              <GymMap
+                                lat={gym.latitude}
+                                lon={gym.longitude}
+                                gymName={gym.name}
+                                logoUrl={logoSrc}
+                              />
+                            ) : (
+                              <Alert variant="warning" className="p-3 text-center">
+                                Ubicación no disponible en el mapa.
+                              </Alert>
+                            )}
+                          </Card.Body>
+                        </Card>
+                      </Col>
+                    </Row>
+                  </Col>
+                </Row>
+          
+          
+                {/* Modal de Confirmación */}
+                {/* Confirmation Modal */}
+                <ConfirmationModal
+                  isOpen={showConfirmModal}
+                  onCancel={handleCancelVisit}
+                  onConfirm={handleConfirmVisit}
+                  title="Confirmar Visita"
+                  message={`¿Estás seguro de que quieres registrar una visita a ${
+                    gym?.name || "este gimnasio"
+                  }?`}
+                  note="Esto contará como una visita válida para el día de hoy."
+                  confirmText={isProcessing ? "Registrando..." : "Confirmar Visita"}
+                  variant="info"
+                  isLoading={isProcessing}
+                />
+              </Container>
+            );}

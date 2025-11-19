@@ -4,16 +4,32 @@
  * Styles for the User Registration Page (RegisterUserPage)
  * =============================================================================
  *
- * No hay estilos específicos en este componente que no puedan ser manejados
- * directamente por las clases de Bootstrap o por estilos globales.
- * Este archivo se crea para mantener la consistencia, pero puede permanecer
- * vacío si no se requieren estilos personalizados.
- *
- * No specific styles in this component that cannot be handled directly
- * by Bootstrap classes or global styles.
- * This file is created for consistency, but can remain empty if no
-
- * custom styles are required.
+ * Añadidos estilos para la tarjeta de registro, los controles de formulario y el enlace de login.
+ * Styles added for the registration card, form controls, and login link.
  *
  * =============================================================================
  */
+
+.registerCard {
+  max-width: 800px; // Un poco más ancha que la de login para acomodar más campos
+  width: 100%;
+  border-radius: var(--bs-border-radius-xl);
+}
+
+.formControl {
+  border-radius: var(--bs-border-radius-lg);
+  border-color: var(--bs-gray-300);
+  &:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), .25);
+  }
+}
+
+.linkText {
+  color: var(--bs-primary);
+  text-decoration: none;
+  &:hover {
+    filter: brightness(90%);
+    text-decoration: underline;
+  }
+}

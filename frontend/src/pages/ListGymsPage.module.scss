@@ -8,27 +8,94 @@
 // Estilo para la tarjeta individual del gimnasio
 // Style for the individual gym card
 .gymCard {
-    cursor: pointer; // Indica que la tarjeta es clickeable / Indicates the card is clickable
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; // Transición suave para el hover / Smooth transition for hover
+    position: relative;
+    overflow: hidden; // Asegura que el overlay no se desborde / Ensures overlay doesn't overflow
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border-radius: var(--bs-border-radius-lg); // Usa border-radius de Bootstrap / Uses Bootstrap's border-radius
 
+    // Efecto de hover para la tarjeta completa
+    // Hover effect for the entire card
     &:hover {
-        transform: translateY(-5px); // Pequeño levantamiento al pasar el ratón / Slight lift on hover
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); // Sombra al pasar el ratón / Shadow on hover
+        transform: translateY(-8px); // Más pronunciado / More pronounced lift
+        box-shadow: var(--bs-box-shadow-lg) !important; // Usa sombra de Bootstrap / Uses Bootstrap's box-shadow
     }
 }
 
-// Estilo para el logo del gimnasio dentro de la tarjeta
-// Style for the gym logo inside the card
-.gymLogo {
-    width: 100%;
-    height: 150px;
-    object-fit: contain; // Asegura que el logo se ajuste sin cortarse / Ensures the logo fits without cropping
+.cardImageWrapper {
+    position: relative;
+    height: 180px; // Altura fija para las imágenes de la tarjeta / Fixed height for card images
+    overflow: hidden;
+    border-top-left-radius: var(--bs-border-radius-lg);
+    border-top-right-radius: var(--bs-border-radius-lg);
 }
 
-// Estilo para el pie de la tarjeta del gimnasio
-// Style for the gym card footer
+.gymImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; // La imagen cubre el área / Image covers the area
+    transition: transform 0.3s ease-in-out; // Transición suave para el zoom / Smooth transition for zoom
+
+    .gymCard:hover & {
+        transform: scale(1.05); // Zoom sutil en hover / Subtle zoom on hover
+    }
+}
+
+.cardOverlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+    color: white;
+    padding: 1rem;
+    padding-top: 2rem; // Más padding para que el texto no toque el borde / More padding so text doesn't touch the edge
+    font-size: 1.25rem;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+
+    h5 {
+        margin-bottom: 0; // Sin margen inferior en el título / No bottom margin on title
+    }
+}
+
+// Estilo para el pie de la tarjeta del gimnasio (si se mantiene)
+// Style for the gym card footer (if kept)
 .cardFooter {
-    padding-top: 10px; // Espaciado superior / Top padding
-    border-top: 1px solid var(--bs-border-color); // Borde superior / Top border
-    color: var(--bs-secondary-color); // Color de texto secundario / Secondary text color
+    background-color: var(--bs-body-bg); // Usar el color de fondo del cuerpo de Bootstrap
+    border-top: 1px solid var(--bs-border-color);
+    padding: 0.75rem 1.25rem; // Padding estándar de Bootstrap
+}
+
+// Estilos para la barra de búsqueda
+// Styles for the search bar
+.searchWrapper {
+    position: relative;
+    .searchInput {
+        padding-left: 3rem; // Espacio para el icono / Space for the icon
+        border-radius: 50px; // Bordes muy redondeados / Very rounded borders
+        border-color: var(--bs-gray-300); // Borde más suave / Softer border
+        box-shadow: var(--bs-box-shadow-sm); // Sombra sutil / Subtle shadow
+        &:focus {
+            box-shadow: var(--bs-box-shadow) !important; // Sombra más prominente al enfocar / More prominent shadow on focus
+            border-color: var(--bs-primary); // Color de borde primario al enfocar / Primary border color on focus
+        }
+    }
+
+    .searchIcon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--bs-gray-600);
+        font-size: 1.25rem;
+        z-index: 2; // Asegura que el icono esté encima del input / Ensures icon is above input
+    }
+}
+
+.cardBodyLogo {
+    height: 65px;
+    width: 65px;
+    object-fit: contain;
+    border-radius: var(--bs-border-radius);
+    padding: 5px;
+    background-color: var(--bs-gray-100);
 }

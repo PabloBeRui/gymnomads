@@ -282,200 +282,191 @@ export const ProfilePage: React.FC = () => {
   }
 
   return (
-    <Container className="page-container-narrow">
-      <h2 className="page-title text-center">Mi Perfil</h2>
+    <Container className="py-5">
+      <Row className="justify-content-center">
+        <Col md={10} lg={8} xl={7}>
+          <h2 className="text-center mb-5 fw-bold">Mi Perfil</h2>
 
-      {/* --- Avatar e Imagen de Perfil --- */}
-      {/* --- Avatar and Profile Image --- */}
-      <div className={styles.previewWrapper}>
-        <input
-          id="profile-file"
-          type="file"
-          ref={profileImageUpload.fileInputRef}
-          onChange={profileImageUpload.handleFileChange}
-          accept="image/png, image/jpeg, image/webp, image/jpg"
-          style={{ display: "none" }}
-        />
+          {/* --- Sección de Imagen de Perfil y Datos Principales --- */}
+          {/* --- Profile Image and Main Data Section --- */}
+          <Card className="mb-4 shadow-sm border-0">
+            <Card.Body className="d-flex flex-column align-items-center p-4">
+              {/* Controles para la subida de imagen de perfil */}
+              {/* Controls for profile picture upload */}
+              <input
+                id="profile-file"
+                type="file"
+                ref={profileImageUpload.fileInputRef}
+                onChange={profileImageUpload.handleFileChange}
+                accept="image/png, image/jpeg, image/webp, image/jpg"
+                style={{ display: "none" }}
+              />
 
-        {/* Componente Avatar */}
-        {/* Avatar Component */}
-        <Avatar
-          src={profileImageUpload.previewUrl}
-          firstName={user.first_name || ""}
-          lastName={user.last_name || ""}
-          size={120} // Aumentado ligeramente el tamaño
-          onClick={isEditing ? profileImageUpload.handleImageClick : undefined}
-          // Añadir puntero si es editable
-          // Add pointer if editable
-          className={isEditing ? "cursor-pointer" : ""} 
-        />
+              {/* Componente Avatar */}
+              {/* Avatar Component */}
+              <Avatar
+                src={profileImageUpload.previewUrl}
+                firstName={user.first_name || ""}
+                lastName={user.last_name || ""}
+                size={150} // Tamaño un poco más grande
+                onClick={isEditing ? profileImageUpload.handleImageClick : undefined}
+                className={clsx("mb-3", { "cursor-pointer shadow-sm": isEditing })}
+              />
 
-        {isEditing && (
-          <div className={styles.smallHelp}>
-            {profileImageUpload.selectedFile
-              ? `Archivo: ${profileImageUpload.selectedFile.name}`
-              : "Haz clic en el avatar para cambiar la foto."}
-            <br />
-            (PNG/JPG/WEBP, max 5MB. Opcional)
-          </div>
-        )}
-      </div>
-
-      <Form>
-        {/* CAMPOS NO EDITABLES / NON-EDITABLE FIELDS */}
-        <Form.Group className="mb-3">
-          <Form.Label className="fw-bold">Email:</Form.Label>
-          <div className={styles.disabledText}>
-            {user.email}
-          </div>
-        </Form.Group>
-
-        {/* Mostrar Rol solo para Admin y Manager */}
-        {/* Show Role only for Admin and Manager */}
-        {(user.role === "admin" || user.role === "manager") && (
-          <Form.Group className="mb-3">
-            <Form.Label className="fw-bold">Rol:</Form.Label>
-            <div className={styles.disabledText}>
-              {user.role}
-            </div>
-          </Form.Group>
-        )}
-
-        {/* CAMPOS EDITABLES O MODO VISUALIZACIÓN */}
-        {/* EDITABLE FIELDS OR VIEW MODE */}
-        {user.role !== "admin" ? (
-          !isEditing ? (
-            // --- Modo Visualización / View Mode ---
-            <>
-              <Form.Group className="mb-3">
-                <Form.Label className="fw-bold">Nombre Completo:</Form.Label>
-                <div className={styles.disabledText} style={{ backgroundColor: '#fff' }}>
-                  {`${user.first_name} ${user.last_name}`}
-                </div>
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label className="fw-bold">Teléfono:</Form.Label>
-                <div className={styles.disabledText} style={{ backgroundColor: '#fff' }}>
-                  {user.phone || "No especificado"}
-                </div>
-              </Form.Group>
-            </>
-          ) : (
-            // --- Modo Edición / Edit Mode ---
-            <>
-              <Form.Group className="mb-3" controlId="edit-first-name">
-                <Form.Label className="fw-bold">Nombre:</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={editFirstName}
-                  onChange={(e) => setEditFirstName(e.target.value)}
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-3" controlId="edit-last-name">
-                <Form.Label className="fw-bold">Apellidos:</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={editLastName}
-                  onChange={(e) => setEditLastName(e.target.value)}
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-3" controlId="edit-phone">
-                <Form.Label className="fw-bold">Teléfono:</Form.Label>
-                <Form.Control
-                  type="tel"
-                  value={editPhone}
-                  onChange={(e) => setEditPhone(e.target.value)}
-                  placeholder="Opcional"
-                />
-              </Form.Group>
-            </>
-          )
-        ) : null}
-
-        {/* GIMNASIO ASOCIADO / ASSOCIATED GYM */}
-        {user.role !== "admin" && (
-          <Form.Group className="mb-3">
-            <Form.Label className="fw-bold">Gimnasio:</Form.Label>
-            <div className={clsx(styles.disabledText, styles.withImage)}>
-              {gymFetchError ? (
-                <span className="text-danger">{gymFetchError}</span>
-              ) : gymName ? (
-                <>
-                  <img
-                    src={
-                      gymLogoUrl
-                        ? `${backendBaseUrl}/${gymLogoUrl.replace(/^\/+/, "")}`
-                        : "/images/gym-logo/default-gym-logo.png"
-                    }
-                    alt={`Logo de ${gymName}`}
-                    className={styles.gymLogo}
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.onerror = null;
-                      target.src = "/images/gym-logo/default-gym-logo.png";
-                    }}
-                  />
-                  {gymName}
-                </>
-              ) : (
-                "Cargando..."
+              {isEditing && (
+                <small className="text-muted text-center mb-3">
+                  {profileImageUpload.selectedFile
+                    ? `Archivo: ${profileImageUpload.selectedFile.name}`
+                    : "Haz clic en el avatar para cambiar la foto."}
+                  <br />
+                  (PNG/JPG/WEBP, max 5MB. Opcional)
+                </small>
               )}
-            </div>
-          </Form.Group>
-        )}
 
-        {/* Botones de Acción */}
-        {/* Action Buttons */}
-        <div className={styles.buttonRow}>
-          {!isEditing ? (
-            <>
-              <Button
-                variant="primary"
-                onClick={handleEditClick}
-                aria-label="Editar perfil"
-              >
-                Editar Perfil
-              </Button>
-              {user.role !== 'admin' && (
-                <Button
-                  variant="info"
-                  className="text-white" // Asegurar texto blanco en botón info
-                  onClick={() => setIsPasswordModalOpen(true)}
-                  aria-label="Cambiar contraseña"
-                >
-                  Cambiar Contraseña
-                </Button>
-              )}
-            </>
-          ) : (
-            <>
-              <Button
-                variant="primary"
-                onClick={handleSaveClick}
-                disabled={isSaving}
-              >
-                {isSaving ? (
-                  <>
-                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
-                    Guardando...
-                  </>
-                ) : (
-                  "Guardar Cambios"
+              <Form className="w-100">
+                {/* CAMPOS NO EDITABLES / NON-EDITABLE FIELDS */}
+                <Form.Group className="mb-3">
+                  <Form.Label className="fw-bold">Email:</Form.Label>
+                  <Form.Control type="text" value={user.email} disabled readOnly className={styles.disabledFormControl} />
+                </Form.Group>
+
+                {/* Mostrar Rol solo para Admin y Manager */}
+                {/* Show Role only for Admin and Manager */}
+                {(user.role === "admin" || user.role === "manager") && (
+                  <Form.Group className="mb-3">
+                    <Form.Label className="fw-bold">Rol:</Form.Label>
+                    <Form.Control type="text" value={user.role} disabled readOnly className={styles.disabledFormControl} />
+                  </Form.Group>
                 )}
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={handleCancelClick}
-                disabled={isSaving}
-              >
-                Cancelar
-              </Button>
-            </>
-          )}
-        </div>
-      </Form>
+                {user.role !== "admin" && (
+                    <Form.Group className="mb-3">
+                        <Form.Label className="fw-bold">Gimnasio:</Form.Label>
+                        <Form.Control
+                            type="text"
+                            value={gymFetchError || gymName || "Cargando..."}
+                            disabled
+                            readOnly
+                            className={styles.disabledFormControl}
+                        />
+                    </Form.Group>
+                )}
+              </Form>
+            </Card.Body>
+          </Card>
+
+          {/* --- Sección de Información Personal y Edición --- */}
+          {/* --- Personal Information and Edit Section --- */}
+          <Card className="mb-4 shadow-sm border-0">
+            <Card.Body className="p-4">
+              <h4 className="mb-4 fw-bold">Información Personal</h4>
+              <Form>
+                {user.role !== "admin" ? (
+                  !isEditing ? (
+                    // --- Modo Visualización / View Mode ---
+                    <>
+                      <Form.Group className="mb-3">
+                        <Form.Label className="fw-bold">Nombre Completo:</Form.Label>
+                        <Form.Control type="text" value={`${user.first_name} ${user.last_name}`} disabled readOnly className={styles.disabledFormControl} />
+                      </Form.Group>
+                      <Form.Group className="mb-3">
+                        <Form.Label className="fw-bold">Teléfono:</Form.Label>
+                        <Form.Control type="text" value={user.phone || "No especificado"} disabled readOnly className={styles.disabledFormControl} />
+                      </Form.Group>
+                    </>
+                  ) : (
+                    // --- Modo Edición / Edit Mode ---
+                    <>
+                      <Row>
+                        <Col md={6}>
+                          <Form.Group className="mb-3" controlId="edit-first-name">
+                            <Form.Label className="fw-bold">Nombre:</Form.Label>
+                            <Form.Control
+                              type="text"
+                              value={editFirstName}
+                              onChange={(e) => setEditFirstName(e.target.value)}
+                              className={styles.formControl}
+                            />
+                          </Form.Group>
+                        </Col>
+                        <Col md={6}>
+                          <Form.Group className="mb-3" controlId="edit-last-name">
+                            <Form.Label className="fw-bold">Apellidos:</Form.Label>
+                            <Form.Control
+                              type="text"
+                              value={editLastName}
+                              onChange={(e) => setEditLastName(e.target.value)}
+                              className={styles.formControl}
+                            />
+                          </Form.Group>
+                        </Col>
+                      </Row>
+                      <Form.Group className="mb-3" controlId="edit-phone">
+                        <Form.Label className="fw-bold">Teléfono:</Form.Label>
+                        <Form.Control
+                          type="tel"
+                          value={editPhone}
+                          onChange={(e) => setEditPhone(e.target.value)}
+                          placeholder="Opcional"
+                          className={styles.formControl}
+                        />
+                      </Form.Group>
+                    </>
+                  )
+                ) : null}
+
+                {/* Botones de Acción */}
+                {/* Action Buttons */}
+                <div className="d-flex justify-content-end gap-3 mt-4">
+                  {!isEditing ? (
+                    <>
+                      <Button
+                        variant="primary"
+                        onClick={handleEditClick}
+                        aria-label="Editar perfil"
+                      >
+                        <i className="bi bi-pencil-fill me-2"></i>Editar Perfil
+                      </Button>
+                      {user.role !== 'admin' && (
+                        <Button
+                          variant="outline-info" // Usar outline para el cambio de contraseña
+                          onClick={() => setIsPasswordModalOpen(true)}
+                          aria-label="Cambiar contraseña"
+                        >
+                          <i className="bi bi-key-fill me-2"></i>Cambiar Contraseña
+                        </Button>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        variant="secondary"
+                        onClick={handleCancelClick}
+                        disabled={isSaving}
+                      >
+                        Cancelar
+                      </Button>
+                      <Button
+                        variant="primary"
+                        onClick={handleSaveClick}
+                        disabled={isSaving}
+                      >
+                        {isSaving ? (
+                          <>
+                            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+                            Guardando...
+                          </>
+                        ) : (
+                          "Guardar Cambios"
+                        )}
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </Form>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
 
       {/* MENSAJES DE ESTADO / STATUS MESSAGES */}
       {isEditing && editError && (
@@ -492,4 +483,5 @@ export const ProfilePage: React.FC = () => {
       />
     </Container>
   );
+
 };

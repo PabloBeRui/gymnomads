@@ -3,65 +3,32 @@
    STYLES:  ProfilePage
    ============================================================================= */
 
-// Contenedor de la imagen de perfil para centrarla y darle margen
-// Profile image container to center it and give it margin
-.previewWrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
 // Texto de ayuda debajo del avatar
 // Helper text below the avatar
 .smallHelp {
-  font-size: 0.9rem;
-  color: #6c757d; // $secondary
+  font-size: 0.85rem; // Ligeramente más pequeño / Slightly smaller
+  color: var(--bs-secondary); // Usar variable de Bootstrap / Use Bootstrap variable
   margin-top: 0.5rem;
   text-align: center;
 }
 
-// Estilo para textos deshabilitados (simulando un input disabled pero más limpio)
-// Style for disabled text (simulating a cleaner disabled input)
-.disabledText {
-  color: #495057;
-  background-color: #e9ecef; // $gray-200
-  padding: 0.375rem 0.75rem; // Padding estándar de Bootstrap
-  border: 1px solid #ced4da; // Borde estándar de input
-  border-radius: 0.375rem;
-  width: 100%;
-  display: block;
-  
-  // Si contiene una imagen (logo gimnasio), usamos flex
-  // If it contains an image (gym logo), use flex
-  &.withImage {
-    display: flex;
-    align-items: center;
+// Estilo para FormControl deshabilitados/solo lectura
+// Style for disabled/read-only FormControls
+.disabledFormControl {
+  background-color: var(--bs-gray-100); // Fondo más claro / Lighter background
+  color: var(--bs-gray-700); // Texto más oscuro / Darker text
+  border-color: var(--bs-gray-300); // Borde más suave / Softer border
+  &:focus {
+    box-shadow: none; // Remover sombra de foco en deshabilitados / Remove focus shadow on disabled
+    border-color: var(--bs-gray-300); // Mantener borde / Keep border
   }
 }
 
-// Logo del gimnasio dentro del campo de texto
-// Gym logo inside the text field
+// Logo del gimnasio dentro del campo de texto (si se mantiene)
+// Gym logo inside the text field (if kept)
 .gymLogo {
   height: 24px;
   width: 24px;
   margin-right: 0.5rem;
   object-fit: contain;
-}
-
-// Contenedor de botones para separarlos
-// Button container to separate them
-.buttonRow {
-  margin-top: 1.5rem;
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end; // Alinear a la derecha
-}
-
-// Texto de error
-// Error text
-.errorText {
-  color: #dc3545; // $danger
-  margin-top: 0.5rem;
-  font-size: 0.9em;
 }
