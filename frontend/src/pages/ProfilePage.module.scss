@@ -1,13 +1,25 @@
 /* =============================================================================
    ESTILOS: ProfilePage
    STYLES:  ProfilePage
-   ============================================================================= */
+   =============================================================================
+ *
+ * Descripción: Estilos para la página de perfil del usuario.
+ * Incluye el diseño para el texto de ayuda bajo el avatar,
+ * los controles de formulario deshabilitados/solo lectura y el logo del gimnasio.
+ *
+ * Description: Styles for the user profile page.
+ * Includes the design for the helper text below the avatar,
+ * disabled/read-only form controls, and the gym logo.
+ *
+ * =============================================================================
+ */
+@import "../index.scss"; // Importar variables globales // Import global variables
 
 // Texto de ayuda debajo del avatar
 // Helper text below the avatar
 .smallHelp {
-  font-size: 0.85rem; // Ligeramente más pequeño / Slightly smaller
-  color: var(--bs-secondary); // Usar variable de Bootstrap / Use Bootstrap variable
+  font-size: 0.85rem; // Ligeramente más pequeño // Slightly smaller
+  color: $secondary; // Color secundario // Secondary color
   margin-top: 0.5rem;
   text-align: center;
 }
@@ -15,12 +27,12 @@
 // Estilo para FormControl deshabilitados/solo lectura
 // Style for disabled/read-only FormControls
 .disabledFormControl {
-  background-color: var(--bs-gray-100); // Fondo más claro / Lighter background
-  color: var(--bs-gray-700); // Texto más oscuro / Darker text
-  border-color: var(--bs-gray-300); // Borde más suave / Softer border
+  background-color: $light; // Fondo más claro // Lighter background
+  color: $dark; // Texto más oscuro // Darker text
+  border-color: var(--bs-gray-300); // Borde más suave // Softer border
   &:focus {
-    box-shadow: none; // Remover sombra de foco en deshabilitados / Remove focus shadow on disabled
-    border-color: var(--bs-gray-300); // Mantener borde / Keep border
+    box-shadow: none; // Remover sombra de foco en deshabilitados // Remove focus shadow on disabled
+    border-color: var(--bs-gray-300); // Mantener borde // Keep border
   }
 }
 

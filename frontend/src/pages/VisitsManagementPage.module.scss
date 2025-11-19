@@ -3,38 +3,50 @@
  * Estilos para la página de gestión de visitas (VisitsManagementPage)
  * Styles for the Visits Management Page (VisitsManagementPage)
  * =============================================================================
+ *
+ * Descripción: Estilos para el componente VisitsManagementPage, que permite
+ * visualizar y gestionar visitas de usuarios. Incluye el diseño para la celda
+ * de avatar, tarjetas de estadísticas, botones de filtro y la opción de gimnasios
+ * eliminados en el selector.
+ *
+ * Description: Styles for the VisitsManagementPage component, which allows
+ * viewing and managing user visits. Includes the design for the avatar cell,
+ * statistic cards, filter buttons, and the deleted gyms option in the selector.
+ *
+ * =============================================================================
  */
+@import "../index.scss"; // Importar variables globales // Import global variables
 
 // Contenedor para el avatar y el texto, asegura alineación vertical
 // Container for the avatar and text, ensures vertical alignment
 .avatarCell {
     display: flex;
-    align-items: center;
-    gap: 10px;
+    align-items: center; // Centrado vertical // Vertical centering
+    gap: 10px; // Espacio entre elementos // Space between elements
 }
 
 // Tarjeta de estadística individual
 // Individual statistic card
 .statCard {
-    cursor: pointer; // Indica que la tarjeta es clickeable / Indicates the card is clickable
-    transition: box-shadow 0.2s ease-in-out; // Transición suave para el hover / Smooth transition for hover
+    cursor: pointer; // Indica que la tarjeta es clickeable // Indicates the card is clickable
+    transition: box-shadow 0.2s ease-in-out; // Transición suave para el hover // Smooth transition for hover
 
     &:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); // Sombra al pasar el ratón / Shadow on hover
+        box-shadow: $box-shadow-lg; // Sombra al pasar el ratón // Shadow on hover
     }
 }
 
 // Estilo para el botón de filtro activo
 // Style for the active filter button
 .activeFilterButton {
-    background-color: var(--bs-primary); 
-    border-color: var(--bs-primary); 
+    background-color: $primary; // Fondo primario // Primary background
+    border-color: $primary; // Borde primario // Primary border
 }
 
 // Estilo para la opción de "Gimnasios Eliminados" en el selector
 // Style for the "Deleted Gyms" option in the select
 .deletedOption {
-    background-color: #ffebee; // Fondo rojo claro / Light red background
-    color: #c62828; // Texto rojo oscuro / Dark red text
-    font-weight: bold; // Texto en negrita / Bold text
+    background-color: lighten($danger, 30%); // Fondo rojo claro // Light red background
+    color: $danger; // Texto rojo oscuro // Dark red text
+    font-weight: bold; // Texto en negrita // Bold text
 }

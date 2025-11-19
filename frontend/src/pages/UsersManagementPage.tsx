@@ -32,6 +32,7 @@ import {
     Alert,
 } from "react-bootstrap";
 import styles from "./UsersManagementPage.module.scss";
+import clsx from "clsx"; // Importar clsx / Import clsx
 
 /**
  * =============================================================================
@@ -240,7 +241,7 @@ export const UsersManagementPage = () => {
                         lastName={u.last_name}
                         size={35}
                     />
-                    <span>
+                    <span className="text-dark">
                         {u.first_name} {u.last_name}
                     </span>
                 </div>
@@ -261,7 +262,7 @@ export const UsersManagementPage = () => {
                                     lastName=""
                                     size={35}
                                 />
-                                <span>
+                                <span className="text-dark">
                                     {userWithGym.gym_name}
                                     {userWithGym.is_gym_deleted && " (Eliminado)"}
                                 </span>
@@ -284,7 +285,7 @@ export const UsersManagementPage = () => {
     if (isLoading && users.length === 0) {
         return (
             <div className="d-flex justify-content-center align-items-center vh-100">
-                <Spinner animation="border" role="status">
+                <Spinner animation="border" role="status" variant="primary">
                     <span className="visually-hidden">Cargando usuarios...</span>
                 </Spinner>
             </div>
@@ -304,10 +305,10 @@ export const UsersManagementPage = () => {
     return (
         <Container fluid="xl" className="py-4">
             <header className="mb-4">
-                <h1 className="h2">
+                <h1 className="h2 text-primary">
                     {isAdmin ? "Gestión de Usuarios" : "Usuarios de mi Gimnasio"}
                 </h1>
-                <p className="text-muted">
+                <p className="text-dark">
                     {isAdmin
                         ? "Visualiza y filtra todos los usuarios de la plataforma."
                         : "Visualiza y filtra los usuarios registrados en tu gimnasio."}
@@ -318,8 +319,8 @@ export const UsersManagementPage = () => {
                 <Col md={4} lg={3}>
                     <Card>
                         <Card.Body>
-                            <h2 className="fw-bold text-success">{totalItems}</h2>
-                            <p className="text-muted mb-0 small">
+                            <h2 className="fw-bold text-primary">{totalItems}</h2>
+                            <p className="text-dark mb-0 small">
                                 {isLoading ? "Cargando..." : "Total de Usuarios"}
                             </p>
                         </Card.Body>
@@ -380,7 +381,7 @@ export const UsersManagementPage = () => {
 
             {users.length === 0 ? (
                 <div className="text-center p-5 bg-light rounded">
-                    <h5 className="text-muted">
+                    <h5 className="text-dark">
                         {searchTerm || selectedGymId
                             ? "🔍 No se encontraron usuarios con los filtros aplicados."
                             : "📭 Aún no hay usuarios registrados."}

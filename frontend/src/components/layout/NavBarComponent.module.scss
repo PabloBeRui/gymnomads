@@ -3,51 +3,105 @@
  * ESTILOS PARA: NavBarComponent
  * STYLES FOR: NavBarComponent
  * =============================================================================
+ *
+ * Descripción: Define los estilos para la barra de navegación principal.
+ * Transparente por defecto, se vuelve glassmorphism al hacer scroll.
+ *
+ * Description: Defines styles for the main navigation bar.
+ * Transparent by default, becomes glassmorphism on scroll.
+ *
+ * =============================================================================
  */
-
-// Define el tamaño del avatar en la barra de navegación y lo hace responsive.
-// Defines the size of the avatar in the navbar and makes it responsive.
-.navAvatar {
-    --avatar-size: 50px; // Tamaño base para escritorio, ajustado para mejor proporción. / Base size for desktop, adjusted for better proportion.
-    
-    // En el menú hamburguesa, el avatar es ligeramente más pequeño.
-    // In the hamburger menu, the avatar is slightly smaller.
-    @media (max-width: 991.98px) {
-        --avatar-size: 40px;
-    }
-}
-
-// Estilos para el menú superpuesto en la vista móvil.
-// Styles for the overlay menu in the mobile view.
-.mobileOverlay {
-    // Estos estilos se aplican solo en la vista de navbar colapsado (móvil/tablet).
-    // These styles apply only in the collapsed navbar view (mobile/tablet).
-    @media (max-width: 991.98px) {
-        
-        // Se aplica mientras la animación de colapso está ocurriendo y cuando está visible.
-        // Applies while the collapse animation is occurring and when it is visible.
-        &.collapsing, &.show {
-            position: absolute;
-            top: 100%; // Se posiciona justo debajo del navbar. / Positions right below the navbar.
-            right: 0;
-            left: 0; // Ocupa todo el ancho. / Occupies the full width.
-            z-index: 1021; // Se asegura de que esté por encima del contenido. / Ensures it's on top of the content.
-
-            // Estilo del fondo del overlay.
-            // Overlay background style.
-            background: rgba(33, 37, 41, 0.6); // Fondo oscuro con 60% de opacidad. / Dark background with 60% opacity.
-            backdrop-filter: blur(5px); // Efecto de desenfoque para el fondo. / Blur effect for the background.
-            padding: 1rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        // El contenedor de los enlaces de navegación.
-        // The container for the navigation links.
-        .nav {
-            // Fuerza a los elementos a alinearse a la derecha.
-            // Forces items to align to the right.
-            align-items: flex-end; 
-            width: 100%;
-        }
-    }
-}
+ @import "../../index.scss"; // Importar variables globales // Import global variables
+ 
+ .navbar {
+   padding: 1rem 0;
+   transition: background-color 0.3s ease-in-out, padding 0.3s ease-in-out, backdrop-filter 0.3s ease-in-out; // Añadir transición para backdrop-filter // Add transition for backdrop-filter
+   font-weight: 500;
+   z-index: 1030; // Asegurar que la navbar esté siempre encima // Ensure navbar is always on top
+ }
+ 
+ .navbarTransparent {
+   background-color: transparent;
+   backdrop-filter: blur(0px); // Sin desenfoque cuando es transparente // No blur when transparent
+ }
+ 
+ .navbarScrolled {
+   background-color: $glass-bg; // Usar el color de glassmorphism definido // Use defined glassmorphism color
+   backdrop-filter: blur(10px); // Aplicar desenfoque para efecto glassmorphism // Apply blur for glassmorphism effect
+   box-shadow: $box-shadow-sm; // Sombra sutil al hacer scroll // Subtle shadow on scroll
+   padding: 0.5rem 0;
+ }
+ 
+ .navbarBrand {
+   font-weight: 700;
+   font-size: 1.5rem;
+   color: $primary !important; // Usar el color primario para la marca // Use primary color for brand
+ }
+ 
+ .navLink {
+   color: rgba($light, 0.7) !important; // Color claro para los enlaces // Light color for links
+   margin: 0 0.5rem;
+   padding: 0.5rem 1rem !important;
+   border-radius: $border-radius;
+   transition: color 0.2s ease, background-color 0.2s ease;
+ 
+   &:hover {
+     color: $light !important; // Color blanco en hover // White color on hover
+     background-color: rgba($light, 0.1); // Fondo sutil en hover // Subtle background on hover
+   }
+ 
+   &.active {
+     color: $light !important; // Color blanco para el enlace activo // White color for active link
+     font-weight: 600;
+   }
+ }
+ 
+ .navbarToggle {
+   border-color: rgba($light, 0.2) !important; // Color de borde del toggle // Toggle border color
+   .navbar-toggler-icon {
+     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.8)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+   }
+ }
+ 
+ .navAvatar {
+   --avatar-size: 40px;
+   border: 2px solid rgba($light, 0.5); // Borde claro para el avatar // Light border for avatar
+ }
+ 
+ .avatarDropdown {
+   :global(.dropdown-menu) {
+     background-color: rgba($dark, 0.9); // Fondo oscuro para el dropdown // Dark background for dropdown
+     backdrop-filter: blur(5px);
+     border: 1px solid rgba($light, 0.1); // Borde claro para el dropdown // Light border for dropdown
+     border-radius: $border-radius-lg;
+     box-shadow: $box-shadow-lg;
+     padding: 0.5rem 0;
+   }
+   :global(.dropdown-item) {
+     color: rgba($light, 0.8); // Color claro para los items del dropdown // Light color for dropdown items
+     &:hover {
+       background-color: rgba($light, 0.1); // Fondo claro en hover // Light background on hover
+       color: $light; // Color blanco en hover // White color on hover
+     }
+   }
+   :global(.dropdown-divider) {
+     border-top: 1px solid rgba($light, 0.1); // Divisor claro // Light divider
+   }
+ }
+ 
+ // Estilos para el overlay del menú en móvil
+ // Styles for mobile menu overlay
+ @media (max-width: 991.98px) {
+   :global(.navbar-collapse.show), :global(.navbar-collapse.collapsing) {
+     padding: 1.5rem;
+     margin-top: 1rem;
+     border-radius: $border-radius-lg;
+     background-color: rgba($dark, 0.95); // Fondo oscuro para el menú móvil // Dark background for mobile menu
+     backdrop-filter: blur(10px);
+   }
+   .navLink {
+     margin: 0.5rem 0;
+     display: block;
+   }
+ }

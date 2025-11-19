@@ -1,3 +1,22 @@
+/**
+ * =============================================================================
+ * UTILIDADES: error-handler
+ * UTILITIES: error-handler
+ * =============================================================================
+ *
+ * Descripción: Módulo centralizado para el manejo de errores de la API.
+ * Proporciona una función para procesar errores capturados de llamadas Axios,
+ * extraer mensajes de error relevantes y manejar casos específicos como
+ * tokens de autenticación inválidos o expirados.
+ *
+ * Description: Centralized module for API error handling.
+ * Provides a function to process errors caught from Axios calls,
+ * extract relevant error messages, and handle specific cases such as
+ * invalid or expired authentication tokens.
+ *
+ * =============================================================================
+ */
+
 // Importar tipos necesarios de axios / Import necessary types from axios
 import axios from "axios";
 

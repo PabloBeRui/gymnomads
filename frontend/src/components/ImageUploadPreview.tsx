@@ -107,7 +107,7 @@ export const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = ({
         style={{ width: `${size}px`, height: `${size}px` }}
         onClick={onClick}
       />
-      {showHelpText && <p className={styles.helpText}>{helpText}</p>}
+      {showHelpText && <p className={clsx(styles.helpText, 'text-primary')}>{helpText}</p>}
     </div>
   );
 };

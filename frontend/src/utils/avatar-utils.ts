@@ -1,3 +1,20 @@
+/**
+ * =============================================================================
+ * UTILIDADES: avatar-utils
+ * UTILITIES: avatar-utils
+ * =============================================================================
+ *
+ * Descripción: Funciones de utilidad para la generación de avatares,
+ * incluyendo la extracción de iniciales y la asignación de colores consistentes
+ * basados en una cadena de texto.
+ *
+ * Description: Utility functions for avatar generation,
+ * including extracting initials and assigning consistent colors
+ * based on a text string.
+ *
+ * =============================================================================
+ */
+
 // Obtener las iniciales de un nombre completo
 // Get initials from full name
 export const getInitials = (firstName: string, lastName: string): string => {

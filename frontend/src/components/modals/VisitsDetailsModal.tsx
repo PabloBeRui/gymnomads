@@ -29,6 +29,7 @@ import { FaArrowRight } from "react-icons/fa";
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
 import { Modal, Button } from "react-bootstrap";
 import styles from "./VisitsDetailsModal.module.scss"; // Importar el módulo SCSS / Import the SCSS module
+import clsx from "clsx"; // Importar clsx / Import clsx
 
 /* =============================================================================
     INTERFACES
@@ -62,7 +63,7 @@ const GymInfoBlock = React.memo(
     city?: string | null;
   }) => (
     <div className={styles.gymInfoBlock}>
-      <label className={styles.gymInfoLabel}>{label}</label>
+      <label className={clsx(styles.gymInfoLabel, "text-dark")}>{label}</label>
       <Avatar
         src={logoSrc}
         firstName={name || "Gimnasio"}
@@ -133,7 +134,7 @@ export const VisitsDetailsModal = ({
   return (
     <Modal show={isOpen} onHide={handleClose} centered size="lg">
       <Modal.Header className={styles.modalHeader}>
-        <Modal.Title className={styles.modalTitle}>
+        <Modal.Title className={clsx(styles.modalTitle, "text-primary")}>
           🎟️ Detalle de la Visita
           {(viewMode === "admin" || viewMode === "manager") &&
             ` (ID: ${visit.id})`}
@@ -141,6 +142,7 @@ export const VisitsDetailsModal = ({
         <CloseButton
           onClick={handleClose}
           ariaLabel="Cerrar detalles de la visita"
+          colorVariant="primary"
         />
       </Modal.Header>
       <Modal.Body>
@@ -177,7 +179,7 @@ export const VisitsDetailsModal = ({
             {/* Mostrar flecha solo si AMBOS bloques se muestran (vista Admin) */}
             {/* Show arrow only if BOTH blocks are shown (Admin view) */}
             {showOriginGym && showDestinationGym && (
-              <FaArrowRight className={styles.journeyArrow} />
+              <FaArrowRight className={styles.journeyArrow} color="var(--bs-primary)" />
             )}
 
             {/* Mostrar bloque de Destino si es necesario / Show Destination block if needed */}
@@ -196,7 +198,7 @@ export const VisitsDetailsModal = ({
           </div>
 
           <div className={styles.dateRow}>
-            <label className={styles.dateLabel}>Fecha y Hora de la Visita:</label>
+            <label className={clsx(styles.dateLabel, "text-dark")}>Fecha y Hora de la Visita:</label>
             <div className={styles.dateValue}>
               {formatFullDate(visit.visit_date)}
             </div>

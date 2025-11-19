@@ -30,6 +30,14 @@ import styles from "./LandingPage.module.scss";
 export const LandingPage: React.FC = () => {
   return (
     <div className={styles.pageContainer}>
+      {/* Video de fondo */}
+      {/* Background video */}
+      <video autoPlay muted loop playsInline className="video-bg">
+        <source src="/videos/landing_video_1.mp4" type="video/mp4" />
+      </video>
+      {/* Overlay con $bg-overlay para perfecta legibilidad */}
+      {/* Overlay with $bg-overlay for perfect readability */}
+      <div className="overlay-bg"></div>
       
       {/* Slide 1: El Héroe con la animación */}
       {/* Slide 1: The Hero with the animation */}

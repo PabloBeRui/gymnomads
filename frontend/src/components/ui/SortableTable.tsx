@@ -82,7 +82,7 @@ export const SortableTable = <T extends { id: number | string }>({
             {columns.map((col) => (
               <th
                 key={col.key as string}
-                className={styles.th}
+                className={clsx(styles.th, "text-primary")}
                 onClick={() => requestSort(col.key)}
                 title={`Ordenar por ${col.header}`}>
                 {col.header}

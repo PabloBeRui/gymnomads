@@ -33,7 +33,7 @@ import {
     Spinner,
     Alert,
 } from "react-bootstrap";
-// import clsx from "clsx";
+import clsx from "clsx";
 import styles from "./VisitsManagementPage.module.scss";
 
 /**
@@ -216,7 +216,7 @@ export const VisitsManagementPage = () => {
                         lastName={""}
                         size={35}
                     />
-                    <span>{visit.user_name || "N/A"}</span>
+                    <span className="text-dark">{visit.user_name || "N/A"}</span>
                 </div>
             ),
         },
@@ -234,7 +234,7 @@ export const VisitsManagementPage = () => {
                                 lastName={""}
                                 size={35}
                             />
-                            <span>{visit.origin_gym_name || "N/A"}</span>
+                            <span className="text-dark">{visit.origin_gym_name || "N/A"}</span>
                         </div>
                     ),
                 },
@@ -262,7 +262,7 @@ export const VisitsManagementPage = () => {
                                 lastName={""}
                                 size={35}
                             />
-                            <span>
+                            <span className="text-dark">
                                 {isAdmin
                                     ? visit.gym_name || "N/A"
                                     : visit.destination_gym_name || "N/A"}
@@ -289,7 +289,7 @@ export const VisitsManagementPage = () => {
     if (isLoading && visits.length === 0) {
         return (
             <div className="d-flex justify-content-center align-items-center vh-100">
-                <Spinner animation="border" role="status">
+                <Spinner animation="border" role="status" variant="primary">
                     <span className="visually-hidden">Cargando visitas...</span>
                 </Spinner>
             </div>
@@ -308,7 +308,7 @@ export const VisitsManagementPage = () => {
     return (
         <Container fluid="xl" className="py-4">
             <header className="mb-4">
-                <h1 className="h2">
+                <h1 className="h2 text-primary">
                     {isAdmin
                         ? "Gestión de Visitas"
                         : isManager
@@ -317,7 +317,7 @@ export const VisitsManagementPage = () => {
                                 : "Visitas Enviadas por mis Usuarios"
                             : "Visitas a mi Gimnasio"}
                 </h1>
-                <p className="text-muted">
+                <p className="text-dark">
                     {isAdmin
                         ? "Visualiza y filtra todas las visitas de todos los gimnasios."
                         : isManager
@@ -354,7 +354,7 @@ export const VisitsManagementPage = () => {
                     >
                         <Card.Body>
                             <h2 className="fw-bold text-primary">{totalItems}</h2>
-                            <p className="text-muted mb-0 small">
+                            <p className="text-dark mb-0 small">
                                 {isLoading
                                     ? "Cargando..."
                                     : isManager
@@ -428,7 +428,7 @@ export const VisitsManagementPage = () => {
 
             {visits.length === 0 ? (
                 <div className="text-center p-5 bg-light rounded">
-                    <h5 className="text-muted">
+                    <h5 className="text-dark">
                         {userSearch || selectedGymId
                             ? "🔍 No se encontraron visitas con los filtros aplicados."
                             : "📭 Aún no hay visitas registradas."}

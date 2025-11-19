@@ -13,7 +13,7 @@
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: var(--bs-gray-800);
+  // color: var(--bs-gray-800); // Removido para control via prop
   padding: 5px 10px;
   border-radius: 50%;
   transition: background-color 0.2s;

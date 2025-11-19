@@ -4,32 +4,38 @@
  * Styles for the User Registration Page (RegisterUserPage)
  * =============================================================================
  *
- * Añadidos estilos para la tarjeta de registro, los controles de formulario y el enlace de login.
- * Styles added for the registration card, form controls, and login link.
+ * Descripción: Estilos para la página donde los usuarios pueden crear una nueva
+ * cuenta. Incluye el diseño de la tarjeta del formulario, los campos de control
+ * y el enlace para iniciar sesión.
+ *
+ * Description: Styles for the page where users can create a new account.
+ * Includes the design of the form card, form control fields, and the
+ * login link.
  *
  * =============================================================================
  */
+@import "../index.scss"; // Importar variables globales // Import global variables
 
 .registerCard {
-  max-width: 800px; // Un poco más ancha que la de login para acomodar más campos
+  max-width: 800px; // Un poco más ancha que la de login para acomodar más campos // Slightly wider than login to accommodate more fields
   width: 100%;
-  border-radius: var(--bs-border-radius-xl);
+  border-radius: var(--bs-border-radius-xl); // Bordes redondeados grandes // Large rounded borders
 }
 
 .formControl {
-  border-radius: var(--bs-border-radius-lg);
-  border-color: var(--bs-gray-300);
+  border-radius: var(--bs-border-radius-lg); // Bordes redondeados // Rounded borders
+  border-color: var(--bs-gray-300); // Color de borde // Border color
   &:focus {
-    border-color: var(--bs-primary);
-    box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), .25);
+    border-color: $primary; // Color primario al enfocar // Primary color on focus
+    box-shadow: 0 0 0 0.25rem rgba($primary, 0.25); // Sombra con color primario // Shadow with primary color
   }
 }
 
 .linkText {
-  color: var(--bs-primary);
-  text-decoration: none;
+  color: $primary; // Color primario // Primary color
+  text-decoration: none; // Sin subrayado // No underline
   &:hover {
-    filter: brightness(90%);
-    text-decoration: underline;
+    filter: brightness(90%); // Brillo reducido al pasar el ratón // Reduced brightness on hover
+    text-decoration: underline; // Subrayado al pasar el ratón // Underline on hover
   }
 }

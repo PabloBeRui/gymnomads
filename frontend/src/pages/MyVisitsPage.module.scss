@@ -3,7 +3,22 @@
  * ESTILOS PARA: MyVisitsPage
  * STYLES FOR: MyVisitsPage
  * =============================================================================
+ *
+ * Descripción: Estilos para la página "Mis Visitas".
+ * Incluye el diseño del contenedor principal, el título, la sección de carga,
+ * el estado vacío, el contenedor de filtros, los campos de entrada,
+ * el contenedor de estadísticas, las tarjetas de estadísticas con sus
+ * números y etiquetas.
+ *
+ * Description: Styles for the "My Visits" page.
+ * Includes the design of the main container, title, loading section,
+ * empty state, filter container, input fields,
+ * statistics container, statistic cards with their
+ * numbers and labels.
+ *
+ * =============================================================================
  */
+@import "../index.scss"; // Importar variables globales // Import global variables
 
 .container {
   padding: 20px;
@@ -14,6 +29,7 @@
 .title {
   font-size: 2rem;
   margin-bottom: 20px;
+  color: $dark; // Color de título oscuro // Dark title color
 }
 
 .loading {
@@ -24,7 +40,7 @@
 .empty {
   text-align: center;
   padding: 40px;
-  color: var(--bs-secondary-color);
+  color: $secondary; // Color secundario // Secondary color
 }
 
 .filtersContainer {
@@ -34,40 +50,40 @@
 .input {
   padding: 10px;
   font-size: 1rem;
-  border: 1px solid var(--bs-gray-400);
-  border-radius: 4px;
+  border: 1px solid var(--bs-gray-400); // Borde estándar // Standard border
+  border-radius: 4px; // Bordes redondeados // Rounded borders
   width: 100%;
-  max-width: 400px;
+  max-width: 400px; // Ancho máximo // Maximum width
 }
 
 .statsContainer {
   display: flex;
-  gap: 20px;
+  gap: 20px; // Espacio entre tarjetas de estadísticas // Space between stat cards
   margin-bottom: 30px;
 }
 
 .statCard {
-  flex: 1 1 200px;
+  flex: 1 1 200px; // La tarjeta puede crecer, encogerse y tiene un tamaño base // Card can grow, shrink, and has a base size
   padding: 20px;
-  background-color: var(--bs-light);
-  border-radius: 8px;
-  border: 1px solid var(--bs-gray-300);
+  background-color: $light; // Fondo claro // Light background
+  border-radius: 8px; // Bordes redondeados // Rounded borders
+  border: 1px solid var(--bs-gray-300); // Borde // Border
   cursor: pointer;
-  transition: box-shadow 0.2s;
+  transition: box-shadow 0.2s; // Transición suave para la sombra // Smooth transition for shadow
 }
 
 .statCard:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: $box-shadow-lg; // Sombra grande al pasar el ratón // Large shadow on hover
 }
 
 .statNumber {
   font-size: 2rem;
   font-weight: bold;
-  color: var(--bs-primary);
+  color: $primary; // Color primario // Primary color
 }
 
 .statLabel {
   font-size: 0.9rem;
-  color: var(--bs-secondary-color);
+  color: $secondary; // Color secundario // Secondary color
   margin-top: 5px;
 }

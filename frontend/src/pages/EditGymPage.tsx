@@ -318,7 +318,7 @@ export const EditGymPage = () => {
      =========================================================================== */
   if (isLoading) return (
     <Container className="text-center mt-5">
-      <Spinner animation="border" role="status">
+      <Spinner animation="border" role="status" variant="primary">
         <span className="visually-hidden">Cargando...</span>
       </Spinner>
     </Container>
@@ -338,15 +338,15 @@ export const EditGymPage = () => {
   }
 
   return (
-    <Container className={styles.container}>
-      <h2>
+    <Container className={clsx(styles.container, "py-5")}>
+      <h2 className="text-primary mb-4 text-center">
         Editar Gimnasio: {originalGymData.name} (ID: {id})
       </h2>
 
       <Form onSubmit={handleSubmit}>
         {/* TEXT FIELDS (Admin only) / CAMPOS DE TEXTO (solo Admin) */}
         <Form.Group className="mb-3">
-          <Form.Label>Nombre:</Form.Label>
+          <Form.Label className="text-dark">Nombre:</Form.Label>
           <Form.Control
             id="name"
             name="name"
@@ -360,7 +360,7 @@ export const EditGymPage = () => {
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label>Dirección:</Form.Label>
+          <Form.Label className="text-dark">Dirección:</Form.Label>
           <Form.Control
             id="address"
             name="address"
@@ -374,7 +374,7 @@ export const EditGymPage = () => {
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label>Ciudad:</Form.Label>
+          <Form.Label className="text-dark">Ciudad:</Form.Label>
           <Form.Control
             id="city"
             name="city"
@@ -388,7 +388,7 @@ export const EditGymPage = () => {
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label>Latitud:</Form.Label>
+          <Form.Label className="text-dark">Latitud:</Form.Label>
           <Form.Control
             id="latitude"
             name="latitude"
@@ -403,7 +403,7 @@ export const EditGymPage = () => {
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label>Longitud:</Form.Label>
+          <Form.Label className="text-dark">Longitud:</Form.Label>
           <Form.Control
             id="longitude"
             name="longitude"
@@ -421,7 +421,7 @@ export const EditGymPage = () => {
         <Form.Group className="mb-3">
           {isManagerEditing ? (
             <>
-              <Form.Label>Logo</Form.Label>
+              <Form.Label className="text-dark">Logo</Form.Label>
               <input
                 id="logoFile"
                 type="file"
@@ -449,7 +449,7 @@ export const EditGymPage = () => {
         <Form.Group className="mb-3">
           {isManagerEditing ? (
             <>
-              <Form.Label>Imagen Principal</Form.Label>
+              <Form.Label className="text-dark">Imagen Principal</Form.Label>
               <input
                 id="mainImageFile"
                 type="file"

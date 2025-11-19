@@ -3,29 +3,40 @@
  * ESTILOS PARA: LandingPage
  * STYLES FOR: LandingPage
  * =============================================================================
+ *
+ * Descripción: Estilos para la página de aterrizaje (LandingPage).
+ * Incluye el diseño del contenedor principal de la página con scroll-snap,
+ * y el botón de llamada a la acción (CTA) con sus efectos de hover.
+ *
+ * Description: Styles for the LandingPage.
+ * Includes the design of the main page container with scroll-snap,
+ * and the call-to-action (CTA) button with its hover effects.
+ *
+ * =============================================================================
  */
+@import "../../index.scss"; // Importar variables globales // Import global variables
 
 .pageContainer {
   height: 100vh;
   width: 100%;
-  overflow-y: scroll;
-  scroll-snap-type: y mandatory;
+  overflow-y: scroll; // Permite el scroll vertical // Enables vertical scrolling
+  scroll-snap-type: y mandatory; // Habilita el scroll-snap vertical // Enables vertical scroll-snap
 }
 
 .ctaButton {
   padding: 12px 30px;
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--bs-white);
-  background-color: var(--bs-primary);
+  color: $dark; // Color de texto oscuro // Dark text color
+  background-color: $primary; // Color primario de fondo // Primary background color
   border: none;
-  border-radius: 5px;
+  border-radius: 5px; // Bordes ligeramente redondeados // Slightly rounded borders
   cursor: pointer;
-  text-decoration: none;
-  transition: transform 0.2s, background-color 0.2s;
+  text-decoration: none; // Sin subrayado // No underline
+  transition: transform 0.2s, background-color 0.2s; // Transiciones suaves // Smooth transitions
 }
 
 .ctaButton:hover {
-  background-color: var(--bs-primary-dark); /* Define a darker shade for primary in your variables */
-  transform: scale(1.05);
+  background-color: $gold-hover; // Color de hover dorado // Gold hover color
+  transform: scale(1.05); // Escala ligeramente al pasar el ratón // Slightly scales on hover
 }

@@ -179,7 +179,7 @@ export const MyVisitsPage = () => {
             lastName=""
             size={35}
           />
-          <span>
+          <span className="text-dark">
             {visit.gym_name || "N/A"}
             {visit.is_gym_deleted === true && " (Eliminado)"}
           </span>
@@ -206,7 +206,7 @@ export const MyVisitsPage = () => {
   if (isLoading && visits.length === 0) {
     return (
       <Container className={clsx(styles.loading, "text-center mt-5")}>
-        <Spinner animation="border" role="status">
+        <Spinner animation="border" role="status" variant="primary">
           <span className="visually-hidden">Cargando tus visitas...</span>
         </Spinner>
       </Container>
@@ -219,7 +219,7 @@ export const MyVisitsPage = () => {
   // =============================================================================
   return (
     <Container className={styles.container}>
-      <h1 className={styles.title}>Mis Visitas</h1>
+      <h1 className={clsx(styles.title, "text-primary")}>Mis Visitas</h1>
 
       {/* Tarjeta de estadísticas que abre un modal */}
       {/* Statistics card that opens a modal */}
@@ -237,8 +237,8 @@ export const MyVisitsPage = () => {
               }
             }}>
             <Card.Body>
-              <Card.Title className={styles.statNumber}>{totalItems}</Card.Title>
-              <Card.Text className={styles.statLabel}>
+              <Card.Title className={clsx(styles.statNumber, "text-primary")}>{totalItems}</Card.Title>
+              <Card.Text className={clsx(styles.statLabel, "text-dark")}>
                 {isLoading && visits.length === 0
                   ? "Cargando..."
                   : "Total de Visitas"}
@@ -261,17 +261,17 @@ export const MyVisitsPage = () => {
 
       {/* Indicador de carga durante la búsqueda */}
       {/* Loading indicator during search */}
-      {isLoading && <p className="text-center text-muted">Buscando...</p>}
+      {isLoading && <p className="text-center text-dark">Buscando...</p>}
 
       {/* Estado vacío o sin resultados */}
       {/* Empty state or no results */}
       {!isLoading && visits.length === 0 ? (
         gymSearch ? (
-          <Alert variant="info" className={styles.empty}>
+          <Alert variant="info" className={clsx(styles.empty, "text-dark")}>
             No se encontraron visitas para "{gymSearch}".
           </Alert>
         ) : (
-          <Alert variant="info" className={styles.empty}>
+          <Alert variant="info" className={clsx(styles.empty, "text-dark")}>
             Aún no has visitado ningún gimnasio.
           </Alert>
         )

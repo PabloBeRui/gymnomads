@@ -21,6 +21,7 @@ import { useEffect } from "react";
 import { Modal, Button } from "react-bootstrap"; // Importar componentes de React-Bootstrap / Import React-Bootstrap components
 import styles from "./ConfirmationModal.module.scss"; // Importar el módulo SCSS / Import the SCSS module
 import clsx from "clsx"; // Importar clsx / Import clsx
+import { CloseButton } from "../ui/CloseButton"; // Importar el componente CloseButton // Import the CloseButton component
 
 /* =============================================================================
    INTERFACES
@@ -115,8 +116,9 @@ export const ConfirmationModal = ({
 
   return (
     <Modal show={isOpen} onHide={onCancel} centered>
-      <Modal.Header closeButton>
-        <Modal.Title className={styles.modalTitle}>{title}</Modal.Title>
+      <Modal.Header className="d-flex justify-content-between align-items-center">
+        <Modal.Title className={clsx(styles.modalTitle, "text-dark")}>{title}</Modal.Title>
+        <CloseButton onClick={onCancel} ariaLabel="Cerrar modal de confirmación" colorVariant="primary" />
       </Modal.Header>
       <Modal.Body>
         <p className={styles.modalText}>{message}</p>

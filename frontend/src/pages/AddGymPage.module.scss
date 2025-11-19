@@ -3,48 +3,61 @@
  * ESTILOS PARA: AddGymPage
  * STYLES FOR: AddGymPage
  * =============================================================================
+ *
+ * Descripción: Estilos para la página de adición de gimnasios.
+ * Incluye el diseño del contenedor principal, la sección de datos del manager
+ * con su título, la previsualización del email, texto de ayuda y
+ * mensajes de coincidencia/descoincidencia de contraseñas.
+ *
+ * Description: Styles for the add gym page.
+ * Includes the design of the main container, the manager data section
+ * with its title, email preview, helper text, and
+ * password match/mismatch messages.
+ *
+ * =============================================================================
  */
+@import "../index.scss"; // Importar variables globales // Import global variables
 
 .container {
   padding: 20px;
   max-width: 800px;
   margin: 20px auto;
-  border: 1px solid var(--bs-gray-300);
-  border-radius: 8px;
+  border: 1px solid var(--bs-gray-300); // Borde estándar // Standard border
+  border-radius: 8px; // Bordes redondeados // Rounded borders
 }
 
 .managerSection {
   margin-top: 30px;
   padding: 20px;
-  background-color: var(--bs-light);
-  border-radius: 8px;
-  border: 2px solid var(--bs-primary);
+  background-color: $light; // Fondo claro // Light background
+  border-radius: 8px; // Bordes redondeados // Rounded borders
+  border: 2px solid $primary; // Borde primario // Primary border
 }
 
 .sectionTitle {
   margin-top: 0;
-  color: var(--bs-primary);
+  color: $primary; // Color primario // Primary color
 }
 
 .emailPreview {
   font-size: 0.9em;
-  color: var(--bs-gray-600);
+  color: $secondary; // Color secundario // Secondary color
   margin-bottom: 15px;
 }
 
 .helperText {
-  color: var(--bs-gray-600);
+  color: $secondary; // Color secundario // Secondary color
   font-size: 0.85em;
 }
 
 .passwordMatch {
-  color: var(--bs-success);
+  color: $success; // Color de éxito // Success color
   font-size: 0.85em;
   margin-top: 5px;
 }
 
 .passwordMismatch {
-  color: var(--bs-danger);
+  color: $danger; // Color de peligro // Danger color
   font-size: 0.85em;
   margin-top: 5px;
 }

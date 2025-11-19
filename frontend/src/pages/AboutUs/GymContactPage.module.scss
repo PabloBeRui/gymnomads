@@ -3,28 +3,37 @@
  * ESTILOS PARA: GymContactPage
  * STYLES FOR: GymContactPage
  * =============================================================================
+ *
+ * Descripción: Estilos para la página de contacto de gimnasios.
+ * Define el diseño del contenedor principal de la página, el título y el subtítulo.
+ *
+ * Description: Styles for the gym contact page.
+ * Defines the design of the main page container, title, and subtitle.
+ *
+ * =============================================================================
  */
+@import "../../index.scss"; // Importar variables globales // Import global variables
 
 .pageContainer {
-  max-width: 600px;
-  margin: 40px auto;
+  max-width: 600px; // Ancho máximo del contenedor // Maximum width of container
+  margin: 40px auto; // Margen superior/inferior y centrado horizontal // Top/bottom margin and horizontal centering
   padding: 30px;
   position: relative;
-  background-color: var(--bs-white);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background-color: var(--bs-white); // Fondo blanco // White background
+  border-radius: 8px; // Bordes redondeados // Rounded borders
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); // Sombra sutil // Subtle shadow
   text-align: center;
 }
 
 .title {
   font-size: 2rem;
-  color: var(--bs-gray-800);
+  color: $dark; // Color de texto oscuro // Dark text color
   margin-bottom: 15px;
 }
 
 .subtitle {
   font-size: 1rem;
-  color: var(--bs-gray-600);
+  color: $secondary; // Color de texto secundario // Secondary text color
   line-height: 1.6;
   margin-bottom: 30px;
 }

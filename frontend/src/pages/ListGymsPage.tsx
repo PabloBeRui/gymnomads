@@ -41,6 +41,7 @@ import {
     Alert,
 } from "react-bootstrap";
 import styles from "./ListGymsPage.module.scss";
+import clsx from "clsx"; // Importar clsx / Import clsx
 
 export const ListGymsPage = () => {
     const { user, token } = useAuth();
@@ -196,7 +197,7 @@ export const ListGymsPage = () => {
                 <Spinner animation="border" role="status" variant="primary">
                     <span className="visually-hidden">Cargando gimnasios...</span>
                 </Spinner>
-                <p className="mt-3 text-muted">Cargando gimnasios...</p>
+                <p className="mt-3 text-dark">Cargando gimnasios...</p>
             </Container>
         );
     }
@@ -214,8 +215,8 @@ export const ListGymsPage = () => {
     return (
         <Container className="py-5">
             <header className="text-center mb-5">
-                <h1 className="fw-bold">Nuestros Gimnasios</h1>
-                <p className="text-muted fs-5">
+                <h1 className="fw-bold text-primary">Nuestros Gimnasios</h1>
+                <p className="fs-5 text-dark">
                     Explora la red de gimnasios asociados a GymNomads.
                 </p>
             </header>
@@ -223,7 +224,7 @@ export const ListGymsPage = () => {
             <Row className="justify-content-center mb-5">
                 <Col md={8} lg={6} className="mb-3 mb-md-0 me-md-3">
                     <div className={styles.searchWrapper}>
-                        <i className={`bi bi-search ${styles.searchIcon}`}></i>
+                        <i className={clsx(`bi bi-search ${styles.searchIcon}`, "text-primary")}></i>
                         <FormControl
                             type="text"
                             placeholder="Buscar por nombre, ciudad o servicios..."
@@ -241,7 +242,7 @@ export const ListGymsPage = () => {
                             onClick={() => navigate("/gyms/add")}
                             className="h-100"
                         >
-                            <i className="bi bi-plus-lg me-2"></i>Añadir Gimnasio
+                            <i className="bi bi-plus-lg me-2 text-dark"></i>Añadir Gimnasio
                         </Button>
                     </Col>
                 )}
@@ -293,8 +294,8 @@ export const ListGymsPage = () => {
                                     </div>
                                     <Card.Body className="d-flex justify-content-between align-items-center">
                                         <div className="d-flex flex-column">
-                                            <Card.Text className="text-muted small">
-                                                <i className="bi bi-geo-alt-fill me-2"></i>
+                                            <Card.Text className="small text-dark">
+                                                <i className="bi bi-geo-alt-fill me-2 text-primary"></i>
                                                 {gym.city}
                                             </Card.Text>
                                         </div>
@@ -310,14 +311,14 @@ export const ListGymsPage = () => {
                                         (user?.role === "manager" && user.home_gym_id === gym.id)) && (
                                         <Card.Footer className="bg-white border-top-0 text-end">
                                             <Button
-                                                variant="outline-secondary"
+                                                variant="outline-primary"
                                                 className="me-2"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     navigate(`/gyms/edit/${gym.id}`);
                                                 }}
                                             >
-                                                <i className="bi bi-pencil-fill me-2"></i>Editar
+                                                <i className="bi bi-pencil-fill me-2 text-primary"></i>Editar
                                             </Button>
                                             {isAdmin && (
                                                 <>

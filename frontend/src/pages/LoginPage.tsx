@@ -33,7 +33,7 @@ import { Container, Form, Button, Alert, Spinner,Card } from "react-bootstrap";
 
 // Importar el módulo SCSS / Import the SCSS module
 import styles from "./LoginPage.module.scss";
-// import clsx from "clsx"; // Importar clsx / Import clsx
+import clsx from "clsx"; // Importar clsx / Import clsx
 
 /* =============================================================================
    COMPONENTE: LoginPage
@@ -99,10 +99,10 @@ export const LoginPage: React.FC = () => {
     <Container className="d-flex align-items-center justify-content-center min-vh-100">
       <Card className={`p-4 shadow-lg ${styles.loginCard}`}>
         <Card.Body>
-          <h2 className="text-center mb-4 fw-bold">Iniciar Sesión</h2>
+          <h2 className="text-center mb-4 fw-bold text-primary">Iniciar Sesión</h2>
           <Form onSubmit={handleSubmit} aria-label="Formulario de inicio de sesión">
             <Form.Group className="mb-3" controlId="email">
-              <Form.Label>Email</Form.Label>
+              <Form.Label className="text-dark">Email</Form.Label>
               <Form.Control
                 type="email"
                 placeholder="tu@email.com"
@@ -119,7 +119,7 @@ export const LoginPage: React.FC = () => {
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="password">
-              <Form.Label>Contraseña</Form.Label>
+              <Form.Label className="text-dark">Contraseña</Form.Label>
               <Form.Control
                 type="password"
                 placeholder="Tu contraseña"
@@ -147,6 +147,7 @@ export const LoginPage: React.FC = () => {
                     role="status"
                     aria-hidden="true"
                     className="me-2"
+                    variant="light"
                   />
                   <span>Iniciando sesión...</span>
                 </>
@@ -156,13 +157,13 @@ export const LoginPage: React.FC = () => {
             </Button>
           </Form>
 
-          <p className="mt-3 text-center">
+          <p className="mt-3 text-center text-dark">
             ¿No tienes cuenta?{" "}
             <Button
               variant="link"
               onClick={() => navigate("/register")}
               disabled={loading}
-              className={`p-0 ${styles.linkButton}`}
+              className={clsx("p-0", styles.linkButton, "text-primary")}
               aria-disabled={loading}>
               Regístrate aquí
             </Button>

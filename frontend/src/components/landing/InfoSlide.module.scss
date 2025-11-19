@@ -3,6 +3,14 @@
  * ESTILOS PARA: InfoSlide
  * STYLES FOR: InfoSlide
  * =============================================================================
+ *
+ * Descripción: Estilos para el componente InfoSlide, que presenta secciones
+ * informativas con un título, texto y contenido opcional.
+ *
+ * Description: Styles for the InfoSlide component, which presents informational
+ * sections with a title, text, and optional content.
+ *
+ * =============================================================================
  */
 
 .slide {
@@ -12,9 +20,9 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: center; // Centra el contenido horizontalmente // Horizontally centers content
   padding: 2rem;
-  box-sizing: border-box; // Asegurar que el padding no desborde / Ensure padding does not overflow
+  box-sizing: border-box; // Asegurar que el padding no desborde // Ensure padding does not overflow
   text-align: center;
   transition: background-color 0.5s ease; // Transición suave de color / Smooth color transition
 }
@@ -28,11 +36,11 @@
 
 .text {
   font-size: clamp(1rem, 2.5vw, 1.25rem); // Tamaño de fuente responsive / Responsive font size
-  color: var(--bs-secondary);
+  color: var(--bs-secondary); // Color de texto secundario // Secondary text color
   max-width: 600px;
   line-height: 1.6;
 }
 
 .childrenContainer {
-  margin-top: 2.5rem;
+  margin-top: 2.5rem; // Margen superior para el contenedor de elementos hijos // Top margin for children elements container
 }

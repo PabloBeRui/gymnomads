@@ -206,10 +206,10 @@ export const ManagerDetailsModal = ({
   return (
     <Modal show={isOpen} onHide={handleClose} centered size="lg">
       <Modal.Header className={styles.modalHeader}>
-        <Modal.Title className={styles.modalTitle}>
+        <Modal.Title className={clsx(styles.modalTitle, "text-primary")}>
           👤 Información del Manager
         </Modal.Title>
-        <CloseButton onClick={handleClose} ariaLabel="Cerrar información del manager" />
+        <CloseButton onClick={handleClose} ariaLabel="Cerrar información del manager" colorVariant="primary" />
       </Modal.Header>
       <Modal.Body>
         {/* Header con Avatar, nombre y email / Header with Avatar, name and email */}
@@ -234,7 +234,7 @@ export const ManagerDetailsModal = ({
             {/* Nombre / First Name */}
             <Col md={6} className={styles.infoRow}>
               <Form.Group controlId="managerFirstName">
-                <Form.Label className={styles.label}>Nombre:</Form.Label>
+                <Form.Label className={clsx(styles.label, "text-dark")}>Nombre:</Form.Label>
                 {isEditMode ? (
                   <>
                     <Form.Control
@@ -258,7 +258,7 @@ export const ManagerDetailsModal = ({
             {/* Apellidos / Last Name */}
             <Col md={6} className={styles.infoRow}>
               <Form.Group controlId="managerLastName">
-                <Form.Label className={styles.label}>Apellidos:</Form.Label>
+                <Form.Label className={clsx(styles.label, "text-dark")}>Apellidos:</Form.Label>
                 {isEditMode ? (
                   <>
                     <Form.Control
@@ -282,7 +282,7 @@ export const ManagerDetailsModal = ({
 
           {/* Email (no editable) / Email (not editable) */}
           <Form.Group controlId="managerEmail" className={styles.infoRow}>
-            <Form.Label className={styles.label}>Email:</Form.Label>
+            <Form.Label className={clsx(styles.label, "text-dark")}>Email:</Form.Label>
             <div className={styles.lockedValue}>
               🔒 {manager.email}
             </div>
@@ -293,7 +293,7 @@ export const ManagerDetailsModal = ({
 
           {/* Teléfono / Phone */}
           <Form.Group controlId="managerPhone" className={styles.infoRow}>
-            <Form.Label className={styles.label}>Teléfono:</Form.Label>
+            <Form.Label className={clsx(styles.label, "text-dark")}>Teléfono:</Form.Label>
             {isEditMode ? (
               <>
                 <Form.Control
@@ -314,13 +314,13 @@ export const ManagerDetailsModal = ({
 
           {/* Gimnasio (no editable) / Gym (not editable) */}
           <Form.Group controlId="managerGym" className={styles.infoRow}>
-            <Form.Label className={styles.label}>Gimnasio:</Form.Label>
+            <Form.Label className={clsx(styles.label, "text-dark")}>Gimnasio:</Form.Label>
             <div className={styles.value}>{manager.gym_name}</div>
           </Form.Group>
 
           {/* Ciudad (no editable) / City (not editable) */}
           <Form.Group controlId="managerCity" className={styles.infoRow}>
-            <Form.Label className={styles.label}>Ciudad:</Form.Label>
+            <Form.Label className={clsx(styles.label, "text-dark")}>Ciudad:</Form.Label>
             <div className={styles.value}>{manager.gym_city}</div>
           </Form.Group>
         </Form>

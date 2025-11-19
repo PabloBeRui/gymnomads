@@ -111,10 +111,10 @@ export const VisitsStatsModal: React.FC<VisitsStatsModalProps> = ({
   return (
     <Modal show={isOpen} onHide={handleClose} centered size="lg">
       <Modal.Header className={styles.modalHeader}>
-        <Modal.Title className={styles.modalTitle}>
+        <Modal.Title className={clsx(styles.modalTitle, "text-primary")}>
           {getTitle()}
         </Modal.Title>
-        <CloseButton onClick={handleClose} ariaLabel="Cerrar estadísticas de visitas" />
+        <CloseButton onClick={handleClose} ariaLabel="Cerrar estadísticas de visitas" colorVariant="primary" />
       </Modal.Header>
       <Modal.Body>
         {viewMode === "manager" && (
@@ -137,8 +137,8 @@ export const VisitsStatsModal: React.FC<VisitsStatsModalProps> = ({
         {/* Mostrar estado de Carga / Show Loading state */}
         {isLoading && (
           <div className="text-center p-5">
-            <Spinner animation="border" />
-            <p className="mt-3">Cargando estadísticas...</p>
+            <Spinner animation="border" variant="primary" />
+            <p className="mt-3 text-dark">Cargando estadísticas...</p>
           </div>
         )}
 
@@ -158,35 +158,35 @@ export const VisitsStatsModal: React.FC<VisitsStatsModalProps> = ({
                   </h3>
                   <div className={styles.statsContainer}>
                     <div className={styles.statBox}>
-                      <p className={styles.statNumber}>{stats.todayReceived ?? 0}</p>
+                      <p className={clsx(styles.statNumber, "text-primary")}>{stats.todayReceived ?? 0}</p>
                       <p className={styles.statLabel}>Hoy</p>
                     </div>
                     <div className={styles.statBox}>
-                      <p className={styles.statNumber}>{stats.thisMonthReceived ?? 0}</p>
+                      <p className={clsx(styles.statNumber, "text-primary")}>{stats.thisMonthReceived ?? 0}</p>
                       <p className={styles.statLabel}>Este Mes</p>
                     </div>
                     <div className={styles.statBox}>
-                      <p className={styles.statNumber}>{stats.totalReceived ?? 0}</p>
+                      <p className={clsx(styles.statNumber, "text-primary")}>{stats.totalReceived ?? 0}</p>
                       <p className={styles.statLabel}>Totales</p>
                     </div>
                   </div>
                 </>
               ) : (
                 <>
-                  <h3 className="text-center mb-3 text-success">
+                  <h3 className="text-center mb-3 text-primary">
                     Visitas Enviadas
                   </h3>
                   <div className={styles.statsContainer}>
                     <div className={styles.statBox}>
-                      <p className={styles.statNumber}>{stats.todaySent ?? 0}</p>
+                      <p className={clsx(styles.statNumber, "text-primary")}>{stats.todaySent ?? 0}</p>
                       <p className={styles.statLabel}>Hoy</p>
                     </div>
                     <div className={styles.statBox}>
-                      <p className={styles.statNumber}>{stats.thisMonthSent ?? 0}</p>
+                      <p className={clsx(styles.statNumber, "text-primary")}>{stats.thisMonthSent ?? 0}</p>
                       <p className={styles.statLabel}>Este Mes</p>
                     </div>
                     <div className={styles.statBox}>
-                      <p className={styles.statNumber}>{stats.totalSent ?? 0}</p>
+                      <p className={clsx(styles.statNumber, "text-primary")}>{stats.totalSent ?? 0}</p>
                       <p className={styles.statLabel}>Totales</p>
                     </div>
                   </div>
@@ -197,18 +197,18 @@ export const VisitsStatsModal: React.FC<VisitsStatsModalProps> = ({
               /* --- User and Admin View (General Statistics) --- */
               <div className={styles.statsContainer}>
                 <div className={styles.statBox}>
-                  <p className={styles.statNumber}>{stats.today ?? 0}</p>
+                  <p className={clsx(styles.statNumber, "text-primary")}>{stats.today ?? 0}</p>
                   <p className={styles.statLabel}>Visitas Hoy</p>
                 </div>
                 <div className={styles.statBox}>
-                  <p className={clsx(styles.statNumber, { [styles.statNumberError]: (stats.thisMonth ?? 0) >= 10 })}>{stats.thisMonth ?? 0}</p>
+                  <p className={clsx(styles.statNumber, { [styles.statNumberError]: (stats.thisMonth ?? 0) >= 10 }, "text-primary")}>{stats.thisMonth ?? 0}</p>
                   <p className={styles.statLabel}>Visitas este Mes</p>
                   {(stats.thisMonth ?? 0) >= 10 && (
-                    <p className={styles.limitMessage}>Máximo de visitas mensuales completado</p>
+                    <p className={clsx(styles.limitMessage, "text-danger")}>Máximo de visitas mensuales completado</p>
                   )}
                 </div>
                 <div className={styles.statBox}>
-                  <p className={styles.statNumber}>{stats.total ?? 0}</p>
+                  <p className={clsx(styles.statNumber, "text-primary")}>{stats.total ?? 0}</p>
                   <p className={styles.statLabel}>Visitas Totales</p>
                 </div>
               </div>
@@ -219,4 +219,3 @@ export const VisitsStatsModal: React.FC<VisitsStatsModalProps> = ({
     </Modal>
   );
 };
-

@@ -3,15 +3,24 @@
  * ESTILOS PARA: AboutUsPage
  * STYLES FOR: AboutUsPage
  * =============================================================================
+ *
+ * Descripción: Estilos para la página "Sobre Nosotros".
+ * Incluye el diseño del disclaimer de advertencia.
+ *
+ * Description: Styles for the "About Us" page.
+ * Includes the design for the warning disclaimer.
+ *
+ * =============================================================================
  */
+@import "../../index.scss"; // Importar variables globales // Import global variables
 
 .disclaimer {
-  background-color: var(--bs-warning-bg-subtle);
-  border: 1px solid var(--bs-warning-border-subtle);
+  background-color: lighten($warning, 20%); // Fondo de advertencia claro // Light warning background
+  border: 1px solid lighten($warning, 10%); // Borde de advertencia // Warning border
   padding: 15px;
-  border-radius: 4px;
+  border-radius: 4px; // Bordes redondeados // Rounded borders
   margin-top: 20px;
   font-size: 0.9rem;
-  color: var(--bs-warning-text-emphasis);
+  color: darken($warning, 25%); // Texto de advertencia oscuro // Dark warning text
   text-align: left;
 }

@@ -3,29 +3,40 @@
  * ESTILOS PARA: QRCodeComponent
  * STYLES FOR: QRCodeComponent
  * =============================================================================
+ *
+ * Descripción: Estilos para el componente QRCodeComponent, que genera y muestra
+ * un código QR con un logo incrustado. Define el contenedor del QR, su
+ * envoltorio visual y el estilo del texto de información opcional.
+ *
+ * Description: Styles for the QRCodeComponent, which generates and displays
+ * a QR code with an embedded logo. Defines the QR container, its visual
+ * wrapper, and the style for the optional info text.
+ *
+ * =============================================================================
  */
+@import "../index.scss"; // Importar variables globales // Import global variables
 
 .qrContainer {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: center; // Centrado horizontal // Horizontal centering
+  justify-content: center; // Centrado vertical // Vertical centering
 }
 
 .qrCodeWrapper {
-  background-color: var(--bs-white);
-  border: 1px solid var(--bs-gray-200);
-  border-radius: 12px;
+  background-color: var(--bs-white); // Fondo blanco para el QR // White background for QR
+  border: 1px solid var(--bs-gray-200); // Borde sutil // Subtle border
+  border-radius: 12px; // Bordes redondeados // Rounded borders
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  align-items: center; // Centrado vertical // Vertical centering
+  justify-content: center; // Centrado horizontal // Horizontal centering
+  padding: 16px; // Espaciado interno // Inner spacing
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); // Sombra suave // Soft shadow
 }
 
 .qrInfo {
   font-size: 0.85rem;
-  color: var(--bs-gray-600);
+  color: $secondary; // Color secundario para información // Secondary color for info
   margin-top: 10px;
   font-style: italic;
 }

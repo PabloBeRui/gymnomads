@@ -70,7 +70,7 @@ function App() {
       <h2>Acceso Denegado</h2>
       <p>
         No tienes permiso para ver esta página.{" "}
-        <Link to="/">Volver al inicio</Link>
+        <Link to="/" className="text-primary">Volver al inicio</Link>
       </p>
     </div>
   );
@@ -82,7 +82,7 @@ function App() {
       <h2>404 - Página no encontrada</h2>
       <p>
         Lo sentimos, la página que buscas no existe.{" "}
-        <Link to="/">Volver al inicio</Link>
+        <Link to="/" className="text-primary">Volver al inicio</Link>
       </p>
     </div>
   );
@@ -102,7 +102,7 @@ function App() {
 
       {/* Contenido principal de la página */}
       {/* Main page content */}
-      <main style={{ flex: 1 }}>
+      <main style={{ flex: 1, paddingTop: '90px' }}>
         {/* Definir las rutas de la aplicación */}
         {/* Define the application routes */}
         <Routes>

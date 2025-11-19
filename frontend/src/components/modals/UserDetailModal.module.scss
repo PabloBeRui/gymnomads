@@ -3,7 +3,18 @@
  * ESTILOS PARA: UserDetailModal
  * STYLES FOR: UserDetailModal
  * =============================================================================
+ *
+ * Descripción: Estilos para el modal que muestra los detalles de un usuario.
+ * Incluye diseño para el overlay, contenido principal, encabezados, información
+ * de perfil, campos de visualización y botones de acción.
+ *
+ * Description: Styles for the modal that displays user details.
+ * Includes design for the overlay, main content, headers, profile information,
+ * display fields, and action buttons.
+ *
+ * =============================================================================
  */
+@import "../../index.scss"; // Importar variables globales // Import global variables
 
 .modalOverlay {
   position: fixed;
@@ -11,71 +22,71 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.5); // Fondo semitransparente // Semi-transparent background
   display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
+  align-items: center; // Centrado vertical // Vertical centering
+  justify-content: center; // Centrado horizontal // Horizontal centering
+  z-index: 1000; // Por encima de otros elementos // Above other elements
 }
 
 .modalContent {
-  background-color: var(--bs-white);
+  background-color: var(--bs-white); // Fondo blanco // White background
   padding: 30px;
-  border-radius: 8px;
-  max-width: 600px;
-  width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px; // Bordes redondeados // Rounded borders
+  max-width: 600px; // Ancho máximo // Maximum width
+  width: 90%; // Ancho responsivo // Responsive width
+  max-height: 90vh; // Altura máxima // Maximum height
+  overflow-y: auto; // Scroll si el contenido es largo // Scroll if content is long
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); // Sombra // Shadow
   position: relative;
 }
 
 .modalHeader {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: space-between; // Espacio entre elementos // Space between elements
+  align-items: center; // Centrado vertical de elementos // Vertically center elements
   margin-bottom: 20px;
   padding-bottom: 15px;
-  border-bottom: 2px solid var(--bs-gray-300);
+  border-bottom: 2px solid var(--bs-gray-300); // Borde inferior // Bottom border
 }
 
 .modalTitle {
   font-size: 1.5rem;
-  color: var(--bs-gray-800);
+  color: $dark; // Color de texto oscuro // Dark text color
   margin: 0;
 }
 
 .profileHeader {
   display: flex;
-  align-items: center;
-  gap: 20px;
+  align-items: center; // Centrado vertical // Vertical centering
+  gap: 20px; // Espacio entre avatar y texto // Space between avatar and text
   margin-bottom: 30px;
   padding-bottom: 20px;
-  border-bottom: 1px solid var(--bs-gray-200);
+  border-bottom: 1px solid var(--bs-gray-200); // Borde inferior // Bottom border
 }
 
 .profileInfo {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 5px; // Espacio entre nombre y email // Space between name and email
 }
 
 .profileName {
   font-size: 1.5rem;
   font-weight: bold;
-  color: var(--bs-gray-800);
+  color: $dark; // Color de texto oscuro // Dark text color
   margin: 0;
 }
 
 .profileEmail {
   font-size: 1rem;
-  color: var(--bs-secondary);
+  color: $secondary; // Color de texto secundario // Secondary text color
   margin: 0;
 }
 
 .infoSection {
-  margin-bottom: 20px;
+  margin-bottom: 20px; // Espacio inferior de la sección de información // Bottom space for info section
 }
 
 .infoRow {
@@ -87,27 +98,27 @@
 .label {
   font-size: 0.9rem;
   font-weight: bold;
-  color: var(--bs-gray-700);
+  color: $dark; // Color de texto oscuro // Dark text color
   margin-bottom: 5px;
 }
 
 .value {
   font-size: 1rem;
-  color: var(--bs-gray-800);
+  color: $dark; // Color de texto oscuro // Dark text color
   padding: 8px 12px;
-  background-color: var(--bs-gray-100);
-  border-radius: 4px;
+  background-color: $light; // Fondo claro // Light background
+  border-radius: 4px; // Bordes redondeados // Rounded borders
 }
 
 .buttonContainer {
   display: flex;
-  gap: 10px;
-  justify-content: flex-end;
+  gap: 10px; // Espacio entre botones // Space between buttons
+  justify-content: flex-end; // Botones a la derecha // Buttons to the right
   margin-top: 20px;
   padding-top: 15px;
-  border-top: 1px solid var(--bs-gray-300);
+  border-top: 1px solid var(--bs-gray-300); // Borde superior // Top border
 }
 
 .deleteButton {
-  margin-right: auto; // Empuja este botón a la izquierda / Pushes this button to the left
+  margin-right: auto; // Empuja este botón a la izquierda // Pushes this button to the left
 }

@@ -3,6 +3,16 @@
  * ESTILOS PARA: ConfirmationModal
  * STYLES FOR: ConfirmationModal
  * =============================================================================
+ *
+ * Descripción: Estilos para el modal de confirmación, utilizado para acciones
+ * críticas. Incluye estilos para el overlay, el contenido principal, título,
+ * mensaje, advertencias, notas y botones de acción.
+ *
+ * Description: Styles for the confirmation modal, used for critical actions.
+ * Includes styles for the overlay, main content, title, message, warnings,
+ * notes, and action buttons.
+ *
+ * =============================================================================
  */
 
 .modalOverlay {
@@ -11,53 +21,53 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.5); // Fondo semitransparente // Semi-transparent background
   display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  animation: fadeIn 0.2s ease-in-out;
+  align-items: center; // Centrado vertical // Vertical centering
+  justify-content: center; // Centrado horizontal // Horizontal centering
+  z-index: 1000; // Por encima de otros elementos // Above other elements
+  animation: fadeIn 0.2s ease-in-out; // Animación de aparición // Fade-in animation
 }
 
 .modalContent {
-  background-color: var(--bs-white);
+  background-color: var(--bs-white); // Fondo blanco // White background
   padding: 30px;
-  border-radius: 8px;
-  max-width: 500px;
-  width: 90%;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  animation: slideIn 0.2s ease-in-out;
+  border-radius: 8px; // Bordes redondeados // Rounded borders
+  max-width: 500px; // Ancho máximo // Maximum width
+  width: 90%; // Ancho responsivo // Responsive width
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); // Sombra // Shadow
+  animation: slideIn 0.2s ease-in-out; // Animación de deslizamiento // Slide-in animation
 }
 
 .modalTitle {
-  font-size: 1.5rem;
+  font-size: 1.5rem; // Tamaño del título // Title size
   margin-bottom: 15px;
-  color: var(--bs-gray-800);
+  color: var(--bs-dark); // Color de texto oscuro // Dark text color
 }
 
 .modalText {
-  font-size: 1rem;
+  font-size: 1rem; // Tamaño del texto del mensaje // Message text size
   margin-bottom: 20px;
-  color: var(--bs-gray-600);
-  line-height: 1.5;
+  color: var(--bs-gray-600); // Color de texto gris // Gray text color
+  line-height: 1.5; // Altura de línea // Line height
 }
 
 .warningText {
-  font-size: 1rem;
+  font-size: 1rem; // Tamaño del texto de advertencia // Warning text size
   margin-bottom: 15px;
   font-weight: bold;
   line-height: 1.5;
 }
 
 .noteText {
-  font-size: 0.9rem;
+  font-size: 0.9rem; // Tamaño del texto de nota // Note text size
   margin-bottom: 20px;
-  color: var(--bs-gray-600);
+  color: var(--bs-gray-600); // Color de texto gris // Gray text color
   font-style: italic;
 }
 
 .modalButtons {
   display: flex;
-  gap: 10px;
-  justify-content: flex-end;
+  gap: 10px; // Espacio entre botones // Space between buttons
+  justify-content: flex-end; // Botones a la derecha // Buttons to the right
 }

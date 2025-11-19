@@ -3,40 +3,51 @@
  * Estilos para la página de listado de gimnasios (ListGymsPage)
  * Styles for the Gyms Listing Page (ListGymsPage)
  * =============================================================================
+ *
+ * Descripción: Define los estilos para el listado de gimnasios, incluyendo
+ * tarjetas individuales de gimnasios, efectos de hover, imágenes, overlays,
+ * pie de tarjeta y la barra de búsqueda con su icono.
+ *
+ * Description: Defines styles for the gym listing, including individual gym
+ * cards, hover effects, images, overlays, card footer, and the search bar
+ * with its icon.
+ *
+ * =============================================================================
  */
+@import "../index.scss"; // Importar variables globales // Import global variables
 
 // Estilo para la tarjeta individual del gimnasio
 // Style for the individual gym card
 .gymCard {
     position: relative;
-    overflow: hidden; // Asegura que el overlay no se desborde / Ensures overlay doesn't overflow
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    border-radius: var(--bs-border-radius-lg); // Usa border-radius de Bootstrap / Uses Bootstrap's border-radius
+    overflow: hidden; // Asegura que el overlay no se desborde // Ensures overlay doesn't overflow
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; // Transiciones suaves // Smooth transitions
+    border-radius: var(--bs-border-radius-lg); // Usa border-radius de Bootstrap // Uses Bootstrap's border-radius
 
     // Efecto de hover para la tarjeta completa
     // Hover effect for the entire card
     &:hover {
-        transform: translateY(-8px); // Más pronunciado / More pronounced lift
-        box-shadow: var(--bs-box-shadow-lg) !important; // Usa sombra de Bootstrap / Uses Bootstrap's box-shadow
+        transform: translateY(-8px); // Elevación al pasar el ratón // Lift on hover
+        box-shadow: $box-shadow-lg !important; // Usa sombra grande del tema // Uses large theme shadow
     }
 }
 
 .cardImageWrapper {
     position: relative;
-    height: 180px; // Altura fija para las imágenes de la tarjeta / Fixed height for card images
+    height: 180px; // Altura fija para las imágenes de la tarjeta // Fixed height for card images
     overflow: hidden;
-    border-top-left-radius: var(--bs-border-radius-lg);
-    border-top-right-radius: var(--bs-border-radius-lg);
+    border-top-left-radius: var(--bs-border-radius-lg); // Bordes superiores redondeados // Rounded top borders
+    border-top-right-radius: var(--bs-border-radius-lg); // Bordes superiores redondeados // Rounded top borders
 }
 
 .gymImage {
     width: 100%;
     height: 100%;
-    object-fit: cover; // La imagen cubre el área / Image covers the area
-    transition: transform 0.3s ease-in-out; // Transición suave para el zoom / Smooth transition for zoom
+    object-fit: cover; // La imagen cubre el área // Image covers the area
+    transition: transform 0.3s ease-in-out; // Transición suave para el zoom // Smooth transition for zoom
 
     .gymCard:hover & {
-        transform: scale(1.05); // Zoom sutil en hover / Subtle zoom on hover
+        transform: scale(1.05); // Zoom sutil en hover // Subtle zoom on hover
     }
 }
 
@@ -45,24 +56,24 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
-    color: white;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%); // Degradado oscuro // Dark gradient
+    color: white; // Texto blanco // White text
     padding: 1rem;
-    padding-top: 2rem; // Más padding para que el texto no toque el borde / More padding so text doesn't touch the edge
+    padding-top: 2rem; // Más padding para que el texto no toque el borde // More padding so text doesn't touch the edge
     font-size: 1.25rem;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5); // Sombra de texto // Text shadow
 
     h5 {
-        margin-bottom: 0; // Sin margen inferior en el título / No bottom margin on title
+        margin-bottom: 0; // Sin margen inferior en el título // No bottom margin on title
     }
 }
 
 // Estilo para el pie de la tarjeta del gimnasio (si se mantiene)
 // Style for the gym card footer (if kept)
 .cardFooter {
-    background-color: var(--bs-body-bg); // Usar el color de fondo del cuerpo de Bootstrap
-    border-top: 1px solid var(--bs-border-color);
-    padding: 0.75rem 1.25rem; // Padding estándar de Bootstrap
+    background-color: var(--bs-body-bg); // Usar el color de fondo del cuerpo de Bootstrap // Uses Bootstrap body background color
+    border-top: 1px solid var(--bs-border-color); // Borde superior // Top border
+    padding: 0.75rem 1.25rem; // Padding estándar de Bootstrap // Standard Bootstrap padding
 }
 
 // Estilos para la barra de búsqueda
@@ -70,13 +81,13 @@
 .searchWrapper {
     position: relative;
     .searchInput {
-        padding-left: 3rem; // Espacio para el icono / Space for the icon
-        border-radius: 50px; // Bordes muy redondeados / Very rounded borders
-        border-color: var(--bs-gray-300); // Borde más suave / Softer border
-        box-shadow: var(--bs-box-shadow-sm); // Sombra sutil / Subtle shadow
+        padding-left: 3rem; // Espacio para el icono // Space for the icon
+        border-radius: 50px; // Bordes muy redondeados // Very rounded borders
+        border-color: var(--bs-gray-300); // Borde más suave // Softer border
+        box-shadow: $box-shadow-sm; // Sombra sutil // Subtle shadow
         &:focus {
-            box-shadow: var(--bs-box-shadow) !important; // Sombra más prominente al enfocar / More prominent shadow on focus
-            border-color: var(--bs-primary); // Color de borde primario al enfocar / Primary border color on focus
+            box-shadow: 0 0 0 0.25rem rgba($primary, 0.25) !important; // Sombra prominente al enfocar con color primario // Prominent shadow on focus with primary color
+            border-color: $primary; // Color de borde primario al enfocar // Primary border color on focus
         }
     }
 
@@ -85,9 +96,9 @@
         left: 1rem;
         top: 50%;
         transform: translateY(-50%);
-        color: var(--bs-gray-600);
+        color: $dark; // Color oscuro para el icono // Dark color for icon
         font-size: 1.25rem;
-        z-index: 2; // Asegura que el icono esté encima del input / Ensures icon is above input
+        z-index: 2; // Asegura que el icono esté encima del input // Ensures icon is above input
     }
 }
 
@@ -95,7 +106,7 @@
     height: 65px;
     width: 65px;
     object-fit: contain;
-    border-radius: var(--bs-border-radius);
+    border-radius: var(--bs-border-radius); // Bordes redondeados // Rounded borders
     padding: 5px;
-    background-color: var(--bs-gray-100);
+    background-color: $light; // Fondo claro // Light background
 }

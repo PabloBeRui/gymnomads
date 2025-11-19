@@ -45,6 +45,7 @@ import {
 // Importar el módulo SCSS para mantener la consistencia, aunque esté vacío.
 // Import the SCSS module for consistency, even if it's empty.
 import styles from "./RegisterUserPage.module.scss";
+import clsx from "clsx"; // Importar clsx / Import clsx
 
 export const RegisterUserPage: React.FC = () => {
     // Hooks de navegación y contexto de autenticación.
@@ -201,10 +202,10 @@ export const RegisterUserPage: React.FC = () => {
                     <Card className={`p-4 shadow-lg ${styles.registerCard}`}>
                         <Card.Body>
                             <div className="text-center mb-4">
-                                <h2 className="text-center mb-4 fw-bold">Crear una cuenta</h2>
-                                <p className="text-muted">
+                                <h2 className="text-center mb-4 fw-bold text-primary">Crear una cuenta</h2>
+                                <p className="text-dark">
                                     ¿Ya tienes cuenta?{" "}
-                                    <Link to="/login" className={styles.linkText}>
+                                    <Link to="/login" className={clsx(styles.linkText, "text-primary")}>
                                         Inicia sesión
                                     </Link>
                                 </p>
@@ -213,7 +214,7 @@ export const RegisterUserPage: React.FC = () => {
                                 {/* Sección para la subida de imagen de perfil */}
                                 {/* Profile picture upload section */}
                                 <Form.Group className="mb-4 text-center" controlId="profilePic">
-                                    <Form.Label className="d-block mb-3">
+                                    <Form.Label className="d-block mb-3 text-dark">
                                         Foto de perfil (opcional)
                                     </Form.Label>
                                     <input
@@ -239,7 +240,7 @@ export const RegisterUserPage: React.FC = () => {
                                 <Row>
                                     <Col md={6}>
                                         <Form.Group className="mb-3" controlId="firstName">
-                                            <Form.Label>Nombre</Form.Label>
+                                            <Form.Label className="text-dark">Nombre</Form.Label>
                                             <Form.Control
                                                 type="text"
                                                 value={firstName}
@@ -251,7 +252,7 @@ export const RegisterUserPage: React.FC = () => {
                                     </Col>
                                     <Col md={6}>
                                         <Form.Group className="mb-3" controlId="lastName">
-                                            <Form.Label>Apellidos</Form.Label>
+                                            <Form.Label className="text-dark">Apellidos</Form.Label>
                                             <Form.Control
                                                 type="text"
                                                 value={lastName}
@@ -264,7 +265,7 @@ export const RegisterUserPage: React.FC = () => {
                                 </Row>
 
                                 <Form.Group className="mb-3" controlId="email">
-                                    <Form.Label>Email</Form.Label>
+                                    <Form.Label className="text-dark">Email</Form.Label>
                                     <Form.Control
                                         type="email"
                                         value={email}
@@ -277,7 +278,7 @@ export const RegisterUserPage: React.FC = () => {
                                 <Row>
                                     <Col md={6}>
                                         <Form.Group className="mb-3" controlId="password">
-                                            <Form.Label>Contraseña</Form.Label>
+                                            <Form.Label className="text-dark">Contraseña</Form.Label>
                                             <Form.Control
                                                 type="password"
                                                 value={password}
@@ -289,7 +290,7 @@ export const RegisterUserPage: React.FC = () => {
                                     </Col>
                                     <Col md={6}>
                                         <Form.Group className="mb-3" controlId="confirmPassword">
-                                            <Form.Label>Confirmar Contraseña</Form.Label>
+                                            <Form.Label className="text-dark">Confirmar Contraseña</Form.Label>
                                             <Form.Control
                                                 type="password"
                                                 value={confirmPassword}
@@ -304,7 +305,7 @@ export const RegisterUserPage: React.FC = () => {
                                 </Row>
 
                                 <Form.Group className="mb-3" controlId="phone">
-                                    <Form.Label>Teléfono (Opcional)</Form.Label>
+                                    <Form.Label className="text-dark">Teléfono (Opcional)</Form.Label>
                                     <Form.Control
                                         type="tel"
                                         value={phone}
@@ -314,13 +315,13 @@ export const RegisterUserPage: React.FC = () => {
                                 </Form.Group>
 
                                 <Form.Group className="mb-4" controlId="homeGymId">
-                                    <Form.Label>Tu Gimnasio de Origen</Form.Label>
+                                    <Form.Label className="text-dark">Tu Gimnasio de Origen</Form.Label>
                                     {/* Muestra un spinner mientras se cargan los gimnasios */}
                                     {/* Shows a spinner while gyms are loading */}
                                     {isLoadingGyms ? (
                                         <div className="text-center py-2">
-                                            <Spinner animation="border" size="sm" />
-                                            <span className="ms-2 text-muted">Cargando gimnasios...</span>
+                                            <Spinner animation="border" size="sm" variant="primary" />
+                                            <span className="ms-2 text-dark">Cargando gimnasios...</span>
                                         </div>
                                     ) : (
                                         <Form.Select
@@ -356,6 +357,7 @@ export const RegisterUserPage: React.FC = () => {
                                                     role="status"
                                                     aria-hidden="true"
                                                     className="me-2"
+                                                    variant="light"
                                                 />
                                                 <span>Registrando...</span>
                                             </>

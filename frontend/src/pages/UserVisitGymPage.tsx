@@ -21,7 +21,7 @@ import { QRCodeComponent } from "../components/QRCodeComponent";
 import { handleApiError } from "../utils/error-handler";
 import { toast } from "sonner";
 import { Container, Row, Col, Alert, Button, Card, Spinner } from "react-bootstrap";
-
+import clsx from "clsx";
 
 
 // =============================================================================
@@ -123,7 +123,7 @@ export const UserVisitGymPage = () => {
                 <Spinner animation="border" role="status" variant="primary">
                     <span className="visually-hidden">Cargando detalles...</span>
                 </Spinner>
-                <p className="mt-3 text-muted">Cargando detalles de la visita...</p>
+                <p className="mt-3 text-dark">Cargando detalles de la visita...</p>
             </Container>
         );
     }
@@ -154,8 +154,8 @@ export const UserVisitGymPage = () => {
             <Row className="justify-content-center">
                 <Col md={10} lg={8}>
                     <header className="text-center mb-4">
-                        <h1 className="h2">¡Visita Confirmada!</h1>
-                        <p className="lead text-muted">Tu acceso al gimnasio está listo.</p>
+                        <h1 className="h2 text-primary">¡Visita Confirmada!</h1>
+                        <p className="lead text-dark">Tu acceso al gimnasio está listo.</p>
                     </header>
 
                     <Alert variant="success" className="text-center">
@@ -164,7 +164,7 @@ export const UserVisitGymPage = () => {
 
                     <Card className="mb-4">
                         <Card.Body>
-                            <Card.Title as="h3" className="h5 mb-3">Detalles de la Visita</Card.Title>
+                            <Card.Title as="h3" className={clsx("h5 mb-3", "text-primary")}>Detalles de la Visita</Card.Title>
                             <p><strong className="text-dark">Gimnasio:</strong> {visitDetails.gym_name}</p>
                             <p><strong className="text-dark">Dirección:</strong> {visitDetails.gym_address}</p>
                             <p><strong className="text-dark">Fecha de visita:</strong> {formatDate(visitDetails.visit_date)}</p>
@@ -174,7 +174,7 @@ export const UserVisitGymPage = () => {
 
                     <Card className="text-center mb-4">
                         <Card.Body>
-                            <Card.Title as="h2" className="h4">Código de Acceso</Card.Title>
+                            <Card.Title as="h2" className={clsx("h4", "text-primary")}>Código de Acceso</Card.Title>
                             <QRCodeComponent
                                 logoUrl="/images/gymnomads/logo/gymnomads-logo.png"
                                 data={qrData}
@@ -185,11 +185,11 @@ export const UserVisitGymPage = () => {
                     </Card>
 
                     <Alert variant="warning">
-                        <Alert.Heading as="h4" className="h6">📱 Instrucciones</Alert.Heading>
+                        <Alert.Heading as="h4" className={clsx("h6", "text-primary")}>📱 Instrucciones</Alert.Heading>
                         <ul className="mb-0">
-                            <li>Presenta este código QR en la recepción del gimnasio.</li>
-                            <li>El código es de un solo uso y válido para hoy.</li>
-                            <li>Puedes hacer una captura de pantalla si lo necesitas.</li>
+                            <li className="text-dark">Presenta este código QR en la recepción del gimnasio.</li>
+                            <li className="text-dark">El código es de un solo uso y válido para hoy.</li>
+                            <li className="text-dark">Puedes hacer una captura de pantalla si lo necesitas.</li>
                         </ul>
                     </Alert>
 

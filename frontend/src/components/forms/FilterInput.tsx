@@ -47,7 +47,7 @@ export const FilterInput: React.FC<FilterInputProps> = ({
 
   return (
     <Form.Group className={clsx("mb-3", styles.filterGroup)} controlId={inputId}>
-      <Form.Label className="small fw-bold text-secondary">{label}</Form.Label>
+      <Form.Label className="small fw-bold text-dark">{label}</Form.Label>
       <Form.Control
         type={type}
         value={value}

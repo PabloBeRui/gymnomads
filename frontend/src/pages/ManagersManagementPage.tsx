@@ -211,7 +211,7 @@ export const ManagersManagementPage = () => {
   if (isLoading && managers.length === 0) {
     return (
       <Container className={clsx(styles.loadingContainer, "text-center mt-5")}>
-        <Spinner animation="border" role="status">
+        <Spinner animation="border" role="status" variant="primary">
           <span className="visually-hidden">Cargando managers...</span>
         </Spinner>
       </Container>
@@ -232,8 +232,8 @@ export const ManagersManagementPage = () => {
     <Container className={styles.container}>
       {/* Encabezado / Header */}
       <div className={styles.header}>
-        <h1 className={styles.title}>Gestión de Managers</h1>
-        <p className={styles.subtitle}>
+        <h1 className={clsx(styles.title, "text-primary")}>Gestión de Managers</h1>
+        <p className={clsx(styles.subtitle, "text-dark")}>
           Visualiza, edita y filtra todos los gerentes registrados en la
           plataforma. Haz click en una fila para ver y editar detalles completos
           (incluido email y teléfono).
@@ -241,8 +241,8 @@ export const ManagersManagementPage = () => {
       </div>
 
       {/* Advertencia sobre eliminación / Warning about deletion */}
-      <Alert variant="warning" className={styles.warningBox}>
-        <strong>ℹ️ Nota importante:</strong> Los managers no se pueden eliminar
+      <Alert variant="warning" className={clsx(styles.warningBox, "mb-4")}>
+        <strong className="text-dark">ℹ️ Nota importante:</strong> Los managers no se pueden eliminar
         directamente desde esta página. Para eliminar un manager, debes eliminar
         el gimnasio asociado desde la página de gestión de gimnasios.
       </Alert>
@@ -252,8 +252,8 @@ export const ManagersManagementPage = () => {
         <Col xs={12} md={6} lg={4}>
           <Card className={styles.statCard}>
             <Card.Body>
-              <Card.Title className={styles.statNumber}>{totalItems}</Card.Title>
-              <Card.Text className={styles.statLabel}>
+              <Card.Title className={clsx(styles.statNumber, "text-primary")}>{totalItems}</Card.Title>
+              <Card.Text className={clsx(styles.statLabel, "text-dark")}>
                 {isLoading ? "Cargando..." : "Total de Managers"}
               </Card.Text>
             </Card.Body>
@@ -284,10 +284,10 @@ export const ManagersManagementPage = () => {
 
       {/* Tabla de managers / Managers table */}
       {managers.length === 0 ? (
-        <div className={styles.emptyState}>
+        <div className={clsx(styles.emptyState, "text-center")}>
           {searchTerm ? (
             <>
-              <p>🔍 No se encontraron managers con el criterio de búsqueda.</p>
+              <p className="text-dark">🔍 No se encontraron managers con el criterio de búsqueda.</p>
               <Button
                 onClick={handleClearFilter}
                 variant="secondary"
@@ -296,7 +296,7 @@ export const ManagersManagementPage = () => {
               </Button>
             </>
           ) : (
-            <p>📭 Aún no hay managers registrados.</p>
+            <p className="text-dark">📭 Aún no hay managers registrados.</p>
           )}
         </div>
       ) : (

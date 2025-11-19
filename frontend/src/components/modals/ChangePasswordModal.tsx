@@ -115,13 +115,13 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
   return (
     <Modal show={isOpen} onHide={onClose} centered>
       <Modal.Header className="d-flex justify-content-between align-items-center">
-        <Modal.Title className={styles.modalTitle}>Cambiar Contraseña</Modal.Title>
+        <Modal.Title className={clsx(styles.modalTitle, "text-primary")}>Cambiar Contraseña</Modal.Title>
         <CloseButton onClick={onClose} ariaLabel="Cerrar modal de cambio de contraseña" />
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
           <Form.Group className={styles.formGroup} controlId="modal-current-password">
-            <Form.Label className={styles.label}>Contraseña Actual</Form.Label>
+            <Form.Label className={clsx(styles.label, "text-dark")}>Contraseña Actual</Form.Label>
             <Form.Control
               type="password"
               value={currentPassword}
@@ -132,7 +132,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
             />
           </Form.Group>
           <Form.Group className={styles.formGroup} controlId="modal-new-password">
-            <Form.Label className={styles.label}>Nueva Contraseña</Form.Label>
+            <Form.Label className={clsx(styles.label, "text-dark")}>Nueva Contraseña</Form.Label>
             <Form.Control
               type="password"
               value={newPassword}
@@ -144,7 +144,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
             />
           </Form.Group>
           <Form.Group className={styles.formGroup} controlId="modal-confirm-password">
-            <Form.Label className={styles.label}>Confirmar Nueva Contraseña</Form.Label>
+            <Form.Label className={clsx(styles.label, "text-dark")}>Confirmar Nueva Contraseña</Form.Label>
             <Form.Control
               type="password"
               value={confirmNewPassword}
@@ -171,7 +171,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
               type="submit"
               disabled={isChangingPassword}
             >
-              {isChangingPassword ? <Spinner animation="border" size="sm" /> : "Establecer Contraseña"}
+              {isChangingPassword ? <Spinner animation="border" size="sm" variant="dark" /> : "Establecer Contraseña"}
             </Button>
           </div>
         </Form>

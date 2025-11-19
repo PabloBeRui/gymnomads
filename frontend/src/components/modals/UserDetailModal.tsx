@@ -121,10 +121,10 @@ export const UserDetailModal = ({
     <>
       <Modal show={isOpen} onHide={handleClose} centered size="lg">
         <Modal.Header className={styles.modalHeader}>
-          <Modal.Title className={styles.modalTitle}>
+          <Modal.Title className={clsx(styles.modalTitle, "text-primary")}>
             👤 Detalles del Usuario
           </Modal.Title>
-          <CloseButton onClick={handleClose} ariaLabel="Cerrar detalles del usuario" />
+          <CloseButton onClick={handleClose} ariaLabel="Cerrar detalles del usuario" colorVariant="primary" />
         </Modal.Header>
         <Modal.Body>
           {/* Header con Avatar, nombre y email / Header with Avatar, name and email */}
@@ -146,7 +146,7 @@ export const UserDetailModal = ({
           {/* Contenido del modal (solo vista) / Modal content (view-only) */}
           <Form className={styles.infoSection}>
             <Form.Group as={Row} className={styles.infoRow}>
-              <Form.Label column sm={4} className={styles.label}>Teléfono:</Form.Label>
+              <Form.Label column sm={4} className={clsx(styles.label, "text-dark")}>Teléfono:</Form.Label>
               <Col sm={8}>
                 <div className={styles.value}>{user.phone || "No especificado"}</div>
               </Col>
@@ -157,7 +157,7 @@ export const UserDetailModal = ({
             {authUser?.role === "admin" && (
               // El Admin SÍ ve el gimnasio de origen y la ciudad / Admin DOES see the home gym and city
               <Form.Group as={Row} className={styles.infoRow}>
-                <Form.Label column sm={4} className={styles.label}>Gimnasio de Origen:</Form.Label>
+                <Form.Label column sm={4} className={clsx(styles.label, "text-dark")}>Gimnasio de Origen:</Form.Label>
                 <Col sm={8}>
                   <div className={clsx(styles.value, "d-flex align-items-center gap-2")}>
                     <Avatar
@@ -177,7 +177,7 @@ export const UserDetailModal = ({
             {/* El Manager NO ve este bloque (es redundante) / Manager DOES NOT see this block (it's redundant) */}
             
             <Form.Group as={Row} className={styles.infoRow}>
-              <Form.Label column sm={4} className={styles.label}>Miembro desde:</Form.Label>
+              <Form.Label column sm={4} className={clsx(styles.label, "text-dark")}>Miembro desde:</Form.Label>
               <Col sm={8}>
                 <div className={styles.value}>
                   {new Date(user.registered_at).toLocaleDateString("es-ES")}

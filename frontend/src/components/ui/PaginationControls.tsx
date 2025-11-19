@@ -97,7 +97,7 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
   return (
     <div className={styles.paginationContainer}>
       <div className={styles.selectorContainer}>
-        <Form.Label htmlFor="items-per-page" className="me-2">Mostrar:</Form.Label>
+        <Form.Label htmlFor="items-per-page" className={clsx("me-2", "text-dark")}>Mostrar:</Form.Label>
         <Form.Select
           id="items-per-page"
           value={itemsPerPage}

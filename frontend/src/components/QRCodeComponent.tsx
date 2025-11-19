@@ -16,7 +16,7 @@
  */
 
 // ---  imports de React y la librería --- / ---  React imports and the library ---
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import QRCodeStyling from "qr-code-styling";
 
 // Importar el módulo SCSS / Import the SCSS module
@@ -58,8 +58,24 @@ export const QRCodeComponent = ({
   // Ref for the div that will hold the QR canvas
   const qrRef = useRef<HTMLDivElement>(null);
 
-  // useEffect para (re)dibujar el QR cuando cambien las props
-  // useEffect to (re)draw the QR when props change
+  // Estado para almacenar el color primario dinámicamente desde CSS
+  // State to store the primary color dynamically from CSS
+  const [primaryColor, setPrimaryColor] = useState<string>("#FFB700"); // Default a $primary
+
+  // Efecto para obtener el valor de la variable CSS --bs-primary
+  // Effect to get the value of the --bs-primary CSS variable
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const computedStyle = getComputedStyle(document.documentElement);
+      const bsPrimary = computedStyle.getPropertyValue("--bs-primary").trim();
+      if (bsPrimary) {
+        setPrimaryColor(bsPrimary);
+      }
+    }
+  }, []);
+
+  // useEffect para (re)dibujar el QR cuando cambien las props o el color primario
+  // useEffect to (re)draw the QR when props or primary color change
   useEffect(() => {
     // 1. Validar que el div contenedor exista
     // 1. Validate that the container div exists
@@ -75,7 +91,7 @@ export const QRCodeComponent = ({
       data: data, // Datos (URL) a codificar / Data (URL) to encode
       image: logoUrl, // Logo de GymNomads / GymNomads logo
       dotsOptions: {
-        color: "#333333", // Puntos oscuros / Dark dots
+        color: primaryColor, // Usar el color primario dinámico // Use dynamic primary color
         type: "rounded", // Puntos redondeados / Rounded dots
       },
       cornersSquareOptions: {
@@ -95,7 +111,7 @@ export const QRCodeComponent = ({
     // 3. Clear the div (to remove old QRs) and append the new one
     qrRef.current.innerHTML = "";
     qrCode.append(qrRef.current);
-  }, [data, logoUrl, size, qrRef]); // Dependencias / Dependencies
+  }, [data, logoUrl, size, qrRef, primaryColor]); // Dependencias: añadir primaryColor // Dependencies: add primaryColor
 
   // --- FIN LÓGICA QR-CODE-STYLING ---
   // --- END QR-CODE-STYLING LOGIC ---

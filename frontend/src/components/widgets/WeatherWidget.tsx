@@ -29,7 +29,7 @@ import { getWeatherIcon } from "../../utils/weather-utils";
 
 // Importar el módulo SCSS / Import the SCSS module
 import styles from "./WeatherWidget.module.scss";
-// import clsx from "clsx"; // Importar clsx / Import clsx
+import clsx from "clsx"; // Importar clsx / Import clsx
 
 // Definir las props que recibirá: latitud y longitud
 // Define the props it will receive: latitude and longitude
@@ -103,7 +103,7 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
   // Renderizar estado de carga
   // Render loading state
   if (isLoading) {
-    return <div className={styles.placeholder}>Cargando tiempo...</div>;
+    return <div className={clsx(styles.placeholder, "text-dark")}>Cargando tiempo...</div>;
   }
 
   // Renderizar estado de error (falla silenciosa)
@@ -128,7 +128,7 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
         <div key={time} className={styles.dayContainer}>
           {/* Etiqueta del día (Hoy, Mañana, Pasado) */}
           {/* Day label (Today, Tomorrow, After) */}
-          <span className={styles.dayLabel}>{dayLabels[index]}</span>
+          <span className={clsx(styles.dayLabel, "text-dark")}>{dayLabels[index]}</span>
 
           {/* Icono del tiempo */}
           {/* Weather icon */}
@@ -136,7 +136,7 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
 
           {/* Temperatura */}
           {/* Temperature */}
-          <span>{Math.round(weatherData.temperature_2m_max[index])}°C</span>
+          <span className="text-dark">{Math.round(weatherData.temperature_2m_max[index])}°C</span>
         </div>
       ))}
     </div>

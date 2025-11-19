@@ -3,48 +3,59 @@
  * ESTILOS PARA: SortableTable
  * STYLES FOR: SortableTable
  * =============================================================================
+ *
+ * Descripción: Estilos para el componente de tabla ordenable.
+ * Incluye el diseño del contenedor de la tabla, encabezados de columna
+ * con funcionalidad de ordenación, celdas de datos y filas interactivas.
+ *
+ * Description: Styles for the sortable table component.
+ * Includes the design of the table container, sortable column headers,
+ * data cells, and interactive rows.
+ *
+ * =============================================================================
  */
+@import "../../index.scss"; // Importar variables globales // Import global variables
 
 .tableContainer {
-  overflow-x: auto;
-  background-color: var(--bs-white);
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow-x: auto; // Permite el scroll horizontal en tablas grandes // Allows horizontal scrolling in large tables
+  background-color: var(--bs-white); // Fondo blanco // White background
+  border-radius: 8px; // Bordes redondeados // Rounded borders
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); // Sombra // Shadow
 }
 
 .table {
-  width: 100%;
-  border-collapse: collapse;
+  width: 100%; // Ancho completo // Full width
+  border-collapse: collapse; // Elimina el espacio entre celdas // Removes space between cells
 }
 
 .th {
   padding: 15px;
   text-align: left;
-  background-color: var(--bs-gray-100);
-  border-bottom: 2px solid var(--bs-gray-300);
+  background-color: $light; // Fondo claro // Light background
+  border-bottom: 2px solid var(--bs-gray-300); // Borde inferior // Bottom border
   font-weight: bold;
-  color: var(--bs-gray-700);
+  color: $dark; // Color de texto oscuro // Dark text color
   cursor: pointer;
   user-select: none;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s; // Transición suave // Smooth transition
 }
 
 .th:hover {
-  background-color: var(--bs-gray-200);
+  background-color: var(--bs-gray-200); // Fondo más oscuro al pasar el ratón // Darker background on hover
 }
 
 .td {
   padding: 12px 15px;
-  border-bottom: 1px solid var(--bs-gray-300);
+  border-bottom: 1px solid var(--bs-gray-300); // Borde inferior // Bottom border
 }
 
 .clickableRow {
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s; // Transición suave // Smooth transition
 }
 
 .clickableRow:hover {
-  background-color: var(--bs-gray-100);
+  background-color: $light; // Fondo claro al pasar el ratón // Light background on hover
 }
 
 .sortIndicator {

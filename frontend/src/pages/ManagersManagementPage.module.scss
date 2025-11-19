@@ -3,7 +3,23 @@
  * ESTILOS PARA: ManagersManagementPage
  * STYLES FOR: ManagersManagementPage
  * =============================================================================
+ *
+ * Descripción: Estilos para la página de gestión de managers.
+ * Incluye el diseño del contenedor principal, el encabezado con título y
+ * subtítulo, contenedores de filtros, grupos de filtros, etiquetas e inputs,
+ * botón de limpiar, contenedores de carga y estado vacío, contenedores de
+ * estadísticas, tarjetas de estadísticas, números y etiquetas de estadísticas,
+ * y la caja de advertencia.
+ *
+ * Description: Styles for the managers management page.
+ * Includes the design of the main container, header with title and subtitle,
+ * filter containers, filter groups, labels and inputs, clear button,
+ * loading and empty state containers, statistics containers,
+ * statistic cards, statistic numbers and labels, and the warning box.
+ *
+ * =============================================================================
  */
+@import "../index.scss"; // Importar variables globales // Import global variables
 
 .container {
   padding: 20px;
@@ -18,50 +34,50 @@
 .title {
   font-size: 2rem;
   margin-bottom: 10px;
-  color: var(--bs-gray-800);
+  color: $dark; // Color de texto oscuro // Dark text color
 }
 
 .subtitle {
   font-size: 1rem;
-  color: var(--bs-gray-600);
+  color: $secondary; // Color de texto secundario // Secondary text color
 }
 
 .filtersContainer {
   display: flex;
-  gap: 15px;
+  gap: 15px; // Espacio entre filtros // Space between filters
   margin-bottom: 30px;
-  flex-wrap: wrap;
-  align-items: flex-end;
+  flex-wrap: wrap; // Envuelve elementos si no caben // Wraps elements if they don't fit
+  align-items: flex-end; // Alinea elementos al final // Aligns items to the end
 }
 
 .filterGroup {
   display: flex;
   flex-direction: column;
   gap: 5px;
-  flex: 1 1 300px;
+  flex: 1 1 300px; // El elemento puede crecer, encogerse y tiene un tamaño base // Element can grow, shrink, and has a base size
 }
 
 .label {
   font-size: 0.9rem;
   font-weight: bold;
-  color: var(--bs-gray-700);
+  color: $dark; // Color de texto oscuro // Dark text color
 }
 
 .input {
   padding: 10px;
   font-size: 1rem;
-  border: 1px solid var(--bs-gray-400);
-  border-radius: 4px;
+  border: 1px solid var(--bs-gray-400); // Borde estándar // Standard border
+  border-radius: 4px; // Bordes redondeados // Rounded borders
   width: 100%;
 }
 
 .clearButton {
   padding: 10px 20px;
   font-size: 1rem;
-  background-color: var(--bs-secondary);
-  color: var(--bs-white);
+  background-color: $secondary; // Color secundario // Secondary color
+  color: $light; // Texto claro // Light text
   border: none;
-  border-radius: 4px;
+  border-radius: 4px; // Bordes redondeados // Rounded borders
   cursor: pointer;
 }
 
@@ -73,42 +89,42 @@
 .emptyState {
   padding: 40px;
   text-align: center;
-  color: var(--bs-secondary-color);
+  color: $secondary; // Color secundario // Secondary color
   font-size: 1.1rem;
 }
 
 .statsContainer {
   display: flex;
-  gap: 20px;
+  gap: 20px; // Espacio entre tarjetas de estadísticas // Space between stat cards
   margin-bottom: 30px;
-  flex-wrap: wrap;
+  flex-wrap: wrap; // Envuelve elementos si no caben // Wraps elements if they don't fit
 }
 
 .statCard {
-  flex: 1 1 200px;
+  flex: 1 1 200px; // La tarjeta puede crecer, encogerse y tiene un tamaño base // Card can grow, shrink, and has a base size
   padding: 20px;
-  background-color: var(--bs-light);
-  border-radius: 8px;
-  border: 1px solid var(--bs-gray-300);
+  background-color: $light; // Fondo claro // Light background
+  border-radius: 8px; // Bordes redondeados // Rounded borders
+  border: 1px solid var(--bs-gray-300); // Borde // Border
 }
 
 .statNumber {
   font-size: 2rem;
   font-weight: bold;
-  color: var(--bs-primary);
+  color: $primary; // Color primario // Primary color
 }
 
 .statLabel {
   font-size: 0.9rem;
-  color: var(--bs-secondary-color);
+  color: $secondary; // Color secundario // Secondary color
   margin-top: 5px;
 }
 
 .warningBox {
   padding: 15px;
-  background-color: var(--bs-warning-bg-subtle);
-  border: 1px solid var(--bs-warning-border-subtle);
-  border-radius: 8px;
+  background-color: lighten($warning, 20%); // Fondo de advertencia claro // Light warning background
+  border: 1px solid lighten($warning, 10%); // Borde de advertencia // Warning border
+  border-radius: 8px; // Bordes redondeados // Rounded borders
   margin-bottom: 20px;
-  color: var(--bs-warning-text-emphasis);
+  color: darken($warning, 25%); // Texto de advertencia oscuro // Dark warning text
 }

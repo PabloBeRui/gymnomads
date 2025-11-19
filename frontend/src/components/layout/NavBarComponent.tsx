@@ -5,63 +5,63 @@
  * =============================================================================
  *
  * Descripción: Barra de navegación principal y responsive de la aplicación.
- * Muestra enlaces condicionales basados en el estado de autenticación y rol.
- * El menú móvil se autocolapsa al hacer clic y se muestra como un overlay
- * a la derecha.
+ * Es transparente por defecto y se vuelve sólida al hacer scroll.
  *
  * Description: Main responsive navigation bar for the application.
- * Displays conditional links based on authentication state and role.
- * The mobile menu auto-collapses on click and is displayed as an overlay
- * on the right.
+ * It's transparent by default and becomes solid on scroll.
  *
  * =============================================================================
  */
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { Avatar } from "../Avatar";
-import { Navbar, Nav, Container, NavDropdown } from "react-bootstrap";
+import { Navbar, Nav, Container, NavDropdown,Button } from "react-bootstrap";
 import styles from "./NavBarComponent.module.scss";
 import clsx from "clsx";
 
 export const NavbarComponent = () => {
   const { user, token, logout } = useAuth();
   const [expanded, setExpanded] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  // Renderiza los enlaces para usuarios autenticados.
-  // Renders links for authenticated users.
+  // Efecto para cambiar el fondo de la navbar al hacer scroll
+  // Effect to change navbar background on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const renderAuthenticatedLinks = () => (
     <>
       {user?.role === "user" && (
-        <Nav.Link as={Link} to="/my-visits" eventKey="1">
-          Mis Visitas
-        </Nav.Link>
+        <Nav.Item>
+            <Nav.Link as={NavLink} to="/my-visits" className={styles.navLink}>Mis Visitas</Nav.Link>
+        </Nav.Item>
       )}
       {(user?.role === "manager" || user?.role === "admin") && (
         <>
-          <Nav.Link as={Link} to="/visits/manage" eventKey="2">
-            Visitas
-          </Nav.Link>
-          <Nav.Link as={Link} to="/users/manage" eventKey="3">
-            Usuarios
-          </Nav.Link>
+          <Nav.Item>
+            <Nav.Link as={NavLink} to="/visits/manage" className={styles.navLink}>Visitas</Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link as={NavLink} to="/users/manage" className={styles.navLink}>Usuarios</Nav.Link>
+          </Nav.Item>
         </>
       )}
       {user?.role === "admin" && (
-        <Nav.Link as={Link} to="/managers/manage" eventKey="4">
-          Managers
-        </Nav.Link>
+        <Nav.Item>
+            <Nav.Link as={NavLink} to="/managers/manage" className={styles.navLink}>Managers</Nav.Link>
+        </Nav.Item>
       )}
     </>
   );
 
-  // Renderiza el menú desplegable del avatar.
-
-  // Renders the avatar dropdown menu.
-
-  const renderAvatarDropdown = (extraClassName?: string) => {
+  const renderAvatarDropdown = () => {
     if (!user) return null;
-
     return (
       <NavDropdown
         title={
@@ -69,27 +69,24 @@ export const NavbarComponent = () => {
             src={user.profile_picture}
             firstName={user.first_name}
             lastName={user.last_name}
-           className={clsx(styles.navAvatar, "mt-3")}
+            className={styles.navAvatar}
           />
         }
         id="avatar-dropdown"
         align="end"
-        className={extraClassName} // Aplica la clase extra aquí
+        className={styles.avatarDropdown}
       >
-        <NavDropdown.Item as={Link} to="/profile" eventKey="5">
-          Perfil ({user.first_name})
+        <NavDropdown.Item as={Link} to="/profile">
+            <i className="bi bi-person-fill me-2"></i>Perfil ({user.first_name})
         </NavDropdown.Item>
-
         <NavDropdown.Divider />
-
         <NavDropdown.Item
           onClick={() => {
             logout();
-
             setExpanded(false);
           }}
-          eventKey="6">
-          Cerrar Sesión
+        >
+            <i className="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
         </NavDropdown.Item>
       </NavDropdown>
     );
@@ -97,77 +94,49 @@ export const NavbarComponent = () => {
 
   return (
     <Navbar
-      style={{ minHeight: "125px" }}
-      bg="dark"
-      variant="dark"
+      fixed="top"
       expand="lg"
-      sticky="top"
       expanded={expanded}
-      onToggle={() => setExpanded((prev) => !prev)}>
-      <Container className="position-relative">
-        <Navbar.Brand as={Link} to="/" onClick={() => setExpanded(false)}>
+      onToggle={() => setExpanded((prev) => !prev)}
+      className={clsx(styles.navbar, scrolled ? styles.navbarScrolled : styles.navbarTransparent)}
+    >
+      <Container>
+        <Navbar.Brand as={Link} to="/" onClick={() => setExpanded(false)} className={styles.navbarBrand}>
           GymNomads
         </Navbar.Brand>
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" className={styles.navbarToggle} />
+        <Navbar.Collapse id="responsive-navbar-nav">
+          <Nav className="ms-auto align-items-center" onSelect={() => setExpanded(false)}>
+            <Nav.Item>
+                <Nav.Link as={NavLink} to="/gyms" className={styles.navLink}>Gimnasios</Nav.Link>
+            </Nav.Item>
 
-        {/* --- CONTROLES DE LA VISTA MÓVIL --- */}
-        {/* --- MOBILE VIEW CONTROLS --- */}
-        {/* Este bloque solo es visible en pantallas pequeñas (d-lg-none) */}
-        {/* This block is only visible on small screens (d-lg-none) */}
-        <div className="d-lg-none d-flex align-items-center gap-3">
-          {/* Si el usuario está logueado, muestra el avatar aquí */}
-          {/* If the user is logged in, show the avatar here */}
-          {user && token && renderAvatarDropdown("me-3")}
-          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-        </div>
-
-        <Navbar.Collapse
-          id="responsive-navbar-nav"
-          className={styles.mobileOverlay}>
-          {/* NAV 1: Enlaces principales (siempre visibles en el collapse) */}
-          {/* NAV 1: Main links (always visible in the collapse) */}
-          <Nav className="me-auto" onSelect={() => setExpanded(false)}>
-
-            <Nav.Link as={Link} to="/gyms" eventKey="8">
-              Gimnasios
-            </Nav.Link>
-            {user && token && renderAuthenticatedLinks()}
-          </Nav>
-
-          {/* NAV 2: Controles de autenticación */}
-          {/* NAV 2: Authentication controls */}
-          <Nav
-            className="align-items-center"
-            onSelect={() => setExpanded(false)}>
             {token && user ? (
               <>
-                {/* En escritorio: muestra el avatar (oculto en móvil) */}
-                {/* On desktop: show the avatar (hidden on mobile) */}
-                <div className="d-none d-lg-block ms-lg-4">
-                  {renderAvatarDropdown()}
-                </div>
-                {/* En móvil: muestra un enlace de logout en el menú */}
-                {/* On mobile: show a logout link in the menu */}
-                <Nav.Link
-                  className="d-lg-none"
-                  onClick={() => {
-                    logout();
-                    setExpanded(false);
-                  }}
-                  eventKey="11">
-                  Cerrar Sesión
-                </Nav.Link>
+                {renderAuthenticatedLinks()}
+                <Nav.Item className="d-none d-lg-block">{renderAvatarDropdown()}</Nav.Item>
               </>
             ) : (
-              // Para todos los tamaños: muestra Login/Registro si no está logueado.
-              // For all sizes: show Login/Register if not logged in.
               <>
-                <Nav.Link as={Link} to="/register-user" eventKey="9">
-                  Registro
-                </Nav.Link>
-                <Nav.Link as={Link} to="/login" eventKey="10">
-                  Login
-                </Nav.Link>
+                <Nav.Item>
+                    <Nav.Link as={NavLink} to="/login" className={styles.navLink}>Login</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Button as={Link} to="/register" variant="primary" size="sm" className="ms-lg-2">Regístrate</Button>
+                </Nav.Item>
               </>
+            )}
+
+            {/* Links para menú hamburguesa en móvil */}
+            {token && user && (
+              <div className="d-lg-none mt-3 border-top pt-3">
+                <Nav.Link as={Link} to="/profile" className={styles.navLink}>
+                    <i className="bi bi-person-fill me-2"></i>Perfil
+                </Nav.Link>
+                <Nav.Link onClick={logout} className={styles.navLink}>
+                    <i className="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                </Nav.Link>
+              </div>
             )}
           </Nav>
         </Navbar.Collapse>

@@ -34,7 +34,7 @@ export const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({ title, childre
     <Container className={clsx(styles.container, "my-4 p-4 bg-white rounded shadow-sm")}>
       <CloseButton navigateTo="/" />
       <h1 className={clsx(styles.title, "mb-4 text-center text-dark")}>{title}</h1>
-      <div className={clsx(styles.content, "text-secondary")}>
+      <div className={clsx(styles.content, "text-dark")}>
         {children}
       </div>
     </Container>

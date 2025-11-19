@@ -3,75 +3,87 @@
  * ESTILOS PARA: Footer
  * STYLES FOR: Footer
  * =============================================================================
+ *
+ * Descripción: Define los estilos para el pie de página de la aplicación.
+ * Cuenta con un diseño glassmorphism permanente.
+ *
+ * Description: Defines styles for the application footer.
+ * Features a permanent glassmorphism design.
+ *
+ * =============================================================================
  */
-
-.footer {
-  background-color: var(--bs-dark); // Un gris oscuro y moderno / A dark, modern gray
-  color: var(--bs-light); // Un color de texto claro que contrasta bien / A light text color that contrasts well
-  padding: 4rem 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.columnsContainer {
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-  width: 100%;
-  max-width: 1200px;
-  margin-bottom: 2rem;
-}
-
-.column {
-  display: flex;
-  flex-direction: column;
-  min-width: 200px;
-  margin-bottom: 2rem;
-}
-
-.title {
-  font-size: 1.1rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  color: var(--bs-secondary); // Un color de acento sutil / A subtle accent color
-  text-transform: uppercase;
-}
-
-.link {
-  color: var(--bs-light);
-  text-decoration: none;
-  margin-bottom: 0.5rem;
-  transition: color 0.3s ease;
-
-  &:hover {
-    color: var(--bs-white);
-  }
-}
-
-.socialContainer {
-  display: flex;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.socialIcon {
-  font-size: 2rem;
-  transition: transform 0.3s ease;
-
-  &:hover {
-    transform: scale(1.2);
-  }
-}
-
-.copyright {
-  border-top: 1px solid var(--bs-gray-700);
-  padding-top: 1.5rem;
-  width: 100%;
-  max-width: 1200px;
-  text-align: center;
-  font-size: 0.9rem;
-  color: var(--bs-secondary);
-}
+ @import "../../index.scss"; // Importar variables globales // Import global variables
+ 
+ .footer {
+   background-color: $glass-bg; // Usar el color de glassmorphism definido // Use defined glassmorphism color
+   backdrop-filter: blur(12px); // Aplicar desenfoque para efecto glassmorphism // Apply blur for glassmorphism effect
+   color: $light; // Color de texto claro para el footer // Light text color for footer
+   padding: 3rem 1rem 2rem 1rem;
+   border-top: 1px solid rgba($light, 0.1); // Borde superior sutil // Subtle top border
+   margin-top: auto; // Asegura que se pegue al fondo en el layout flex de App.tsx // Ensures it sticks to the bottom in App.tsx's flex layout
+   position: relative; // Necesario para que el z-index funcione correctamente // Required for z-index to work correctly
+   z-index: 1000; // Asegurar que el footer esté sobre otros elementos si es necesario // Ensure footer is above other elements if necessary
+ }
+ 
+ .title {
+   font-weight: 600;
+   margin-bottom: 1.25rem;
+   letter-spacing: 0.5px;
+   color: $light; // Color de título claro // Light title color
+ }
+ 
+ .link {
+   color: rgba($light, 0.7); // Color de enlace claro // Light link color
+   text-decoration: none;
+   margin-bottom: 0.75rem;
+   transition: color 0.2s ease-in-out;
+   display: block; // Asegura que los links ocupen su propio espacio // Ensures links take their own space
+ 
+   &:hover {
+     color: $light; // Color blanco en hover // White color on hover
+   }
+ }
+ 
+ .socialContainer {
+   display: flex;
+   gap: 1.5rem;
+ }
+ 
+ .socialIcon {
+   font-size: 1.75rem;
+   color: rgba($light, 0.7); // Color de icono social claro // Light social icon color
+   transition: all 0.2s ease-in-out;
+ 
+   &:hover {
+     color: $light; // Color blanco en hover // White color on hover
+     transform: scale(1.1);
+   }
+ }
+ 
+ .copyright {
+   border-top: 1px solid rgba($light, 0.1); // Borde superior claro // Light top border
+   padding-top: 2rem;
+   margin-top: 2rem;
+   text-align: center;
+   font-size: 0.9rem;
+   color: rgba($light, 0.5); // Color de copyright claro // Light copyright color
+ 
+   a {
+     color: rgba($light, 0.7); // Color de enlace claro // Light link color
+     text-decoration: none;
+     font-weight: 500;
+     &:hover {
+       color: $light; // Color blanco en hover // White color on hover
+     }
+   }
+ }
+ 
+ // Ajustes de layout para la responsividad
+ // Layout adjustments for responsiveness
+ .column {
+   margin-bottom: 2rem;
+ }
+ 
+ .columnsContainer {
+   width: 100%;
+ }

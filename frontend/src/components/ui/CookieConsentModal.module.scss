@@ -3,7 +3,18 @@
  * ESTILOS PARA: CookieConsentModal
  * STYLES FOR: CookieConsentModal
  * =============================================================================
+ *
+ * Descripción: Estilos para el modal de consentimiento de cookies.
+ * Incluye el diseño del overlay, el contenido principal del modal, título,
+ * texto explicativo y botones de acción.
+ *
+ * Description: Styles for the cookie consent modal.
+ * Includes the design of the overlay, main modal content, title,
+ * explanatory text, and action buttons.
+ *
+ * =============================================================================
  */
+@import "../../index.scss"; // Importar variables globales // Import global variables
 
 .modalOverlay {
   position: fixed;
@@ -11,38 +22,38 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.7); // Fondo oscuro semitransparente // Semi-transparent dark background
   display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1050;
+  align-items: center; // Centrado vertical // Vertical centering
+  justify-content: center; // Centrado horizontal // Horizontal centering
+  z-index: 1050; // Asegura que esté por encima de otros modales // Ensures it's above other modals
 }
 
 .modalContent {
-  background-color: var(--bs-white);
+  background-color: var(--bs-white); // Fondo blanco // White background
   padding: 25px 30px;
-  border-radius: 8px;
-  max-width: 500px;
-  width: 90%;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  border-radius: 8px; // Bordes redondeados // Rounded borders
+  max-width: 500px; // Ancho máximo // Maximum width
+  width: 90%; // Ancho responsivo // Responsive width
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); // Sombra // Shadow
 }
 
 .title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--bs-gray-800);
+  color: $dark; // Color de texto oscuro // Dark text color
   margin-bottom: 10px;
 }
 
 .text {
   font-size: 0.9rem;
-  color: var(--bs-gray-700);
+  color: $dark; // Color de texto oscuro // Dark text color
   line-height: 1.6;
   margin-bottom: 20px;
 }
 
 .buttonContainer {
   display: flex;
-  gap: 10px;
-  justify-content: flex-end;
+  gap: 10px; // Espacio entre botones // Space between buttons
+  justify-content: flex-end; // Botones a la derecha // Buttons to the right
 }

@@ -9,116 +9,181 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css');
 
-
-/* 2. DEFINIR VARIABLES PRIMERO
-   2. DEFINE YOUR VARIABLES FIRST
+/* 2. DEFINIR VARIABLES DE DISEÑO PERSONALIZADAS
+   2. DEFINE CUSTOM DESIGN VARIABLES
    ============================================================================= */
-// Redefinir los colores base de Bootstrap ANTES de importarlo.
-// Redefine Bootstrap's base colors HERE *before* importing it so they take effect.
 
-// Nueva paleta de colores "Cool Slate"
-// New "Cool Slate" color palette
-$primary: #4A90E2; // Azul profesional / Professional blue
-$secondary: #6c757d; // Gris neutral (estándar) / Neutral gray (standard)
-$success: #50E3C2; // Verde menta moderno / Modern mint green
-$danger: #E95E5E; // Rojo suave / Soft red
-$warning: #F5A623; // Naranja cálido / Warm orange
-$info: #4A90E2;    // Azul (igual que el primario) / Blue (same as primary)
-$light: #F7F9FC; // Gris muy claro para fondos / Very light gray for backgrounds
-$dark: #242A32;   // Gris oscuro para texto / Dark slate gray for text
+// Paleta de colores oficial "Rendimiento Elegante"
+// Official "Elegant Performance" color palette
+$primary:       #FFB700;   // Amarillo Azafrán // Saffron Yellow
+$secondary:     #194350;   // Azul Petróleo // Petrol Blue
+$success:       #2A9D8F;   // Verde Éxito // Success Green
+$warning:       #E6B800;   // Amarillo Advertencia (Hover del amarillo) // Warning Yellow (Yellow Hover)
+$danger:        #DC3545;   // Rojo Peligro // Danger Red
+$info:          #0077B6;   // Azul Información // Info Blue
+$dark:          #1A202C;   // Oscuro Principal // Main Dark
+$light:         #F8F9FA;   // Claro Principal // Main Light
+$accent-gold:   #FFB700;   // Dorado Acento // Accent Gold
+$gold-hover:    #E6B800;   // Dorado Hover // Gold Hover
+$bg-overlay:    rgba(26, 32, 44, 0.78); // Superposición de Fondo // Background Overlay
+$glass-bg:      rgba(25, 35, 50, 0.72); // Fondo Glassmorphism // Glassmorphism Background
 
 // Tipografía
 // Typography
 $font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-$font-size-base: 1rem; // Tamaño base (16px) / Base size (16px)
+$font-size-base: 1rem;
+$headings-font-weight: 600;
 
 // Bordes y Sombras
 // Borders and Shadows
-$border-radius: 0.5rem; // Bordes más redondeados / Softer, more rounded corners
-$enable-shadows: true;    // Habilitar sombras predefinidas de Bootstrap / Enable predefined Bootstrap shadows
-$box-shadow-sm: 0 .125rem .25rem rgba($dark, .075);
-$box-shadow:    0 .5rem 1rem rgba($dark, .15);
+$border-radius: 0.5rem;
+$border-radius-lg: 0.8rem;
+$border-radius-sm: 0.4rem;
+$enable-shadows: true;
+$box-shadow: 0 0.5rem 1.5rem rgba($dark, .1);
+$box-shadow-sm: 0 0.125rem 0.25rem rgba($dark, .075);
 $box-shadow-lg: 0 1rem 3rem rgba($dark, .175);
-
-
-// Espaciado
-// Spacing
-$spacer: 1rem; // Base para márgenes y paddings (p.ej., 'p-1' será 0.25rem) / Base for margins and paddings (e.g., 'p-1' will be 0.25rem)
-
-// Habilitar un mapa de espaciadores más grande para utilidades (p.ej. 'mt-5')
-// Enable a larger spacer map for utilities (e.g. 'mt-5')
-$spacers: (
-  0: 0,
-  1: $spacer * .25,
-  2: $spacer * .5,
-  3: $spacer,
-  4: $spacer * 1.5,
-  5: $spacer * 3,
-);
 
 /* 3. IMPORTAR EL SASS DE BOOTSTRAP
    3. IMPORT BOOTSTRAP SASS
    ============================================================================= */
-// Ahora Bootstrap se "compilará" usando nuestras variables.
-// Bootstrap will now "compile" using our variables.
+// Se utiliza la versión de Bootstrap 5
+// Using Bootstrap 5 version
 @import "bootstrap/scss/bootstrap";
 
 /* 4. ESTILOS GLOBALES
    4. GLOBAL STYLES
    ============================================================================= */
-
-/* Leaflet – Estilos base de la librería de mapas interactivos
-   Leaflet – Base styles for the interactive map library
-*/
+// Importar estilos de Leaflet para mapas
+// Import Leaflet styles for maps
 @import "leaflet/dist/leaflet.css";
 
-/* Estilos base de la aplicación
-   Base application styles
-*/
 html, body {
   height: 100%;
   width: 100%;
-  overflow-x: hidden; // Prevenir scroll horizontal / Prevent horizontal scroll
+  overflow-x: hidden; // Prevenir desplazamiento horizontal // Prevent horizontal scrolling
 }
 
 body {
-  background-color: $light; // Usar nuestra variable de Bootstrap / Use our Bootstrap variable
-  color: $dark;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  background-color: $light; // Usar el color claro de la paleta // Use light color from palette
+  color: $dark; // Usar el color oscuro de la paleta para el texto // Use dark color from palette for text
+  -webkit-font-smoothing: antialiased; // Mejorar el renderizado de fuentes // Improve font rendering
+  -moz-osx-font-smoothing: grayscale; // Mejorar el renderizado de fuentes // Improve font rendering
 }
 
-// Asegurar que el layout de App.tsx (flex-column) funcione
-// Ensure the App.tsx layout (flex-column) works
 #root, .d-flex.flex-column.min-vh-100 {
-  min-height: 100vh;
+  min-height: 100vh; // Asegurar que la aplicación ocupa toda la altura de la ventana // Ensure app takes full viewport height
 }
 
 main {
-  flex: 1; // Asegurar que el contenido principal ocupe el espacio / Ensure the main content occupies the space
+  flex: 1; // Permitir que el contenido principal ocupe el espacio restante // Allow main content to take remaining space
   width: 100%;
-  padding-top: $spacer * 1.5;
-  padding-bottom: $spacer * 1.5;
+  // El padding se manejará a nivel de página para más control
+  // Padding will be handled at page level for more control
 }
 
-// Sobrescribir estilos de componentes globales aquí
-// Override global component styles here
-
+// Sobrescribir estilos de componentes globales de Bootstrap
+// Override global Bootstrap component styles
 .card {
-  border: none; // Quitar bordes de las tarjetas para un look más limpio, la sombra es suficiente.
-  // Remove card borders for a cleaner look, the shadow is enough.
+  border: none; // Eliminar bordes predeterminados de las tarjetas // Remove default card borders
+  box-shadow: $box-shadow-sm; // Aplicar sombra suave a las tarjetas // Apply soft shadow to cards
+}
+
+.btn {
+  transition: all 0.2s ease-in-out; // Transición suave para todos los botones // Smooth transition for all buttons
+  border-radius: $border-radius; // Aplicar radio de borde consistente // Apply consistent border radius
 }
 
 .btn-primary {
-    // Degradado sutil para el botón principal
-    // Subtle gradient for the primary button
-    background-image: linear-gradient(to right, $primary 0%, darken($primary, 5%) 50%, $primary 100%);
-    background-size: 200% auto;
-    border: none;
-    transition: 0.5s;
+    background-color: $primary; // Usar el color primario de la paleta // Use primary color from palette
+    border: none; // Eliminar borde predeterminado // Remove default border
+    color: $dark; // Texto oscuro para el botón primario // Dark text for primary button
 
     &:hover {
-        background-position: right center; // Cambiar dirección en hover
-        // Change direction on hover
+        transform: translateY(-2px); // Efecto de elevación al pasar el ratón // Lift effect on hover
+        box-shadow: $box-shadow; // Sombra más pronunciada al pasar el ratón // More pronounced shadow on hover
+        background-color: $gold-hover; // Usar el color de hover dorado // Use gold hover color
+        color: $dark; // Asegurar que el texto permanezca oscuro // Ensure text remains dark
     }
+
+    &:active {
+        background-color: darken($primary, 10%) !important; // Oscurecer al hacer clic // Darken on click
+        transform: translateY(0); // Eliminar elevación al hacer clic // Remove lift on click
+        box-shadow: $box-shadow-sm; // Sombra más pequeña al hacer clic // Smaller shadow on click
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 .25rem rgba($primary, .5) !important; // Sombra de enfoque personalizada // Custom focus shadow
+    }
+}
+
+.btn-secondary {
+    background-color: $secondary; // Usar el color secundario de la paleta // Use secondary color from palette
+    border: none;
+    color: $light; // Texto claro para el botón secundario // Light text for secondary button
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: $box-shadow;
+        background-color: darken($secondary, 5%);
+        color: $light;
+    }
+
+    &:active {
+        background-color: darken($secondary, 10%) !important;
+        transform: translateY(0);
+        box-shadow: $box-shadow-sm;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 .25rem rgba($secondary, .5) !important;
+    }
+}
+
+.text-primary {
+  color: $primary !important; // Forzar el uso del color primario // Force primary color usage
+}
+
+.bg-primary {
+  background-color: $primary !important; // Forzar el uso del color primario // Force primary color usage
+}
+
+.text-secondary {
+  color: $secondary !important; // Forzar el uso del color secundario // Force secondary color usage
+}
+
+.bg-secondary {
+  background-color: $secondary !important; // Forzar el uso del color secundario // Force secondary color usage
+}
+
+.text-accent-gold {
+  color: $accent-gold !important; // Forzar el uso del color dorado de acento // Force accent gold color usage
+}
+
+// Estilos para el video de fondo en LandingPage
+// Styles for background video in LandingPage
+.video-bg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  z-index: -1;
+  transform: translateX(-50%) translateY(-50%);
+  background-size: cover;
+  overflow: hidden;
+}
+
+// Estilo para el overlay general
+// Style for general overlay
+.overlay-bg {
+  background-color: $bg-overlay;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
 }

@@ -1,3 +1,18 @@
+/**
+ * =============================================================================
+ * COMPONENTE: ApiTest
+ * COMPONENT:  ApiTest
+ * =============================================================================
+ *
+ * Descripción: Componente de prueba simple para verificar la conectividad
+ * con la API y mostrar una lista de gimnasios, o un mensaje de error si
+ * la llamada falla.
+ *
+ * Description: Simple test component to verify API connectivity and
+ * display a list of gyms, or an error message if the call fails.
+ *
+ * =============================================================================
+ */
 import { useEffect, useState } from "react";
 
 // Interfaz Gym
@@ -25,7 +40,7 @@ export const ApiTest = () => {
       try {
         setError(null); // Limpiar errores previos. // Clear previous errors.
         // La función ahora devuelve un objeto { data, total } y requiere un token
-        // The function now returns an object { data, total } and requires a token
+        // The function now returns an objeto { data, total } and requires a token
         const response = await getAllGyms(""); // Pasamos un token vacío para la prueba
         setGyms(response.data); // Asignar solo la propiedad 'data' al estado
       } catch (err) {
@@ -43,7 +58,7 @@ export const ApiTest = () => {
   return (
     <div>
       <h1>Prueba de conexión a la API</h1>
-      {error && <p style={{ color: "red", fontSize: "2rem" }}>{error}</p>}
+      {error && <p className="text-danger" style={{ fontSize: "2rem" }}>{error}</p>}
       <ul>
         {gyms.map((gym: Gym) => (
           <li key={gym.id}>

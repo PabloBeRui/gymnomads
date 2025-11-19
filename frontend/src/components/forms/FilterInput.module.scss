@@ -3,13 +3,19 @@
  * ESTILOS PARA: FilterInput
  * STYLES FOR: FilterInput
  * =============================================================================
+ *
+ * Descripción: Estilos específicos para el componente FilterInput.
+ *
+ * Description: Specific styles for the FilterInput component.
+ *
+ * =============================================================================
  */
 
 .filterGroup {
   // Permite que el grupo se flexione en contenedores. / Allows the group to flex in containers.
-  flex: 1 1 200px;
+  flex: 1 1 200px; // El elemento puede crecer, encogerse y tiene un tamaño base // Element can grow, shrink, and has a base size
 }
 
 .input {
-  min-width: 200px;
+  min-width: 200px; // Ancho mínimo del input // Minimum width of the input
 }

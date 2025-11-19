@@ -3,33 +3,44 @@
  * ESTILOS PARA: LoginPage
  * STYLES FOR: LoginPage
  * =============================================================================
+ *
+ * Descripción: Estilos para la página de inicio de sesión.
+ * Incluye el diseño de la tarjeta de login, los controles de formulario y
+ * el estilo del botón de enlace para el registro.
+ *
+ * Description: Styles for the login page.
+ * Includes the design of the login card, form controls, and the
+ * registration link button style.
+ *
+ * =============================================================================
  */
+@import "../index.scss"; // Importar variables globales // Import global variables
 
 .loginCard {
-  max-width: 450px; // Tamaño máximo para el formulario de login / Max width for login form
-  width: 100%; // Ocupa todo el ancho disponible hasta max-width / Occupy full available width up to max-width
-  border-radius: var(--bs-border-radius-xl); // Bordes más redondeados / More rounded borders
+  max-width: 450px; // Tamaño máximo para el formulario de login // Max width for login form
+  width: 100%; // Ocupa todo el ancho disponible hasta max-width // Occupy full available width up to max-width
+  border-radius: var(--bs-border-radius-xl); // Bordes más redondeados // More rounded borders
 }
 
 .formControl {
-  border-radius: var(--bs-border-radius-lg); // Bordes redondeados para inputs / Rounded borders for inputs
-  border-color: var(--bs-gray-300); // Borde más suave / Softer border
+  border-radius: var(--bs-border-radius-lg); // Bordes redondeados para inputs // Rounded borders for inputs
+  border-color: var(--bs-gray-300); // Borde más suave // Softer border
   &:focus {
-    border-color: var(--bs-primary); // Color primario al enfocar / Primary color on focus
-    box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), .25); // Sombra de enfoque / Focus shadow
+    border-color: $primary; // Color primario al enfocar // Primary color on focus
+    box-shadow: 0 0 0 0.25rem rgba($primary, 0.25); // Sombra de enfoque con color primario // Focus shadow with primary color
   }
 }
 
 .linkButton {
   background: none;
   border: none;
-  color: var(--bs-primary);
-  text-decoration: none; // Quitar el subrayado por defecto / Remove default underline
+  color: $primary; // Color primario // Primary color
+  text-decoration: none; // Quitar el subrayado por defecto // Remove default underline
   cursor: pointer;
   padding: 0;
   margin: 0;
   &:hover {
-    filter: brightness(90%); // Oscurecer en hover / Darken on hover
-    text-decoration: underline; // Subrayar en hover / Underline on hover
+    filter: brightness(90%); // Oscurecer en hover // Darken on hover
+    text-decoration: underline; // Subrayar en hover // Underline on hover
   }
 }

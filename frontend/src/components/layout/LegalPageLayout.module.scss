@@ -3,25 +3,33 @@
  * ESTILOS PARA: LegalPageLayout
  * STYLES FOR: LegalPageLayout
  * =============================================================================
+ *
+ * Descripción: Estilos para el layout de páginas legales, como política de privacidad.
+ * Proporciona un contenedor centrado con sombra y un botón de cierre.
+ *
+ * Description: Styles for the legal pages layout, such as privacy policy.
+ * Provides a centered container with shadow and a close button.
+ *
+ * =============================================================================
  */
 
 .container {
-  position: relative; // Necesario para el posicionamiento absoluto del CloseButton / Needed for absolute positioning of CloseButton
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 2rem 4rem;
-  background-color: var(--bs-white);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  line-height: 1.6;
+  position: relative; // Necesario para el posicionamiento absoluto del CloseButton // Needed for absolute positioning of the CloseButton
+  max-width: 800px; // Ancho máximo del contenedor // Maximum width of the container
+  margin: 2rem auto; // Centrado horizontal y margen superior/inferior // Horizontal centering and top/bottom margin
+  padding: 2rem 4rem; // Espaciado interno // Inner spacing
+  background-color: var(--bs-white); // Fondo blanco // White background
+  border-radius: 8px; // Bordes redondeados // Rounded borders
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); // Sombra sutil // Subtle shadow
+  line-height: 1.6; // Altura de línea para legibilidad // Line height for readability
 }
 
 .title {
-  margin-bottom: 2rem;
-  text-align: center;
-  color: var(--bs-dark);
+  margin-bottom: 2rem; // Margen inferior // Bottom margin
+  text-align: center; // Texto centrado // Centered text
+  color: var(--bs-dark); // Color de texto oscuro // Dark text color
 }
 
 .content {
-  color: var(--bs-secondary);
+  color: var(--bs-secondary); // Color de texto secundario // Secondary text color
 }

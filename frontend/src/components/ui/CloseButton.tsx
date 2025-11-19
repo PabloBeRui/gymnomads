@@ -18,7 +18,7 @@
  * - If `onClick` is provided, it executes that function (ideal for modals).
  * - If `navigateTo` is provided, it navigates to the specified route (ideal for pages).
  * - If neither is provided, it navigates back in the browser history.
- * Refactored to use SASS Modules.
+ * Refactorizado para usar SASS Modules.
  *
  * =============================================================================
  */
@@ -42,6 +42,9 @@ interface CloseButtonProps {
   //  Etiqueta de accesibilidad para el botón.
   //  Accessibility label for the button.
   ariaLabel?: string;
+  // Variante de color del botón.
+  // Color variant of the button.
+  colorVariant?: 'primary' | 'dark' | 'light';
 }
 
 /* =============================================================================
@@ -52,6 +55,7 @@ export const CloseButton: React.FC<CloseButtonProps> = ({
   onClick,
   navigateTo,
   ariaLabel = "Cerrar", // Valor por defecto / Default value
+  colorVariant = "dark", // Por defecto oscuro / Default to dark
 }) => {
   const navigate = useNavigate();
 
@@ -69,11 +73,26 @@ export const CloseButton: React.FC<CloseButtonProps> = ({
     }
   };
 
+  // Determinar el color basado en la variante
+  // Determine the color based on the variant
+  const buttonColor = React.useMemo(() => {
+    switch (colorVariant) {
+      case 'primary':
+        return 'var(--bs-primary)';
+      case 'light':
+        return 'var(--bs-light)';
+      case 'dark':
+      default:
+        return 'var(--bs-dark)';
+    }
+  }, [colorVariant]);
+
   return (
     <button
       className={clsx(styles.closeButton)}
       onClick={handleClick}
       aria-label={ariaLabel}
+      style={{ color: buttonColor }}
     >
       &times;
     </button>

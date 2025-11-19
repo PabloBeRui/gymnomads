@@ -3,32 +3,45 @@
  * ESTILOS PARA: WeatherWidget
  * STYLES FOR: WeatherWidget
  * =============================================================================
+ *
+ * Descripción: Estilos para el componente WeatherWidget, que muestra un
+ * pronóstico del tiempo de 3 días. Incluye el diseño del placeholder de carga,
+ * el contenedor principal del widget, los contenedores individuales de cada
+ * día y las etiquetas de los días.
+ *
+ * Description: Styles for the WeatherWidget component, which displays a
+ * 3-day weather forecast. Includes the design of the loading placeholder,
+ * the main widget container, individual day containers, and day labels.
+ *
+ * =============================================================================
  */
+@import "../../index.scss"; // Importar variables globales // Import global variables
 
 .placeholder {
   height: 68px;
   font-size: 0.8rem;
-  color: var(--bs-gray-600);
+  color: $secondary; // Color secundario // Secondary color
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  align-items: center; // Centrado vertical // Vertical centering
+  justify-content: flex-start; // Alineación al inicio // Start alignment
 }
 
 .weatherContainer {
   display: flex;
-  flex-direction: row;
-  gap: 15px;
-  align-items: center;
+  flex-direction: row; // Disposición horizontal // Horizontal layout
+  gap: 15px; // Espacio entre elementos // Space between elements
+  align-items: center; // Centrado vertical // Vertical centering
 }
 
 .dayContainer {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
+  flex-direction: column; // Disposición vertical // Vertical layout
+  align-items: center; // Centrado horizontal // Horizontal centering
+  gap: 5px; // Espacio entre elementos // Space between elements
   font-size: 0.85rem;
 }
 
 .dayLabel {
   font-weight: 500;
+  color: $dark; // Color oscuro // Dark color
 }

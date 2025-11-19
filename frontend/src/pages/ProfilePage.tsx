@@ -274,7 +274,7 @@ export const ProfilePage: React.FC = () => {
   if (!user) {
     return (
       <Container className="page-container-narrow">
-        <p className={styles.errorText}>
+        <p className={clsx(styles.errorText, "text-danger")}>
           Error: No se pudieron cargar los datos del usuario.
         </p>
       </Container>
@@ -285,10 +285,11 @@ export const ProfilePage: React.FC = () => {
     <Container className="py-5">
       <Row className="justify-content-center">
         <Col md={10} lg={8} xl={7}>
-          <h2 className="text-center mb-5 fw-bold">Mi Perfil</h2>
+          <h2 className="text-center mb-5 fw-bold text-primary">Mi Perfil</h2>
 
-          {/* --- Sección de Imagen de Perfil y Datos Principales --- */}
-          {/* --- Profile Image and Main Data Section --- */}
+          {/* --- Sección de Imagen de Perfil y Datos Principales ---
+           * --- Profile Image and Main Data Section ---
+           */}
           <Card className="mb-4 shadow-sm border-0">
             <Card.Body className="d-flex flex-column align-items-center p-4">
               {/* Controles para la subida de imagen de perfil */}
@@ -314,7 +315,7 @@ export const ProfilePage: React.FC = () => {
               />
 
               {isEditing && (
-                <small className="text-muted text-center mb-3">
+                <small className="text-center mb-3 text-dark">
                   {profileImageUpload.selectedFile
                     ? `Archivo: ${profileImageUpload.selectedFile.name}`
                     : "Haz clic en el avatar para cambiar la foto."}
@@ -326,7 +327,7 @@ export const ProfilePage: React.FC = () => {
               <Form className="w-100">
                 {/* CAMPOS NO EDITABLES / NON-EDITABLE FIELDS */}
                 <Form.Group className="mb-3">
-                  <Form.Label className="fw-bold">Email:</Form.Label>
+                  <Form.Label className="fw-bold text-dark">Email:</Form.Label>
                   <Form.Control type="text" value={user.email} disabled readOnly className={styles.disabledFormControl} />
                 </Form.Group>
 
@@ -334,13 +335,13 @@ export const ProfilePage: React.FC = () => {
                 {/* Show Role only for Admin and Manager */}
                 {(user.role === "admin" || user.role === "manager") && (
                   <Form.Group className="mb-3">
-                    <Form.Label className="fw-bold">Rol:</Form.Label>
+                    <Form.Label className="fw-bold text-dark">Rol:</Form.Label>
                     <Form.Control type="text" value={user.role} disabled readOnly className={styles.disabledFormControl} />
                   </Form.Group>
                 )}
                 {user.role !== "admin" && (
                     <Form.Group className="mb-3">
-                        <Form.Label className="fw-bold">Gimnasio:</Form.Label>
+                        <Form.Label className="fw-bold text-dark">Gimnasio:</Form.Label>
                         <div className={`${styles.disabledFormControl} d-flex align-items-center`}>
                             {gymFetchError ? (
                                 <span className="text-danger">{gymFetchError}</span>
@@ -354,7 +355,7 @@ export const ProfilePage: React.FC = () => {
                                     <span>{gymName}</span>
                                 </>
                             ) : (
-                                "Cargando..."
+                                <span className="text-dark">Cargando...</span>
                             )}
                         </div>
                     </Form.Group>
@@ -363,22 +364,23 @@ export const ProfilePage: React.FC = () => {
             </Card.Body>
           </Card>
 
-          {/* --- Sección de Información Personal y Edición --- */}
-          {/* --- Personal Information and Edit Section --- */}
+          {/* --- Sección de Información Personal y Edición ---
+           * --- Personal Information and Edit Section ---
+           */}
           <Card className="mb-4 shadow-sm border-0">
             <Card.Body className="p-4">
-              <h4 className="mb-4 fw-bold">Información Personal</h4>
+              <h4 className="mb-4 fw-bold text-primary">Información Personal</h4>
               <Form>
                 {user.role !== "admin" ? (
                   !isEditing ? (
                     // --- Modo Visualización / View Mode ---
                     <>
                       <Form.Group className="mb-3">
-                        <Form.Label className="fw-bold">Nombre Completo:</Form.Label>
+                        <Form.Label className="fw-bold text-dark">Nombre Completo:</Form.Label>
                         <Form.Control type="text" value={`${user.first_name} ${user.last_name}`} disabled readOnly className={styles.disabledFormControl} />
                       </Form.Group>
                       <Form.Group className="mb-3">
-                        <Form.Label className="fw-bold">Teléfono:</Form.Label>
+                        <Form.Label className="fw-bold text-dark">Teléfono:</Form.Label>
                         <Form.Control type="text" value={user.phone || "No especificado"} disabled readOnly className={styles.disabledFormControl} />
                       </Form.Group>
                     </>
@@ -388,7 +390,7 @@ export const ProfilePage: React.FC = () => {
                       <Row>
                         <Col md={6}>
                           <Form.Group className="mb-3" controlId="edit-first-name">
-                            <Form.Label className="fw-bold">Nombre:</Form.Label>
+                            <Form.Label className="fw-bold text-dark">Nombre:</Form.Label>
                             <Form.Control
                               type="text"
                               value={editFirstName}
@@ -399,7 +401,7 @@ export const ProfilePage: React.FC = () => {
                         </Col>
                         <Col md={6}>
                           <Form.Group className="mb-3" controlId="edit-last-name">
-                            <Form.Label className="fw-bold">Apellidos:</Form.Label>
+                            <Form.Label className="fw-bold text-dark">Apellidos:</Form.Label>
                             <Form.Control
                               type="text"
                               value={editLastName}
@@ -410,7 +412,7 @@ export const ProfilePage: React.FC = () => {
                         </Col>
                       </Row>
                       <Form.Group className="mb-3" controlId="edit-phone">
-                        <Form.Label className="fw-bold">Teléfono:</Form.Label>
+                        <Form.Label className="fw-bold text-dark">Teléfono:</Form.Label>
                         <Form.Control
                           type="tel"
                           value={editPhone}
@@ -433,15 +435,15 @@ export const ProfilePage: React.FC = () => {
                         onClick={handleEditClick}
                         aria-label="Editar perfil"
                       >
-                        <i className="bi bi-pencil-fill me-2"></i>Editar Perfil
+                        <i className="bi bi-pencil-fill me-2 text-dark"></i>Editar Perfil
                       </Button>
                       {user.role !== 'admin' && (
                         <Button
-                          variant="outline-info" // Usar outline para el cambio de contraseña
+                          variant="outline-primary" // Usar outline para el cambio de contraseña
                           onClick={() => setIsPasswordModalOpen(true)}
                           aria-label="Cambiar contraseña"
                         >
-                          <i className="bi bi-key-fill me-2"></i>Cambiar Contraseña
+                          <i className="bi bi-key-fill me-2 text-primary"></i>Cambiar Contraseña
                         </Button>
                       )}
                     </>
@@ -461,7 +463,7 @@ export const ProfilePage: React.FC = () => {
                       >
                         {isSaving ? (
                           <>
-                            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+                            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" variant="light" />
                             Guardando...
                           </>
                         ) : (

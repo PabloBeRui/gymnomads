@@ -298,24 +298,24 @@ export const AddGymPage = () => {
   };
 
   return (
-    <Container className={styles.container}>
-      <h2>Añadir Nuevo Gimnasio</h2>
+    <Container className={clsx(styles.container, "py-5")}>
+      <h2 className="text-primary mb-4 text-center">Añadir Nuevo Gimnasio</h2>
 
       <Alert variant="warning" className="mb-4">
         <strong>Importante:</strong> Al crear el gimnasio, automáticamente se
         creará un usuario manager con los datos de la persona responsable. El
         email del manager será generado automáticamente a partir del nombre del
-        gimnasio (ejemplo: nombregimnasio@gymnomads.com).
+        gimnasio (ejemplo: <span className="text-primary">nombregimnasio@gymnomads.com</span>).
       </Alert>
 
       <Form onSubmit={handleSubmit}>
         {/* ===== SECCIÓN: Datos del Gimnasio ===== */}
         {/* ===== SECTION: Gym Data ===== */}
-        <h3>Datos del Gimnasio</h3>
+        <h3 className="text-primary mb-3">Datos del Gimnasio</h3>
 
         {/* Nombre del Gimnasio / Gym Name */}
         <Form.Group className="mb-3" controlId="name">
-          <Form.Label>
+          <Form.Label className="text-dark">
             Nombre del Gimnasio: <span className="text-danger">*</span>
           </Form.Label>
           <Form.Control
@@ -330,7 +330,7 @@ export const AddGymPage = () => {
 
         {/* Dirección / Address */}
         <Form.Group className="mb-3" controlId="address">
-          <Form.Label>
+          <Form.Label className="text-dark">
             Dirección: <span className="text-danger">*</span>
           </Form.Label>
           <Form.Control
@@ -345,7 +345,7 @@ export const AddGymPage = () => {
 
         {/* Ciudad / City */}
         <Form.Group className="mb-3" controlId="city">
-          <Form.Label>
+          <Form.Label className="text-dark">
             Ciudad: <span className="text-danger">*</span>
           </Form.Label>
           <Form.Control
@@ -360,7 +360,7 @@ export const AddGymPage = () => {
 
         {/* Latitud / Latitude */}
         <Form.Group className="mb-3" controlId="latitude">
-          <Form.Label>
+          <Form.Label className="text-dark">
             Latitud: <span className="text-danger">*</span>
           </Form.Label>
           <Form.Control
@@ -374,14 +374,14 @@ export const AddGymPage = () => {
             min={-90}
             max={90}
           />
-          <Form.Text className={styles.helperText}>
+          <Form.Text className={clsx(styles.helperText, "text-dark")}>
             Debe estar entre -90 y 90
           </Form.Text>
         </Form.Group>
 
         {/* Longitud / Longitude */}
         <Form.Group className="mb-3" controlId="longitude">
-          <Form.Label>
+          <Form.Label className="text-dark">
             Longitud: <span className="text-danger">*</span>
           </Form.Label>
           <Form.Control
@@ -395,7 +395,7 @@ export const AddGymPage = () => {
             min={-180}
             max={180}
           />
-          <Form.Text className={styles.helperText}>
+          <Form.Text className={clsx(styles.helperText, "text-dark")}>
             Debe estar entre -180 y 180
           </Form.Text>
         </Form.Group>
@@ -403,16 +403,16 @@ export const AddGymPage = () => {
         {/* ===== SECCIÓN: Datos del Manager Responsable ===== */}
         {/* ===== SECTION: Responsible Manager Data ===== */}
         <div className={clsx(styles.managerSection, "mt-4")}>
-          <h3 className={styles.sectionTitle}>
+          <h3 className={clsx(styles.sectionTitle, "text-primary", "mb-3")}>
             👤 Datos del Manager Responsable
           </h3>
-          <p className={styles.emailPreview}>
-            Email: <strong>{generateManagerEmail(name)}</strong>
+          <p className={clsx(styles.emailPreview, "text-dark")}>
+            Email: <strong className="text-primary">{generateManagerEmail(name)}</strong>
           </p>
 
           {/* Nombre del Manager / Manager First Name */}
           <Form.Group className="mb-3" controlId="managerFirstName">
-            <Form.Label>
+            <Form.Label className="text-dark">
               Nombre: <span className="text-danger">*</span>
             </Form.Label>
             <Form.Control
@@ -424,14 +424,14 @@ export const AddGymPage = () => {
               placeholder="Ej: Pablo"
               minLength={2}
             />
-            <Form.Text className={styles.helperText}>
+            <Form.Text className={clsx(styles.helperText, "text-dark")}>
               Nombre real de la persona responsable del gimnasio
             </Form.Text>
           </Form.Group>
 
           {/* Apellidos del Manager / Manager Last Name */}
           <Form.Group className="mb-3" controlId="managerLastName">
-            <Form.Label>
+            <Form.Label className="text-dark">
               Apellidos: <span className="text-danger">*</span>
             </Form.Label>
             <Form.Control
@@ -447,7 +447,7 @@ export const AddGymPage = () => {
 
           {/* Teléfono del Manager (Opcional) / Manager Phone (Optional) */}
           <Form.Group className="mb-3" controlId="managerPhone">
-            <Form.Label>Teléfono(opcional):</Form.Label>
+            <Form.Label className="text-dark">Teléfono(opcional):</Form.Label>
             <Form.Control
               name="managerPhone"
               type="tel"
@@ -459,7 +459,7 @@ export const AddGymPage = () => {
 
           {/* Contraseña del Manager / Manager Password */}
           <Form.Group className="mb-3" controlId="managerPassword">
-            <Form.Label>
+            <Form.Label className="text-dark">
               Contraseña: <span className="text-danger">*</span>
             </Form.Label>
             <Form.Control
@@ -471,7 +471,7 @@ export const AddGymPage = () => {
               placeholder="Mínimo 6 caracteres"
               minLength={6}
             />
-            <Form.Text className={styles.helperText}>
+            <Form.Text className={clsx(styles.helperText, "text-dark")}>
               Esta contraseña será utilizada por el manager para acceder al
               sistema
             </Form.Text>
@@ -479,7 +479,7 @@ export const AddGymPage = () => {
 
           {/* Confirmar Contraseña del Manager / Confirm Manager Password (← NUEVO) */}
           <Form.Group className="mb-3" controlId="managerPasswordConfirm">
-            <Form.Label>
+            <Form.Label className="text-dark">
               Confirmar Contraseña: <span className="text-danger">*</span>
             </Form.Label>
             <Form.Control
@@ -493,12 +493,12 @@ export const AddGymPage = () => {
             />
             {/* Indicador visual de coincidencia / Visual match indicator */}
             {passwordsMatch() && (
-              <small className={styles.passwordMatch}>
+              <small className={clsx(styles.passwordMatch, "text-success")}>
                 ✓ Las contraseñas coinciden
               </small>
             )}
             {passwordsMismatch() && (
-              <small className={styles.passwordMismatch}>
+              <small className={clsx(styles.passwordMismatch, "text-danger")}>
                 ✗ Las contraseñas no coinciden
               </small>
             )}

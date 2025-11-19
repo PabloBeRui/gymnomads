@@ -170,7 +170,7 @@ export const GymPage = () => {
   if (isLoading) {
     return (
       <Container className={clsx(styles.loadingContainer, "text-center mt-5")}>
-        <Spinner animation="border" role="status">
+        <Spinner animation="border" role="status" variant="primary">
           <span className="visually-hidden">Cargando datos del gimnasio...</span>
         </Spinner>
       </Container>
@@ -228,7 +228,7 @@ export const GymPage = () => {
                                         <Col xs="auto">
                                             <div className="d-flex align-items-center gap-3">
                                                 <img src={logoSrc} alt={`Logo de ${gym.name}`} className={styles.gymLogoSmall} />
-                                                <CloseButton navigateTo="/gyms" />
+                                                <CloseButton navigateTo="/gyms" colorVariant="primary" />
                                             </div>
                                         </Col>
                                     </Row>
@@ -242,7 +242,7 @@ export const GymPage = () => {
                                             <h1 className="text-white fw-bold mb-0">{gym.name}</h1>
                                             </div>
                                             <p className="text-white mb-0 fs-5">
-                                            <i className="bi bi-geo-alt-fill me-2"></i>
+                                            <i className="bi bi-geo-alt-fill me-2 text-primary"></i>
                                             {gym.address}, {gym.city}
                                             </p>
                                         </div>
@@ -262,7 +262,7 @@ export const GymPage = () => {
                                                 >
                                                 {isProcessing ? (
                                                     <>
-                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" variant="light" />
                                                     Registrando...
                                                     </>
                                                 ) : (
@@ -282,7 +282,7 @@ export const GymPage = () => {
                                         <Col lg={12} className="mb-4">
                                         <Card className="h-100 shadow-sm border-0">
                                             <Card.Body>
-                                            <h4 className="fw-bold mb-3">Ubicación</h4>
+                                            <h4 className="fw-bold mb-3 text-primary">Ubicación</h4>
                                             {gym.latitude && gym.longitude ? (
                                                 <GymMap
                                                 lat={gym.latitude}

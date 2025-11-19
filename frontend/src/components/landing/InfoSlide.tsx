@@ -50,7 +50,7 @@ export const InfoSlide: React.FC<InfoSlideProps> = ({
     // Aplicar el color de fondo dinámicamente / Apply the background color dynamically
     <Container fluid className={clsx(styles.slide, "d-flex flex-column justify-content-center align-items-center p-4")} style={{ backgroundColor }}>
       <h2 className={clsx(styles.title, "text-dark")}>{title}</h2>
-      <p className={clsx(styles.text, "text-secondary")}>{text}</p>
+      <p className={clsx(styles.text, "text-dark")}>{text}</p>
 
       {/* Renderizar contenido extra (como el botón CTA) si existe */}
       {/* Render extra content (like the CTA button) if it exists */}
