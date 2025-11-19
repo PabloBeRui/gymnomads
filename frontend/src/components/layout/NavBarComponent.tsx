@@ -40,22 +40,30 @@ export const NavbarComponent = () => {
     <>
       {user?.role === "user" && (
         <Nav.Item>
-            <Nav.Link as={NavLink} to="/my-visits" className={styles.navLink}>Mis Visitas</Nav.Link>
+            {/* Cierra el menú al hacer clic. */}
+            {/* Closes the menu on click. */}
+            <Nav.Link as={NavLink} to="/my-visits" className={styles.navLink} onClick={() => setExpanded(false)}>Mis Visitas</Nav.Link>
         </Nav.Item>
       )}
       {(user?.role === "manager" || user?.role === "admin") && (
         <>
           <Nav.Item>
-            <Nav.Link as={NavLink} to="/visits/manage" className={styles.navLink}>Visitas</Nav.Link>
+            {/* Cierra el menú al hacer clic. */}
+            {/* Closes the menu on click. */}
+            <Nav.Link as={NavLink} to="/visits/manage" className={styles.navLink} onClick={() => setExpanded(false)}>Visitas</Nav.Link>
           </Nav.Item>
           <Nav.Item>
-            <Nav.Link as={NavLink} to="/users/manage" className={styles.navLink}>Usuarios</Nav.Link>
+            {/* Cierra el menú al hacer clic. */}
+            {/* Closes the menu on click. */}
+            <Nav.Link as={NavLink} to="/users/manage" className={styles.navLink} onClick={() => setExpanded(false)}>Usuarios</Nav.Link>
           </Nav.Item>
         </>
       )}
       {user?.role === "admin" && (
         <Nav.Item>
-            <Nav.Link as={NavLink} to="/managers/manage" className={styles.navLink}>Managers</Nav.Link>
+            {/* Cierra el menú al hacer clic. */}
+            {/* Closes the menu on click. */}
+            <Nav.Link as={NavLink} to="/managers/manage" className={styles.navLink} onClick={() => setExpanded(false)}>Managers</Nav.Link>
         </Nav.Item>
       )}
     </>
@@ -76,8 +84,9 @@ export const NavbarComponent = () => {
         id="avatar-dropdown"
         align="end"
         className={styles.avatarDropdown}
+        onClick={() => setExpanded(false)} // Cierra el menú principal al abrir el dropdown. // Closes main menu on dropdown open.
       >
-        <NavDropdown.Item onClick={() => navigate('/profile')}>
+        <NavDropdown.Item onClick={() => { navigate('/profile'); setExpanded(false); }}> {/* Cierra el menú al hacer clic. */}
             <i className="bi bi-person-fill me-2"></i>Perfil ({user.first_name})
         </NavDropdown.Item>
         <NavDropdown.Divider />
@@ -108,7 +117,7 @@ export const NavbarComponent = () => {
       <Container className="d-flex align-items-center justify-content-between">
         {/* Mobile-only Avatar Link */}
         {token && user ? (
-            <Link to="/profile" className="d-lg-none d-flex align-items-center me-2"> {/* d-flex align-items-center for vertical alignment */}
+            <Link to="/profile" className="d-lg-none d-flex align-items-center me-2" onClick={() => setExpanded(false)}> {/* Cierra el menú al hacer clic. */}
               <Avatar
                 src={user.profile_picture}
                 firstName={user.first_name}
@@ -119,6 +128,7 @@ export const NavbarComponent = () => {
         ) : (
             <div className="d-lg-none me-2" style={{ width: '40px' }}></div> // Placeholder for alignment
         )}
+        
         {/* Marca de la aplicación (logo/nombre). */}
         {/* Application brand (logo/name). */}
         <Navbar.Brand as={Link} to="/" onClick={() => setExpanded(false)} className={clsx(styles.navbarBrand, "mx-auto", "mx-lg-0")}>
@@ -126,7 +136,7 @@ export const NavbarComponent = () => {
         </Navbar.Brand>
         {/* Botón de alternancia para el menú responsivo (hamburguesa). */}
         {/* Toggle button for responsive menu (hamburger). */}
-        <Navbar.Toggle aria-controls="responsive-navbar-nav" className={clsx(styles.navbarToggle, "ms-auto")} /> {/* ms-auto to push to right */}
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" className={clsx(styles.navbarToggle, "ms-auto")} />
         {/* Contenido colapsable de la barra de navegación. */}
         {/* Collapsible content of the navigation bar. */}
         <Navbar.Collapse id="responsive-navbar-nav">
@@ -136,7 +146,7 @@ export const NavbarComponent = () => {
             {/* Enlace a la página de gimnasios. */}
             {/* Link to gyms page. */}
             <Nav.Item>
-                <Nav.Link as={NavLink} to="/gyms" className={styles.navLink}>Gimnasios</Nav.Link>
+                <Nav.Link as={NavLink} to="/gyms" className={styles.navLink} onClick={() => setExpanded(false)}>Gimnasios</Nav.Link>
             </Nav.Item>
 
             {/* Renderiza enlaces autenticados o de inicio de sesión/registro. */}
@@ -155,12 +165,12 @@ export const NavbarComponent = () => {
                 {/* Enlace para iniciar sesión. */}
                 {/* Link to login. */}
                 <Nav.Item>
-                    <Nav.Link as={NavLink} to="/login" className={styles.navLink}>Login</Nav.Link>
+                    <Nav.Link as={NavLink} to="/login" className={styles.navLink} onClick={() => setExpanded(false)}>Login</Nav.Link>
                 </Nav.Item>
                 {/* Botón para registrarse. */}
                 {/* Button to register. */}
                 <Nav.Item>
-                    <Button onClick={() => navigate('/register')} variant="primary" size="sm" className="ms-lg-2">Regístrate</Button>
+                    <Button onClick={() => { navigate('/register'); setExpanded(false); }} variant="primary" size="sm" className="ms-lg-2">Regístrate</Button>
                 </Nav.Item>
               </>
             )}
@@ -168,10 +178,10 @@ export const NavbarComponent = () => {
             {/* Links para menú hamburguesa en móvil */}
             {token && user && (
               <div className="d-lg-none mt-3 border-top pt-3">
-                <Nav.Link onClick={() => navigate('/profile')} className={styles.navLink}>
+                <Nav.Link onClick={() => { navigate('/profile'); setExpanded(false); }} className={styles.navLink}>
                     <i className="bi bi-person-fill me-2"></i>Perfil
                 </Nav.Link>
-                <Nav.Link onClick={logout} className={styles.navLink}>
+                <Nav.Link onClick={() => { logout(); setExpanded(false); }} className={styles.navLink}>
                     <i className="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
                 </Nav.Link>
               </div>
