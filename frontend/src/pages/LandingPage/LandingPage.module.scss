@@ -17,6 +17,11 @@
 @import "../../index.scss"; // Importar variables globales // Import global variables
 
 .pageContainer {
+  height: auto; // La altura se ajustará al contenido // Height will adjust to content
+  position: relative; // Necesario para el posicionamiento de los hijos // Needed for children positioning
+}
+
+.scrollContainer {
   height: 100vh;
   width: 100%;
   overflow-y: scroll; // Permite el scroll vertical // Enables vertical scrolling

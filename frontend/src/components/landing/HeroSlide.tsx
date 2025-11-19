@@ -20,7 +20,7 @@ interface HeroSlideProps {
     transparentBg?: boolean;
 }
 
-export const HeroSlide: React.FC<HeroSlideProps> = ({ transparentBg = false }) => {
+export const HeroSlide: React.FC<HeroSlideProps> = ({ transparentBg = true }) => {
   const [animationStep, setAnimationStep] = useState(0);
 
   useEffect(() => {
