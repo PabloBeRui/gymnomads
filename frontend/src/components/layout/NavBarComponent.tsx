@@ -55,78 +55,49 @@ export const NavbarComponent = () => {
     </>
   );
 
-      // Renderiza el menú desplegable del avatar.
+  // Renderiza el menú desplegable del avatar.
 
-      // Renders the avatar dropdown menu.
+  // Renders the avatar dropdown menu.
 
-      const renderAvatarDropdown = (extraClassName?: string) => {
+  const renderAvatarDropdown = (extraClassName?: string) => {
+    if (!user) return null;
 
-          if (!user) return null;
+    return (
+      <NavDropdown
+        title={
+          <Avatar
+            src={user.profile_picture}
+            firstName={user.first_name}
+            lastName={user.last_name}
+           className={clsx(styles.navAvatar, "mt-3")}
+          />
+        }
+        id="avatar-dropdown"
+        align="end"
+        className={extraClassName} // Aplica la clase extra aquí
+      >
+        <NavDropdown.Item as={Link} to="/profile" eventKey="5">
+          Perfil ({user.first_name})
+        </NavDropdown.Item>
 
-  
+        <NavDropdown.Divider />
 
-          return (
+        <NavDropdown.Item
+          onClick={() => {
+            logout();
 
-              <NavDropdown
-
-                  title={
-
-                      <Avatar
-
-                          src={user.profile_picture}
-
-                          firstName={user.first_name}
-
-                          lastName={user.last_name}
-
-                          className={clsx(styles.navAvatar, "mt-3")}
-
-                      />
-
-                  }
-
-                  id="avatar-dropdown"
-
-                  align="end"
-
-                  className={extraClassName} // Aplica la clase extra aquí
-
-              >
-
-                  <NavDropdown.Item as={Link} to="/profile" eventKey="5">
-
-                      Perfil ({user.first_name})
-
-                  </NavDropdown.Item>
-
-                  <NavDropdown.Divider />
-
-                  <NavDropdown.Item
-
-                      onClick={() => {
-
-                          logout();
-
-                          setExpanded(false);
-
-                      }}
-
-                      eventKey="6"
-
-                  >
-
-                      Cerrar Sesión
-
-                  </NavDropdown.Item>
-
-              </NavDropdown>
-
-          );
-
-      };
+            setExpanded(false);
+          }}
+          eventKey="6">
+          Cerrar Sesión
+        </NavDropdown.Item>
+      </NavDropdown>
+    );
+  };
 
   return (
     <Navbar
+      style={{ minHeight: "125px" }}
       bg="dark"
       variant="dark"
       expand="lg"
