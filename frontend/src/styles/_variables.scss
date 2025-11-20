@@ -52,12 +52,3 @@ $box-shadow-lg: 0 1rem 3rem rgba($dark, .175);
 // SOBRESCRIBIR VARIABLES DE BOOTSTRAP
 // OVERRIDE BOOTSTRAP VARIABLES
 // =============================================================================
-// Personaliza el color del icono del menú hamburguesa de Bootstrap para navbars oscuras.
-// Se inyecta la variable SASS `$primary` en el atributo `stroke` del SVG
-// para que las líneas del icono tengan el color principal del proyecto.
-//
-// Customizes the color of the Bootstrap hamburger menu icon for dark navbars.
-// The SASS `$primary` variable is injected into the SVG's `stroke` attribute
-// so the icon lines match the project's primary color.
-// $navbar-dark-toggler-icon-bg: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke='#{$primary}' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg>");
-

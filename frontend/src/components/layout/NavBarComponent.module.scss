@@ -74,6 +74,10 @@
 
 .navbarToggle {
   border-color: transparent !important; // Borde transparente para el toggle // Transparent border for toggle
+  &:focus, &:active {
+    outline: none !important;
+    box-shadow: none !important;
+  }
 }
 
 .navAvatar {

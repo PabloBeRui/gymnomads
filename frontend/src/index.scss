@@ -154,3 +154,15 @@ main {
   height: 100%;
   z-index: -1; // Encima del video, detrás del contenido // On top of video, behind content
 }
+
+// =============================================================================
+// OVERRIDE DE LA VARIABLE CSS PARA EL ICONO DEL MENÚ HAMBURGUESA
+// CSS VARIABLE OVERRIDE FOR HAMBURGER MENU ICON
+// =============================================================================
+// Se anula la variable CSS de Bootstrap para el color del icono del alternador.
+// Esta es una forma más directa de asegurar que el color se aplique.
+// Overriding Bootstrap's CSS variable for the toggler icon color.
+// This is a more direct way to ensure the color is applied.
+:root {
+  --bs-navbar-toggler-icon-bg: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke='#{$primary}' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg>");
+}
