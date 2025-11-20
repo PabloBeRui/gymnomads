@@ -12,102 +12,163 @@
  *
  * =============================================================================
  */
- @use "../../styles/variables" as *; // Importar variables globales // Import global variables
- 
- .navbar {
-   padding: 1rem 0;
-   transition: background-color 0.3s ease-in-out, padding 0.3s ease-in-out, backdrop-filter 0.3s ease-in-out; // Añadir transición para backdrop-filter // Add transition for backdrop-filter
-   font-weight: 500;
-   z-index: 1030; // Asegurar que la navbar esté siempre encima // Ensure navbar is always on top
- }
- 
- .navbarTransparent {
-   background-color: transparent; // Fondo transparente // Transparent background
-   backdrop-filter: blur(0px); // Sin desenfoque cuando es transparente // No blur when transparent
- }
- 
- .navbarScrolled {
-   background-color: $glass-bg; // Usar el color de glassmorphism definido // Use defined glassmorphism color
-   backdrop-filter: blur(10px); // Aplicar desenfoque para efecto glassmorphism // Apply blur for glassmorphism effect
-   box-shadow: $box-shadow-sm; // Sombra sutil al hacer scroll // Subtle shadow on scroll
-   padding: 0.5rem 0;
- }
- 
- .navbarBrand {
-   font-weight: 700;
-   font-size: 1.5rem;
-   color: $primary !important; // Usar el color primario para la marca // Use primary color for brand
- }
- 
- .navLink {
-   color: rgba($light, 0.7) !important; // Color claro para los enlaces // Light color for links
-   margin: 0 0.5rem;
-   padding: 0.5rem 1rem !important;
-   border-radius: $border-radius;
-   transition: color 0.2s ease, background-color 0.2s ease;
- 
-   &:hover {
-     color: $light !important; // Color blanco en hover // White color on hover
-     background-color: rgba($light, 0.1); // Fondo sutil en hover // Subtle background on hover
-   }
- 
-   &.active {
-     color: $light !important; // Color blanco para el enlace activo // White color for active link
-     font-weight: 600;
-   }
- }
- 
- .navbarToggle {
-   border-color: transparent !important; // Color de borde del toggle // Toggle border color
-   .navbar-toggler-icon {
-     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.8)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
-   }
- }
- 
- .navAvatar {
-   --avatar-size: 40px;
-   border: 2px solid rgba($light, 0.5); // Borde claro para el avatar // Light border for avatar
- }
- 
- .avatarDropdown {
-   :global(.dropdown-menu) {
-     background-color: rgba($dark, 0.9); // Fondo oscuro para el dropdown // Dark background for dropdown
-     backdrop-filter: blur(5px);
-     border: 1px solid rgba($light, 0.1); // Borde claro para el dropdown // Light border for dropdown
-     border-radius: $border-radius-lg;
-     box-shadow: $box-shadow-lg;
-     padding: 0.5rem 0;
+@use "../../styles/variables" as *; // Importar variables globales // Import global variables
 
-     // Ensure right alignment on mobile
-     @media (max-width: 991.98px) { // Bootstrap's 'lg' breakpoint
-       right: 0 !important;
-       left: auto !important;
-     }
-   }
-   :global(.dropdown-item) {
-     color: rgba($light, 0.8); // Color claro para los items del dropdown // Light color for dropdown items
-     &:hover {
-       background-color: rgba($light, 0.1); // Fondo claro en hover // Light background on hover
-       color: $light; // Color blanco en hover // White color on hover
-     }
-   }
-   :global(.dropdown-divider) {
-     border-top: 1px solid rgba($light, 0.1); // Divisor claro // Light divider
-   }
- }
- 
- // Estilos para el overlay del menú en móvil
- // Styles for mobile menu overlay
- @media (max-width: 991.98px) {
-   :global(.navbar-collapse.show), :global(.navbar-collapse.collapsing) {
-     padding: 1.5rem;
-     margin-top: 1rem;
-     border-radius: $border-radius-lg;
-     background-color: rgba($dark, 0.95); // Fondo oscuro para el menú móvil // Dark background for mobile menu
-     backdrop-filter: blur(10px);
-   }
-   .navLink {
-     margin: 0.5rem 0;
-     display: block;
-   }
- }
+.navbar {
+  padding: 1rem 0;
+  transition: background-color 0.3s ease-in-out, padding 0.3s ease-in-out,
+    backdrop-filter 0.3s ease-in-out; // Añadir transición para backdrop-filter // Add transition for backdrop-filter
+  font-weight: 500;
+  z-index: 1030; // Asegurar que la navbar esté siempre encima // Ensure navbar is always on top
+}
+
+.navbarTransparent {
+  background-color: transparent; // Fondo transparente // Transparent background
+  backdrop-filter: blur(
+    0px
+  ); // Sin desenfoque cuando es transparente // No blur when transparent
+}
+
+.navbarScrolled {
+  background-color: $glass-bg; // Usar el color de glassmorphism definido // Use defined glassmorphism color
+  backdrop-filter: blur(
+    10px
+  ); // Aplicar desenfoque para efecto glassmorphism // Apply blur for glassmorphism effect
+  box-shadow: $box-shadow-sm; // Sombra sutil al hacer scroll // Subtle shadow on scroll
+  padding: 0.5rem 0;
+}
+
+.navbarBrand {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: $primary !important; // Usar el color primario para la marca // Use primary color for brand
+}
+
+.navLink {
+  color: rgba(
+    $light,
+    0.7
+  ) !important; // Color claro para los enlaces // Light color for links
+  margin: 0 0.5rem;
+  padding: 0.5rem 1rem !important;
+  border-radius: $border-radius;
+  transition: color 0.2s ease, background-color 0.2s ease;
+
+  // Bloque :hover corregido
+  // Corrected :hover block
+  &:hover {
+    color: $light !important; // Color blanco en hover // White color on hover
+    background-color: rgba(
+      $light,
+      0.1
+    ); // Fondo sutil en hover // Subtle background on hover
+  }
+
+  // Bloque &.active corregido
+  // Corrected &.active block
+  &.active {
+    color: $light !important; // Color blanco para el enlace activo // White color for active link
+    font-weight: 600;
+  }
+}
+
+.navbarToggle {
+  border-color: transparent !important; // Borde transparente para el toggle // Transparent border for toggle
+}
+
+.navAvatar {
+  --avatar-size: 40px;
+  border: 2px solid rgba($light, 0.5); // Borde claro para el avatar // Light border for avatar
+}
+
+.avatarDropdown {
+  :global(.dropdown-menu) {
+    background-color: rgba(
+      $dark,
+      0.9
+    ); // Fondo oscuro para el dropdown // Dark background for dropdown
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba($light, 0.1); // Borde claro para el dropdown // Light border for dropdown
+    border-radius: $border-radius-lg;
+    box-shadow: $box-shadow-lg;
+    padding: 0.5rem 0;
+
+    // Ensure right alignment on mobile
+    @media (max-width: 991.98px) {
+      // Bootstrap's 'lg' breakpoint
+      right: 0 !important;
+      left: auto !important;
+    }
+  }
+  :global(.dropdown-item) {
+    color: rgba(
+      $light,
+      0.8
+    ); // Color claro para los items del dropdown // Light color for dropdown items
+    &:hover {
+      background-color: rgba(
+        $light,
+        0.1
+      ); // Fondo claro en hover // Light background on hover
+      color: $light; // Color blanco en hover // White color on hover
+    }
+  }
+  :global(.dropdown-divider) {
+    border-top: 1px solid rgba($light, 0.1); // Divisor claro // Light divider
+  }
+}
+
+// Estilos para el overlay del menú en móvil
+// Styles for mobile menu overlay
+@media (max-width: 991.98px) {
+  :global(.navbar-collapse.show),
+  :global(.navbar-collapse.collapsing) {
+    padding: 1.5rem;
+    margin-top: 1rem;
+    border-radius: $border-radius-lg;
+    background-color: rgba(
+      $dark,
+      0.95
+    ); // Fondo oscuro para el menú móvil // Dark background for mobile menu
+    backdrop-filter: blur(10px);
+  }
+  .navLink {
+    margin: 0.5rem 0;
+    display: block;
+  }
+}
+/* ==========================================================================
+* HAMBURGER TOGGLER ANIMATION STYLES (CUSTOM SVG)
+* ESTILOS DE ANIMACIÓN DEL ALTERNADOR DE HAMBURGUESA (SVG PERSONALIZADO)
+========================================================================== */
+
+// Base styles for the SVG container (The Dumbbell/X icon)
+// Estilos base para el contenedor SVG (el icono Mancuerna/X)
+.dumbbellSvg {
+  // Set transformation origin to the center of the SVG
+  // Establecer el origen de la transformación al centro del SVG
+  transform-origin: 50% 50%;
+  // Controla la rotación del icono al abrir/cerrar.
+  // Controls the icon rotation when opening/closing.
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  cursor: pointer;
+
+  // Default state: no rotation, full opacity
+  // Estado por defecto: sin rotación, opacidad completa
+  transform: rotate(0deg) scale(1);
+  opacity: 1;
+
+  // Estilo para los elementos internos del SVG (líneas, rects)
+  // Style for the inner SVG elements (lines, rects)
+  .iconGroup {
+    transition: all 0.3s ease-in-out;
+  }
+}
+
+// State when the menu is expanded (the 'X' icon is visible)
+// Estado cuando el menú está expandido (el icono 'X' es visible)
+.isExpanded {
+  // Aplica una rotación completa para la transición de mancuerna a 'X'.
+  // Apply a full rotation for the dumbbell to 'X' transition.
+  transform: rotate(360deg) scale(0.9);
+}
