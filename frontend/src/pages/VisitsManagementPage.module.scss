@@ -15,6 +15,7 @@
  *
  * =============================================================================
  */
+@use "sass:color";
 @use "../styles/variables" as *; // Importar variables globales // Import global variables
 
 // Contenedor para el avatar y el texto, asegura alineación vertical
@@ -46,7 +47,7 @@
 // Estilo para la opción de "Gimnasios Eliminados" en el selector
 // Style for the "Deleted Gyms" option in the select
 .deletedOption {
-    background-color: lighten($danger, 30%); // Fondo rojo claro // Light red background
+    background-color: color.adjust($danger, $lightness: 30%); // Fondo rojo claro // Light red background
     color: $danger; // Texto rojo oscuro // Dark red text
     font-weight: bold; // Texto en negrita // Bold text
 }
