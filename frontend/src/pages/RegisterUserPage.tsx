@@ -46,6 +46,7 @@ import {
 // Import the SCSS module for consistency, even if it's empty.
 import styles from "./RegisterUserPage.module.scss";
 import clsx from "clsx"; // Importar clsx / Import clsx
+import { CloseButton } from "../components/ui/CloseButton"; // Importar el botón de cierre // Import the close button
 
 export const RegisterUserPage: React.FC = () => {
     // Hooks de navegación y contexto de autenticación.
@@ -196,7 +197,13 @@ export const RegisterUserPage: React.FC = () => {
     const isSubmitting = isRegistering || isUploading;
 
     return (
-        <Container className="d-flex align-items-center justify-content-center min-vh-100 py-5">
+        <Container className="d-flex align-items-center justify-content-center min-vh-100 py-5 position-relative"> {/* Añadir position-relative para el posicionamiento absoluto del botón */}
+            <CloseButton
+                onClick={() => navigate(-1)}
+                className={styles.closeButton}
+                color="#FFB700"
+                ariaLabel="Volver a la página anterior"
+            />
             <Row className="justify-content-center w-100">
                 <Col md={10} lg={8} xl={7}>
                     <Card className={`p-4 shadow-lg ${styles.registerCard}`}>

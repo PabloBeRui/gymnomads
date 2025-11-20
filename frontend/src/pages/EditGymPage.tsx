@@ -48,6 +48,7 @@ import { useImageUpload } from "../hooks/useImageUpload";
 
 // Componentes UI / UI components
 import { ImageUploadPreview } from "../components/ImageUploadPreview";
+import { CloseButton } from "../components/ui/CloseButton"; // Importar el botón de cierre // Import the close button
 
 // Servicios API / API services
 import {
@@ -338,7 +339,13 @@ export const EditGymPage = () => {
   }
 
   return (
-    <Container className={clsx(styles.container, "py-5")}>
+    <Container className={clsx(styles.container, "py-5", "position-relative")}> {/* Añadir position-relative para el posicionamiento absoluto del botón */}
+      <CloseButton
+        onClick={() => navigate(-1)}
+        className={styles.closeButton}
+        color="#FFB700"
+        ariaLabel="Volver a la página anterior"
+      />
       <h2 className="text-primary mb-4 text-center">
         Editar Gimnasio: {originalGymData.name} (ID: {id})
       </h2>

@@ -50,6 +50,8 @@ import type { CreateGymManagerResponse } from "../interfaces/gym-interfaces";
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
 import { Container, Form, Button, Alert } from "react-bootstrap";
 
+import { CloseButton } from "../components/ui/CloseButton"; // Importar el botón de cierre // Import the close button
+
 // Importar el módulo SCSS / Import the SCSS module
 import styles from "./AddGymPage.module.scss";
 import clsx from "clsx"; // Importar clsx / Import clsx
@@ -299,6 +301,12 @@ export const AddGymPage = () => {
 
   return (
     <Container className={clsx(styles.container, "py-5")}>
+      <CloseButton
+        onClick={() => navigate(-1)}
+        className={styles.closeButton}
+        color="#FFB700"
+        ariaLabel="Volver a la página anterior"
+      />
       <h2 className="text-primary mb-4 text-center">Añadir Nuevo Gimnasio</h2>
 
       <Alert variant="warning" className="mb-4">

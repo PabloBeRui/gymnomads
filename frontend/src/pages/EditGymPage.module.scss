@@ -25,3 +25,12 @@
   display: block;
   border: 1px solid var(--bs-gray-200);
 }
+
+// Estilo para posicionar el nuevo botón de cierre animado.
+// Style to position the new animated close button.
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+}

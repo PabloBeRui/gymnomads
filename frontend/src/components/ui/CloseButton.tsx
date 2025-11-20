@@ -1,100 +1,88 @@
 /**
  * =============================================================================
- * COMPONENTE: CloseButton
- * COMPONENT: CloseButton
+ * COMPONENTE: CloseButton (Animado)
+ * COMPONENT:  CloseButton (Animated)
  * =============================================================================
  *
- * Botón de cierre reutilizable para modales y páginas.
- * Proporciona una "X" estilizada que permite al usuario cerrar una vista.
- * Su comportamiento es configurable:
- * - Si se proporciona `onClick`, ejecuta esa función (ideal para modales).
- * - Si se proporciona `navigateTo`, navega a la ruta especificada (ideal para páginas).
- * - Si no se proporciona ninguno, navega hacia atrás en el historial del navegador.
- * Refactorizado para usar SASS Modules.
+ * @description Botón de cierre reutilizable y animado que usa un icono SVG.
+ * Al hacer clic, ejecuta una animación de "desaparición" antes de llamar
+ * a la función `onClick`.
+ * 
+ * @description Reusable and animated close button using an SVG icon.
+ * On click, it performs a "disappearing" animation before calling the
+ * `onClick` function.
  *
- * Reusable close button for modals and pages.
- * Provides a stylized "X" that allows the user to close a view.
- * Its behavior is configurable:
- * - If `onClick` is provided, it executes that function (ideal for modals).
- * - If `navigateTo` is provided, it navigates to the specified route (ideal for pages).
- * - If neither is provided, it navigates back in the browser history.
- * Refactorizado para usar SASS Modules.
- *
+ * @props {() => void} onClick - La función a ejecutar después de la animación de cierre.
+ * @props {string} [color='#1A202C'] - El color del trazo (stroke) del icono SVG.
+ * @props {number} [size=30] - El tamaño (ancho y alto) del icono SVG en píxeles.
+ * @props {string} [className] - Clases CSS adicionales para posicionamiento.
+ * @props {string} [ariaLabel='Cerrar'] - Etiqueta de accesibilidad.
  * =============================================================================
  */
+import React, { useState } from 'react';
+import styles from './CloseButton.module.scss';
+import clsx from 'clsx';
 
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import styles from "./CloseButton.module.scss"; // Importar el módulo SCSS / Import the SCSS module
-import clsx from "clsx"; // Importar clsx / Import clsx
-
-/* =============================================================================
-   INTERFACES
-   INTERFACES
-   ============================================================================= */
 interface CloseButtonProps {
-  //  Función a ejecutar al hacer clic (para modales).
-  //  Function to execute on click (for modals).
-  onClick?: () => void;
-  //  Ruta a la que navegar (para páginas).
-  //  Route to navigate to (for pages).
-  navigateTo?: string;
-  //  Etiqueta de accesibilidad para el botón.
-  //  Accessibility label for the button.
+  onClick: () => void;
+  color?: string;
+  size?: number;
+  className?: string;
   ariaLabel?: string;
-  // Variante de color del botón.
-  // Color variant of the button.
-  colorVariant?: 'primary' | 'dark' | 'light';
 }
 
-/* =============================================================================
-   COMPONENTE: CloseButton
-   COMPONENT: CloseButton
-   ============================================================================= */
 export const CloseButton: React.FC<CloseButtonProps> = ({
   onClick,
-  navigateTo,
-  ariaLabel = "Cerrar", // Valor por defecto / Default value
-  colorVariant = "dark", // Por defecto oscuro / Default to dark
+  color = '#1A202C', // Default to dark color
+  size = 30,
+  className,
+  ariaLabel = 'Cerrar',
 }) => {
-  const navigate = useNavigate();
+  const [isClosing, setIsClosing] = useState(false);
 
-  // Español: Manejador de clic para el botón.
-  // English: Click handler for the button.
   const handleClick = () => {
-    if (onClick) {
-      onClick();
-    } else if (navigateTo) {
-      navigate(navigateTo);
-    } else {
-      // Español: Comportamiento por defecto: ir hacia atrás en el historial del navegador.
-      // English: Default behavior: go back in browser history.
-      navigate(-1);
-    }
-  };
+    // 1. Activar el estado de cierre para aplicar la clase de animación
+    // 1. Activate closing state to apply the animation class
+    setIsClosing(true);
 
-  // Determinar el color basado en la variante
-  // Determine the color based on the variant
-  const buttonColor = React.useMemo(() => {
-    switch (colorVariant) {
-      case 'primary':
-        return 'var(--bs-primary)';
-      case 'light':
-        return 'var(--bs-light)';
-      case 'dark':
-      default:
-        return 'var(--bs-dark)';
-    }
-  }, [colorVariant]);
+    // 2. Esperar a que la animación termine (300ms) antes de llamar a la función onClick
+    // 2. Wait for the animation to finish (300ms) before calling the onClick function
+    setTimeout(() => {
+      onClick();
+      // 3. Resetear el estado por si el componente se reutiliza sin desmontarse
+      // 3. Reset the state in case the component is reused without unmounting
+      setIsClosing(false);
+    }, 300);
+  };
 
   return (
     <button
-      className={clsx(styles.closeButton)}
+      className={clsx(styles.closeButton, className)}
       onClick={handleClick}
       aria-label={ariaLabel}
-      style={{ color: buttonColor }}
+      disabled={isClosing} // Deshabilitar el botón durante la animación // Disable button during animation
     >
-      &times;
+      <div
+        className={clsx(styles.iconContainer, { [styles.closing]: isClosing })}
+        style={{ width: size, height: size }}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={size}
+          height={size}
+          viewBox="0 0 30 30"
+          fill="none"
+          stroke={color}
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeMiterlimit="10"
+        >
+          {/* Este SVG ahora forma una 'X' directamente, sin necesitar rotación inicial. */}
+          {/* This SVG now forms an 'X' directly, without needing initial rotation. */}
+          <line x1="6" y1="6" x2="24" y2="24" />
+          <line x1="24" y1="6" x2="6" y2="24" />
+        </svg>
+      </div>
     </button>
   );
 };

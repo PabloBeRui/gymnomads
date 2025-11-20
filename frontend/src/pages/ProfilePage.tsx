@@ -16,6 +16,7 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import clsx from "clsx";
+import { useNavigate } from "react-router-dom"; // Importar useNavigate // Import useNavigate
 
 // Importar componentes de Bootstrap
 // Import Bootstrap components
@@ -32,6 +33,7 @@ import { useImageUpload } from "../hooks/useImageUpload";
 // Import components
 import { Avatar } from "../components/Avatar";
 import { ChangePasswordModal } from "../components/modals/ChangePasswordModal";
+import { CloseButton } from "../components/ui/CloseButton"; // Importar el botón de cierre // Import the close button
 
 // Importar servicios / Import services
 import { getGymById } from "../services/gym-services";
@@ -282,7 +284,13 @@ export const ProfilePage: React.FC = () => {
   }
 
   return (
-    <Container className="py-5">
+    <Container className={clsx("py-5", "position-relative")}> {/* Añadir position-relative para el posicionamiento absoluto del botón */}
+      <CloseButton
+        onClick={() => navigate(-1)}
+        className={styles.closeButton}
+        color="#FFB700"
+        ariaLabel="Volver a la página anterior"
+      />
       <Row className="justify-content-center">
         <Col md={10} lg={8} xl={7}>
           <h2 className="text-center mb-5 fw-bold text-primary">Mi Perfil</h2>

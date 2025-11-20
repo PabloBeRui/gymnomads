@@ -44,3 +44,12 @@
   margin-right: 0.5rem;
   object-fit: contain;
 }
+
+// Estilo para posicionar el nuevo botón de cierre animado.
+// Style to position the new animated close button.
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+}

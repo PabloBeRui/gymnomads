@@ -17,7 +17,7 @@
  * =============================================================================
  */
 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // Importar useNavigate // Import useNavigate
 import { CloseButton } from '../../components/ui/CloseButton';
 // Importar iconos para los botones / Import icons for the buttons
 import { FaUserPlus, FaBuilding } from 'react-icons/fa';
@@ -30,11 +30,16 @@ import styles from "./JoinUsPage.module.scss";
 import clsx from "clsx"; // Importar clsx / Import clsx
 
 export const JoinUsPage = () => {
+  const navigate = useNavigate(); // Inicializar useNavigate // Initialize useNavigate
+
   return (
     <Container className={styles.pageContainer}>
-      {/* Botón de cierre ahora redirige a la página principal */}
-      {/* Close button now redirects to the main page */}
-      <CloseButton navigateTo="/" />
+      <CloseButton
+        onClick={() => navigate(-1)}
+        className={styles.closeButton}
+        color="#FFB700"
+        ariaLabel="Volver a la página anterior"
+      />
 
       <h1 className={styles.title}>Únete a la Revolución del Fitness</h1>
 

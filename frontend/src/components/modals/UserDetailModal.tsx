@@ -120,11 +120,28 @@ export const UserDetailModal = ({
   return (
     <>
       <Modal show={isOpen} onHide={handleClose} centered size="lg">
+        {/*
+          * =======================================================================
+          * BOTÓN DE CIERRE PERSONALIZADO (SVG ANIMADO)
+          * CUSTOM CLOSE BUTTON (ANIMATED SVG)
+          * =======================================================================
+          * Se coloca aquí para tener un control absoluto sobre su posicionamiento
+          * por encima de todo el contenido del modal.
+          *
+          * Placed here to have absolute positioning control over all modal content.
+          * =======================================================================
+          */
+        }
+        <CloseButton
+          onClick={handleClose}
+          className={styles.closeButton}
+          color="#FFB700" // Se pasa el color primario directamente para asegurar el valor // Pass the primary color directly to ensure the value
+          ariaLabel="Cerrar detalles del usuario"
+        />
         <Modal.Header className={styles.modalHeader}>
           <Modal.Title className={clsx(styles.modalTitle, "text-primary")}>
             👤 Detalles del Usuario
           </Modal.Title>
-          <CloseButton onClick={handleClose} ariaLabel="Cerrar detalles del usuario" colorVariant="primary" />
         </Modal.Header>
         <Modal.Body>
           {/* Header con Avatar, nombre y email / Header with Avatar, name and email */}

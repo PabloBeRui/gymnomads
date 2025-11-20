@@ -18,6 +18,7 @@
  */
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom'; // Importar useNavigate // Import useNavigate
 import { CloseButton } from '../ui/CloseButton';
 import { Container } from 'react-bootstrap'; // Importar componentes de React-Bootstrap / Import React-Bootstrap components
 import styles from './LegalPageLayout.module.scss'; // Importar el módulo SCSS / Import the SCSS module
@@ -30,9 +31,20 @@ interface LegalPageLayoutProps {
 }
 
 export const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({ title, children }) => {
+  const navigate = useNavigate(); // Inicializar useNavigate // Initialize useNavigate
+
+  const handleClose = () => {
+    navigate(-1); // Navegar hacia atrás en el historial // Navigate back in history
+  };
+
   return (
     <Container className={clsx(styles.container, "my-4 p-4 bg-white rounded shadow-sm")}>
-      <CloseButton navigateTo="/" />
+      <CloseButton
+        onClick={handleClose}
+        className={styles.closeButton}
+        color="#FFB700" // Color primario del proyecto // Project's primary color
+        ariaLabel="Cerrar página legal"
+      />
       <h1 className={clsx(styles.title, "mb-4 text-center text-dark")}>{title}</h1>
       <div className={clsx(styles.content, "text-dark")}>
         {children}

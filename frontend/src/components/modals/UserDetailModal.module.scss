@@ -122,3 +122,12 @@
 .deleteButton {
   margin-right: auto; // Empuja este botón a la izquierda // Pushes this button to the left
 }
+
+// Estilo para posicionar el nuevo botón de cierre animado.
+// Style to position the new animated close button.
+.closeButton {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  z-index: 1056; // Asegurar que esté por encima del contenido del modal de React-Bootstrap.
+}
