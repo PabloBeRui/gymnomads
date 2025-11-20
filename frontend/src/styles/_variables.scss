@@ -1,0 +1,49 @@
+/**
+ * =============================================================================
+ * ARCHIVO PARCIAL SCSS: Variables
+ * SCSS PARTIAL FILE: Variables
+ * =============================================================================
+ *
+ * Descripción: Este archivo contiene todas las variables globales de SASS
+ * para el proyecto, incluyendo la paleta de colores, tipografía, bordes y
+ * sombras. Se utiliza con `@use` en otros archivos SCSS para asegurar que
+ * las variables estén disponibles globalmente sin duplicar código.
+ *
+ * Description: This file contains all the global SASS variables for the
+ * project, including the color palette, typography, borders, and shadows.
+ * It is used with `@use` in other SCSS files to ensure variables are
+ * available globally without duplicating code.
+ *
+ * =============================================================================
+ */
+
+// Paleta de colores oficial "Rendimiento Elegante"
+// Official "Elegant Performance" color palette
+$primary:       #FFB700;   // Amarillo Azafrán // Saffron Yellow
+$secondary:     #194350;   // Azul Petróleo // Petrol Blue
+$success:       #2A9D8F;   // Verde Éxito // Success Green
+$warning:       #E6B800;   // Amarillo Advertencia (Hover del amarillo) // Warning Yellow (Yellow Hover)
+$danger:        #DC3545;   // Rojo Peligro // Danger Red
+$info:          #0077B6;   // Azul Información // Info Blue
+$dark:          #1A202C;   // Oscuro Principal // Main Dark
+$light:         #F8F9FA;   // Claro Principal // Main Light
+$accent-gold:   #FFB700;   // Dorado Acento // Accent Gold
+$gold-hover:    #E6B800;   // Dorado Hover // Gold Hover
+$bg-overlay:    rgba(26, 32, 44, 0.78); // Superposición de Fondo // Background Overlay
+$glass-bg:      rgba(25, 35, 50, 0.72); // Fondo Glassmorphism // Glassmorphism Background
+
+// Tipografía
+// Typography
+$font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+$font-size-base: 1rem;
+$headings-font-weight: 600;
+
+// Bordes y Sombras
+// Borders and Shadows
+$border-radius: 0.5rem;
+$border-radius-lg: 0.8rem;
+$border-radius-sm: 0.4rem;
+$enable-shadows: true;
+$box-shadow: 0 0.5rem 1.5rem rgba($dark, .1);
+$box-shadow-sm: 0 0.125rem 0.25rem rgba($dark, .075);
+$box-shadow-lg: 0 1rem 3rem rgba($dark, .175);

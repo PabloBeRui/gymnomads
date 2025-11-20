@@ -33,7 +33,7 @@ import {
     Spinner,
     Alert,
 } from "react-bootstrap";
-import clsx from "clsx";
+
 import styles from "./VisitsManagementPage.module.scss";
 
 /**

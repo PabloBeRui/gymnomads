@@ -13,7 +13,7 @@
  *
  * =============================================================================
  */
-@import "../index.scss"; // Importar variables globales // Import global variables
+@use "../styles/variables" as *; // Importar variables globales // Import global variables
 
 // Texto de ayuda debajo del avatar
 // Helper text below the avatar

@@ -14,7 +14,7 @@
  *
  * =============================================================================
  */
-@import "../../index.scss"; // Importar variables globales // Import global variables
+@use "../../styles/variables" as *; // Importar variables globales // Import global variables
 
 .tableContainer {
   overflow-x: auto; // Permite el scroll horizontal en tablas grandes // Allows horizontal scrolling in large tables

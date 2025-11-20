@@ -14,7 +14,7 @@
  *
  * =============================================================================
  */
-@import "../index.scss"; // Importar variables globales // Import global variables
+@use "../styles/variables" as *; // Importar variables globales // Import global variables
 
 .loginCard {
   max-width: 450px; // Tamaño máximo para el formulario de login // Max width for login form

@@ -14,7 +14,7 @@
  *
  * =============================================================================
  */
-@import "../index.scss"; // Importar variables globales // Import global variables
+@use "../styles/variables" as *; // Importar variables globales // Import global variables
 
 .registerCard {
   max-width: 800px; // Un poco más ancha que la de login para acomodar más campos // Slightly wider than login to accommodate more fields

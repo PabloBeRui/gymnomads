@@ -18,7 +18,7 @@
  *
  * =============================================================================
  */
-@import "../index.scss"; // Importar variables globales // Import global variables
+@use "../styles/variables" as *; // Importar variables globales // Import global variables
 
 .container {
   padding: 20px;

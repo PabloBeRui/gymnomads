@@ -12,7 +12,7 @@
  *
  * =============================================================================
  */
-@import "../../index.scss";
+@use "../../styles/variables" as *;
 
 .slide {
   height: 100vh; // Ocupa toda la altura de la ventana // Occupies full viewport height

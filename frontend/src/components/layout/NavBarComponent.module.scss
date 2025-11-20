@@ -12,7 +12,7 @@
  *
  * =============================================================================
  */
- @import "../../index.scss"; // Importar variables globales // Import global variables
+ @use "../../styles/variables" as *; // Importar variables globales // Import global variables
  
  .navbar {
    padding: 1rem 0;

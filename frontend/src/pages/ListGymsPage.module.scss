@@ -14,7 +14,7 @@
  *
  * =============================================================================
  */
-@import "../index.scss"; // Importar variables globales // Import global variables
+@use "../styles/variables" as *; // Importar variables globales // Import global variables
 
 // Estilo para la tarjeta individual del gimnasio
 // Style for the individual gym card

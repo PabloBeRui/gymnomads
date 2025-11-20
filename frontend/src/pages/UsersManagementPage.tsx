@@ -32,7 +32,6 @@ import {
     Alert,
 } from "react-bootstrap";
 import styles from "./UsersManagementPage.module.scss";
-import clsx from "clsx"; // Importar clsx / Import clsx
 
 /**
  * =============================================================================

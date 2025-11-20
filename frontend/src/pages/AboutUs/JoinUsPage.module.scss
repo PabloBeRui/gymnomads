@@ -16,7 +16,7 @@
  *
  * =============================================================================
  */
-@import "../../index.scss"; // Importar variables globales // Import global variables
+@use "../../styles/variables" as *; // Importar variables globales // Import global variables
 
 .pageContainer {
   max-width: 900px; // Ancho máximo del contenedor // Maximum width of container

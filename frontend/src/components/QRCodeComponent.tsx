@@ -16,12 +16,11 @@
  */
 
 // ---  imports de React y la librería --- / ---  React imports and the library ---
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import QRCodeStyling from "qr-code-styling";
 
 // Importar el módulo SCSS / Import the SCSS module
 import styles from "./QRCodeComponent.module.scss";
-import clsx from "clsx"; // Importar clsx / Import clsx
 
 /* =============================================================================
     PROPS

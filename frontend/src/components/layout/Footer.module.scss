@@ -12,7 +12,7 @@
  *
  * =============================================================================
  */
- @import "../../index.scss"; // Importar variables globales // Import global variables
+ @use "../../styles/variables" as *; // Importar variables globales // Import global variables
  
  .footer {
    background-color: $glass-bg; // Usar el color de glassmorphism definido // Use defined glassmorphism color

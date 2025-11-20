@@ -14,7 +14,7 @@
  *
  * =============================================================================
  */
-@import "../index.scss"; // Importar variables globales // Import global variables
+@use "../styles/variables" as *; // Importar variables globales // Import global variables
 
 // Contenedor para el avatar y el texto, asegura alineación vertical.
 // Usado en las celdas de la tabla de usuarios.

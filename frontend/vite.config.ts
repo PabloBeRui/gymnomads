@@ -7,4 +7,11 @@ export default defineConfig({
   server: {
     host: true,
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        quietDeps: true, // Suprimir warnings de dependencias como Bootstrap
+      },
+    },
+  },
 });

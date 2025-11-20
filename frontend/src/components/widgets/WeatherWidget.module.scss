@@ -15,7 +15,7 @@
  *
  * =============================================================================
  */
-@import "../../index.scss"; // Importar variables globales // Import global variables
+@use "../../styles/variables" as *; // Importar variables globales // Import global variables
 
 .placeholder {
   height: 68px;
