@@ -49,6 +49,71 @@ main {
   // Padding will be handled at page level for more control
 }
 
+// =============================================================================
+// PERSONALIZACIÓN AVANZADA DE BOTONES DE BOOTSTRAP
+// ADVANCED BOOTSTRAP BUTTON CUSTOMIZATION
+// =============================================================================
+// Para anular los estilos de Bootstrap sin usar `!important`, aumentamos la
+// especificidad de nuestras reglas envolviéndolas en `:root`.
+// Esto hace que `:root .btn-primary` sea más "fuerte" que el `.btn-primary`
+// por defecto de Bootstrap. Luego, anulamos las variables CSS de Bootstrap.
+//
+// To override Bootstrap's styles without using `!important`, we increase
+// the specificity of our rules by wrapping them in `:root`. This makes
+// `:root .btn-primary` "stronger" than Bootstrap's default `.btn-primary`.
+// We then override Bootstrap's CSS variables.
+// =============================================================================
+:root {
+  .btn-primary {
+    // --- Variables CSS de Bootstrap para el estado normal del botón ---
+    // --- Bootstrap CSS variables for the button's normal state ---
+    --bs-btn-bg: #{$primary} ;
+    --bs-btn-border-color: #{$primary} ;
+    --bs-btn-color: #{$dark} ;
+    
+    // --- Variables para el estado :hover y :focus ---
+    // --- Variables for the :hover and :focus state ---
+    --bs-btn-hover-bg: #{$gold-hover} ;
+    --bs-btn-hover-border-color: #{$gold-hover} ;
+    --bs-btn-hover-color: #{$dark} ;
+    --bs-btn-focus-bg: #{$gold-hover} ;
+    --bs-btn-focus-border-color: #{$gold-hover} ;
+    --bs-btn-focus-color: #{$dark} ;
+
+    // --- Variables para el estado :active (al hacer clic) ---
+    // --- Variables for the :active (on click) state ---
+    --bs-btn-active-bg: #{color.adjust($primary, $lightness: -10%)} ;
+    --bs-btn-active-border-color: #{color.adjust($primary, $lightness: -12%)} ;
+    --bs-btn-active-color: #{$dark} ;
+    
+    // --- Sombra para el estado :focus ---
+    // --- Shadow for the :focus state ---
+    --bs-btn-focus-shadow-rgb: #{color.channel($primary, 'red')}, #{color.channel($primary, 'green')}, #{color.channel($primary, 'blue')} ;
+  }
+
+  .btn-secondary {
+    // --- Anulación de variables para el botón secundario ---
+    // --- Variable overrides for the secondary button ---
+    --bs-btn-bg: #{$secondary} ;
+    --bs-btn-border-color: #{$secondary} ;
+    --bs-btn-color: #{$light} ;
+    
+    --bs-btn-hover-bg: #{color.adjust($secondary, $lightness: 5%)} ;
+    --bs-btn-hover-border-color: #{color.adjust($secondary, $lightness: 5%)} ;
+    --bs-btn-hover-color: #{$light} ;
+    
+    --bs-btn-focus-bg: #{color.adjust($secondary, $lightness: 5%)} ;
+    --bs-btn-focus-border-color: #{color.adjust($secondary, $lightness: 5%)} ;
+    --bs-btn-focus-color: #{$light} ;
+    
+    --bs-btn-active-bg: #{color.adjust($secondary, $lightness: -10%)} ;
+    --bs-btn-active-border-color: #{color.adjust($secondary, $lightness: -12%)} ;
+    --bs-btn-active-color: #{$light} ;
+
+    --bs-btn-focus-shadow-rgb: #{color.channel($secondary, 'red')}, #{color.channel($secondary, 'green')}, #{color.channel($secondary, 'blue')} ;
+  }
+}
+
 // Sobrescribir estilos de componentes globales de Bootstrap
 // Override global Bootstrap component styles
 .card {
@@ -62,49 +127,25 @@ main {
 }
 
 .btn-primary {
-    background-color: $primary; // Usar el color primario de la paleta // Use primary color from palette
-    border: none; // Eliminar borde predeterminado // Remove default border
-    color: $dark; // Texto oscuro para el botón primario // Dark text for primary button
-
-    &:hover {
-        transform: translateY(-2px); // Efecto de elevación al pasar el ratón // Lift effect on hover
-        box-shadow: $box-shadow; // Sombra más pronunciada al pasar el ratón // More pronounced shadow on hover
-        background-color: $gold-hover; // Usar el color de hover dorado // Use gold hover color
-        color: $dark; // Asegurar que el texto permanezca oscuro // Ensure text remains dark
-    }
-
-    &:active {
-        background-color: color.adjust($primary, $lightness: -10%) !important; // Oscurecer al hacer clic // Darken on click
-        transform: translateY(0); // Eliminar elevación al hacer clic // Remove lift on click
-        box-shadow: $box-shadow-sm; // Sombra más pequeña al hacer clic // Smaller shadow on click
-    }
-
-    &:focus {
-      box-shadow: 0 0 0 .25rem rgba($primary, .5) !important; // Sombra de enfoque personalizada // Custom focus shadow
-    }
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $box-shadow;
+  }
+  &:active {
+    transform: translateY(0);
+    box-shadow: $box-shadow-sm;
+  }
 }
 
 .btn-secondary {
-    background-color: $secondary; // Usar el color secundario de la paleta // Use secondary color from palette
-    border: none;
-    color: $light; // Texto claro para el botón secundario // Light text for secondary button
-
-    &:hover {
-        transform: translateY(-2px);
-        box-shadow: $box-shadow;
-        background-color: color.adjust($secondary, $lightness: -5%);
-        color: $light;
-    }
-
-    &:active {
-        background-color: color.adjust($secondary, $lightness: -10%) !important;
-        transform: translateY(0);
-        box-shadow: $box-shadow-sm;
-    }
-
-    &:focus {
-      box-shadow: 0 0 0 .25rem rgba($secondary, .5) !important;
-    }
+  &:hover {
+      transform: translateY(-2px);
+      box-shadow: $box-shadow;
+  }
+  &:active {
+      transform: translateY(0);
+      box-shadow: $box-shadow-sm;
+  }
 }
 
 .text-primary {
