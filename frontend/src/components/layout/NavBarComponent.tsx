@@ -12,7 +12,7 @@
  *
  * =============================================================================
  */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { Avatar } from "../Avatar";
@@ -25,6 +25,7 @@ export const NavbarComponent = () => {
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const navRef = useRef<HTMLDivElement>(null); // Ref para el contenedor de la navbar // Ref for the navbar container
 
   // Efecto para cambiar el fondo de la navbar al hacer scroll
   // Effect to change navbar background on scroll
@@ -36,6 +37,26 @@ export const NavbarComponent = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Efecto para cerrar el menú al hacer clic fuera
+  // Effect to close the menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        setExpanded(false);
+      }
+    };
+
+    if (expanded) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [expanded]);
+  
   const renderAuthenticatedLinks = () => (
     <>
       {user?.role === "user" && (
@@ -106,6 +127,7 @@ export const NavbarComponent = () => {
     // Componente principal de la barra de navegación.
     // Main navigation bar component.
     <Navbar
+      ref={navRef} // Adjuntar la ref al componente Navbar // Attach the ref to the Navbar component
       fixed="top" // Fija la barra de navegación en la parte superior. // Fixes the navbar to the top.
       expand="lg" // Expande la barra de navegación en pantallas grandes y superiores. // Expands the navbar on large screens and above.
       expanded={expanded} // Controla el estado expandido/colapsado. // Controls expanded/collapsed state.
