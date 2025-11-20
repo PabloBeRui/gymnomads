@@ -21,7 +21,7 @@ import { Toaster } from "sonner";
 
 // Componentes necesarios de react-router-dom
 // Necessary components from react-router-dom
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, useLocation } from "react-router-dom";
 
 // --- Componentes de Layout y UI Globales ---
 // --- Global Layout and UI Components ---
@@ -63,6 +63,17 @@ import { GymContactPage } from "./pages/AboutUs/GymContactPage";
 import { ProtectedRoute } from "./router/ProtectedRoute";
 
 function App() {
+  const location = useLocation();
+  const isLandingPage = location.pathname === "/";
+
+  // Estilo condicional para el contenido principal
+  // Conditional style for the main content
+  const mainStyle = {
+    flex: 1,
+    paddingTop: '90px',
+    backgroundColor: isLandingPage ? 'transparent' : '#F8F9FA',
+  };
+
   // Componente placeholder para la página de "No Autorizado" (Error 403)
   // Placeholder component for the "Unauthorized" page (Error 403)
   const UnauthorizedPage = () => (
@@ -88,89 +99,106 @@ function App() {
   );
 
   return (
-    // Contenedor principal para layout "sticky footer"
-    // Main container for "sticky footer" layout
-    <div
-      style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      {/* Sistema global de notificaciones */}
-      {/* Global notification system */}
-      <Toaster position="bottom-left" richColors closeButton />
+    // Contenedor raíz para el fondo de video.
+    // Root container for the video background.
+    <div className="root-container">
+      {/* Video de fondo y superposición */}
+      {/* Background video and overlay */}
+      <video autoPlay muted loop playsInline className="video-bg">
+        <source src="/videos/landing_video_1.mp4" type="video/mp4" />
+      </video>
+      <div className="overlay-bg"></div>
 
-      {/* Barra de navegación principal */}
-      {/* Main navigation bar */}
-      <NavbarComponent />
+      {/* Contenedor principal de la aplicación para el layout "sticky footer" */}
+      {/* Main application container for "sticky footer" layout */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          minHeight: "100vh",
+          position: "relative",
+          zIndex: 1,
+        }}>
+        {/* Sistema global de notificaciones */}
+        {/* Global notification system */}
+        <Toaster position="bottom-left" richColors closeButton />
 
-      {/* Contenido principal de la página */}
-      {/* Main page content */}
-      <main style={{ flex: 1, paddingTop: '90px' }}>
-        {/* Definir las rutas de la aplicación */}
-        {/* Define the application routes */}
-        <Routes>
-          {/* ========================================
+        {/* Barra de navegación principal */}
+        {/* Main navigation bar */}
+        <NavbarComponent />
+
+        {/* Contenido principal de la página */}
+        {/* Main page content */}
+        <main style={mainStyle}>
+          {/* Definir las rutas de la aplicación */}
+          {/* Define the application routes */}
+          <Routes>
+            {/* ========================================
               RUTAS PÚBLICAS
               PUBLIC ROUTES
               ======================================== */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/register" element={<RegisterUserPage />} />{" "}
-          {/* Ruta corregida */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/gyms" element={<ListGymsPage />} />
-          <Route path="/gyms/:id" element={<GymPage />} />
-          <Route path="/unauthorized" element={<UnauthorizedPage />} />
-          {/* --- Rutas Legales e Info --- */}
-          <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-          <Route path="/terms-conditions" element={<TermsOfServicePage />} />
-          <Route path="/cookies-policy" element={<CookiesPolicyPage />} />
-          <Route path="/legal-notice" element={<LegalNoticePage />} />
-          <Route path="/about-us" element={<AboutUsPage />} />
-          <Route path="/faq" element={<FaqPage />} />
-          <Route path="/join" element={<JoinUsPage />} />
-          <Route path="/gym-contact" element={<GymContactPage />} />
-          {/* ========================================
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/register" element={<RegisterUserPage />} />{" "}
+            {/* Ruta corregida */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/gyms" element={<ListGymsPage />} />
+            <Route path="/gyms/:id" element={<GymPage />} />
+            <Route path="/unauthorized" element={<UnauthorizedPage />} />
+            {/* --- Rutas Legales e Info --- */}
+            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+            <Route path="/terms-conditions" element={<TermsOfServicePage />} />
+            <Route path="/cookies-policy" element={<CookiesPolicyPage />} />
+            <Route path="/legal-notice" element={<LegalNoticePage />} />
+            <Route path="/about-us" element={<AboutUsPage />} />
+            <Route path="/faq" element={<FaqPage />} />
+            <Route path="/join" element={<JoinUsPage />} />
+            <Route path="/gym-contact" element={<GymContactPage />} />
+            {/* ========================================
               RUTAS PROTEGIDAS: Autenticación requerida (User, Manager, Admin)
               PROTECTED ROUTES: Authentication required (User, Manager, Admin)
               ======================================== */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/visits/:visitId/qr" element={<UserVisitGymPage />} />
-            <Route path="/my-visits" element={<MyVisitsPage />} />
-          </Route>
-          {/* ========================================
+            <Route element={<ProtectedRoute />}>
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/visits/:visitId/qr" element={<UserVisitGymPage />} />
+              <Route path="/my-visits" element={<MyVisitsPage />} />
+            </Route>
+            {/* ========================================
               RUTAS PROTEGIDAS: Admin y Manager
               PROTECTED ROUTES: Admin and Manager
               ======================================== */}
-          <Route
-            element={<ProtectedRoute allowedRoles={["admin", "manager"]} />}>
-            <Route path="/gyms/edit/:id" element={<EditGymPage />} />
-            <Route path="/visits/manage" element={<VisitsManagementPage />} />
-            <Route path="/users/manage" element={<UsersManagementPage />} />
-          </Route>
-          {/* ========================================
+            <Route
+              element={<ProtectedRoute allowedRoles={["admin", "manager"]} />}>
+              <Route path="/gyms/edit/:id" element={<EditGymPage />} />
+              <Route path="/visits/manage" element={<VisitsManagementPage />} />
+              <Route path="/users/manage" element={<UsersManagementPage />} />
+            </Route>
+            {/* ========================================
               RUTAS PROTEGIDAS: Solo Admin
               PROTECTED ROUTES: Admin only
               ======================================== */}
-          <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
-            <Route path="/gyms/add" element={<AddGymPage />} />
-            <Route
-              path="/managers/manage"
-              element={<ManagersManagementPage />}
-            />
-          </Route>
-          {/* ========================================
+            <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+              <Route path="/gyms/add" element={<AddGymPage />} />
+              <Route
+                path="/managers/manage"
+                element={<ManagersManagementPage />}
+              />
+            </Route>
+            {/* ========================================
               RUTA NOT FOUND (404)
               NOT FOUND ROUTE (404)
               ======================================== */}
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </main>
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </main>
 
-      {/* Footer global */}
-      {/* Global footer */}
-      <Footer />
+        {/* Footer global */}
+        {/* Global footer */}
+        <Footer />
 
-      {/* Modal global de consentimiento de cookies */}
-      {/* Global cookie consent modal */}
-      <CookieConsentModal />
+        {/* Modal global de consentimiento de cookies */}
+        {/* Global cookie consent modal */}
+        <CookieConsentModal />
+      </div>
     </div>
   );
 }
