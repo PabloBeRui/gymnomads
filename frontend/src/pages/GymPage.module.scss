@@ -58,16 +58,23 @@
 
 .heroOverlay {
     position: absolute;
-    bottom: 0;
+    top: 0; // Se adhiere a la parte superior
     left: 0;
     right: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%); // Degradado oscuro // Dark gradient
+    height: 100%; // Ocupa toda la altura
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%); // Degradado oscuro // Dark gradient
     color: white; // Texto blanco // White text
     padding: 1.5rem;
-    padding-top: 3rem;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end; // Contenido al final // Content at the end
+    justify-content: space-between; // Espacio entre el nombre (arriba) y la ciudad (abajo)
+
+    h1 {
+        // En móvil, aumentar el tamaño del nombre del gimnasio
+        @media (max-width: 767.98px) {
+            font-size: 1.625rem; // 1.25rem * 1.3
+        }
+    }
 }
 
 .gymLogoSmall {

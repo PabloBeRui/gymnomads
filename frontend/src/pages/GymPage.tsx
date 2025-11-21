@@ -257,18 +257,20 @@ export const GymPage = () => {
                                         <Card.Img variant="top" src={mainImageSrc} alt={`Imagen principal de ${gym.name}`} className={styles.heroImage} />
                                         <div className={styles.heroOverlay}>
                                             <div className="d-flex align-items-center mb-2">
-                                            <h1 className="text-white fw-bold mb-0">{gym.name}</h1>
+                                            <h1 className="text-primary fw-bold mb-0">{gym.name}</h1>
                                             </div>
                                             <p className="text-white mb-0 fs-5">
                                             <i className="bi bi-geo-alt-fill me-2 text-primary"></i>
-                                            {gym.address}, {gym.city}
+                                            {gym.city}
                                             </p>
                                         </div>
                                         </div>
                                         <Card.Body className="p-4">
                                         <Row className="align-items-center">
                                             <Col md={8}>
-                                                {/* Contenido principal como el botón de visita se muestra aquí */}
+                                                <p className="text-secondary mb-0">
+                                                    <i className="bi bi-geo-alt-fill me-2 text-info"></i>{gym.address}
+                                                </p>
                                             </Col>
                                             <Col md={4} className="text-md-end mt-3 mt-md-0">
                                             {canVisit && (
