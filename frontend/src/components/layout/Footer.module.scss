@@ -47,8 +47,8 @@
  .socialContainer {
    display: flex;
    gap: 1.5rem;
- }
- 
+   justify-content: center; // Centrar los iconos sociales
+ } 
  .socialIcon {
    font-size: 1.75rem;
    color: rgba($light, 0.7); // Color de icono social claro // Light social icon color

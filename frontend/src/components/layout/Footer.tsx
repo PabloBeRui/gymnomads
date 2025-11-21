@@ -16,6 +16,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
 import styles from "./Footer.module.scss";
+import clsx from "clsx";
 
 export const Footer: React.FC = () => {
   const whatsappMessage = "Hola, he visto tu proyecto GymNomads y me gustaría contactar contigo.";
@@ -25,9 +26,9 @@ export const Footer: React.FC = () => {
   return (
     <footer className={styles.footer}>
       <Container className={styles.columnsContainer}>
-        <Row>
+        <Row className="justify-content-center">
           {/* Columna: Sobre Nosotros */}
-          <Col xs={12} md={4} lg={3} className={styles.column}>
+          <Col xs={12} md={4} lg={3} className={clsx(styles.column, "text-center")}>
             <h5 className={styles.title}>Sobre Nosotros</h5>
             <Link to="/about-us" className={styles.link}>Quiénes somos</Link>
             <Link to="/faq" className={styles.link}>Preguntas Frecuentes</Link>
@@ -35,7 +36,7 @@ export const Footer: React.FC = () => {
           </Col>
 
           {/* Columna: Legal */}
-          <Col xs={12} md={4} lg={3} className={styles.column}>
+          <Col xs={12} md={4} lg={3} className={clsx(styles.column, "text-center")}>
             <h5 className={styles.title}>Páginas Legales</h5>
             <Link to="/privacy-policy" className={styles.link}>Política de privacidad</Link>
             <Link to="/terms-conditions" className={styles.link}>Términos y condiciones</Link>
@@ -44,7 +45,7 @@ export const Footer: React.FC = () => {
           </Col>
 
           {/* Columna: Contacto */}
-          <Col xs={12} md={4} lg={3} className={styles.column}>
+          <Col xs={12} md={4} lg={3} className={clsx(styles.column, "text-center")}>
             <h5 className={styles.title}>Contacto</h5>
             <div className={styles.socialContainer}>
               <a href="https://github.com/PabloBeRui" target="_blank" rel="noopener noreferrer" className={styles.socialIcon} aria-label="Perfil de GitHub">
