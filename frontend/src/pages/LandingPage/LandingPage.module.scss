@@ -27,6 +27,15 @@
   overflow-y: scroll;
   scroll-behavior: smooth;
   scroll-snap-type: y proximity;
+
+  /* Ocultar barra de desplazamiento para navegadores WebKit (Chrome, Safari, etc.) */
+  &::-webkit-scrollbar {
+    width: 0px; // Hacer la barra de desplazamiento invisible
+    background: transparent; // Asegurar que no se muestre ningún color de fondo
+  }
+
+  /* Ocultar barra de desplazamiento para Firefox */
+  scrollbar-width: none;
 }
 
 .ctaButton {
