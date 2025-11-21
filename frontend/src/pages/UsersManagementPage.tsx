@@ -295,7 +295,7 @@ export const UsersManagementPage = () => {
     // Renderizado principal // Main rendering
     return (
         <Container fluid="xl" className="py-4">
-            <header className="mb-4">
+            <header className="mb-4 text-center">
                 <h1 className="h2 text-primary">
                     {isAdmin ? "Gestión de Usuarios" : "Usuarios de mi Gimnasio"}
                 </h1>
@@ -313,11 +313,11 @@ export const UsersManagementPage = () => {
                 <Card.Body>
                     <Row className="align-items-end">
                         {/* Métricas */}
-                        <Col md={4} lg={3} className="mb-3">
-                            <h2 className="fw-bold text-primary mb-1">{totalItems}</h2>
+                        <Col md={4} lg={3} className="mb-3 text-center">
                             <p className="text-dark mb-0 small">
                                 {isLoading ? "Cargando..." : "Total de Usuarios"}
                             </p>
+                            <h2 className="fw-bold text-primary">{totalItems}</h2>
                         </Col>
 
                         {/* Filtros */}

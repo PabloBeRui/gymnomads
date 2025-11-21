@@ -299,7 +299,7 @@ export const VisitsManagementPage = () => {
 
     return (
         <Container fluid="xl" className="py-4">
-            <header className="mb-4">
+            <header className="mb-4 text-center">
                 <h1 className="h2 text-primary">
                     {isAdmin
                         ? "Gestión de Visitas"
@@ -342,14 +342,13 @@ export const VisitsManagementPage = () => {
                         </div>
                     )}
                     <Row className="align-items-end">
-                        <Col md={4} lg={3} className="mb-3">
+                        <Col md={4} lg={3} className="mb-3 text-center">
                             <Card
                                 className={styles.statCard}
                                 onClick={() => setIsStatsModalOpen(true)}
                                 title="Ver estadísticas detalladas"
                             >
                                 <Card.Body>
-                                    <h2 className="fw-bold text-primary">{totalItems}</h2>
                                     <p className="text-dark mb-0 small">
                                         {isLoading
                                             ? "Cargando..."
@@ -359,6 +358,7 @@ export const VisitsManagementPage = () => {
                                                     : "Total Enviadas"
                                                 : "Total de Visitas"}
                                     </p>
+                                    <h2 className="fw-bold text-primary">{totalItems}</h2>
                                 </Card.Body>
                             </Card>
                         </Col>
