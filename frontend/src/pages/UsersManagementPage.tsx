@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../context/AuthContext";
 import {
     getAllUsers,
@@ -15,6 +15,7 @@ import { handleApiError } from "../utils/error-handler";
 import { Avatar } from "../components/Avatar";
 import { UserDetailModal } from "../components/modals/UserDetailModal";
 import { usePagination } from "../hooks/usePagination";
+import { useMediaQuery } from "../hooks/useMediaQuery"; // Importar el nuevo hook
 import { PaginationControls } from "../components/ui/PaginationControls";
 import { FilterInput } from "../components/forms/FilterInput";
 import {
@@ -82,6 +83,9 @@ export const UsersManagementPage = () => {
         null
     );
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
+
+    // Hook para responsividad / Hook for responsiveness
+    const isLargeScreen = useMediaQuery("(min-width: 768px)");
 
     // Cargar gimnasios (solo para admin) // Load gyms (admin only)
     useEffect(() => {
@@ -220,56 +224,63 @@ export const UsersManagementPage = () => {
     };
 
     // Definición de columnas para la tabla // Column definitions for the table
-    const userColumns: ColumnDefinition<UserWithGym | GymUser>[] = [
-        {
-            key: "first_name",
-            header: "Nombre",
-            render: (u) => (
-                <div className={styles.avatarCell}>
-                    <Avatar
-                        src={u.profile_picture}
-                        firstName={u.first_name}
-                        lastName={u.last_name}
-                        size={35}
-                    />
-                    <span className="text-dark">
-                        {u.first_name} {u.last_name}
-                    </span>
-                </div>
-            ),
-        },
-        ...(isAdmin
-            ? [
-                {
-                    key: "gym_name" as keyof (UserWithGym | GymUser),
-                    header: "Gimnasio",
-                    render: (u: UserWithGym | GymUser) => {
-                        const userWithGym = u as UserWithGym;
-                        return (
-                            <div className={styles.avatarCell}>
-                                <Avatar
-                                    src={userWithGym.logo_url}
-                                    firstName={userWithGym.gym_name}
-                                    size={35}
-                                />
-                                <span className="text-dark">
-                                    {userWithGym.gym_name}
-                                    {userWithGym.is_gym_deleted ? <span className="text-danger ms-1">(Eliminado)</span> : null}
-                                </span>
-                            </div>
-                        );
-                    },
+    const userColumns: ColumnDefinition<UserWithGym | GymUser>[] = useMemo(() => {
+        const columns: ColumnDefinition<UserWithGym | GymUser>[] = [
+            {
+                key: "first_name",
+                header: "Nombre",
+                render: (u) => (
+                    <div className={styles.avatarCell}>
+                        <Avatar
+                            src={u.profile_picture}
+                            firstName={u.first_name}
+                            lastName={u.last_name}
+                            size={35}
+                        />
+                        <span className="text-dark">
+                            {isLargeScreen ? `${u.first_name} ${u.last_name}` : u.first_name}
+                        </span>
+                    </div>
+                ),
+            },
+        ];
+
+        // Columnas específicas para admin
+        if (isAdmin) {
+            columns.push({
+                key: "gym_name" as keyof (UserWithGym | GymUser),
+                header: "Gimnasio",
+                render: (u: UserWithGym | GymUser) => {
+                    const userWithGym = u as UserWithGym;
+                    return (
+                        <div className={styles.avatarCell}>
+                            <Avatar
+                                src={userWithGym.logo_url}
+                                firstName={userWithGym.gym_name}
+                                size={35}
+                            />
+                            <span className="text-dark">
+                                {userWithGym.gym_name}
+                                {userWithGym.is_gym_deleted ? <span className="text-danger ms-1">(Eliminado)</span> : null}
+                            </span>
+                        </div>
+                    );
                 },
-            ]
-            : [
-                {
-                    key: "registered_at" as keyof (UserWithGym | GymUser),
-                    header: "Fecha de Registro",
-                    render: (u: UserWithGym | GymUser) =>
-                        formatDate(u.registered_at),
-                },
-            ]),
-    ];
+            });
+        }
+        
+        // Columna de fecha de registro para manager
+        if (isManager) {
+            columns.push({
+                key: "registered_at" as keyof (UserWithGym | GymUser),
+                header: "Fecha de Registro",
+                render: (u: UserWithGym | GymUser) =>
+                    formatDate(u.registered_at),
+            });
+        }
+
+        return columns;
+    }, [isLargeScreen, isAdmin, isManager]);
 
     // Renderizado de estado de carga // Loading state rendering
     if (isLoading && users.length === 0) {
