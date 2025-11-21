@@ -22,6 +22,7 @@ import { Toaster } from "sonner";
 // Componentes necesarios de react-router-dom
 // Necessary components from react-router-dom
 import { Routes, Route, Link, useLocation } from "react-router-dom";
+import clsx from "clsx";
 
 // --- Componentes de Layout y UI Globales ---
 // --- Global Layout and UI Components ---
@@ -66,14 +67,6 @@ function App() {
   const location = useLocation();
   const isLandingPage = location.pathname === "/";
 
-  // Estilo condicional para el contenido principal
-  // Conditional style for the main content
-  const mainStyle = {
-    flex: 1,
-    paddingTop: '90px',
-    backgroundColor: isLandingPage ? 'transparent' : '#F8F9FA',
-  };
-
   // Componente placeholder para la página de "No Autorizado" (Error 403)
   // Placeholder component for the "Unauthorized" page (Error 403)
   const UnauthorizedPage = () => (
@@ -99,47 +92,34 @@ function App() {
   );
 
   return (
-    // Contenedor raíz para el fondo de video.
-    // Root container for the video background.
-    <div className="root-container">
-      {/* Video de fondo y superposición */}
-      {/* Background video and overlay */}
+    <>
+      {/* ========================================
+        FONDO DE VIDEO GLOBAL Y FIJO
+        GLOBAL FIXED VIDEO BACKGROUND
+        ======================================== */}
       <video autoPlay muted loop playsInline className="video-bg">
         <source src="/videos/landing_video_1.mp4" type="video/mp4" />
       </video>
       <div className="overlay-bg"></div>
 
-      {/* Contenedor principal de la aplicación para el layout "sticky footer" */}
-      {/* Main application container for "sticky footer" layout */}
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          minHeight: "100vh",
-          position: "relative",
-          zIndex: 1,
-        }}>
-        {/* Sistema global de notificaciones */}
-        {/* Global notification system */}
+      {/* ========================================
+        CONTENEDOR PRINCIPAL DE LA APLICACIÓN
+        MAIN APP CONTAINER
+        ======================================== */}
+      <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", position: "relative" }}>
         <Toaster position="bottom-left" richColors closeButton />
-
-        {/* Barra de navegación principal */}
-        {/* Main navigation bar */}
         <NavbarComponent />
-
-        {/* Contenido principal de la página */}
-        {/* Main page content */}
-        <main style={mainStyle}>
-          {/* Definir las rutas de la aplicación */}
-          {/* Define the application routes */}
+        <main
+          style={{ flex: 1, paddingTop: "90px" }}
+          className={clsx({ "main-content-glass": !isLandingPage })}
+        >
           <Routes>
             {/* ========================================
               RUTAS PÚBLICAS
               PUBLIC ROUTES
               ======================================== */}
             <Route path="/" element={<LandingPage />} />
-            <Route path="/register" element={<RegisterUserPage />} />{" "}
-            {/* Ruta corregida */}
+            <Route path="/register" element={<RegisterUserPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/gyms" element={<ListGymsPage />} />
             <Route path="/gyms/:id" element={<GymPage />} />
@@ -153,6 +133,7 @@ function App() {
             <Route path="/faq" element={<FaqPage />} />
             <Route path="/join" element={<JoinUsPage />} />
             <Route path="/gym-contact" element={<GymContactPage />} />
+
             {/* ========================================
               RUTAS PROTEGIDAS: Autenticación requerida (User, Manager, Admin)
               PROTECTED ROUTES: Authentication required (User, Manager, Admin)
@@ -162,27 +143,26 @@ function App() {
               <Route path="/visits/:visitId/qr" element={<UserVisitGymPage />} />
               <Route path="/my-visits" element={<MyVisitsPage />} />
             </Route>
+
             {/* ========================================
               RUTAS PROTEGIDAS: Admin y Manager
               PROTECTED ROUTES: Admin and Manager
               ======================================== */}
-            <Route
-              element={<ProtectedRoute allowedRoles={["admin", "manager"]} />}>
+            <Route element={<ProtectedRoute allowedRoles={["admin", "manager"]} />}>
               <Route path="/gyms/edit/:id" element={<EditGymPage />} />
               <Route path="/visits/manage" element={<VisitsManagementPage />} />
               <Route path="/users/manage" element={<UsersManagementPage />} />
             </Route>
+
             {/* ========================================
               RUTAS PROTEGIDAS: Solo Admin
               PROTECTED ROUTES: Admin only
               ======================================== */}
             <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
               <Route path="/gyms/add" element={<AddGymPage />} />
-              <Route
-                path="/managers/manage"
-                element={<ManagersManagementPage />}
-              />
+              <Route path="/managers/manage" element={<ManagersManagementPage />} />
             </Route>
+
             {/* ========================================
               RUTA NOT FOUND (404)
               NOT FOUND ROUTE (404)
@@ -190,16 +170,10 @@ function App() {
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
-
-        {/* Footer global */}
-        {/* Global footer */}
         <Footer />
-
-        {/* Modal global de consentimiento de cookies */}
-        {/* Global cookie consent modal */}
         <CookieConsentModal />
       </div>
-    </div>
+    </>
   );
 }
 

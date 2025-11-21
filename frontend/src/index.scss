@@ -196,6 +196,13 @@ main {
   z-index: -1; // Encima del video, detrás del contenido // On top of video, behind content
 }
 
+// Clase para aplicar el efecto glassmorphism al contenido principal
+// Class to apply glassmorphism effect to the main content
+.main-content-glass {
+  background-color: $glass-bg;
+  backdrop-filter: blur(12px);
+}
+
 // =============================================================================
 // OVERRIDE DE LA VARIABLE CSS PARA EL ICONO DEL MENÚ HAMBURGUESA
 // CSS VARIABLE OVERRIDE FOR HAMBURGER MENU ICON
