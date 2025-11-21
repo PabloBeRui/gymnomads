@@ -24,9 +24,9 @@
   flex-wrap: wrap;
   gap: 1rem;
 
-  // En pantallas pequeñas, alinear todo a la derecha
+  // En pantallas pequeñas, alinear todo al centro
   @media (max-width: 767.98px) {
-    justify-content: flex-end;
+    justify-content: center;
   }
 }
 
