@@ -64,6 +64,7 @@ import styles from "./ProfilePage.module.scss";
 export const ProfilePage: React.FC = () => {
   // --- Context / Auth ---
   const { user, token, setUser } = useAuth();
+  const navigate = useNavigate(); // Inicializar navigate
 
   // --- Local state / Estados locales ---
   const [gymName, setGymName] = useState<string | null>(null);
