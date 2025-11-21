@@ -110,7 +110,7 @@ export const NavbarComponent = () => {
                 <div className="d-lg-none me-2" style={{ width: "40px" }}></div>
             )}
             <Navbar.Brand as={Link} to="/" onClick={() => setExpanded(false)} className={clsx(styles.navbarBrand, "mx-auto", "mx-lg-0")}>
-                GymNomads
+                <span>Gym</span><span className="text-light">Nomads</span>
             </Navbar.Brand>
             <Navbar.Toggle aria-controls="responsive-navbar-nav" className={clsx(styles.navbarToggle, "ms-auto")}>
                 {expanded ? (

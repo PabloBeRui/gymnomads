@@ -22,19 +22,21 @@ interface HeroSlideProps {
 
 export const HeroSlide: React.FC<HeroSlideProps> = ({ transparentBg = true }) => {
   const [animationStep, setAnimationStep] = useState(0);
+  const [gymColorAnimated, setGymColorAnimated] = useState(false);
 
   useEffect(() => {
     const timers: number[] = [];
     const steps = [
-      () => setAnimationStep(1),
-      () => setAnimationStep(2),
-      () => setAnimationStep(3),
+      () => setGymColorAnimated(true), // Paso 0: Animar color de "Gym"
+      () => setAnimationStep(1),      // Paso 1: "Viaja."
+      () => setAnimationStep(2),      // Paso 2: "Entrena."
+      () => setAnimationStep(3),      // Paso 3: "Repite."
     ];
 
-    let delay = 800;
+    let delay = 500; // Delay inicial
     steps.forEach((step, index) => {
       timers[index] = setTimeout(step, delay);
-      delay += 600;
+      delay += 750; // Delay 25% más lento
     });
 
     return () => {
@@ -44,7 +46,12 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ transparentBg = true }) =>
 
   return (
     <div className={clsx(styles.slide, { [styles.transparent]: transparentBg })}>
-      <h1 className={styles.brandName}>GymNomads</h1>
+      <h1 className={styles.brandName}>
+        <span className={clsx(styles.gym, { [styles.gymAnimated]: gymColorAnimated })}>
+            Gym
+        </span>
+        <span className={styles.nomads}>Nomads</span>
+      </h1>
 
       <div className={styles.taglineContainer}>
         <span
