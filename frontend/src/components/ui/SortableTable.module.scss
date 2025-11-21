@@ -50,6 +50,7 @@
   border-top: 1px solid var(--bs-gray-200); // Borde superior más claro
   vertical-align: middle; // Alinear contenido verticalmente
   text-align: center;
+  font-weight: 400; // Asegurar que el texto normal no esté en negrita
 }
 
 // Estilo para la primera fila, para que no tenga borde superior
@@ -66,7 +67,7 @@
     
     // Hacer el texto más prominente al pasar el ratón
     & > .td {
-      font-weight: 500;
+      font-weight: 600; // Hacer el texto más fuerte al pasar el ratón
       color: $dark;
     }
   }

@@ -34,3 +34,11 @@
     color: $danger; // Texto rojo oscuro // Dark red text
     font-weight: bold; // Texto en negrita // Bold text
 }
+
+// Estilo para el nombre de un gimnasio eliminado en la tabla
+// Style for a deleted gym's name in the table
+.deletedGym {
+    color: $danger;
+    text-decoration: line-through;
+    opacity: 0.8;
+}

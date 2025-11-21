@@ -33,6 +33,7 @@ import {
     Alert,
 } from "react-bootstrap";
 import styles from "./UsersManagementPage.module.scss";
+import clsx from "clsx";
 
 /**
  * =============================================================================
@@ -259,12 +260,15 @@ export const UsersManagementPage = () => {
                                 firstName={userWithGym.gym_name}
                                 size={35}
                             />
-                            <div>
-                                <span className="text-dark">{userWithGym.gym_name}</span>
-                                {userWithGym.is_gym_deleted ? (
-                                    <div><span className="text-danger small">(Eliminado)</span></div>
-                                ) : null}
-                            </div>
+                            <span
+                                className={clsx({
+                                    "text-dark": !userWithGym.is_gym_deleted,
+                                    [styles.deletedGym]: userWithGym.is_gym_deleted,
+                                })}
+                                title={userWithGym.is_gym_deleted ? "Gimnasio Eliminado" : ""}
+                            >
+                                {userWithGym.gym_name}
+                            </span>
                         </div>
                     );
                 },
@@ -272,17 +276,17 @@ export const UsersManagementPage = () => {
         }
         
         // Columna de fecha de registro para manager
-        if (isManager) {
+        if (isLargeScreen) {
             columns.push({
                 key: "registered_at" as keyof (UserWithGym | GymUser),
-                header: "Fecha de Registro",
+                header: "Miembro desde",
                 render: (u: UserWithGym | GymUser) =>
                     formatDate(u.registered_at),
             });
         }
 
         return columns;
-    }, [isLargeScreen, isAdmin, isManager]);
+    }, [isLargeScreen, isAdmin]);
 
     // Renderizado de estado de carga // Loading state rendering
     if (isLoading && users.length === 0) {

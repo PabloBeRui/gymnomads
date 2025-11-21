@@ -36,6 +36,7 @@ import {
 } from "react-bootstrap";
 
 import styles from "./VisitsManagementPage.module.scss";
+import clsx from "clsx";
 
 /**
  * =============================================================================
@@ -249,12 +250,15 @@ export const VisitsManagementPage = () => {
                             size={35}
                         />
                         <div>
-                            <span className="text-dark">
+                            <span
+                                className={clsx({
+                                    "text-dark": !visit.is_gym_deleted,
+                                    [styles.deletedGym]: visit.is_gym_deleted,
+                                })}
+                                title={visit.is_gym_deleted ? "Gimnasio Eliminado" : ""}
+                            >
                                 {isAdmin ? visit.gym_name || "N/A" : visit.destination_gym_name || "N/A"}
                             </span>
-                            {visit.is_gym_deleted ? (
-                                <div><span className="text-danger small">(Eliminado)</span></div>
-                            ) : null}
                         </div>
                     </div>
                 ),

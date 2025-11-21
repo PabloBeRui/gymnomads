@@ -216,7 +216,7 @@ export const ListGymsPage = () => {
         <Container className="py-5">
             <header className="text-center mb-5">
                 <h1 className="fw-bold text-primary">Nuestros Gimnasios</h1>
-                <p className="fs-5 text-dark">
+                <p className="fs-5 text-light">
                     Explora la red de gimnasios asociados a GymNomads.
                 </p>
             </header>
@@ -312,13 +312,13 @@ export const ListGymsPage = () => {
                                         <Card.Footer className="bg-white border-top-0">
                                             <div className="d-flex justify-content-end align-items-center gap-2">
                                                 <Button
-                                                    variant="outline-primary"
+                                                    variant="outline-info"
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         navigate(`/gyms/edit/${gym.id}`);
                                                     }}
                                                 >
-                                                    <i className="bi bi-pencil-fill me-2 text-primary"></i>Editar
+                                                    <i className="bi bi-pencil-fill me-2 text-info"></i>Editar
                                                 </Button>
                                                 {isAdmin && (
                                                     <>
