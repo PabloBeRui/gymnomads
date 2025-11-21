@@ -38,6 +38,25 @@ body {
   -moz-osx-font-smoothing: grayscale; // Mejorar el renderizado de fuentes // Improve font rendering
 }
 
+/* Estilo de la barra de desplazamiento */
+/* Scrollbar style */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bs-gray-300); // Color de fondo de la pista // Track background color
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $primary; // Color del pulgar al color primario // Thumb color to primary
+  border-radius: 10px;
+  &:hover {
+    background: lighten($primary, 10%); // Un poco más claro al pasar el ratón // Slightly lighter on hover
+  }
+}
+
 #root, .d-flex.flex-column.min-vh-100 {
   min-height: 100vh; // Asegurar que la aplicación ocupa toda la altura de la ventana // Ensure app takes full viewport height
 }
