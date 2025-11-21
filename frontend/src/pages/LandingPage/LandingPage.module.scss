@@ -21,6 +21,14 @@
   position: relative; // Necesario para el posicionamiento de los hijos // Needed for children positioning
 }
 
+.scrollContainer {
+  height: 100vh;
+  width: 100%;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+  scroll-snap-type: y proximity;
+}
+
 .ctaButton {
   padding: 12px 30px;
   font-size: 1.1rem;
