@@ -18,11 +18,16 @@
 
 .paginationContainer {
   display: flex;
-  justify-content: space-between; // Espacio entre selector y botones // Space between selector and buttons
-  align-items: center; // Centrado vertical // Vertical centering
-  padding: 16px 0;
-  flex-wrap: wrap; // Envuelve elementos si no caben // Wraps elements if they don't fit
-  gap: 16px; // Espacio entre elementos // Space between elements
+  justify-content: space-between; // Por defecto para pantallas grandes
+  align-items: center;
+  padding: 1rem 0;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  // En pantallas pequeñas, alinear todo a la derecha
+  @media (max-width: 767.98px) {
+    justify-content: flex-end;
+  }
 }
 
 .selectorContainer {
