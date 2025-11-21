@@ -58,7 +58,7 @@
   // Bloque :hover corregido
   // Corrected :hover block
   &:hover {
-    color: $light !important; // Color blanco en hover // White color on hover
+    color: $primary !important; // Color primario en hover
     background-color: rgba(
       $light,
       0.1
