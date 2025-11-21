@@ -233,3 +233,15 @@ main {
 :root {
   --bs-navbar-toggler-icon-bg: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke='#{$primary}' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg>");
 }
+
+/* Ocultar barra de desplazamiento en móviles */
+/* Hide scrollbar on mobile */
+@media (max-width: 767.98px) {
+  body::-webkit-scrollbar {
+    display: none; /* Para Chrome, Safari y Opera */
+  }
+  body {
+    -ms-overflow-style: none;  /* IE y Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+}

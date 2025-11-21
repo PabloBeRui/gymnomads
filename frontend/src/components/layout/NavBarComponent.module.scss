@@ -20,6 +20,7 @@
     backdrop-filter 0.3s ease-in-out; // Añadir transición para backdrop-filter // Add transition for backdrop-filter
   font-weight: 500;
   z-index: 1030; // Asegurar que la navbar esté siempre encima // Ensure navbar is always on top
+  width: 100vw; // Ocupar todo el ancho del viewport
 }
 
 .navbarTransparent {
