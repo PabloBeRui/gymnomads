@@ -121,6 +121,23 @@
   :global(.dropdown-divider) {
     border-top: 1px solid rgba($light, 0.1); // Divisor claro // Light divider
   }
+  
+  // Color del caret del dropdown
+  :global(.dropdown-toggle::after) {
+    border-top-color: $light;
+  }
+
+  // Cuando el dropdown-toggle está en hover
+  // When the dropdown-toggle is hovered
+  :global(.dropdown-toggle:hover::after) {
+    border-top-color: $primary;
+  }
+
+  // Cuando el dropdown está abierto
+  // When the dropdown is open
+  :global(.dropdown-toggle.show::after) {
+    border-top-color: $primary;
+  }
 }
 
 // Estilos para el overlay del menú en móvil
