@@ -289,14 +289,14 @@ export const ListGymsPage = () => {
                                             className={styles.gymImage}
                                         />
                                         <div className={styles.cardOverlay}>
-                                            <h5 className="text-white fw-bold">{gym.name}</h5>
+                                            <h5 className="text-primary fw-bold">{gym.name}</h5>
                                         </div>
                                     </div>
                                     <Card.Body className="d-flex justify-content-between align-items-center">
                                         <div className="d-flex flex-column">
                                             <Card.Text className="small text-dark">
                                                 <i className="bi bi-geo-alt-fill me-2 text-primary"></i>
-                                                {gym.city}
+                                                <strong>{gym.city}</strong>
                                             </Card.Text>
                                         </div>
                                         <div>
@@ -309,41 +309,41 @@ export const ListGymsPage = () => {
                                     </Card.Body>
                                     {(user?.role === "admin" ||
                                         (user?.role === "manager" && user.home_gym_id === gym.id)) && (
-                                        <Card.Footer className="bg-white border-top-0 text-end">
-                                            <Button
-                                                variant="outline-primary"
-                                                className="me-2"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    navigate(`/gyms/edit/${gym.id}`);
-                                                }}
-                                            >
-                                                <i className="bi bi-pencil-fill me-2 text-primary"></i>Editar
-                                            </Button>
-                                            {isAdmin && (
-                                                <>
-                                                    <Button
-                                                        variant="outline-danger"
-                                                        className="me-2"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handleDelete(gym);
-                                                        }}
-                                                    >
-                                                        <i className="bi bi-trash-fill me-2"></i>Borrar
-                                                    </Button>
-                                                    {/* TODO: Implement suspend gym functionality */}
-                                                    <Button
-                                                        variant="outline-warning"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            // Future suspend logic here
-                                                        }}
-                                                    >
-                                                        <i className="bi bi-pause-circle-fill me-2"></i>Suspender
-                                                    </Button>
-                                                </>
-                                            )}
+                                        <Card.Footer className="bg-white border-top-0">
+                                            <div className="d-flex justify-content-end align-items-center gap-2">
+                                                <Button
+                                                    variant="outline-primary"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        navigate(`/gyms/edit/${gym.id}`);
+                                                    }}
+                                                >
+                                                    <i className="bi bi-pencil-fill me-2 text-primary"></i>Editar
+                                                </Button>
+                                                {isAdmin && (
+                                                    <>
+                                                        <Button
+                                                            variant="outline-danger"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleDelete(gym);
+                                                            }}
+                                                        >
+                                                            <i className="bi bi-trash-fill me-2"></i>Borrar
+                                                        </Button>
+                                                        {/* TODO: Implement suspend gym functionality */}
+                                                        <Button
+                                                            variant="outline-warning"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                // Future suspend logic here
+                                                            }}
+                                                        >
+                                                            <i className="bi bi-pause-circle-fill me-2"></i>Suspender
+                                                        </Button>
+                                                    </>
+                                                )}
+                                            </div>
                                         </Card.Footer>
                                     )}
                                 </Card>
