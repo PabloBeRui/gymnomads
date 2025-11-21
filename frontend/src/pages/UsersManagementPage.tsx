@@ -307,7 +307,7 @@ export const UsersManagementPage = () => {
             </header>
 
             <Card className="mb-4">
-                <Card.Header as="h5" className="bg-secondary text-white">
+                <Card.Header as="h5" className="bg-secondary text-white text-center">
                     Filtros y Métricas
                 </Card.Header>
                 <Card.Body>

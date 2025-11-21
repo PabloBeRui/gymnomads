@@ -243,7 +243,7 @@ export const ManagersManagementPage = () => {
   return (
     <Container fluid="xl" className="py-4">
       {/* Encabezado / Header */}
-      <div className="mb-4">
+      <div className="mb-4 text-center">
         <h1 className="h2 text-primary">Gestión de Managers</h1>
         <p className="text-dark">
           Visualiza, edita y filtra todos los gerentes registrados en la
@@ -252,7 +252,7 @@ export const ManagersManagementPage = () => {
       </div>
 
       <Card className="mb-4">
-        <Card.Header as="h5" className="bg-secondary text-white">
+        <Card.Header as="h5" className="bg-secondary text-white text-center">
             Filtros y Métricas
         </Card.Header>
         <Card.Body>
