@@ -318,7 +318,7 @@ export const ListGymsPage = () => {
                                                         navigate(`/gyms/edit/${gym.id}`);
                                                     }}
                                                 >
-                                                    <i className="bi bi-pencil-fill me-2 text-info"></i>Editar
+                                                    <i className="bi bi-pencil-fill me-2"></i>Editar
                                                 </Button>
                                                 {isAdmin && (
                                                     <>
