@@ -219,21 +219,39 @@ export const GymPage = () => {
                         <Container fluid="md" className={`${styles.contentContainer} py-4`} onClick={(e) => e.stopPropagation()}>
                             <Row className="justify-content-center">
                                 <Col lg={11}>
-                                    <Row className="justify-content-between align-items-center mb-4">
-                                        <Col xs="auto">
-                                            {gym.latitude && gym.longitude && (
-                                                <WeatherWidget latitude={gym.latitude} longitude={gym.longitude} />
-                                            )}
-                                        </Col>
-                                        <Col xs="auto">
-                                            <div className="d-flex align-items-center gap-3">
-                                                <img src={logoSrc} alt={`Logo de ${gym.name}`} className={styles.gymLogoSmall} />
-                                                <CloseButton onClick={() => navigate("/gyms")} color="#FFB700" />
-                                            </div>
-                                        </Col>
-                                    </Row>
-                
-                                    {/* --- Hero Image y Detalles Principales --- */}
+                                                                                                    {/* Fila superior para móvil, se oculta en escritorio */}
+                                                                                                    <Row className="d-md-none justify-content-between align-items-center mb-3">
+                                                                                                        <Col xs="auto">
+                                                                                                            <img src={logoSrc} alt={`Logo de ${gym.name}`} className={styles.gymLogoSmall} />
+                                                                                                        </Col>
+                                                                                                        <Col xs="auto">
+                                                                                                            <CloseButton onClick={() => navigate("/gyms")} color="#FFB700" />
+                                                                                                        </Col>
+                                                                                                    </Row>
+                                                                
+                                                                                                    {/* Fila del widget del tiempo, centrada en móvil, se oculta en escritorio */}
+                                                                                                    <Row className="d-md-none justify-content-center mb-4">
+                                                                                                        <Col xs="auto">
+                                                                                                            {gym.latitude && gym.longitude && (
+                                                                                                                <WeatherWidget latitude={gym.latitude} longitude={gym.longitude} />
+                                                                                                            )}
+                                                                                                        </Col>
+                                                                                                    </Row>
+                                                                
+                                                                                                    {/* Fila para escritorio, se oculta en móvil */}
+                                                                                                    <Row className="d-none d-md-flex justify-content-between align-items-center mb-4">
+                                                                                                        <Col md="auto">
+                                                                                                            {gym.latitude && gym.longitude && (
+                                                                                                                <WeatherWidget latitude={gym.latitude} longitude={gym.longitude} />
+                                                                                                            )}
+                                                                                                        </Col>
+                                                                                                        <Col md="auto">
+                                                                                                            <div className="d-flex align-items-center gap-3">
+                                                                                                                <img src={logoSrc} alt={`Logo de ${gym.name}`} className={styles.gymLogoSmall} />
+                                                                                                                <CloseButton onClick={() => navigate("/gyms")} color="#FFB700" />
+                                                                                                            </div>
+                                                                                                        </Col>
+                                                                                                    </Row>                                    {/* --- Hero Image y Detalles Principales --- */}
                                     <Card className="mb-4 shadow-sm border-0">
                                         <div className={styles.heroImageWrapper}>
                                         <Card.Img variant="top" src={mainImageSrc} alt={`Imagen principal de ${gym.name}`} className={styles.heroImage} />
