@@ -259,10 +259,12 @@ export const UsersManagementPage = () => {
                                 firstName={userWithGym.gym_name}
                                 size={35}
                             />
-                            <span className="text-dark">
-                                {userWithGym.gym_name}
-                                {userWithGym.is_gym_deleted ? <span className="text-danger ms-1">(Eliminado)</span> : null}
-                            </span>
+                            <div>
+                                <span className="text-dark">{userWithGym.gym_name}</span>
+                                {userWithGym.is_gym_deleted ? (
+                                    <div><span className="text-danger small">(Eliminado)</span></div>
+                                ) : null}
+                            </div>
                         </div>
                     );
                 },
