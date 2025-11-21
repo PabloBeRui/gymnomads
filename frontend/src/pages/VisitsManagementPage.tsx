@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../context/AuthContext";
 import {
     getAllVisits,
@@ -17,6 +17,7 @@ import { Avatar } from "../components/Avatar";
 import { VisitsDetailsModal } from "../components/modals/VisitsDetailsModal";
 import { VisitsStatsModal } from "../components/modals/VisitsStatsModal";
 import { usePagination } from "../hooks/usePagination";
+import { useMediaQuery } from "../hooks/useMediaQuery";
 import { PaginationControls } from "../components/ui/PaginationControls";
 import { FilterInput } from "../components/forms/FilterInput";
 import {
@@ -89,6 +90,9 @@ export const VisitsManagementPage = () => {
         null
     );
     const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
+
+    // Hook para responsividad / Hook for responsiveness
+    const isLargeScreen = useMediaQuery("(min-width: 768px)");
 
     // Cargar gimnasios (solo para admin) // Load gyms (admin only)
     useEffect(() => {
@@ -196,84 +200,78 @@ export const VisitsManagementPage = () => {
     };
 
     // Definición de columnas para la tabla // Column definitions for the table
-    const visitColumns: ColumnDefinition<VisitWithDetails>[] = [
-        {
-            key: "user_name",
-            header: "Usuario",
-            render: (visit) => (
-                <div className={styles.avatarCell}>
-                    <Avatar
-                        src={visit.user_profile_picture}
-                        firstName={visit.user_name || "Usuario"}
-                        lastName={""}
-                        size={35}
-                    />
-                    <span className="text-dark">{visit.user_name || "N/A"}</span>
-                </div>
-            ),
-        },
-        // Columna de gimnasio de origen (para manager en vista de recibidas) // Origin gym column (for manager in received view)
-        ...(isManager && managerVisitView === "received"
-            ? [
-                {
-                    key: "origin_gym_name" as keyof VisitWithDetails,
-                    header: "Gimnasio de Origen",
-                    render: (visit: VisitWithDetails) => (
-                        <div className={styles.avatarCell}>
-                            <Avatar
-                                src={visit.origin_gym_logo_url}
-                                firstName={visit.origin_gym_name || "Gimnasio"}
-                                size={35}
-                            />
-                            <span className="text-dark">{visit.origin_gym_name || "N/A"}</span>
-                        </div>
-                    ),
-                },
-            ]
-            : []),
-        // Columna de gimnasio de destino (para admin y manager en vista de enviadas) // Destination gym column (for admin and manager in sent view)
-        ...(isAdmin || (isManager && managerVisitView === "sent")
-            ? [
-                {
-                    key: "destination_gym_name" as keyof VisitWithDetails,
-                    header: isAdmin ? "Gimnasio Visitado" : "Gimnasio de Destino",
-                    render: (visit: VisitWithDetails) => (
-                        <div className={styles.avatarCell}>
-                            <Avatar
-                                src={
-                                    isAdmin
-                                        ? visit.gym_logo_url
-                                        : visit.destination_gym_logo_url
-                                }
-                                firstName={
-                                    isAdmin
-                                        ? visit.gym_name || "Gimnasio"
-                                        : visit.destination_gym_name || "Gimnasio"
-                                }
-                                size={35}
-                            />
-                            <span className="text-dark">
-                                {isAdmin
-                                    ? visit.gym_name || "N/A"
-                                    : visit.destination_gym_name || "N/A"}
-                                {visit.is_gym_deleted ? <span className="text-danger ms-1">(Eliminado)</span> : null}
-                            </span>
-                        </div>
-                    ),
-                },
-            ]
-            : []),
-        {
-            key: "visit_date",
-            header: "Fecha de Visita",
-            render: (visit) =>
-                new Date(visit.visit_date).toLocaleDateString("es-ES", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "2-digit",
-                }),
-        },
-    ];
+    const visitColumns: ColumnDefinition<VisitWithDetails>[] = useMemo(() => {
+        const baseColumns: ColumnDefinition<VisitWithDetails>[] = [
+            {
+                key: "user_name",
+                header: "Usuario",
+                render: (visit) => (
+                    <div className={styles.avatarCell}>
+                        <Avatar
+                            src={visit.user_profile_picture}
+                            firstName={visit.user_name || "Usuario"}
+                            size={35}
+                        />
+                        <span className="text-dark">
+                            {isLargeScreen ? visit.user_name || "N/A" : (visit.user_name?.split(' ')[0] || "N/A")}
+                        </span>
+                    </div>
+                ),
+            },
+        ];
+
+        if (isManager && managerVisitView === "received") {
+            baseColumns.push({
+                key: "origin_gym_name",
+                header: "Gimnasio de Origen",
+                render: (visit: VisitWithDetails) => (
+                    <div className={styles.avatarCell}>
+                        <Avatar
+                            src={visit.origin_gym_logo_url}
+                            firstName={visit.origin_gym_name || "Gimnasio"}
+                            size={35}
+                        />
+                        <span className="text-dark">{visit.origin_gym_name || "N/A"}</span>
+                    </div>
+                ),
+            });
+        }
+
+        if (isAdmin || (isManager && managerVisitView === "sent")) {
+            baseColumns.push({
+                key: "destination_gym_name",
+                header: isAdmin ? "Gimnasio Visitado" : "Gimnasio de Destino",
+                render: (visit: VisitWithDetails) => (
+                    <div className={styles.avatarCell}>
+                        <Avatar
+                            src={isAdmin ? visit.gym_logo_url : visit.destination_gym_logo_url}
+                            firstName={isAdmin ? visit.gym_name || "Gimnasio" : visit.destination_gym_name || "Gimnasio"}
+                            size={35}
+                        />
+                        <span className="text-dark">
+                            {isAdmin ? visit.gym_name || "N/A" : visit.destination_gym_name || "N/A"}
+                            {visit.is_gym_deleted ? <span className="text-danger ms-1">(Eliminado)</span> : null}
+                        </span>
+                    </div>
+                ),
+            });
+        }
+
+        if (isLargeScreen) {
+            baseColumns.push({
+                key: "visit_date",
+                header: "Fecha de Visita",
+                render: (visit) =>
+                    new Date(visit.visit_date).toLocaleDateString("es-ES", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "2-digit",
+                    }),
+            });
+        }
+
+        return baseColumns;
+    }, [isLargeScreen, isAdmin, isManager, managerVisitView]);
 
     // Muestra el spinner mientras carga y no hay datos // Shows spinner while loading and there is no data
     if (isLoading && visits.length === 0) {
