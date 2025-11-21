@@ -10,7 +10,7 @@
 
 .input {
   // Añadir padding para los iconos
-  padding-left: 2.5rem; // Espacio para el icono izquierdo
+  padding-left: 2.8rem; // Espacio para el icono izquierdo
   padding-right: 2.5rem; // Espacio para el botón de limpiar
   
   // Estilo consistente con la paleta
@@ -23,11 +23,12 @@
 .leadingIcon {
   position: absolute;
   top: 50%;
-  left: 0.9rem;
+  left: 0.8rem; // Ajustado para más espacio
   transform: translateY(-50%);
   color: $secondary;
   opacity: 0.6;
   pointer-events: none; // No interferir con el clic del input
+  z-index: 3; // Asegurar que esté por encima del input
 }
 
 .clearButton {

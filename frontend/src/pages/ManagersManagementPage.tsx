@@ -14,7 +14,7 @@
  * =============================================================================
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getAllManagers, updateManager } from "../services/user-services";
 import type {
@@ -26,6 +26,7 @@ import { handleApiError } from "../utils/error-handler";
 import { ManagerDetailsModal } from "../components/modals/ManagerDetailsModal";
 import { Avatar } from "../components/Avatar";
 import { usePagination } from "../hooks/usePagination";
+import { useMediaQuery } from "../hooks/useMediaQuery"; // Importar el nuevo hook
 import { PaginationControls } from "../components/ui/PaginationControls";
 import { FilterInput } from "../components/forms/FilterInput";
 import {
@@ -72,6 +73,9 @@ export const ManagersManagementPage = () => {
   const [selectedManager, setSelectedManager] = useState<ManagerWithGym | null>(
     null
   );
+
+  // Hook para responsividad / Hook for responsiveness
+  const isLargeScreen = useMediaQuery("(min-width: 768px)");
 
   // Cargar managers / Load managers
   const fetchManagers = async () => {
@@ -166,40 +170,54 @@ export const ManagersManagementPage = () => {
 
   // --- Definición de columnas para la tabla ---
   // --- Column definitions for the table ---
-  const managerColumns: ColumnDefinition<ManagerWithGym>[] = [
-    {
-      key: "first_name",
-      header: "Manager",
-      render: (manager) => (
-        <div className="d-flex align-items-center gap-2">
-          <Avatar
-            src={manager.profile_picture}
-            firstName={manager.first_name}
-            lastName={manager.last_name}
-            size={35}
-          />
-          <span>
-            {manager.first_name} {manager.last_name}
-          </span>
-        </div>
-      ),
-    },
-    {
-      key: "gym_name",
-      header: "Gimnasio",
-      render: (manager) => (
-        <div className="d-flex align-items-center gap-2">
-          <Avatar
-            src={manager.logo_url}
-            firstName={manager.gym_name}
-            lastName=""
-            size={35}
-          />
-          <span>{manager.gym_name}</span>
-        </div>
-      ),
-    },
-  ];
+  const managerColumns: ColumnDefinition<ManagerWithGym>[] = useMemo(() => {
+    const columns: ColumnDefinition<ManagerWithGym>[] = [
+      {
+        key: "first_name",
+        header: "Manager",
+        render: (manager) => (
+          <div className="d-flex align-items-center gap-2">
+            <Avatar
+              src={manager.profile_picture}
+              firstName={manager.first_name}
+              lastName={manager.last_name}
+              size={35}
+            />
+            <span>
+              {isLargeScreen
+                ? `${manager.first_name} ${manager.last_name}`
+                : manager.first_name}
+            </span>
+          </div>
+        ),
+      },
+      {
+        key: "gym_name",
+        header: "Gimnasio",
+        render: (manager) => (
+          <div className="d-flex align-items-center gap-2">
+            <Avatar
+              src={manager.logo_url}
+              firstName={manager.gym_name}
+              lastName=""
+              size={35}
+            />
+            <span>{manager.gym_name}</span>
+          </div>
+        ),
+      },
+    ];
+
+    if (isLargeScreen) {
+      columns.push({
+        key: "gym_city",
+        header: "Ciudad",
+        render: (manager) => <span>{manager.gym_city}</span>,
+      });
+    }
+
+    return columns;
+  }, [isLargeScreen]);
 
   // Render loading
   if (isLoading && managers.length === 0) {
@@ -240,11 +258,11 @@ export const ManagersManagementPage = () => {
         <Card.Body>
             <Row className="align-items-end">
                 {/* Métricas */}
-                <Col md={4} lg={3} className="mb-3">
-                    <h2 className="fw-bold text-primary mb-1">{totalItems}</h2>
+                <Col md={4} lg={3} className="mb-3 text-center">
                     <p className="text-dark mb-0 small">
                         {isLoading ? "Cargando..." : "Total de Managers"}
                     </p>
+                    <h2 className="fw-bold text-primary mb-1">{totalItems}</h2>
                 </Col>
 
                 {/* Filtro */}

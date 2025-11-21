@@ -59,10 +59,16 @@
 
 .clickableRow {
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 
   &:hover {
     background-color: rgba($primary, 0.1); // Usar un matiz del color primario
+    
+    // Hacer el texto más prominente al pasar el ratón
+    & > .td {
+      font-weight: 500;
+      color: $dark;
+    }
   }
 }
 
