@@ -24,7 +24,7 @@ import clsx from "clsx";
 interface AvatarProps {
     src?: string | null; // URL de la imagen de perfil / Profile picture URL
     firstName: string; // Nombre del usuario / User's first name
-    lastName: string; // Apellido del usuario / User's last name
+    lastName?: string; // Apellido del usuario (opcional) / User's last name (optional)
     size?: number; // Tamaño del avatar. Se usa para la variable CSS. / Avatar size. Used for the CSS variable.
     onClick?: () => void; // Función al hacer click / Click handler function
     className?: string; // Clases CSS adicionales / Additional CSS classes
@@ -33,7 +33,7 @@ interface AvatarProps {
 export const Avatar: React.FC<AvatarProps> = ({
     src,
     firstName,
-    lastName,
+    lastName = '', // Valor por defecto para evitar undefined
     size,
     onClick,
     className = "",
@@ -62,6 +62,8 @@ export const Avatar: React.FC<AvatarProps> = ({
         dynamicStyles["--avatar-size"] = `${size}px`;
     }
 
+    const fullName = lastName ? `${firstName} ${lastName}` : firstName;
+
     return (
         <div
             className={clsx(
@@ -71,14 +73,14 @@ export const Avatar: React.FC<AvatarProps> = ({
             )}
             style={dynamicStyles}
             onClick={onClick}
-            title={`${firstName} ${lastName}`} // Tooltip con nombre completo / Tooltip with full name
+            title={fullName} // Tooltip con nombre completo / Tooltip with full name
             role={onClick ? "button" : "img"}
-            aria-label={`Avatar de ${firstName} ${lastName}`}
+            aria-label={`Avatar de ${fullName}`}
         >
             {showImage ? (
                 <img
                     src={src}
-                    alt={`${firstName} ${lastName}`}
+                    alt={fullName}
                     className={styles.avatarImage}
                     onError={() => setImageError(true)} // Si falla la carga, mostrar iniciales / Show initials if loading fails
                 />

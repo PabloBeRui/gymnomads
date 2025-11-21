@@ -223,7 +223,6 @@ export const VisitsManagementPage = () => {
                             <Avatar
                                 src={visit.origin_gym_logo_url}
                                 firstName={visit.origin_gym_name || "Gimnasio"}
-                                lastName={""}
                                 size={35}
                             />
                             <span className="text-dark">{visit.origin_gym_name || "N/A"}</span>
@@ -251,14 +250,13 @@ export const VisitsManagementPage = () => {
                                         ? visit.gym_name || "Gimnasio"
                                         : visit.destination_gym_name || "Gimnasio"
                                 }
-                                lastName={""}
                                 size={35}
                             />
                             <span className="text-dark">
                                 {isAdmin
                                     ? visit.gym_name || "N/A"
                                     : visit.destination_gym_name || "N/A"}
-                                {visit.is_gym_deleted && " (Eliminado)"}
+                                {visit.is_gym_deleted ? <span className="text-danger ms-1">(Eliminado)</span> : null}
                             </span>
                         </div>
                     ),

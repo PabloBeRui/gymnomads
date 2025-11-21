@@ -250,12 +250,11 @@ export const UsersManagementPage = () => {
                                 <Avatar
                                     src={userWithGym.logo_url}
                                     firstName={userWithGym.gym_name}
-                                    lastName=""
                                     size={35}
                                 />
                                 <span className="text-dark">
                                     {userWithGym.gym_name}
-                                    {userWithGym.is_gym_deleted && " (Eliminado)"}
+                                    {userWithGym.is_gym_deleted ? <span className="text-danger ms-1">(Eliminado)</span> : null}
                                 </span>
                             </div>
                         );
