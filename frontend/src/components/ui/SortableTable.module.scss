@@ -14,51 +14,67 @@
  *
  * =============================================================================
  */
-@use "../../styles/variables" as *; // Importar variables globales // Import global variables
+@use "../../styles/variables" as *;
 
 .tableContainer {
-  overflow-x: auto; // Permite el scroll horizontal en tablas grandes // Allows horizontal scrolling in large tables
-  background-color: var(--bs-white); // Fondo blanco // White background
-  border-radius: 8px; // Bordes redondeados // Rounded borders
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); // Sombra // Shadow
+  overflow-x: auto;
+  border: 1px solid var(--bs-gray-300);
+  border-radius: $border-radius-lg;
+  box-shadow: $box-shadow;
+  // Usar 'overflow:hidden' para que el radio del borde se aplique a la tabla interior
+  overflow: hidden;
 }
 
 .table {
-  width: 100%; // Ancho completo // Full width
-  border-collapse: collapse; // Elimina el espacio entre celdas // Removes space between cells
+  margin-bottom: 0; // React-Bootstrap a veces añade un margen que queremos eliminar
 }
 
 .th {
-  padding: 15px;
+  padding: 1rem 1.25rem;
   text-align: left;
-  background-color: $light; // Fondo claro // Light background
-  border-bottom: 2px solid var(--bs-gray-300); // Borde inferior // Bottom border
-  font-weight: bold;
-  color: $dark; // Color de texto oscuro // Dark text color
+  background-color: $secondary; // Fondo oscuro del tema
+  border-bottom: none;
+  font-weight: 600;
+  color: $light; // Texto claro para contraste
   cursor: pointer;
   user-select: none;
-  transition: background-color 0.2s; // Transición suave // Smooth transition
-}
+  transition: background-color 0.2s ease;
+  white-space: nowrap; // Evitar que los títulos se partan
 
-.th:hover {
-  background-color: var(--bs-gray-200); // Fondo más oscuro al pasar el ratón // Darker background on hover
+  &:hover {
+    background-color: lighten($secondary, 5%); // Aclarar al pasar el ratón
+  }
 }
 
 .td {
-  padding: 12px 15px;
-  border-bottom: 1px solid var(--bs-gray-300); // Borde inferior // Bottom border
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--bs-gray-200); // Borde superior más claro
+  vertical-align: middle; // Alinear contenido verticalmente
+}
+
+// Estilo para la primera fila, para que no tenga borde superior
+:global(tbody tr:first-child) > .td {
+  border-top: none;
 }
 
 .clickableRow {
   cursor: pointer;
-  transition: background-color 0.2s; // Transición suave // Smooth transition
-}
+  transition: background-color 0.2s ease;
 
-.clickableRow:hover {
-  background-color: $light; // Fondo claro al pasar el ratón // Light background on hover
+  &:hover {
+    background-color: rgba($primary, 0.1); // Usar un matiz del color primario
+  }
 }
 
 .sortIndicator {
-  margin-left: 8px;
-  font-size: 0.9em;
+  margin-left: 0.5rem;
+  opacity: 0.8;
+  display: inline-block;
+  width: 1em; // Reservar espacio para el icono
+  transition: opacity 0.2s ease;
+}
+
+// Ocultar el indicador si no está activo para un look más limpio
+.th:not(:hover) .sortIndicator:empty {
+  opacity: 0;
 }

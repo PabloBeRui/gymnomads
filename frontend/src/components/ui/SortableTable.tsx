@@ -71,7 +71,10 @@ export const SortableTable = <T extends { id: number | string }>({
     if (!sortConfig || sortConfig.key !== key) {
       return null;
     }
-    return sortConfig.direction === "ascending" ? "🔼" : "🔽";
+    if (sortConfig.direction === "ascending") {
+      return <i className="bi bi-arrow-up"></i>;
+    }
+    return <i className="bi bi-arrow-down"></i>;
   };
 
   return (
@@ -82,7 +85,7 @@ export const SortableTable = <T extends { id: number | string }>({
             {columns.map((col) => (
               <th
                 key={col.key as string}
-                className={clsx(styles.th, "text-primary")}
+                className={styles.th}
                 onClick={() => requestSort(col.key)}
                 title={`Ordenar por ${col.header}`}>
                 {col.header}

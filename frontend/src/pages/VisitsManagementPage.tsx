@@ -183,14 +183,6 @@ export const VisitsManagementPage = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedGymId, userSearch, currentPage, itemsPerPage, managerVisitView]);
 
-    // Limpia los filtros y vuelve a la primera página // Clears filters and returns to the first page
-    const handleClearFilters = () => {
-        setSelectedGymId("");
-        setUserSearch("");
-        setGymSearchTerm("");
-        goToPage(1);
-    };
-
     // Maneja el clic en una fila de la tabla // Handles a click on a table row
     const handleRowClick = (visit: VisitWithDetails) => {
         setSelectedVisit(visit);
@@ -328,103 +320,92 @@ export const VisitsManagementPage = () => {
                 </p>
             </header>
 
-            {isManager && (
-                <div className="mb-3 d-flex gap-2">
-                    <Button
-                        variant={managerVisitView === 'received' ? 'primary' : 'secondary'}
-                        onClick={() => setManagerVisitView("received")}
-                    >
-                        Visitas Recibidas
-                    </Button>
-                    <Button
-                        variant={managerVisitView === 'sent' ? 'primary' : 'secondary'}
-                        onClick={() => setManagerVisitView("sent")}
-                    >
-                        Visitas Enviadas
-                    </Button>
-                </div>
-            )}
-
-            <Row className="mb-4">
-                <Col md={4} lg={3}>
-                    <Card
-                        className={styles.statCard}
-                        onClick={() => setIsStatsModalOpen(true)}
-                        title="Ver estadísticas detalladas"
-                    >
-                        <Card.Body>
-                            <h2 className="fw-bold text-primary">{totalItems}</h2>
-                            <p className="text-dark mb-0 small">
-                                {isLoading
-                                    ? "Cargando..."
-                                    : isManager
-                                        ? managerVisitView === "received"
-                                            ? "Total de Visitas Recibidas"
-                                            : "Total de Visitas Enviadas"
-                                        : "Total de Visitas"}
-                            </p>
-                        </Card.Body>
-                    </Card>
-                </Col>
-            </Row>
-
-            <Form className="d-flex flex-wrap gap-3 align-items-end mb-4">
-                {isAdmin && (
-                    <Form.Group as={Col} md={4} controlId="gymFilterGroup">
-                        <FilterInput
-                            label="Buscar Gimnasio"
-                            type="text"
-                            placeholder="🔍 Nombre o ciudad..."
-                            value={gymSearchTerm}
-                            onChange={(e) => setGymSearchTerm(e.target.value)}
-                            id="gymSearchFilter"
-                        />
-                        <Form.Select
-                            value={selectedGymId}
-                            onChange={(e) => setSelectedGymId(e.target.value)}
-                            aria-label="Filtrar por gimnasio"
-                            className="mt-2"
-                        >
-                            <option value="">A Todos los Gimnasios</option>
-                            <option
-                                value="deleted"
-                                className={styles.deletedOption}
+            <Card className="mb-4">
+                <Card.Header as="h5" className="bg-secondary text-white">
+                    Filtros y Métricas
+                </Card.Header>
+                <Card.Body>
+                    {isManager && (
+                        <div className="mb-3 d-flex gap-2">
+                            <Button
+                                variant={managerVisitView === 'received' ? 'primary' : 'secondary'}
+                                onClick={() => setManagerVisitView("received")}
                             >
-                                A Gimnasios Eliminados
-                            </option>
-                            {filteredGyms.map((gym) => (
-                                <option key={gym.id} value={gym.id}>
-                                    {gym.name} - {gym.city}
-                                </option>
-                            ))}
-                        </Form.Select>
-                        {gymSearchTerm && filteredGyms.length === 0 && (
-                            <small className="text-danger mt-1 d-block">
-                                No se encontraron gimnasios
-                            </small>
+                                Visitas Recibidas
+                            </Button>
+                            <Button
+                                variant={managerVisitView === 'sent' ? 'primary' : 'secondary'}
+                                onClick={() => setManagerVisitView("sent")}
+                            >
+                                Visitas Enviadas
+                            </Button>
+                        </div>
+                    )}
+                    <Row className="align-items-end">
+                        <Col md={4} lg={3} className="mb-3">
+                            <Card
+                                className={styles.statCard}
+                                onClick={() => setIsStatsModalOpen(true)}
+                                title="Ver estadísticas detalladas"
+                            >
+                                <Card.Body>
+                                    <h2 className="fw-bold text-primary">{totalItems}</h2>
+                                    <p className="text-dark mb-0 small">
+                                        {isLoading
+                                            ? "Cargando..."
+                                            : isManager
+                                                ? managerVisitView === "received"
+                                                    ? "Total Recibidas"
+                                                    : "Total Enviadas"
+                                                : "Total de Visitas"}
+                                    </p>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+
+                        {isAdmin && (
+                            <Col md={8} lg={5} className="mb-3">
+                                <FilterInput
+                                    label="Buscar Gimnasio"
+                                    icon={<i className="bi bi-search"></i>}
+                                    placeholder="Nombre o ciudad..."
+                                    value={gymSearchTerm}
+                                    onChange={(e) => setGymSearchTerm(e.target.value)}
+                                    onClear={() => setGymSearchTerm("")}
+                                    id="gymSearchFilter"
+                                />
+                                <Form.Select
+                                    value={selectedGymId}
+                                    onChange={(e) => setSelectedGymId(e.target.value)}
+                                    aria-label="Filtrar por gimnasio"
+                                    className="mt-2"
+                                >
+                                    <option value="">A Todos los Gimnasios</option>
+                                    <option value="deleted" className={styles.deletedOption}>
+                                        A Gimnasios Eliminados
+                                    </option>
+                                    {filteredGyms.map((gym) => (
+                                        <option key={gym.id} value={gym.id}>
+                                            {gym.name} - {gym.city}
+                                        </option>
+                                    ))}
+                                </Form.Select>
+                            </Col>
                         )}
-                    </Form.Group>
-                )}
 
-                <Form.Group as={Col} md={3} controlId="userSearchGroup">
-                    <FilterInput
-                        label="Buscar por Usuario"
-                        value={userSearch}
-                        onChange={(e) => setUserSearch(e.target.value)}
-                        placeholder="Nombre o email..."
-                    />
-                </Form.Group>
-
-                <Form.Group>
-                    <Button
-                        variant="secondary"
-                        onClick={handleClearFilters}
-                        disabled={isLoading}
-                    >
-                        Limpiar
-                    </Button>
-                </Form.Group>
-            </Form>
+                        <Col md={4} lg={4} className="mb-3">
+                            <FilterInput
+                                label="Buscar por Usuario"
+                                icon={<i className="bi bi-search"></i>}
+                                value={userSearch}
+                                onChange={(e) => setUserSearch(e.target.value)}
+                                onClear={() => setUserSearch("")}
+                                placeholder="Nombre o email..."
+                            />
+                        </Col>
+                    </Row>
+                </Card.Body>
+            </Card>
 
             {visits.length === 0 ? (
                 <div className="text-center p-5 bg-light rounded">
@@ -433,15 +414,6 @@ export const VisitsManagementPage = () => {
                             ? "🔍 No se encontraron visitas con los filtros aplicados."
                             : "📭 Aún no hay visitas registradas."}
                     </h5>
-                    {(userSearch || selectedGymId) && (
-                        <Button
-                            variant="primary"
-                            onClick={handleClearFilters}
-                            className="mt-3"
-                        >
-                            Limpiar filtros
-                        </Button>
-                    )}
                 </div>
             ) : (
                 <>

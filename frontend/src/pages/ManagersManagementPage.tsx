@@ -122,12 +122,6 @@ export const ManagersManagementPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, currentPage, itemsPerPage]);
 
-  // Limpiar filtro / Clear filter
-  const handleClearFilter = () => {
-    setSearchTerm("");
-    goToPage(1);
-  };
-
   // Manejar click en fila para ver detalles / Handle row click to view details
   const handleRowClick = (manager: ManagerWithGym) => {
     setSelectedManager(manager);
@@ -229,72 +223,56 @@ export const ManagersManagementPage = () => {
 
   // Render principal / Main render
   return (
-    <Container className={styles.container}>
+    <Container fluid="xl" className="py-4">
       {/* Encabezado / Header */}
-      <div className={styles.header}>
-        <h1 className={clsx(styles.title, "text-primary")}>Gestión de Managers</h1>
-        <p className={clsx(styles.subtitle, "text-dark")}>
+      <div className="mb-4">
+        <h1 className="h2 text-primary">Gestión de Managers</h1>
+        <p className="text-dark">
           Visualiza, edita y filtra todos los gerentes registrados en la
-          plataforma. Haz click en una fila para ver y editar detalles completos
-          (incluido email y teléfono).
+          plataforma.
         </p>
       </div>
 
+      <Card className="mb-4">
+        <Card.Header as="h5" className="bg-secondary text-white">
+            Filtros y Métricas
+        </Card.Header>
+        <Card.Body>
+            <Row className="align-items-end">
+                {/* Métricas */}
+                <Col md={4} lg={3} className="mb-3">
+                    <h2 className="fw-bold text-primary mb-1">{totalItems}</h2>
+                    <p className="text-dark mb-0 small">
+                        {isLoading ? "Cargando..." : "Total de Managers"}
+                    </p>
+                </Col>
+
+                {/* Filtro */}
+                <Col md={8} lg={9} className="mb-3">
+                  <FilterInput
+                    label="Buscar Manager"
+                    icon={<i className="bi bi-search"></i>}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onClear={() => setSearchTerm("")}
+                    placeholder="Manager, Gimnasio, Ciudad..."
+                  />
+                </Col>
+            </Row>
+        </Card.Body>
+      </Card>
+      
       {/* Advertencia sobre eliminación / Warning about deletion */}
-      <Alert variant="warning" className={clsx(styles.warningBox, "mb-4")}>
-        <strong className="text-dark">ℹ️ Nota importante:</strong> Los managers no se pueden eliminar
-        directamente desde esta página. Para eliminar un manager, debes eliminar
-        el gimnasio asociado desde la página de gestión de gimnasios.
+      <Alert variant="info" className="mb-4">
+        <i className="bi bi-info-circle-fill me-2"></i>
+        Haz click en una fila para ver y editar detalles (incluido email y teléfono). Los managers no se pueden eliminar directamente.
       </Alert>
-
-      {/* Estadísticas / Statistics */}
-      <Row className={clsx(styles.statsContainer, "mb-4")}>
-        <Col xs={12} md={6} lg={4}>
-          <Card className={styles.statCard}>
-            <Card.Body>
-              <Card.Title className={clsx(styles.statNumber, "text-primary")}>{totalItems}</Card.Title>
-              <Card.Text className={clsx(styles.statLabel, "text-dark")}>
-                {isLoading ? "Cargando..." : "Total de Managers"}
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-
-      {/* Filtro único / Single filter */}
-      <div className={clsx(styles.filtersContainer, "mb-4")}>
-        <FilterInput
-          label="Buscar Manager"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Manager, Gimnasio, Ciudad"
-          helpText="La búsqueda filtra por todos los campos visibles"
-        />
-
-        {searchTerm && (
-          <Button
-            onClick={handleClearFilter}
-            variant="secondary"
-            className={styles.clearButton}
-            disabled={isLoading}>
-            Limpiar Búsqueda
-          </Button>
-        )}
-      </div>
 
       {/* Tabla de managers / Managers table */}
       {managers.length === 0 ? (
-        <div className={clsx(styles.emptyState, "text-center")}>
+        <div className="text-center p-5 bg-light rounded">
           {searchTerm ? (
-            <>
-              <p className="text-dark">🔍 No se encontraron managers con el criterio de búsqueda.</p>
-              <Button
-                onClick={handleClearFilter}
-                variant="secondary"
-                className="mt-3">
-                Limpiar búsqueda
-              </Button>
-            </>
+            <p className="text-dark">🔍 No se encontraron managers con el criterio de búsqueda.</p>
           ) : (
             <p className="text-dark">📭 Aún no hay managers registrados.</p>
           )}
