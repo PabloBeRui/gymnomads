@@ -40,7 +40,7 @@ export const LandingPage: React.FC = () => {
         <InfoSlide
           title="Viaja"
           text="Explora cientos de gimnasios en toda España. Ya sea por trabajo o placer, tu próximo entrenamiento está a solo un clic de distancia."
-          backgroundColor="#f8f9fa" // Un gris muy claro
+          backgroundImage="/images/info-slide/slide-background-viaja.png"
         />
 
         {/* Slide 3: "Entrena" */}
@@ -48,7 +48,7 @@ export const LandingPage: React.FC = () => {
         <InfoSlide
           title="Entrena"
           text="Accede a instalaciones de calidad sin pagar pases de día. Tu abono en un gimnasio de la red es tu pase para todos."
-          backgroundColor="#e9ecef" // Un gris un poco más oscuro
+          backgroundImage="/images/info-slide/slide-background-entrena.png"
         />
 
         {/* Slide 4: "Repite" (con el botón CTA) */}
@@ -56,7 +56,7 @@ export const LandingPage: React.FC = () => {
         <InfoSlide
           title="Repite"
           text="Mantén tu rutina. Haz crecer la comunidad. Conviértete en un auténtico GymNomad."
-          backgroundColor="#dee2e6" // Gris final
+          backgroundImage="/images/info-slide/slide-background-repite.png"
         >
           {/* La Llamada a la Acción (CTA) */}
           {/* The Call to Action (CTA) */}

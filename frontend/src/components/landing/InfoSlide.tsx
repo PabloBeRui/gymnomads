@@ -32,7 +32,8 @@ import clsx from "clsx"; // Importar clsx / Import clsx
 interface InfoSlideProps {
   title: string;
   text: string;
-  backgroundColor: string;
+  backgroundColor?: string; // Hacer que el color de fondo sea opcional / Make background color optional
+  backgroundImage?: string; // Ruta de la imagen de fondo / Background image path
   children?: React.ReactNode; // Para el botón en la última slide / For the button on the last slide
 }
 
@@ -44,17 +45,31 @@ export const InfoSlide: React.FC<InfoSlideProps> = ({
   title,
   text,
   backgroundColor,
+  backgroundImage,
   children,
 }) => {
-  return (
-    // Aplicar el color de fondo dinámicamente / Apply the background color dynamically
-    <Container fluid className={clsx(styles.slide, "d-flex flex-column justify-content-center align-items-center p-4")} style={{ backgroundColor }}>
-      <h2 className={clsx(styles.title, "text-dark")}>{title}</h2>
-      <p className={clsx(styles.text, "text-dark")}>{text}</p>
+  // Estilos dinámicos para el contenedor / Dynamic styles for the container
+  const containerStyle: React.CSSProperties = {
+    backgroundColor: !backgroundImage ? backgroundColor : 'transparent', // Usar color si no hay imagen
+    backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
+    backgroundSize: backgroundImage ? 'cover' : 'auto',
+    backgroundPosition: backgroundImage ? 'center' : 'auto',
+    backgroundRepeat: backgroundImage ? 'no-repeat' : 'initial',
+    position: 'relative', // Necesario para posicionar el overlay / Needed for overlay positioning
+  };
 
-      {/* Renderizar contenido extra (como el botón CTA) si existe */}
-      {/* Render extra content (like the CTA button) if it exists */}
-      {children && <div className={styles.childrenContainer}>{children}</div>}
+  return (
+    // Aplicar los estilos dinámicamente / Apply dynamic styles
+    <Container fluid className={clsx(styles.slide, "d-flex flex-column justify-content-center align-items-center p-4")} style={containerStyle}>
+      {backgroundImage && <div className={styles.backgroundOverlay}></div>} {/* Overlay para legibilidad */}
+      <div className={styles.contentWrapper}> {/* Wrapper para el contenido */}
+        <h2 className={clsx(styles.title, "text-light")}>{title}</h2> {/* Cambiar a text-light para contraste */}
+        <p className={clsx(styles.text, "text-light")}>{text}</p> {/* Cambiar a text-light para contraste */}
+
+        {/* Renderizar contenido extra (como el botón CTA) si existe */}
+        {/* Render extra content (like the CTA button) if it exists */}
+        {children && <div className={styles.childrenContainer}>{children}</div>}
+      </div>
     </Container>
   );
 };
