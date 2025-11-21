@@ -20,8 +20,8 @@
   overflow-x: auto;
   border-radius: $border-radius-lg;
   box-shadow: $box-shadow;
-  // Usar 'overflow:hidden' para que el radio del borde se aplique a la tabla interior
   overflow: hidden;
+  background-color: var(--bs-white); // Fondo blanco para rellenar el contenedor
 }
 
 .table {
