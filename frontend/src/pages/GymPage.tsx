@@ -216,7 +216,7 @@ export const GymPage = () => {
   // Render principal
                   return (
                     <div className={styles.pageWrapper} onClick={() => navigate("/gyms")}>
-                        <Container className={`${styles.contentContainer} py-4`} onClick={(e) => e.stopPropagation()}>
+                        <Container fluid="md" className={`${styles.contentContainer} py-4`} onClick={(e) => e.stopPropagation()}>
                             <Row className="justify-content-center">
                                 <Col lg={11}>
                                     <Row className="justify-content-between align-items-center mb-4">
@@ -228,7 +228,7 @@ export const GymPage = () => {
                                         <Col xs="auto">
                                             <div className="d-flex align-items-center gap-3">
                                                 <img src={logoSrc} alt={`Logo de ${gym.name}`} className={styles.gymLogoSmall} />
-                                                <CloseButton navigateTo="/gyms" colorVariant="primary" />
+                                                <CloseButton onClick={() => navigate("/gyms")} color="#FFB700" />
                                             </div>
                                         </Col>
                                     </Row>

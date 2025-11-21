@@ -17,7 +17,7 @@
 @use "../styles/variables" as *; // Importar variables globales // Import global variables
 
 .pageWrapper {
-  background-color: $light; // Fondo claro general // General light background
+  background-color: transparent; // Fondo transparente
   min-height: 100vh; // Altura mínima de la página // Minimum page height
   padding: 2rem 1rem;
   display: flex;
