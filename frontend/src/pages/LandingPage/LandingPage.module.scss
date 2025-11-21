@@ -21,13 +21,6 @@
   position: relative; // Necesario para el posicionamiento de los hijos // Needed for children positioning
 }
 
-.scrollContainer {
-  height: 100vh;
-  width: 100%;
-  overflow-y: scroll; // Permite el scroll vertical // Enables vertical scrolling
-  scroll-snap-type: y mandatory; // Habilita el scroll-snap vertical // Enables vertical scroll-snap
-}
-
 .ctaButton {
   padding: 12px 30px;
   font-size: 1.1rem;
