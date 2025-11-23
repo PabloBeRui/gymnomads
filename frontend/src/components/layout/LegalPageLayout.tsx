@@ -28,20 +28,24 @@ import clsx from 'clsx'; // Importar clsx / Import clsx
 interface LegalPageLayoutProps {
   title: string;
   children: React.ReactNode;
+  closeButtonTopOffset?: string; // Nueva prop // New prop
 }
 
-export const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({ title, children }) => {
+export const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({ title, children, closeButtonTopOffset }) => {
   const navigate = useNavigate(); // Inicializar useNavigate // Initialize useNavigate
 
   const handleClose = () => {
     navigate(-1); // Navegar hacia atrás en el historial // Navigate back in history
   };
 
+  const closeButtonStyle: React.CSSProperties = closeButtonTopOffset ? { top: closeButtonTopOffset } : {}; // Estilo dinámico // Dynamic style
+
   return (
     <Container className={clsx(styles.container, "my-4 p-4 bg-white rounded shadow-sm")}>
       <CloseButton
         onClick={handleClose}
         className={styles.closeButton}
+        style={closeButtonStyle} // Aplicar estilo dinámico // Apply dynamic style
         color="#FFB700" // Color primario del proyecto // Project's primary color
         ariaLabel="Cerrar página legal"
       />

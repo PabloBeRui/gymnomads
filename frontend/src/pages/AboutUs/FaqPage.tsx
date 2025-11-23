@@ -23,7 +23,7 @@ import styles from "./FaqPage.module.scss";
 
 export const FaqPage = () => {
   return (
-    <LegalPageLayout title="Preguntas Frecuentes">
+    <LegalPageLayout title={"\u00A0"} closeButtonTopOffset="15px">
       <>
         <h2>Para Socios</h2>
 

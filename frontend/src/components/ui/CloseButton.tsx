@@ -28,6 +28,7 @@ interface CloseButtonProps {
   color?: string;
   size?: number;
   className?: string;
+  style?: React.CSSProperties; // Añadir prop style // Add style prop
   ariaLabel?: string;
 }
 
@@ -36,6 +37,7 @@ export const CloseButton: React.FC<CloseButtonProps> = ({
   color = '#FFB700', // Cambiar por defecto al color primario (#FFB700) // Change default to primary color (#FFB700)
   size = 30,
   className,
+  style, // Desestructurar style // Destructure style
   ariaLabel = 'Cerrar',
 }) => {
   const [isClosing, setIsClosing] = useState(false);
@@ -58,6 +60,7 @@ export const CloseButton: React.FC<CloseButtonProps> = ({
   return (
     <button
       className={clsx(styles.closeButton, className)}
+      style={style} // Aplicar style al botón // Apply style to button
       onClick={handleClick}
       aria-label={ariaLabel}
       disabled={isClosing} // Deshabilitar el botón durante la animación // Disable button during animation

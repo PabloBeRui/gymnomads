@@ -25,7 +25,7 @@ import styles from "./AboutUsPage.module.scss";
 
 export const AboutUsPage = () => {
   return (
-    <LegalPageLayout title="Quiénes Somos">
+    <LegalPageLayout title="Quiénes Somos" closeButtonTopOffset="15px">
       <>
         <h2>Nuestra Misión</h2>
         <p>
