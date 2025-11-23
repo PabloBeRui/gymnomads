@@ -33,7 +33,7 @@ interface CloseButtonProps {
 
 export const CloseButton: React.FC<CloseButtonProps> = ({
   onClick,
-  color = '#1A202C', // Default to dark color
+  color = '#FFB700', // Cambiar por defecto al color primario (#FFB700) // Change default to primary color (#FFB700)
   size = 30,
   className,
   ariaLabel = 'Cerrar',
