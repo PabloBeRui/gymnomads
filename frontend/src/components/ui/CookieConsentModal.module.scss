@@ -4,56 +4,59 @@
  * STYLES FOR: CookieConsentModal
  * =============================================================================
  *
- * Descripción: Estilos para el modal de consentimiento de cookies.
- * Incluye el diseño del overlay, el contenido principal del modal, título,
- * texto explicativo y botones de acción.
+ * Descripción: Estilos personalizados para el modal de consentimiento de cookies.
+ * Se simplifica para trabajar con los estilos nativos de Bootstrap Modal,
+ * personalizando solo la estética interna y el contenedor.
  *
- * Description: Styles for the cookie consent modal.
- * Includes the design of the overlay, main modal content, title,
- * explanatory text, and action buttons.
+ * Description: Custom styles for the cookie consent modal.
+ * Simplified to work with native Bootstrap Modal styles,
+ * customizing only the internal aesthetics and container.
  *
  * =============================================================================
  */
 @use "../../styles/variables" as *; // Importar variables globales // Import global variables
 
-.modalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7); // Fondo oscuro semitransparente // Semi-transparent dark background
-  display: flex;
-  align-items: center; // Centrado vertical // Vertical centering
-  justify-content: center; // Centrado horizontal // Horizontal centering
-  z-index: 1050; // Asegura que esté por encima de otros modales // Ensures it's above other modals
+// Clase para personalizar el contenedor principal del modal (pass to contentClassName)
+// Class to customize the main modal container
+.cookieModalContent {
+  border: none; // Sin bordes predeterminados // No default borders
+  border-radius: 1rem; // Bordes más redondeados // More rounded borders
+  box-shadow: $box-shadow-lg; // Sombra pronunciada // Prominent shadow
+  overflow: hidden; // Para que el borde redondeado recorte el contenido // So rounded border clips content
 }
 
-.modalContent {
-  background-color: var(--bs-white); // Fondo blanco // White background
-  padding: 25px 30px;
-  border-radius: 8px; // Bordes redondeados // Rounded borders
-  max-width: 500px; // Ancho máximo // Maximum width
-  width: 90%; // Ancho responsivo // Responsive width
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); // Sombra // Shadow
+.body {
+  padding: 2rem; // Espaciado interno generoso // Generous internal spacing
+  text-align: center; // Texto centrado para mejor lectura en este tipo de avisos // Centered text for better reading in this type of notice
 }
 
 .title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: $dark; // Color de texto oscuro // Dark text color
-  margin-bottom: 10px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $primary; // Color primario para destacar // Primary color to highlight
+  margin-bottom: 1rem;
 }
 
 .text {
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: $dark; // Color de texto oscuro // Dark text color
   line-height: 1.6;
-  margin-bottom: 20px;
+  margin-bottom: 2rem;
 }
 
 .buttonContainer {
   display: flex;
-  gap: 10px; // Espacio entre botones // Space between buttons
-  justify-content: flex-end; // Botones a la derecha // Buttons to the right
+  gap: 1rem; // Espacio entre botones // Space between buttons
+  justify-content: center; // Botones centrados // Centered buttons
+  
+  // En móvil, botones apilados
+  // On mobile, stacked buttons
+  @media (max-width: 576px) {
+    flex-direction: column;
+    width: 100%;
+    
+    button {
+      width: 100%;
+    }
+  }
 }

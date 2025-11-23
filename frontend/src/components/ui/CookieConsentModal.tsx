@@ -61,10 +61,17 @@ export const CookieConsentModal: React.FC = () => {
   };
 
   return (
-    <Modal show={isVisible} onHide={handleReject} centered className={styles.modalOverlay}>
-      <Modal.Body className={styles.modalContent}>
-        <h3 className={clsx(styles.title, "text-primary")}>Datos para mejorar tu experiencia</h3>
-        <p className={clsx(styles.text, "text-dark")}>
+    <Modal 
+      show={isVisible} 
+      onHide={handleReject} 
+      centered 
+      backdrop="static" // Obligar a interactuar // Force interaction
+      keyboard={false}
+      contentClassName={styles.cookieModalContent} // Estilos del contenedor // Container styles
+    >
+      <Modal.Body className={styles.body}>
+        <h3 className={styles.title}>Datos para mejorar tu experiencia</h3>
+        <p className={styles.text}>
           Para ofrecer las mejores experiencias, utilizamos tecnologías como las
           cookies para almacenar y/o acceder a la información del dispositivo.
           El consentimiento de estas tecnologías nos permitirá procesar datos
