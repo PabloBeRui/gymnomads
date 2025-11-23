@@ -219,13 +219,12 @@ export const ManagerDetailsModal = ({
             firstName={manager.first_name}
             lastName={manager.last_name}
             size={100}
+            className={styles.avatar}
           />
-          <div className={styles.profileInfo}>
-            <h3 className={styles.profileName}>
-              {manager.first_name} {manager.last_name}
-            </h3>
-            <p className={styles.profileEmail}>{manager.email}</p>
-          </div>
+          <h3 className={styles.profileName}>
+            {manager.first_name} {manager.last_name}
+          </h3>
+          <p className={styles.profileEmail}>{manager.email}</p>
         </div>
 
         {/* Contenido del modal (campos editables) / Modal content (editable fields) */}
