@@ -21,6 +21,8 @@ import { QRCodeComponent } from "../components/QRCodeComponent";
 import { handleApiError } from "../utils/error-handler";
 import { toast } from "sonner";
 import { Container, Row, Col, Alert, Button, Card, Spinner, Collapse } from "react-bootstrap";
+import { CloseButton } from "../components/ui/CloseButton"; // Importar CloseButton
+import styles from "./UserVisitGymPage.module.scss"; // Importar estilos
 import clsx from "clsx";
 
 
@@ -153,16 +155,24 @@ export const UserVisitGymPage = () => {
     return (
         <Container fluid="sm" className="py-3 py-md-4">
             <Row className="justify-content-center">
-                <Col md={10} lg={8}>
+                <Col md={10} lg={8} className={styles.relativeCol}>
+                    {/* CloseButton posicionado absolutamente */}
+                    <CloseButton
+                        onClick={() => navigate("/gyms")}
+                        className={styles.pageCloseButton}
+                        color="#FFB700"
+                        ariaLabel="Volver a la lista de gimnasios"
+                    />
+
                     <header className="text-center">
+                        {/* Se eliminó el título h1 y el párrafo según instrucciones previas */}
                     </header>
 
                     <Alert variant="success" className="text-center mb-2">
                         <strong>✓ ¡Visita Confirmada!</strong> <p className="mb-0">Tu acceso al gimnasio está listo.</p>
                     </Alert>
 
-                    {/* 1. Instrucciones (Reordenado: Primero) */}
-                    {/* 1. Instructions (Reordered: First) */}
+                    {/* 1. Instrucciones */}
                     <Alert variant="warning" className="mb-4 border-0 shadow-sm">
                         <div className="d-flex align-items-center mb-2">
                             <i className="bi bi-info-circle-fill me-2 fs-4 text-primary"></i>
@@ -174,8 +184,7 @@ export const UserVisitGymPage = () => {
                         </ul>
                     </Alert>
 
-                    {/* 2. Código QR (Reordenado: Segundo - Central) */}
-                    {/* 2. QR Code (Reordered: Second - Central) */}
+                    {/* 2. Código QR */}
                     <Card className="text-center mb-4 border-0 shadow-lg" style={{ borderRadius: '1rem', overflow: 'hidden' }}>
                         <Card.Header className="bg-primary text-white py-3">
                             <h2 className="h4 mb-0 fw-bold">Tu Pase de Acceso</h2>
@@ -193,8 +202,7 @@ export const UserVisitGymPage = () => {
                         </Card.Body>
                     </Card>
 
-                    {/* 3. Detalles de la Visita (Reordenado: Tercero - Desplegable) */}
-                    {/* 3. Visit Details (Reordered: Third - Collapsible) */}
+                    {/* 3. Detalles de la Visita (Desplegable) */}
                     <Card className="mb-4 border-0 shadow-sm bg-light">
                         <Card.Header 
                             className="bg-transparent border-0 d-flex justify-content-between align-items-center py-3" 
@@ -233,17 +241,7 @@ export const UserVisitGymPage = () => {
                         </Collapse>
                     </Card>
 
-                    <div className="d-grid mt-4">
-                        <Button
-                            variant="outline-primary"
-                            size="lg"
-                            onClick={() => navigate("/gyms")}
-                            aria-label="Volver a la lista de gimnasios"
-                            className="fw-bold"
-                        >
-                            <i className="bi bi-arrow-left me-2"></i>Volver a Gimnasios
-                        </Button>
-                    </div>
+                    {/* Botón "Volver a Gimnasios" eliminado */}
                 </Col>
             </Row>
         </Container>
