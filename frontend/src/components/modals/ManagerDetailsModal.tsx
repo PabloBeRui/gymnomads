@@ -337,15 +337,10 @@ export const ManagerDetailsModal = ({
             </Button>
           </>
         ) : (
-          // Modo vista: Editar y Cerrar / View mode: Edit and Close
-          <>
-            <Button variant="secondary" onClick={handleClose}>
-              Cerrar
-            </Button>
-            <Button variant="primary" onClick={() => setIsEditMode(true)}>
-              ✏️ Editar Información
-            </Button>
-          </>
+          // Modo vista: Editar / View mode: Edit
+          <Button variant="primary" onClick={() => setIsEditMode(true)}>
+            ✏️ Editar Información
+          </Button>
         )}
       </Modal.Footer>
     </Modal>

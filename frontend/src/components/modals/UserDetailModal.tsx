@@ -203,9 +203,9 @@ export const UserDetailModal = ({
             </Form.Group>
           </Form>
         </Modal.Body>
-        <Modal.Footer className={styles.buttonContainer}>
-          {/* Botón Eliminar (condicional) / Delete Button (conditional) */}
-          {canDelete && (
+        {canDelete && (
+          <Modal.Footer className={styles.buttonContainer}>
+            {/* Botón Eliminar (condicional) / Delete Button (conditional) */}
             <Button
               variant="danger"
               onClick={handleDeleteClick}
@@ -214,13 +214,8 @@ export const UserDetailModal = ({
             >
               {isDeleting ? "Eliminando..." : "🗑️ Eliminar Usuario"}
             </Button>
-          )}
-
-          {/* Botón Cerrar / Close Button */}
-          <Button variant="secondary" onClick={handleClose}>
-            Cerrar
-          </Button>
-        </Modal.Footer>
+          </Modal.Footer>
+        )}
       </Modal>
 
       {/* Modal de Confirmación para Eliminar / Confirmation Modal for Deletion */}

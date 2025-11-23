@@ -204,12 +204,6 @@ export const VisitsDetailsModal = ({
           </div>
         </div>
       </Modal.Body>
-      <Modal.Footer className={styles.buttonContainer}>
-        {/* Botón Cerrar / Close Button */}
-        <Button variant="secondary" onClick={handleClose}>
-          Cerrar
-        </Button>
-      </Modal.Footer>
     </Modal>
   );
 };
