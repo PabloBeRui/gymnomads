@@ -119,7 +119,13 @@ export const UserDetailModal = ({
 
   return (
     <>
-      <Modal show={isOpen} onHide={handleClose} centered size="lg">
+      <Modal 
+        show={isOpen} 
+        onHide={handleClose} 
+        centered 
+        size="lg"
+        contentClassName={styles.modalContent} // Aplicar estilos personalizados al contenedor del modal / Apply custom styles to modal container
+      >
         {/*
           * =======================================================================
           * BOTÓN DE CIERRE PERSONALIZADO (SVG ANIMADO)
@@ -140,7 +146,7 @@ export const UserDetailModal = ({
         />
         <Modal.Header className={styles.modalHeader}>
           <Modal.Title className={clsx(styles.modalTitle, "text-primary")}>
-            👤 Detalles del Usuario
+            Detalles del Usuario
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -151,13 +157,13 @@ export const UserDetailModal = ({
               firstName={user.first_name}
               lastName={user.last_name}
               size={100}
+              className={styles.avatar}
             />
-            <div className={styles.profileInfo}>
-              <h3 className={styles.profileName}>
-                {user.first_name} {user.last_name}
-              </h3>
-              <p className={styles.profileEmail}>{user.email}</p>
-            </div>
+            {/* Flatten profileInfo div */}
+            <h3 className={styles.profileName}>
+              {user.first_name} {user.last_name}
+            </h3>
+            <p className={styles.profileEmail}>{user.email}</p>
           </div>
 
           {/* Contenido del modal (solo vista) / Modal content (view-only) */}
@@ -183,7 +189,7 @@ export const UserDetailModal = ({
                       lastName=""
                       size={30}
                     />
-                    {/* Mostramos "Nombre (Ciudad)" / We show "Name (City)" */}
+                    {/* Mostramos "Nombre (Ciudad)" / We show "Name (Ciudad)" */}
                     <span>
                       {user.gym_name} ({user.gym_city || "Ciudad desconocida"})
                     </span>

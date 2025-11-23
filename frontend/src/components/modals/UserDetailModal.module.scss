@@ -34,7 +34,7 @@
   padding: 30px;
   border-radius: 8px; // Bordes redondeados // Rounded borders
   max-width: 600px; // Ancho máximo // Maximum width
-  width: 90%; // Ancho responsivo // Responsive width
+  width: 100%; // Ancho completo // Full width
   max-height: 90vh; // Altura máxima // Maximum height
   overflow-y: auto; // Scroll si el contenido es largo // Scroll if content is long
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); // Sombra // Shadow
@@ -48,41 +48,84 @@
   margin-bottom: 20px;
   padding-bottom: 15px;
   border-bottom: 2px solid var(--bs-gray-300); // Borde inferior // Bottom border
+  position: relative; // Necesario para el posicionamiento absoluto del botón de cierre // Needed for absolute positioning of close button
+
+  @media (max-width: 767.98px) {
+    padding-top: 1rem; // Ajustar padding superior para el botón de cierre // Adjust top padding for close button
+    padding-right: 1rem; // Ajustar padding derecho para el botón de cierre // Adjust right padding for close button
+    align-items: flex-start; // Alinear elementos al inicio para que el título no empuje el botón // Align items to start so the title doesn't push the button
+  }
 }
 
 .modalTitle {
   font-size: 1.5rem;
   color: $dark; // Color de texto oscuro // Dark text color
   margin: 0;
+  
+  @media (max-width: 767.98px) {
+    padding-right: 2rem; // Reducir espacio para el botón de cierre // Reduce space for close button
+  }
 }
 
 .profileHeader {
-  display: flex;
-  align-items: center; // Centrado vertical // Vertical centering
-  gap: 20px; // Espacio entre avatar y texto // Space between avatar and text
+  display: grid;
+  grid-template-columns: auto 1fr; // Avatar automático, texto ocupa el resto // Avatar auto, text takes rest
+  gap: 5px 20px; // Gap vertical pequeño, horizontal grande // Small vertical gap, large horizontal gap
+  align-items: center;
   margin-bottom: 30px;
   padding-bottom: 20px;
   border-bottom: 1px solid var(--bs-gray-200); // Borde inferior // Bottom border
+
+  // Áreas por defecto (Escritorio)
+  // Default Areas (Desktop)
+  grid-template-areas:
+    "avatar name"
+    "avatar email";
+
+  @media (max-width: 767.98px) {
+    // Áreas Móvil: Avatar y Nombre arriba, Email ocupa todo abajo
+    // Mobile Areas: Avatar and Name top, Email takes full bottom
+    grid-template-areas:
+      "avatar name"
+      "email email";
+    gap: 0.5rem 1rem;
+  }
 }
 
-.profileInfo {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 5px; // Espacio entre nombre y email // Space between name and email
+.avatar {
+  grid-area: avatar;
 }
+
+// Clase .profileInfo ELIMINADA (refactorización a Grid)
+// .profileInfo class REMOVED (Grid refactoring)
 
 .profileName {
+  grid-area: name;
   font-size: 1.5rem;
   font-weight: bold;
   color: $dark; // Color de texto oscuro // Dark text color
   margin: 0;
+  align-self: end; // Alinear abajo en su celda (cerca del email) // Align bottom in cell (near email)
+
+  @media (max-width: 767.98px) {
+    align-self: center; // Centrado vertical con avatar en móvil // Vertically centered with avatar on mobile
+    margin-right: 0; // Resetear margen // Reset margin
+  }
 }
 
 .profileEmail {
+  grid-area: email;
   font-size: 1rem;
   color: $secondary; // Color de texto secundario // Secondary text color
   margin: 0;
+  align-self: start; // Alinear arriba en su celda // Align top in cell
+  font-weight: bold; // Email en negrita // Bold email
+
+  @media (max-width: 767.98px) {
+    word-break: break-all; // Romper palabras largas // Break long words
+    margin-top: 0.5rem;
+    text-align: center; // Centrar el texto del email en móvil // Center email text on mobile
+  }
 }
 
 .infoSection {
@@ -108,6 +151,7 @@
   padding: 8px 12px;
   background-color: $light; // Fondo claro // Light background
   border-radius: 4px; // Bordes redondeados // Rounded borders
+  width: fit-content; // Ajustar ancho al contenido // Adjust width to content
 }
 
 .buttonContainer {
@@ -130,4 +174,9 @@
   top: 15px;
   right: 20px;
   z-index: 1056; // Asegurar que esté por encima del contenido del modal de React-Bootstrap.
+
+  @media (max-width: 767.98px) {
+    top: 1rem;
+    right: 1rem;
+  }
 }
