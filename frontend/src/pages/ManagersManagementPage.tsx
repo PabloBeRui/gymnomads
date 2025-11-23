@@ -245,7 +245,7 @@ export const ManagersManagementPage = () => {
       {/* Encabezado / Header */}
       <div className="mb-4 text-center">
         <h1 className="h2 text-primary">Gestión de Managers</h1>
-        <p className="text-dark">
+        <p className="text-light">
           Visualiza, edita y filtra todos los gerentes registrados en la
           plataforma.
         </p>

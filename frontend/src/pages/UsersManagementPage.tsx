@@ -314,7 +314,7 @@ export const UsersManagementPage = () => {
                 <h1 className="h2 text-primary">
                     {isAdmin ? "Gestión de Usuarios" : "Usuarios de mi Gimnasio"}
                 </h1>
-                <p className="text-dark">
+                <p className="text-light">
                     {isAdmin
                         ? "Visualiza y filtra todos los usuarios de la plataforma."
                         : "Visualiza y filtra los usuarios registrados en tu gimnasio."}

@@ -313,7 +313,7 @@ export const VisitsManagementPage = () => {
                                 : "Visitas Enviadas por mis Usuarios"
                             : "Visitas a mi Gimnasio"}
                 </h1>
-                <p className="text-dark">
+                <p className="text-light">
                     {isAdmin
                         ? "Visualiza y filtra todas las visitas de todos los gimnasios."
                         : isManager
