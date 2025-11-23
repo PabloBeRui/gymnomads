@@ -151,16 +151,14 @@ export const UserVisitGymPage = () => {
 
     // Renderizado principal del componente // Main component rendering
     return (
-        <Container fluid="sm" className="py-4 py-md-5">
+        <Container fluid="sm" className="py-3 py-md-4">
             <Row className="justify-content-center">
                 <Col md={10} lg={8}>
-                    <header className="text-center mb-4">
-                        <h1 className="h2 text-primary">¡Visita Confirmada!</h1>
-                        <p className="lead text-dark">Tu acceso al gimnasio está listo.</p>
+                    <header className="text-center">
                     </header>
 
-                    <Alert variant="success" className="text-center mb-4">
-                        <strong>✓ Visita registrada correctamente</strong>
+                    <Alert variant="success" className="text-center mb-2">
+                        <strong>✓ ¡Visita Confirmada!</strong> <p className="mb-0">Tu acceso al gimnasio está listo.</p>
                     </Alert>
 
                     {/* 1. Instrucciones (Reordenado: Primero) */}
