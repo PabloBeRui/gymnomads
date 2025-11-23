@@ -25,6 +25,34 @@
   box-sizing: border-box; // Asegurar que el padding no desborde // Ensure padding does not overflow
   text-align: center;
   transition: background-color 0.5s ease; // Transición suave de color / Smooth color transition
+  position: relative; // Necesario para los pseudo-elementos // Needed for pseudo-elements
+
+  // Gradiente superior e inferior para suavizar la transición entre slides
+  // Top and bottom gradient to smooth the transition between slides
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 15%; // Altura del desvanecimiento (ajustable) // Fade height (adjustable)
+    z-index: 3; // Encima del contenido y overlay // Above content and overlay
+    pointer-events: none; // Permitir clics a través del gradiente // Allow clicks through the gradient
+  }
+
+  // Gradiente superior (desvanece hacia abajo)
+  // Top gradient (fades downwards)
+  &::before {
+    top: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+  }
+
+  // Gradiente inferior (desvanece hacia arriba)
+  // Bottom gradient (fades upwards)
+  &::after {
+    bottom: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  }
 }
 
 .title {
