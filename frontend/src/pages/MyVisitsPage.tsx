@@ -167,6 +167,12 @@ export const MyVisitsPage = () => {
     goToPage(1); // Resetear a la primera página con cada nueva búsqueda
   };
 
+
+  const handleClearSearch = () => {
+    setGymSearch("");
+    goToPage(1); // Restablecer la página a la primera al limpiar la búsqueda
+  };
+
   const myVisitsColumns: ColumnDefinition<VisitWithDetails>[] = [
     {
       key: "gym_name",
@@ -255,6 +261,7 @@ export const MyVisitsPage = () => {
           label="Buscar Visitas por Gimnasio"
           value={gymSearch}
           onChange={handleSearchChange}
+          onClear={handleClearSearch} 
           placeholder="🔍 Buscar por nombre de gimnasio..."
         />
       </div>

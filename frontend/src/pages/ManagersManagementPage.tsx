@@ -35,7 +35,7 @@ import {
 } from "../components/ui/SortableTable";
 
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
-import { Container, Row, Col, Card, Button,  Spinner, Alert } from "react-bootstrap";
+import { Container, Row, Col, Card, Spinner, Alert } from "react-bootstrap";
 
 // Importar el módulo SCSS / Import the SCSS module
 import styles from "./ManagersManagementPage.module.scss";
