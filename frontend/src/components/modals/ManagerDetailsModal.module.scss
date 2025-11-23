@@ -35,12 +35,27 @@
   padding: 30px;
   border-radius: 8px; // Bordes redondeados // Rounded borders
   max-width: 600px; // Ancho máximo // Maximum width
-  width: 90%; // Ancho responsivo // Responsive width
-  max-height: 90vh; // Altura máxima // Maximum height
+  width: 90%; // Ancho responsivo por defecto // Default responsive width
+  max-height: 90vh; // Altura máxima por defecto // Default max height
   overflow-y: auto; // Scroll si el contenido es largo // Scroll if content is long
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); // Sombra // Shadow
   animation: slideIn 0.2s ease-in-out; // Animación de deslizamiento // Slide-in animation
   position: relative;
+
+  @media (max-width: 767.98px) {
+    max-height: 70vh; // Aumentar altura (de 60vh a 70vh) // Increase height
+    width: 95%; // Ancho en móvil // Width on mobile
+    margin: 0 auto; // Centrado // Centered
+    padding: 15px; // Reducir padding para ganar espacio horizontal // Reduce padding to gain horizontal space
+    
+    scrollbar-width: none; // Firefox
+    -ms-overflow-style: none;  // IE and Edge
+    &::-webkit-scrollbar {
+      display: none; // Chrome, Safari, Opera
+      width: 0px;
+      background: transparent;
+    }
+  }
 }
 
 .modalHeader {
@@ -56,6 +71,8 @@
   font-size: 1.5rem;
   color: $dark; // Color de texto oscuro // Dark text color
   margin: 0;
+  text-align: center; // Centrar el texto del título // Center title text
+  width: 100%; // Asegurar que ocupe el ancho disponible // Ensure full width
 }
 
 .profileHeader {
@@ -110,6 +127,7 @@
   color: $secondary; // Color de texto secundario // Secondary text color
   margin: 0;
   align-self: start; // Alinear arriba en su celda // Align top in cell
+  font-weight: bold; // Email en negrita // Bold email
 
   @media (max-width: 767.98px) {
     word-break: break-all; // Romper palabras largas // Break long words
@@ -126,6 +144,9 @@
   display: flex;
   flex-direction: column;
   margin-bottom: 15px;
+  
+  // Alineación por defecto es izquierda (flex-direction: column sin align-items)
+  // Default alignment is left
 }
 
 .label {

@@ -167,7 +167,7 @@ export const ManagerDetailsModal = ({
   }, [manager]);
 
   // Manejar cierre del modal / Handle modal close
-  // ESTA FUNCION DEBE ESTAR DEFINIDA ANTES DE USARSE EN useEffect
+  // SE HA MOVIDO AQUÍ ARRIBA PARA EVITAR ReferenceError
   const handleClose = useCallback(() => {
     if (isEditMode) {
       handleCancelEdit();
@@ -207,7 +207,13 @@ export const ManagerDetailsModal = ({
 
   // Render del modal / Modal render
   return (
-    <Modal show={isOpen} onHide={handleClose} centered size="lg">
+    <Modal 
+      show={isOpen} 
+      onHide={handleClose} 
+      centered 
+      size="lg"
+      contentClassName={styles.modalContent} // Aplicar estilos personalizados
+    >
       <Modal.Header className={styles.modalHeader}>
         <Modal.Title className={clsx(styles.modalTitle, "text-primary")}>
           Información del Manager
@@ -234,10 +240,8 @@ export const ManagerDetailsModal = ({
         <Form className={styles.infoSection}>
           <Row>
             {/* Nombre y Apellidos (Lógica condicional para móvil/escritorio) */}
-            {/* First and Last Name (Conditional logic for mobile/desktop) */}
             {isMobile && !isEditMode ? (
               // Móvil + Vista: Un solo campo "Nombre" con nombre completo
-              // Mobile + View: Single "Name" field with full name
               <Col xs={12} className={styles.infoRow}>
                 <Form.Group controlId="managerFullName">
                   <Form.Label className={clsx(styles.label, "text-dark")}>Nombre:</Form.Label>
@@ -248,7 +252,6 @@ export const ManagerDetailsModal = ({
               </Col>
             ) : (
               // Escritorio o Edición: Campos separados
-              // Desktop or Edit: Separate fields
               <>
                 {/* Nombre / First Name */}
                 <Col md={6} className={styles.infoRow}>
