@@ -172,19 +172,8 @@ export const UserVisitGymPage = () => {
                         <h4>✓ ¡Visita Confirmada!</h4> <p>Tu acceso al gimnasio está listo.</p>
                     </Alert>
 
-                    {/* 1. Instrucciones */}
-                    <Alert variant="warning" className="mb-4 border-0 shadow-sm">
-                        <div className="d-flex align-items-center mb-2">
-                            <i className="bi bi-info-circle-fill me-2 fs-4 text-primary"></i>
-                            <Alert.Heading as="h4" className={clsx("h6 mb-0", "text-primary")}>Instrucciones de Acceso</Alert.Heading>
-                        </div>
-                        <ul className="mb-0 ps-3">
-                            <li className="text-dark mb-1">Presenta este código QR en la recepción del gimnasio.</li>
-                            <li className="text-dark mb-1">El código es de un solo uso y válido para hoy.</li>
-                        </ul>
-                    </Alert>
-
-                    {/* 2. Código QR */}
+                    {/* 2. Código QR (Reordenado: Segundo - Central) */}
+                    {/* 2. QR Code (Reordered: Second - Central) */}
                     <Card className="text-center mb-4 border-0 shadow-lg" style={{ borderRadius: '1rem', overflow: 'hidden' }}>
                         <Card.Header className="bg-primary text-white py-3">
                             <h2 className="h4 mb-0 fw-bold">Tu Pase de Acceso</h2>
@@ -202,7 +191,21 @@ export const UserVisitGymPage = () => {
                         </Card.Body>
                     </Card>
 
-                    {/* 3. Detalles de la Visita (Desplegable) */}
+                    {/* 1. Instrucciones (Reordenado: Ahora Tercero) */}
+                    {/* 1. Instructions (Reordered: Now Third) */}
+                    <Alert variant="warning" className="mb-4 border-0 shadow-sm">
+                        <div className="d-flex align-items-center mb-2">
+                            <i className="bi bi-info-circle-fill me-2 fs-4 text-primary"></i>
+                            <Alert.Heading as="h4" className={clsx("h6 mb-0", "text-primary")}>Instrucciones de Acceso</Alert.Heading>
+                        </div>
+                        <ul className="mb-0 ps-3">
+                            <li className="text-dark mb-1">Presenta este código QR en la recepción del gimnasio.</li>
+                            <li className="text-dark mb-1">El código es de un solo uso y válido para hoy.</li>
+                        </ul>
+                    </Alert>
+
+                    {/* 3. Detalles de la Visita (Reordenado: Cuarto - Desplegable) */}
+                    {/* 3. Visit Details (Reordered: Fourth - Collapsible) */}
                     <Card className="mb-4 border-0 shadow-sm bg-light">
                         <Card.Header 
                             className="bg-transparent border-0 d-flex justify-content-between align-items-center py-3" 
@@ -240,8 +243,6 @@ export const UserVisitGymPage = () => {
                             </div>
                         </Collapse>
                     </Card>
-
-                    {/* Botón "Volver a Gimnasios" eliminado */}
                 </Col>
             </Row>
         </Container>
