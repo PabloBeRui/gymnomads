@@ -213,12 +213,12 @@ export const UserDetailModal = ({
           <Modal.Footer className={styles.buttonContainer}>
             {/* Botón Eliminar (condicional) / Delete Button (conditional) */}
             <Button
-              variant="danger"
+              variant="outline-danger"
               onClick={handleDeleteClick}
               disabled={isDeleting}
               className={styles.deleteButton}
             >
-              {isDeleting ? "Eliminando..." : "🗑️ Eliminar Usuario"}
+              {isDeleting ? "Eliminando..." : <><i className="bi bi-trash-fill me-2"></i>Eliminar Usuario</>}
             </Button>
           </Modal.Footer>
         )}

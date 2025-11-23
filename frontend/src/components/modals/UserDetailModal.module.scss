@@ -31,7 +31,7 @@
 
 .modalContent {
   background-color: var(--bs-white); // Fondo blanco // White background
-  padding: 25px; // Reducir ligeramente el padding // Slightly reduced padding
+  padding: 30px;
   border-radius: 8px; // Bordes redondeados // Rounded borders
   max-width: 600px; // Ancho máximo // Maximum width
   width: 100%; // Ancho completo // Full width
@@ -39,6 +39,16 @@
   overflow-y: auto; // Scroll si el contenido es largo // Scroll if content is long
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); // Sombra // Shadow
   position: relative;
+
+  @media (max-width: 767.98px) {
+    scrollbar-width: none; // Firefox
+    -ms-overflow-style: none;  // IE and Edge
+    &::-webkit-scrollbar {
+      display: none; // Chrome, Safari, Opera
+      width: 0px;
+      background: transparent;
+    }
+  }
 }
 
 .modalHeader {
@@ -63,7 +73,7 @@
   margin: 0;
   
   @media (max-width: 767.98px) {
-    padding-right: 2rem; // Reducir espacio para el botón de cierre // Reduce space for close button
+    padding-right: 3rem; // Dejar espacio para el botón de cierre // Leave space for the close button
   }
 }
 
@@ -128,6 +138,10 @@
   }
 }
 
+.infoSection {
+  margin-bottom: 20px; // Espacio inferior de la sección de información // Bottom space for info section
+}
+
 .infoRow {
   display: flex;
   flex-direction: column;
@@ -147,7 +161,6 @@
   padding: 8px 12px;
   background-color: $light; // Fondo claro // Light background
   border-radius: 4px; // Bordes redondeados // Rounded borders
-  width: fit-content; // Ajustar ancho al contenido // Adjust width to content
 }
 
 .buttonContainer {
@@ -160,7 +173,16 @@
 }
 
 .deleteButton {
-  margin-right: auto; // Empuja este botón a la izquierda // Pushes this button to the left
+  // Estilos para que parezca una "card de listgympage" (sombra, transición)
+  // Styles to look like a "listgympage card" (shadow, transition)
+  box-shadow: $box_shadow; // Sombra base un poco más fuerte // Stronger base shadow
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  border-radius: $border-radius-lg; // Más redondeado como la card // More rounded like the card
+
+  &:hover {
+    transform: translateY(-8px); // Elevación al pasar el ratón como gymCard // Lift on hover like gymCard
+    box-shadow: $box_shadow_lg !important; // Usa sombra grande del tema como gymCard // Uses large theme shadow like gymCard
+  }
 }
 
 // Estilo para posicionar el nuevo botón de cierre animado.
