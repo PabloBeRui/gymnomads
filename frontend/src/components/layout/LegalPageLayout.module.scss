@@ -12,16 +12,51 @@
  *
  * =============================================================================
  */
+@use "../../styles/variables" as *; // Importar variables globales // Import global variables
 
 .container {
   position: relative; // Necesario para el posicionamiento absoluto del CloseButton // Needed for absolute positioning of the CloseButton
-  max-width: 800px; // Ancho máximo del contenedor // Maximum width of the container
-  margin: 2rem auto; // Centrado horizontal y margen superior/inferior // Horizontal centering and top/bottom margin
-  padding: 2rem 4rem; // Espaciado interno // Inner spacing
+  max-width: 900px; // Ancho máximo del contenedor (aumentado) // Increased max-width
+  margin: 3rem auto; // Centrado horizontal y margen superior/inferior // Horizontal centering and top/bottom margin
+  padding: 2.5rem 3rem; // Espaciado interno (aumentado horizontalmente) // Inner spacing (increased horizontally)
   background-color: var(--bs-white); // Fondo blanco // White background
-  border-radius: 8px; // Bordes redondeados // Rounded borders
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); // Sombra sutil // Subtle shadow
-  line-height: 1.6; // Altura de línea para legibilidad // Line height for readability
+  border-radius: $border-radius-lg; // Bordes redondeados // Rounded borders
+  box-shadow: $box-shadow-lg; // Sombra sutil // Subtle shadow
+  line-height: 1.7; // Altura de línea para legibilidad // Line height for readability
+
+  // Estilos generales para el contenido dentro del layout
+  // General styles for content within the layout
+  h2 {
+    color: $primary; // Títulos en color primario // Primary color titles
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba($primary, 0.2); // Subrayado sutil // Subtle underline
+  }
+
+  h4 {
+    color: $secondary; // Subtítulos en color secundario // Secondary color subtitles
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    color: $dark; // Texto principal oscuro // Dark main text
+    margin-bottom: 1rem;
+  }
+
+  ol, ul {
+    color: $dark; // Listas en color oscuro // Dark lists
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+  }
 }
 
 .title {
@@ -38,7 +73,7 @@
 // Style to position the new animated close button.
 .closeButton {
   position: absolute;
-  top: -20px;
-  right: 20px;
+  top: 10px; // Subir un poco más // Move up slightly
+  right: 10px; // Alinear a la derecha // Align right
   z-index: 10; // Asegurar que esté por encima del contenido.
 }

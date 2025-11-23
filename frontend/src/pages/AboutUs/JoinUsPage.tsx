@@ -35,10 +35,10 @@ export const JoinUsPage = () => {
   return (
     <Container className={styles.pageContainer}>
       <CloseButton
-        onClick={() => navigate(-1)}
+        onClick={() => navigate("/")} // Ir a la Landing Page // Go to Landing Page
         className={styles.closeButton}
         color="#FFB700"
-        ariaLabel="Volver a la página anterior"
+        ariaLabel="Volver al inicio"
       />
 
       <h1 className={styles.title}>Únete a la Revolución del Fitness</h1>

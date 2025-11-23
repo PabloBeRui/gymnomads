@@ -16,12 +16,21 @@
 @use "../../styles/variables" as *; // Importar variables globales // Import global variables
 
 .disclaimer {
-  background-color: color.adjust($warning, $lightness: 20%); // Fondo de advertencia claro // Light warning background
-  border: 1px solid color.adjust($warning, $lightness: 10%); // Borde de advertencia // Warning border
-  padding: 15px;
-  border-radius: 4px; // Bordes redondeados // Rounded borders
-  margin-top: 20px;
-  font-size: 0.9rem;
-  color: color.adjust($warning, $lightness: -25%); // Texto de advertencia oscuro // Dark warning text
-  text-align: left;
+  background-color: rgba($warning, 0.1); // Fondo de advertencia muy suave // Very soft warning background
+  border-left: 4px solid $warning; // Borde izquierdo sólido // Solid left border
+  padding: 1.5rem;
+  border-radius: 0 $border-radius $border-radius 0; // Bordes redondeados a la derecha // Rounded right borders
+  margin-top: 3rem;
+  font-size: 0.95rem;
+  color: color.adjust($dark, $lightness: 20%); // Texto gris oscuro // Dark gray text
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  &::before {
+    content: 'ℹ️'; // Icono visual // Visual icon
+    font-style: normal;
+    font-size: 1.2rem;
+  }
 }

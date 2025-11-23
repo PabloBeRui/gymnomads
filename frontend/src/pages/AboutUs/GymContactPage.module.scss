@@ -17,23 +17,39 @@
 .pageContainer {
   max-width: 600px; // Ancho máximo del contenedor // Maximum width of container
   margin: 40px auto; // Margen superior/inferior y centrado horizontal // Top/bottom margin and horizontal centering
-  padding: 30px;
+  padding: 40px; // Padding interno aumentado // Increased internal padding
   position: relative;
-  background-color: var(--bs-white); // Fondo blanco // White background
-  border-radius: 8px; // Bordes redondeados // Rounded borders
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); // Sombra sutil // Subtle shadow
+  background-color: rgba($light, 0.95); // Fondo claro con ligera transparencia // Light background with slight transparency
+  backdrop-filter: blur(10px); // Efecto blur // Blur effect
+  border-radius: $border-radius-lg; // Bordes redondeados // Rounded borders
+  box-shadow: $box-shadow-lg; // Sombra pronunciada // Prominent shadow
   text-align: center;
+  border: 1px solid rgba($dark, 0.05);
 }
 
 .title {
   font-size: 2rem;
-  color: $dark; // Color de texto oscuro // Dark text color
-  margin-bottom: 15px;
+  font-weight: 700;
+  color: $primary; // Color primario // Primary color
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .subtitle {
-  font-size: 1rem;
+  font-size: 1.1rem;
   color: $secondary; // Color de texto secundario // Secondary text color
   line-height: 1.6;
-  margin-bottom: 30px;
+  margin-bottom: 2rem;
+  max-width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+// Estilo para el botón de cierre
+.closeButton {
+  position: absolute;
+  top: -15px; // Subir el botón para que esté fuera del padding superior // Move button up to be outside top padding
+  right: 10px;
+  z-index: 10;
 }

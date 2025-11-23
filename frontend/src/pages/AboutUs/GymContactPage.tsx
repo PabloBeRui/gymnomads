@@ -17,6 +17,7 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { CloseButton } from "../../components/ui/CloseButton";
+import { useNavigate } from "react-router-dom";
 
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
 import { Container, Form, Button } from "react-bootstrap";
@@ -26,6 +27,7 @@ import styles from "./GymContactPage.module.scss";
 // import clsx from "clsx"; // Importar clsx / Import clsx
 
 export const GymContactPage = () => {
+  const navigate = useNavigate();
   const [gymName, setGymName] = useState("");
   const [address, setAddress] = useState("");
   const [email, setEmail] = useState("");
@@ -58,7 +60,12 @@ export const GymContactPage = () => {
 
   return (
     <Container className={styles.pageContainer}>
-      <CloseButton navigateTo="/" />
+      <CloseButton 
+        onClick={() => navigate("/")} 
+        className={styles.closeButton} 
+        color="#FFB700" 
+        ariaLabel="Volver al inicio"
+      />
       <h1 className={styles.title}>Contacta con Nosotros</h1>
       <p className={styles.subtitle}>
         ¿Eres un gimnasio y quieres unirte a nuestra red? Rellena el siguiente

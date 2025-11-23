@@ -20,63 +20,78 @@
 
 .pageContainer {
   max-width: 900px; // Ancho máximo del contenedor // Maximum width of container
-  margin: 40px auto; // Margen superior/inferior y centrado horizontal // Top/bottom margin and horizontal centering
-  padding: 20px;
+  margin: 60px auto; // Margen superior/inferior y centrado horizontal // Top/bottom margin and horizontal centering
+  padding: 40px;
   position: relative;
-  background-color: var(--bs-white); // Fondo blanco // White background
-  border-radius: 8px; // Bordes redondeados // Rounded borders
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); // Sombra sutil // Subtle shadow
+  background-color: rgba($light, 0.95); // Fondo claro semitransparente // Light semi-transparent background
+  backdrop-filter: blur(10px); // Efecto glass // Glass effect
+  border-radius: $border-radius-lg; // Bordes redondeados // Rounded borders
+  box-shadow: $box-shadow-lg; // Sombra sutil // Subtle shadow
+  border: 1px solid rgba($dark, 0.05);
 }
 
 .title {
   text-align: center;
-  font-size: 2rem;
-  color: $dark; // Color de texto oscuro // Dark text color
-  margin-bottom: 30px;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: $primary; // Color primario // Primary color
+  margin-bottom: 40px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba($dark, 0.1);
 }
 
 .ctaCard {
   flex: 1;
   min-width: 300px; // Ancho mínimo de la tarjeta CTA // Minimum width of CTA card
   padding: 30px 25px;
-  border: 1px solid var(--bs-gray-300); // Borde de la tarjeta // Card border
-  border-radius: 8px; // Bordes redondeados // Rounded borders
+  border: 1px solid rgba($dark, 0.1); // Borde de la tarjeta // Card border
+  border-radius: $border-radius; // Bordes redondeados // Rounded borders
   text-align: center;
   text-decoration: none; // Sin subrayado // No underline
   color: inherit; // Hereda el color del texto // Inherits text color
-  transition: transform 0.2s, box-shadow 0.2s; // Transiciones suaves // Smooth transitions
+  background-color: $light; // Fondo blanco // White background
+  transition: all 0.3s ease-in-out; // Transiciones suaves // Smooth transitions
+  height: 100%;
 }
 
 .ctaCard:hover {
-  transform: translateY(-5px); // Elevación al pasar el ratón // Lift on hover
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); // Sombra al pasar el ratón // Shadow on hover
+  transform: translateY(-10px); // Elevación al pasar el ratón // Lift on hover
+  box-shadow: $box-shadow-lg; // Sombra al pasar el ratón // Shadow on hover
+  border-color: $primary; // Borde primario en hover // Primary border on hover
 }
 
 .iconWrapper {
-  font-size: 3rem;
-  color: $primary; // Color primario para el icono // Primary color for icon
-  margin-bottom: 15px;
+  font-size: 4rem;
+  color: $secondary; // Color secundario para el icono // Secondary color for icon
+  margin-bottom: 20px;
+  transition: transform 0.3s ease;
+
+  .ctaCard:hover & {
+    transform: scale(1.1) rotate(5deg); // Efecto en el icono al hacer hover en la tarjeta // Icon effect on card hover
+    color: $primary; // Cambiar a primario en hover // Change to primary on hover
+  }
 }
 
 .cardTitle {
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 700;
   color: $dark; // Color de texto oscuro // Dark text color
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .cardText {
   font-size: 1rem;
-  color: $secondary; // Color de texto secundario // Secondary text color
+  color: rgba($dark, 0.7); // Color de texto secundario // Secondary text color
   line-height: 1.6;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 // Estilo para posicionar el nuevo botón de cierre animado.
 // Style to position the new animated close button.
 .closeButton {
   position: absolute;
-  top: -20px;
-  right: 15px;
+  top: -15px; // Subir el botón para que esté fuera del padding superior // Move button up to be outside top padding
+  right: 10px; // Ajustar a la derecha // Adjust right
   z-index: 10;
 }
