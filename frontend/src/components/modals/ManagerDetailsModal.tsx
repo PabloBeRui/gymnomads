@@ -41,6 +41,7 @@ import { useState, useEffect, useCallback } from "react";
 import type { ManagerWithGym } from "../../interfaces/user-interfaces";
 import { Avatar } from "../Avatar";
 import { CloseButton } from "../ui/CloseButton"; // Importar el nuevo componente / Import the new component
+import { useMediaQuery } from "../../hooks/useMediaQuery"; // Importar hook de media query / Import media query hook
 
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
 import { Modal, Form, Button, Row, Col } from "react-bootstrap";
@@ -86,6 +87,7 @@ export const ManagerDetailsModal = ({
   // --- Estados del componente / Component states ---
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const isMobile = useMediaQuery("(max-width: 767.98px)"); // Detectar móvil / Detect mobile
 
   // Estados de campos editables / Editable fields states
   const [firstName, setFirstName] = useState<string>("");
@@ -165,6 +167,7 @@ export const ManagerDetailsModal = ({
   }, [manager]);
 
   // Manejar cierre del modal / Handle modal close
+  // ESTA FUNCION DEBE ESTAR DEFINIDA ANTES DE USARSE EN useEffect
   const handleClose = useCallback(() => {
     if (isEditMode) {
       handleCancelEdit();
@@ -207,9 +210,9 @@ export const ManagerDetailsModal = ({
     <Modal show={isOpen} onHide={handleClose} centered size="lg">
       <Modal.Header className={styles.modalHeader}>
         <Modal.Title className={clsx(styles.modalTitle, "text-primary")}>
-          👤 Información del Manager
+          Información del Manager
         </Modal.Title>
-        <CloseButton onClick={handleClose} ariaLabel="Cerrar información del manager" colorVariant="primary" />
+        <CloseButton onClick={handleClose} ariaLabel="Cerrar información del manager" color="#FFB700" />
       </Modal.Header>
       <Modal.Body>
         {/* Header con Avatar, nombre y email / Header with Avatar, name and email */}
@@ -230,53 +233,74 @@ export const ManagerDetailsModal = ({
         {/* Contenido del modal (campos editables) / Modal content (editable fields) */}
         <Form className={styles.infoSection}>
           <Row>
-            {/* Nombre / First Name */}
-            <Col md={6} className={styles.infoRow}>
-              <Form.Group controlId="managerFirstName">
-                <Form.Label className={clsx(styles.label, "text-dark")}>Nombre:</Form.Label>
-                {isEditMode ? (
-                  <>
-                    <Form.Control
-                      type="text"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      isInvalid={!!errors.firstName}
-                      placeholder="Ej: Pablo"
-                      disabled={isSaving}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.firstName}
-                    </Form.Control.Feedback>
-                  </>
-                ) : (
-                  <div className={styles.value}>{manager.first_name}</div>
-                )}
-              </Form.Group>
-            </Col>
+            {/* Nombre y Apellidos (Lógica condicional para móvil/escritorio) */}
+            {/* First and Last Name (Conditional logic for mobile/desktop) */}
+            {isMobile && !isEditMode ? (
+              // Móvil + Vista: Un solo campo "Nombre" con nombre completo
+              // Mobile + View: Single "Name" field with full name
+              <Col xs={12} className={styles.infoRow}>
+                <Form.Group controlId="managerFullName">
+                  <Form.Label className={clsx(styles.label, "text-dark")}>Nombre:</Form.Label>
+                  <div className={styles.value}>
+                    {manager.first_name} {manager.last_name}
+                  </div>
+                </Form.Group>
+              </Col>
+            ) : (
+              // Escritorio o Edición: Campos separados
+              // Desktop or Edit: Separate fields
+              <>
+                {/* Nombre / First Name */}
+                <Col md={6} className={styles.infoRow}>
+                  <Form.Group controlId="managerFirstName">
+                    <Form.Label className={clsx(styles.label, "text-dark")}>Nombre:</Form.Label>
+                    {isEditMode ? (
+                      <>
+                        <Form.Control
+                          type="text"
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                          isInvalid={!!errors.firstName}
+                          placeholder="Ej: Pablo"
+                          disabled={isSaving}
+                          className={styles.input}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {errors.firstName}
+                        </Form.Control.Feedback>
+                      </>
+                    ) : (
+                      <div className={styles.value}>{manager.first_name}</div>
+                    )}
+                  </Form.Group>
+                </Col>
 
-            {/* Apellidos / Last Name */}
-            <Col md={6} className={styles.infoRow}>
-              <Form.Group controlId="managerLastName">
-                <Form.Label className={clsx(styles.label, "text-dark")}>Apellidos:</Form.Label>
-                {isEditMode ? (
-                  <>
-                    <Form.Control
-                      type="text"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      isInvalid={!!errors.lastName}
-                      placeholder="Ej: Bernabéu Ruiz"
-                      disabled={isSaving}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.lastName}
-                    </Form.Control.Feedback>
-                  </>
-                ) : (
-                  <div className={styles.value}>{manager.last_name}</div>
-                )}
-              </Form.Group>
-            </Col>
+                {/* Apellidos / Last Name */}
+                <Col md={6} className={styles.infoRow}>
+                  <Form.Group controlId="managerLastName">
+                    <Form.Label className={clsx(styles.label, "text-dark")}>Apellidos:</Form.Label>
+                    {isEditMode ? (
+                      <>
+                        <Form.Control
+                          type="text"
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
+                          isInvalid={!!errors.lastName}
+                          placeholder="Ej: Bernabéu Ruiz"
+                          disabled={isSaving}
+                          className={styles.input}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {errors.lastName}
+                        </Form.Control.Feedback>
+                      </>
+                    ) : (
+                      <div className={styles.value}>{manager.last_name}</div>
+                    )}
+                  </Form.Group>
+                </Col>
+              </>
+            )}
           </Row>
 
           {/* Email (no editable) / Email (not editable) */}
@@ -314,7 +338,17 @@ export const ManagerDetailsModal = ({
           {/* Gimnasio (no editable) / Gym (not editable) */}
           <Form.Group controlId="managerGym" className={styles.infoRow}>
             <Form.Label className={clsx(styles.label, "text-dark")}>Gimnasio:</Form.Label>
-            <div className={styles.value}>{manager.gym_name}</div>
+            <div className={clsx(styles.value, "d-flex align-items-center gap-2")}>
+              <Avatar
+                src={manager.logo_url}
+                firstName={manager.gym_name}
+                lastName=""
+                size={30}
+              />
+              <span>
+                {manager.gym_name}
+              </span>
+            </div>
           </Form.Group>
 
           {/* Ciudad (no editable) / City (not editable) */}
