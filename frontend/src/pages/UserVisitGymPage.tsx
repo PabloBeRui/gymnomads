@@ -20,7 +20,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { QRCodeComponent } from "../components/QRCodeComponent";
 import { handleApiError } from "../utils/error-handler";
 import { toast } from "sonner";
-import { Container, Row, Col, Alert, Button, Card, Spinner } from "react-bootstrap";
+import { Container, Row, Col, Alert, Button, Card, Spinner, Collapse } from "react-bootstrap";
 import clsx from "clsx";
 
 
@@ -58,6 +58,7 @@ export const UserVisitGymPage = () => {
     const [visitDetails, setVisitDetails] = useState<VisitDetails | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [showDetails, setShowDetails] = useState<boolean>(false); // Estado para el desplegable / State for collapse
 
     // Cargar detalles de la visita al montar // Load visit details on mount
     useEffect(() => {
@@ -158,49 +159,91 @@ export const UserVisitGymPage = () => {
                         <p className="lead text-dark">Tu acceso al gimnasio está listo.</p>
                     </header>
 
-                    <Alert variant="success" className="text-center">
+                    <Alert variant="success" className="text-center mb-4">
                         <strong>✓ Visita registrada correctamente</strong>
                     </Alert>
 
-                    <Card className="mb-4">
-                        <Card.Body>
-                            <Card.Title as="h3" className={clsx("h5 mb-3", "text-primary")}>Detalles de la Visita</Card.Title>
-                            <p><strong className="text-dark">Gimnasio:</strong> {visitDetails.gym_name}</p>
-                            <p><strong className="text-dark">Dirección:</strong> {visitDetails.gym_address}</p>
-                            <p><strong className="text-dark">Fecha de visita:</strong> {formatDate(visitDetails.visit_date)}</p>
-                            <p className="mb-0"><strong className="text-dark">ID de visita:</strong> #{visitDetails.id}</p>
-                        </Card.Body>
-                    </Card>
-
-                    <Card className="text-center mb-4">
-                        <Card.Body>
-                            <Card.Title as="h2" className={clsx("h4", "text-primary")}>Código de Acceso</Card.Title>
-                            <QRCodeComponent
-                                logoUrl="/images/gymnomads/logo/gymnomads-logo.png"
-                                data={qrData}
-                                size={250}
-                                altText={`Código QR de acceso para visita #${visitDetails.id}`}
-                            />
-                        </Card.Body>
-                    </Card>
-
-                    <Alert variant="warning">
-                        <Alert.Heading as="h4" className={clsx("h6", "text-primary")}>📱 Instrucciones</Alert.Heading>
-                        <ul className="mb-0">
-                            <li className="text-dark">Presenta este código QR en la recepción del gimnasio.</li>
-                            <li className="text-dark">El código es de un solo uso y válido para hoy.</li>
-                            <li className="text-dark">Puedes hacer una captura de pantalla si lo necesitas.</li>
+                    {/* 1. Instrucciones (Reordenado: Primero) */}
+                    {/* 1. Instructions (Reordered: First) */}
+                    <Alert variant="warning" className="mb-4 border-0 shadow-sm">
+                        <div className="d-flex align-items-center mb-2">
+                            <i className="bi bi-info-circle-fill me-2 fs-4 text-primary"></i>
+                            <Alert.Heading as="h4" className={clsx("h6 mb-0", "text-primary")}>Instrucciones de Acceso</Alert.Heading>
+                        </div>
+                        <ul className="mb-0 ps-3">
+                            <li className="text-dark mb-1">Presenta este código QR en la recepción del gimnasio.</li>
+                            <li className="text-dark mb-1">El código es de un solo uso y válido para hoy.</li>
                         </ul>
                     </Alert>
 
+                    {/* 2. Código QR (Reordenado: Segundo - Central) */}
+                    {/* 2. QR Code (Reordered: Second - Central) */}
+                    <Card className="text-center mb-4 border-0 shadow-lg" style={{ borderRadius: '1rem', overflow: 'hidden' }}>
+                        <Card.Header className="bg-primary text-white py-3">
+                            <h2 className="h4 mb-0 fw-bold">Tu Pase de Acceso</h2>
+                        </Card.Header>
+                        <Card.Body className="p-4 bg-white">
+                            <div className="d-flex justify-content-center">
+                                <QRCodeComponent
+                                    logoUrl="/images/gymnomads/logo/gymnomads-logo.png"
+                                    data={qrData}
+                                    size={280}
+                                    altText={`Código QR de acceso para visita #${visitDetails.id}`}
+                                />
+                            </div>
+                            <p className="text-muted mt-3 mb-0 small">Escanea este código en la entrada</p>
+                        </Card.Body>
+                    </Card>
+
+                    {/* 3. Detalles de la Visita (Reordenado: Tercero - Desplegable) */}
+                    {/* 3. Visit Details (Reordered: Third - Collapsible) */}
+                    <Card className="mb-4 border-0 shadow-sm bg-light">
+                        <Card.Header 
+                            className="bg-transparent border-0 d-flex justify-content-between align-items-center py-3" 
+                            role="button" 
+                            onClick={() => setShowDetails(!showDetails)}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            <div className="d-flex align-items-center">
+                                <i className="bi bi-receipt me-2 text-primary"></i>
+                                <h3 className={clsx("h6 mb-0", "text-primary")}>Detalles del Ticket</h3>
+                            </div>
+                            <i className={`bi bi-chevron-${showDetails ? 'up' : 'down'} text-muted`}></i>
+                        </Card.Header>
+                        <Collapse in={showDetails}>
+                            <div>
+                                <Card.Body className="pt-0 border-top">
+                                    <Row className="mt-3">
+                                        <Col sm={6} className="mb-2">
+                                            <p className="mb-1 small text-muted">Gimnasio</p>
+                                            <p className="fw-bold text-dark">{visitDetails.gym_name}</p>
+                                        </Col>
+                                        <Col sm={6} className="mb-2">
+                                            <p className="mb-1 small text-muted">Fecha</p>
+                                            <p className="fw-bold text-dark">{formatDate(visitDetails.visit_date)}</p>
+                                        </Col>
+                                        <Col xs={12} className="mb-2">
+                                            <p className="mb-1 small text-muted">Dirección</p>
+                                            <p className="text-dark">{visitDetails.gym_address}</p>
+                                        </Col>
+                                        <Col xs={12}>
+                                            <p className="mb-0 small text-muted">ID de Referencia: <span className="font-monospace text-dark">#{visitDetails.id}</span></p>
+                                        </Col>
+                                    </Row>
+                                </Card.Body>
+                            </div>
+                        </Collapse>
+                    </Card>
+
                     <div className="d-grid mt-4">
                         <Button
-                            variant="primary"
+                            variant="outline-primary"
                             size="lg"
                             onClick={() => navigate("/gyms")}
                             aria-label="Volver a la lista de gimnasios"
+                            className="fw-bold"
                         >
-                            Volver a Gimnasios
+                            <i className="bi bi-arrow-left me-2"></i>Volver a Gimnasios
                         </Button>
                     </div>
                 </Col>

@@ -123,15 +123,6 @@ export const QRCodeComponent = ({
         aria-label={altText}
         role="img"
       />
-
-      {/* Información de desarrollo (se mantiene de tu código original) */}
-      {/* Development info (kept from your original code) */}
-      {import.meta.env.DEV && (
-        <p className={styles.qrInfo}>
-          Dev: QR data = "{data.substring(0, 30)}
-          {data.length > 30 ? "..." : ""}"
-        </p>
-      )}
     </div>
   );
 };
