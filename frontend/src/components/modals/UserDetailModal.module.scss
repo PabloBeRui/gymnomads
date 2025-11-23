@@ -31,7 +31,7 @@
 
 .modalContent {
   background-color: var(--bs-white); // Fondo blanco // White background
-  padding: 30px;
+  padding: 25px; // Reducir ligeramente el padding // Slightly reduced padding
   border-radius: 8px; // Bordes redondeados // Rounded borders
   max-width: 600px; // Ancho máximo // Maximum width
   width: 100%; // Ancho completo // Full width
@@ -126,10 +126,6 @@
     margin-top: 0.5rem;
     text-align: center; // Centrar el texto del email en móvil // Center email text on mobile
   }
-}
-
-.infoSection {
-  margin-bottom: 20px; // Espacio inferior de la sección de información // Bottom space for info section
 }
 
 .infoRow {
