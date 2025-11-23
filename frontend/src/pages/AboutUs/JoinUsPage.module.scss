@@ -21,7 +21,7 @@
 .pageContainer {
   max-width: 900px; // Ancho máximo del contenedor // Maximum width of container
   margin: 60px auto; // Margen superior/inferior y centrado horizontal // Top/bottom margin and horizontal centering
-  padding: 40px;
+  padding: 60px 40px 40px 40px; // Aumentar padding superior // Increase top padding
   position: relative;
   background-color: rgba($light, 0.95); // Fondo claro semitransparente // Light semi-transparent background
   backdrop-filter: blur(10px); // Efecto glass // Glass effect
