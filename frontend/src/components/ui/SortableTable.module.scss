@@ -15,6 +15,7 @@
  * =============================================================================
  */
 @use "../../styles/variables" as *;
+@use "sass:color"; // Importar el módulo de color para usar color.adjust() // Import color module to use color.adjust()
 
 .tableContainer {
   overflow-x: auto;
@@ -41,7 +42,7 @@
   white-space: nowrap; // Evitar que los títulos se partan
 
   &:hover {
-    background-color: lighten($secondary, 5%); // Aclarar al pasar el ratón
+    background-color: color.adjust($secondary, $lightness: 5%); // Aclarar al pasar el ratón // Lighten on hover
   }
 }
 
