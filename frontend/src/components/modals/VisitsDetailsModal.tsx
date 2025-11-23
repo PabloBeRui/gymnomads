@@ -142,7 +142,7 @@ export const VisitsDetailsModal = ({
         <CloseButton
           onClick={handleClose}
           ariaLabel="Cerrar detalles de la visita"
-          colorVariant="primary"
+          className={styles.modalCloseButton}
         />
       </Modal.Header>
       <Modal.Body>
@@ -155,11 +155,10 @@ export const VisitsDetailsModal = ({
               firstName={visit.user_name || "Usuario"}
               lastName={""}
               size={100}
+              className={styles.avatar}
             />
-            <div className={styles.profileInfo}>
-              <h3 className={styles.profileName}>{visit.user_name || "N/A"}</h3>
-              <p className={styles.profileEmail}>{visit.user_email || "N/A"}</p>
-            </div>
+            <h3 className={styles.profileName}>{visit.user_name || "N/A"}</h3>
+            <p className={styles.profileEmail}>{visit.user_email || "N/A"}</p>
           </div>
         )}
 
