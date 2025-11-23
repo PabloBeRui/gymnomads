@@ -57,24 +57,24 @@ export const QRCodeComponent = ({
   // Ref for the div that will hold the QR canvas
   const qrRef = useRef<HTMLDivElement>(null);
 
-  // Estado para almacenar el color primario dinámicamente desde CSS
-  // State to store the primary color dynamically from CSS
-  const [primaryColor, setPrimaryColor] = useState<string>("#FFB700"); // Default a $primary
+  // Estado para almacenar el color del QR dinámicamente desde CSS
+  // State to store the QR color dynamically from CSS
+  const [qrColor, setQrColor] = useState<string>("#194350"); // Default a $secondary
 
-  // Efecto para obtener el valor de la variable CSS --bs-primary
-  // Effect to get the value of the --bs-primary CSS variable
+  // Efecto para obtener el valor de la variable CSS --bs-secondary
+  // Effect to get the value of the --bs-secondary CSS variable
   useEffect(() => {
     if (typeof window !== "undefined") {
       const computedStyle = getComputedStyle(document.documentElement);
-      const bsPrimary = computedStyle.getPropertyValue("--bs-primary").trim();
-      if (bsPrimary) {
-        setPrimaryColor(bsPrimary);
+      const bsSecondary = computedStyle.getPropertyValue("--bs-secondary").trim();
+      if (bsSecondary) {
+        setQrColor(bsSecondary);
       }
     }
   }, []);
 
-  // useEffect para (re)dibujar el QR cuando cambien las props o el color primario
-  // useEffect to (re)draw the QR when props or primary color change
+  // useEffect para (re)dibujar el QR cuando cambien las props o el color
+  // useEffect to (re)draw the QR when props or color change
   useEffect(() => {
     // 1. Validar que el div contenedor exista
     // 1. Validate that the container div exists
@@ -90,11 +90,11 @@ export const QRCodeComponent = ({
       data: data, // Datos (URL) a codificar / Data (URL) to encode
       image: logoUrl, // Logo de GymNomads / GymNomads logo
       dotsOptions: {
-        color: primaryColor, // Usar el color primario dinámico // Use dynamic primary color
-        type: "rounded", // Puntos redondeados / Rounded dots
+        color: qrColor, // Usar el color secundario dinámico // Use dynamic secondary color
+        type: "square", // Puntos cuadrados (QR normal) // Square dots (normal QR)
       },
       cornersSquareOptions: {
-        type: "extra-rounded", // Esquinas redondeadas / Rounded corners
+        type: "square", // Esquinas cuadradas // Square corners
       },
       backgroundOptions: {
         color: "#ffffff", // Fondo blanco (del canvas) / White background (of the canvas)
@@ -110,7 +110,7 @@ export const QRCodeComponent = ({
     // 3. Clear the div (to remove old QRs) and append the new one
     qrRef.current.innerHTML = "";
     qrCode.append(qrRef.current);
-  }, [data, logoUrl, size, qrRef, primaryColor]); // Dependencias: añadir primaryColor // Dependencies: add primaryColor
+  }, [data, logoUrl, size, qrRef, qrColor]); // Dependencias: añadir qrColor // Dependencies: add qrColor
 
   // --- FIN LÓGICA QR-CODE-STYLING ---
   // --- END QR-CODE-STYLING LOGIC ---
