@@ -29,3 +29,19 @@
   right: 1rem; // Ajustar según el padding del contenedor // Adjust based on container padding
   z-index: 10; // Asegurar que esté por encima de otros elementos // Ensure it's above other elements
 }
+
+.customSuccessAlert {
+  background-color: $secondary; // Fondo oscuro para el Alert // Dark background for Alert
+  color: $light; // Texto claro por defecto para el Alert // Light text by default for Alert
+  border-color: $secondary; // Borde acorde al fondo // Border matching background
+
+  h4 {
+    color: $primary; // Título en color primario // Title in primary color
+    margin-bottom: 0.5rem; // Espacio entre h4 y p // Space between h4 and p
+  }
+
+  p {
+    color: $light; // Párrafo en color claro // Paragraph in light color
+    margin-bottom: 0; // Sin margen inferior // No bottom margin
+  }
+}

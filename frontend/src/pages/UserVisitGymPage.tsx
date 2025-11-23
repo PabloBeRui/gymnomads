@@ -168,8 +168,8 @@ export const UserVisitGymPage = () => {
                         {/* Se eliminó el título h1 y el párrafo según instrucciones previas */}
                     </header>
 
-                    <Alert variant="success" className="text-center mb-2">
-                        <strong>✓ ¡Visita Confirmada!</strong> <p className="mb-0">Tu acceso al gimnasio está listo.</p>
+                    <Alert className={clsx("text-center mb-2", styles.customSuccessAlert)}>
+                        <h4>✓ ¡Visita Confirmada!</h4> <p>Tu acceso al gimnasio está listo.</p>
                     </Alert>
 
                     {/* 1. Instrucciones */}
