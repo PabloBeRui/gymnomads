@@ -47,60 +47,58 @@ export const JoinUsPage = () => {
           ariaLabel="Volver al inicio"
         />
 
-        <h1 className={styles.title}>Únete a la revolución del fitness</h1>
+        <h1 className={styles.title}>Únete a la Revolución del Fitness</h1>
 
         <Row className="justify-content-center g-4">
           {/* --- Tarjeta 1: Soy un Socio --- */}
           {/* --- Card 1: register user --- */}
-          <Col md={6} lg={5}>
-            <Card as={Link} to="/register" className={clsx(styles.ctaCard, "h-100")}>
-              <div className={styles.cardImageWrapper}>
-                <Card.Img 
-                  variant="top" 
-                  src="/images/join-us/socio.png" 
-                  className={styles.cardImage}
-                  alt="Imagen representativa de un socio entrenando"
-                />
-              </div>
-              <Card.Body className="d-flex flex-column">
-                <Card.Title className={styles.cardTitle}>Soy un Socio</Card.Title>
-                <Card.Text className={styles.cardText}>
-                  ¿Tu gimnasio ya es parte de la red? Regístrate aquí para activar
-                  tu pasaporte Gymnomads y empezar a visitar otros gimnasios.
-                </Card.Text>
-                <Button variant="primary" className={clsx(styles.cardButton, "mt-auto")}>
-                  Registrarme Ahora
-                </Button>
-              </Card.Body>
-            </Card>
-          </Col>
-
+                    <Col md={6} lg={6}>
+                      <Card as={Link} to="/register" className={clsx(styles.ctaCard, "h-100")}>
+                        <div className={styles.cardImageWrapper}>
+                          <Card.Img
+                            variant="top"
+                            src="/images/join-us/socio.png"
+                            className={styles.cardImage}
+                            alt="Imagen representativa de un socio entrenando"
+                          />
+                        </div>
+                        <Card.Body className="d-flex flex-column">
+                          <Card.Title className={styles.cardTitle}>Soy un Socio</Card.Title>
+                          <Card.Text className={styles.cardText}>
+                            ¿Tu gimnasio ya es parte de la red? Regístrate aquí para activar
+                            tu pasaporte Gymnomads y empezar a visitar otros gimnasios.
+                          </Card.Text>
+                          <Button variant="primary" className={clsx(styles.cardButton, "mt-auto")}>
+                            Registrarme Ahora
+                          </Button>
+                        </Card.Body>
+                      </Card>
+                    </Col>
           {/* --- Tarjeta 2: Soy un Gimnasio --- */}
           {/* --- card 2: Gym --- */}
-          <Col md={6} lg={5}>
-            <Card as={Link} to="/gym-contact" className={clsx(styles.ctaCard, "h-100")}>
-              <div className={styles.cardImageWrapper}>
-                 <Card.Img 
-                    variant="top" 
-                    src="/images/join-us/gimnasio.png" 
-                    className={styles.cardImage}
-                    alt="Imagen representativa de un gimnasio moderno"
-                 />
-              </div>
-              <Card.Body className="d-flex flex-column">
-                <Card.Title className={styles.cardTitle}>Soy un Gimnasio</Card.Title>
-                <Card.Text className={styles.cardText}>
-                  ¿Quieres atraer nuevos miembros y ofrecer un valor añadido
-                  increíble a tus socios actuales? Contacta con nosotros para
-                  unirte a la red.
-                </Card.Text>
-                <Button variant="secondary" className={clsx(styles.cardButton, "mt-auto")}>
-                  Contactar
-                </Button>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
+                    <Col md={6} lg={6}>
+                      <Card as={Link} to="/gym-contact" className={clsx(styles.ctaCard, "h-100")}>
+                        <div className={styles.cardImageWrapper}>
+                           <Card.Img
+                              variant="top"
+                              src="/images/join-us/gimnasio.png"
+                              className={styles.cardImage}
+                              alt="Imagen representativa de un gimnasio moderno"
+                           />
+                        </div>
+                        <Card.Body className="d-flex flex-column">
+                          <Card.Title className={styles.cardTitle}>Soy un Gimnasio</Card.Title>
+                          <Card.Text className={styles.cardText}>
+                            ¿Quieres atraer nuevos miembros y ofrecer un valor añadido
+                            increíble a tus socios actuales? Contacta con nosotros para
+                            unirte a la red.
+                          </Card.Text>
+                          <Button variant="secondary" className={clsx(styles.cardButton, "mt-auto")}>
+                            Contactar
+                          </Button>
+                        </Card.Body>
+                      </Card>
+                    </Col>        </Row>
       </Container>
     </div>
   );
