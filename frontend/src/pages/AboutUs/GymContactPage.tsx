@@ -20,11 +20,11 @@ import { CloseButton } from "../../components/ui/CloseButton";
 import { useNavigate } from "react-router-dom";
 
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
-import { Container, Form, Button } from "react-bootstrap";
+import { Form, Button, Spinner } from "react-bootstrap";
 
 // Importar el módulo SCSS / Import the SCSS module
 import styles from "./GymContactPage.module.scss";
-// import clsx from "clsx"; // Importar clsx / Import clsx
+import clsx from "clsx";
 
 export const GymContactPage = () => {
   const navigate = useNavigate();
@@ -37,18 +37,13 @@ export const GymContactPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     setIsSubmitting(true);
 
-    // Simulación de envío a un API
-    // API submission simulation
+    // Simulación de envío
     setTimeout(() => {
       toast.success(
         "¡Gracias por tu interés! Hemos recibido tus datos y te contactaremos pronto."
       );
-
-      // Resetear formulario y estado
-      // Reset form and state
       setGymName("");
       setAddress("");
       setEmail("");
@@ -58,78 +53,144 @@ export const GymContactPage = () => {
     }, 1500);
   };
 
+  const handleBackdropClick = () => {
+    navigate(-1);
+  };
+
+  const handleContainerClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   return (
-    <Container className={styles.pageContainer}>
-      <CloseButton 
-        onClick={() => navigate("/")} 
-        className={styles.closeButton} 
-        color="#FFB700" 
-        ariaLabel="Volver al inicio"
-      />
-      <h1 className={styles.title}>Contacta con Nosotros</h1>
-      <p className={styles.subtitle}>
-        ¿Eres un gimnasio y quieres unirte a nuestra red? Rellena el siguiente
-        formulario y nos pondremos en contacto contigo.
-      </p>
-      <Form onSubmit={handleSubmit} className="text-start">
-        <Form.Group className="mb-3" controlId="gymName">
-          <Form.Label>Nombre del Gimnasio</Form.Label>
-          <Form.Control
-            type="text"
-            value={gymName}
-            onChange={(e) => setGymName(e.target.value)}
-            required
-          />
-        </Form.Group>
+    <div className={styles.backdrop} onClick={handleBackdropClick}>
+      <div className={styles.pageContainer} onClick={handleContainerClick}>
+        <div className={styles.splitLayout}>
+          {/* Sección Izquierda: Imagen e Inspiración */}
+          <div className={styles.imageSection}>
+            <img
+              src="/images/gym-contact-page/gym-contact-page.png"
+              alt="Gimnasio moderno GymNomads"
+              className={styles.contactImage}
+            />
+            <div className={styles.imageOverlay}>
+              <h2>Expande tu Negocio</h2>
+              <p>Únete a la red de gimnasios más flexible de España.</p>
+            </div>
+          </div>
 
-        <Form.Group className="mb-3" controlId="address">
-          <Form.Label>Dirección</Form.Label>
-          <Form.Control
-            type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            required
-          />
-        </Form.Group>
+          {/* Sección Derecha: Formulario */}
+          <div className={styles.formSection}>
+            <CloseButton
+              onClick={() => navigate(-1)}
+              className={styles.closeButton}
+              color="#FFB700"
+              ariaLabel="Cerrar formulario"
+            />
 
-        <Form.Group className="mb-3" controlId="email">
-          <Form.Label>Email de Contacto</Form.Label>
-          <Form.Control
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </Form.Group>
+            <h1 className={styles.title}>Contacta con Nosotros</h1>
+            <p className={styles.subtitle}>
+              Rellena el formulario para unirte a nuestra red exclusiva y en en
+              poco tiempo contactaremos contigo.
+            </p>
 
-        <Form.Group className="mb-3" controlId="phone">
-          <Form.Label>Teléfono de Contacto</Form.Label>
-          <Form.Control
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            required
-          />
-        </Form.Group>
+            <Form onSubmit={handleSubmit}>
+              <Form.Group className="mb-3" controlId="gymName">
+                <Form.Label className={styles.formLabel}>
+                  Nombre del Gimnasio
+                </Form.Label>
+                <Form.Control
+                  type="text"
+                  value={gymName}
+                  onChange={(e) => setGymName(e.target.value)}
+                  required
+                  className={styles.formControl}
+                  placeholder="Ej: Iron Temple Gym"
+                />
+              </Form.Group>
 
-        <Form.Group className="mb-4" controlId="observations">
-          <Form.Label>Observaciones o Dudas (Opcional)</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={3}
-            value={observations}
-            onChange={(e) => setObservations(e.target.value)}
-          />
-        </Form.Group>
+              <Form.Group className="mb-3" controlId="address">
+                <Form.Label className={styles.formLabel}>Dirección</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  required
+                  className={styles.formControl}
+                  placeholder="Calle Principal, 123, Madrid"
+                />
+              </Form.Group>
 
-        <Button
-          variant="primary"
-          type="submit"
-          disabled={isSubmitting}
-          className="w-100">
-          {isSubmitting ? "Enviando..." : "Enviar Solicitud"}
-        </Button>
-      </Form>
-    </Container>
+              <div className="row">
+                <div className="col-md-6">
+                  <Form.Group className="mb-3" controlId="email">
+                    <Form.Label className={styles.formLabel}>
+                      Email Profesional
+                    </Form.Label>
+                    <Form.Control
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className={styles.formControl}
+                      placeholder="contacto@tugimnasio.com"
+                    />
+                  </Form.Group>
+                </div>
+                <div className="col-md-6">
+                  <Form.Group className="mb-3" controlId="phone">
+                    <Form.Label className={styles.formLabel}>
+                      Teléfono
+                    </Form.Label>
+                    <Form.Control
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      required
+                      className={styles.formControl}
+                      placeholder="+34 600 000 000"
+                    />
+                  </Form.Group>
+                </div>
+              </div>
+
+              <Form.Group className="mb-4" controlId="observations">
+                <Form.Label className={styles.formLabel}>
+                  Observaciones (Opcional)
+                </Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  value={observations}
+                  onChange={(e) => setObservations(e.target.value)}
+                  className={styles.formControl}
+                  placeholder="Cuéntanos un poco sobre tus instalaciones..."
+                />
+              </Form.Group>
+
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className={clsx(styles.submitButton, "w-100")}>
+                {isSubmitting ? (
+                  <>
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                      className="me-2"
+                    />
+                    Enviando...
+                  </>
+                ) : (
+                  "Enviar Solicitud"
+                )}
+              </Button>
+            </Form>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };

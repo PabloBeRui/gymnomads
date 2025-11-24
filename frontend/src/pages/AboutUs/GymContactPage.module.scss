@@ -5,51 +5,173 @@
  * =============================================================================
  *
  * Descripción: Estilos para la página de contacto de gimnasios.
- * Define el diseño del contenedor principal de la página, el título y el subtítulo.
  *
  * Description: Styles for the gym contact page.
- * Defines the design of the main page container, title, and subtitle.
  *
  * =============================================================================
  */
-@use "../../styles/variables" as *; // Importar variables globales // Import global variables
+@use "../../styles/variables" as *;
+
+// Fondo global para el efecto modal/backdrop
+.backdrop {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; // Permite scroll si el contenido es alto
+  padding: 2rem 1rem;
+  cursor: pointer; // Indica que se puede cerrar clicando fuera
+}
 
 .pageContainer {
-  max-width: 600px; // Ancho máximo del contenedor // Maximum width of container
-  margin: 40px auto; // Margen superior/inferior y centrado horizontal // Top/bottom margin and horizontal centering
-  padding: 40px; // Padding interno aumentado // Increased internal padding
   position: relative;
-  background-color: rgba($light, 0.95); // Fondo claro con ligera transparencia // Light background with slight transparency
-  backdrop-filter: blur(10px); // Efecto blur // Blur effect
-  border-radius: $border-radius-lg; // Bordes redondeados // Rounded borders
-  box-shadow: $box-shadow-lg; // Sombra pronunciada // Prominent shadow
-  text-align: center;
-  border: 1px solid rgba($dark, 0.05);
+  max-width: 1100px; // Ancho máximo amplio para diseño split
+  width: 100%;
+  background-color: var(--bs-white);
+  border-radius: $border-radius-lg;
+  box-shadow: $box-shadow-lg;
+  overflow: hidden; // Para que la imagen no se salga de los bordes redondeados
+  cursor: default; // Evitar cerrar al clicar dentro
+  padding: 0; // Quitamos padding del contenedor principal para manejarlo en el grid
+
+  // Ajuste para móvil: dejar margen lateral
+  @media (max-width: 768px) {
+    width: 95%;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.splitLayout {
+  display: flex;
+  flex-direction: column; // Móvil por defecto: Columna
+
+  @media (min-width: 992px) {
+    flex-direction: row; // Escritorio: Fila
+    min-height: 600px; // Altura mínima para que luzca bien en escritorio
+  }
+}
+
+// Sección de la Imagen
+.imageSection {
+  position: relative;
+  background-color: $dark; // Fondo de respaldo
+  min-height: 250px; // Altura mínima en móvil
+
+  @media (min-width: 992px) {
+    flex: 1; // Ocupa espacio proporcional
+    max-width: 45%; // Ancho máximo en escritorio
+  }
+}
+
+.contactImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 0.8; // Un poco de opacidad para mezclar con el fondo oscuro
+}
+
+.imageOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba($dark, 0.3), rgba($dark, 0.8)); // Gradiente para texto
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 2rem;
+  
+  h2 {
+    color: $primary;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    margin-bottom: 0.5rem;
+  }
+  
+  p {
+    color: $light;
+    font-size: 1rem;
+    margin-bottom: 0;
+  }
+}
+
+// Sección del Formulario
+.formSection {
+  flex: 1.2;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative; // Para posicionar el botón de cierre
+
+  @media (max-width: 768px) {
+    padding: 2rem 1.5rem;
+  }
 }
 
 .title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: $primary; // Color primario // Primary color
+  color: $secondary;
+  font-weight: 800;
   margin-bottom: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-size: 2rem;
 }
 
 .subtitle {
-  font-size: 1.1rem;
-  color: $secondary; // Color de texto secundario // Secondary text color
-  line-height: 1.6;
+  color: $dark;
   margin-bottom: 2rem;
-  max-width: 80%;
-  margin-left: auto;
-  margin-right: auto;
+  opacity: 0.8;
 }
 
-// Estilo para el botón de cierre
 .closeButton {
   position: absolute;
-  top: -15px; // Subir el botón para que esté fuera del padding superior // Move button up to be outside top padding
-  right: 10px;
+  top: 15px;
+  right: 15px;
   z-index: 10;
+}
+
+// Estilos personalizados para el formulario
+.formLabel {
+  font-weight: 600;
+  color: $secondary;
+  font-size: 0.9rem;
+}
+
+.formControl {
+  border: 1px solid rgba($secondary, 0.2);
+  padding: 0.75rem;
+  border-radius: $border-radius;
+  background-color: rgba($light, 0.5);
+  
+  &:focus {
+    border-color: $primary;
+    box-shadow: 0 0 0 0.25rem rgba($primary, 0.15);
+    background-color: var(--bs-white);
+  }
+}
+
+.submitButton {
+  background-color: $primary;
+  border: none;
+  padding: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: $dark; // Texto oscuro para contraste con amarillo
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+
+  &:hover {
+    background-color: $gold-hover;
+    transform: translateY(-2px);
+    box-shadow: $box-shadow;
+  }
+
+  &:disabled {
+    background-color: rgba($primary, 0.5);
+    cursor: not-allowed;
+    transform: none;
+  }
 }
