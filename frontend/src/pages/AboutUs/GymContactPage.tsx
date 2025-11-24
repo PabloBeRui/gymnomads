@@ -64,6 +64,12 @@ export const GymContactPage = () => {
   return (
     <div className={styles.backdrop} onClick={handleBackdropClick}>
       <div className={styles.pageContainer} onClick={handleContainerClick}>
+        <CloseButton 
+          onClick={() => navigate(-1)} 
+          className={styles.closeButton} 
+          color="#FFB700" 
+          ariaLabel="Cerrar formulario"
+        />
         <div className={styles.splitLayout}>
           {/* Sección Izquierda: Imagen e Inspiración */}
           <div className={styles.imageSection}>
@@ -78,17 +84,10 @@ export const GymContactPage = () => {
             </div>
           </div>
 
-          {/* Sección Derecha: Formulario */}
-          <div className={styles.formSection}>
-            <CloseButton
-              onClick={() => navigate(-1)}
-              className={styles.closeButton}
-              color="#FFB700"
-              ariaLabel="Cerrar formulario"
-            />
-
-            <h1 className={styles.title}>Contacta con Nosotros</h1>
-            <p className={styles.subtitle}>
+                    {/* Sección Derecha: Formulario */}
+                    <div className={styles.formSection}>
+                      
+                      <h1 className={styles.title}>Contacta con Nosotros</h1>            <p className={styles.subtitle}>
               Rellena el formulario para unirte a nuestra red exclusiva y en en
               poco tiempo contactaremos contigo.
             </p>
