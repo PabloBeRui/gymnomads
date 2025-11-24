@@ -41,7 +41,11 @@ export const LandingPage: React.FC = () => {
           title="Viaja"
           text="Explora cientos de gimnasios en toda España. Ya sea por trabajo o placer, tu próximo entrenamiento está a solo un clic de distancia."
           backgroundImage="/images/info-slide/slide-background-viaja.png"
-        />
+        >
+          <Link to="/gyms" className={styles.ctaButton}>
+            Explorar Gimnasios
+          </Link>
+        </InfoSlide>
 
         {/* Slide 3: "Entrena" */}
         {/* Slide 3: "Train" */}
@@ -49,22 +53,21 @@ export const LandingPage: React.FC = () => {
           title="Entrena"
           text="Accede a instalaciones de calidad sin pagar pases de día. Tu abono en un gimnasio de la red es tu pase para todos."
           backgroundImage="/images/info-slide/slide-background-entrena.png"
-        />
+        >
+          <Link to="/about-us" className={styles.ctaButton}>
+            Quiénes somos
+          </Link>
+        </InfoSlide>
 
-        {/* Slide 4: "Repite" (con el botón CTA) */}
-        {/* Slide 4: "Repeat" (con el botón CTA) */}
+        {/* Slide 4: "Repite" */}
+        {/* Slide 4: "Repeat" */}
         <InfoSlide
           title="Repite"
           text="Mantén tu rutina. Haz crecer la comunidad. Conviértete en un auténtico GymNomad."
           backgroundImage="/images/info-slide/slide-background-repite.png"
         >
-          {/* La Llamada a la Acción (CTA) */}
-          {/* The Call to Action (CTA) */}
-          <Link
-            to="/gyms" // Enlace a la página de listado de gimnasios
-            className={styles.ctaButton}
-          >
-            Explorar Gimnasios
+          <Link to="/join" className={styles.ctaButton}>
+            Únete a Gymnomads
           </Link>
         </InfoSlide>
       </div>
