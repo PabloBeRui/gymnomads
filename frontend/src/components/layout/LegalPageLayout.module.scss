@@ -73,7 +73,7 @@
 // Style to position the new animated close button.
 .closeButton {
   position: absolute;
-  top: -15px; // Subir para que sobresalga // Move up to overlap
+  top: 15px; // Subir para que sobresalga // Move up to overlap
   right: 10px; // Alinear a la derecha // Align right
   z-index: 10; // Asegurar que esté por encima del contenido.
 }
