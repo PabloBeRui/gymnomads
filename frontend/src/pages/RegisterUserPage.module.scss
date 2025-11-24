@@ -19,11 +19,15 @@
 .registerCard {
   max-width: 800px; // Un poco más ancha que la de login para acomodar más campos // Slightly wider than login to accommodate more fields
   width: 100%;
-  border-radius: var(--bs-border-radius-xl); // Bordes redondeados grandes // Large rounded borders
+  border-radius: var(
+    --bs-border-radius-xl
+  ); // Bordes redondeados grandes // Large rounded borders
 }
 
 .formControl {
-  border-radius: var(--bs-border-radius-lg); // Bordes redondeados // Rounded borders
+  border-radius: var(
+    --bs-border-radius-lg
+  ); // Bordes redondeados // Rounded borders
   border-color: var(--bs-gray-300); // Color de borde // Border color
   &:focus {
     border-color: $primary; // Color primario al enfocar // Primary color on focus
@@ -35,7 +39,9 @@
   color: $primary; // Color primario // Primary color
   text-decoration: none; // Sin subrayado // No underline
   &:hover {
-    filter: brightness(90%); // Brillo reducido al pasar el ratón // Reduced brightness on hover
+    filter: brightness(
+      90%
+    ); // Brillo reducido al pasar el ratón // Reduced brightness on hover
     text-decoration: underline; // Subrayado al pasar el ratón // Underline on hover
   }
 }
@@ -47,4 +53,9 @@
   top: 20px;
   right: 20px;
   z-index: 10;
+
+  @media (max-width: 768px) {
+    top: 50px; // Ligeramente más abajo en móvil // Slightly lower on mobile
+    margin-right: 10px;
+  }
 }
