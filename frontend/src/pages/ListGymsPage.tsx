@@ -73,41 +73,56 @@ export const ListGymsPage = () => {
   const backendBaseUrl =
     import.meta.env.VITE_BACKEND_BASE_URL || window.location.origin;
 
-  // Efecto para obtener los datos de los gimnasios // Effect to fetch gym data
+  // Efecto para obtener los datos de los gimnasios (ADMIN) - Paginación en servidor
+  // Effect to fetch gym data (ADMIN) - Server-side pagination
   useEffect(() => {
-    const fetchGyms = async () => {
+    if (!isAdmin) return;
+
+    const fetchAdminGyms = async () => {
       setError(null);
       setIsLoading(true);
       try {
         const commonFilters = { search: searchTerm.trim() || undefined };
-        let response;
-
-        if (isAdmin) {
-          // Admin: usa paginación del backend y ordena por nombre
-          // Admin: uses backend pagination and sorts by name
-          const adminFilters = {
-            ...commonFilters,
-            page: currentPage,
-            limit: itemsPerPage,
-            orderBy: "name_asc" as const,
-          };
-          response = await getAllGyms(token ?? undefined, adminFilters);
-          setGyms(response.data);
-          setTotalItems(response.total);
-        } else {
-          // No-Admin: obtiene todos los gimnasios para ordenar en el frontend
-          // Non-Admin: gets all gyms to sort on the frontend
-          const userFilters = { ...commonFilters, limit: 1000 }; // Límite alto // High limit
-          response = await getAllGyms(token ?? undefined, userFilters);
-          const sortedGyms = sortGymsByRole(response.data, user);
-          setUnpaginatedGyms(sortedGyms);
-          setTotalItems(sortedGyms.length);
-        }
+        const adminFilters = {
+          ...commonFilters,
+          page: currentPage,
+          limit: itemsPerPage,
+          orderBy: "name_asc" as const,
+        };
+        const response = await getAllGyms(token ?? undefined, adminFilters);
+        setGyms(response.data);
+        setTotalItems(response.total);
       } catch (err) {
-        const msg = handleApiError(
-          err,
-          "Hubo un problema al cargar los gimnasios."
-        );
+        const msg = handleApiError(err, "Hubo un problema al cargar los gimnasios.");
+        setError(msg);
+        toast.error(msg);
+        setGyms([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    const timeoutId = setTimeout(fetchAdminGyms, 500);
+    return () => clearTimeout(timeoutId);
+  }, [isAdmin, token, searchTerm, currentPage, itemsPerPage, setTotalItems]); // Dependencias estáticas
+
+  // Efecto para obtener los datos de los gimnasios (USER/GUEST) - Carga todo y paginación en cliente
+  // Effect to fetch gym data (USER/GUEST) - Fetch all and client-side pagination
+  useEffect(() => {
+    if (isAdmin) return;
+
+    const fetchUserGyms = async () => {
+      setError(null);
+      setIsLoading(true);
+      try {
+        const commonFilters = { search: searchTerm.trim() || undefined };
+        const userFilters = { ...commonFilters, limit: 1000 }; // Límite alto / High limit
+        const response = await getAllGyms(token ?? undefined, userFilters);
+        const sortedGyms = sortGymsByRole(response.data, user);
+        setUnpaginatedGyms(sortedGyms);
+        setTotalItems(sortedGyms.length);
+      } catch (err) {
+        const msg = handleApiError(err, "Hubo un problema al cargar los gimnasios.");
         setError(msg);
         toast.error(msg);
         setGyms([]);
@@ -117,16 +132,9 @@ export const ListGymsPage = () => {
       }
     };
 
-    const timeoutId = setTimeout(fetchGyms, 500);
+    const timeoutId = setTimeout(fetchUserGyms, 500);
     return () => clearTimeout(timeoutId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    searchTerm,
-    user,
-    isAdmin,
-    token,
-    ...(isAdmin ? [currentPage, itemsPerPage] : []),
-  ]);
+  }, [isAdmin, token, searchTerm, user, setTotalItems]); // Dependencias estáticas
 
   // Efecto para manejar la paginación en el frontend para no-admins
   // Effect to handle frontend pagination for non-admins
