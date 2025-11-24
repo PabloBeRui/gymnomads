@@ -18,7 +18,6 @@
  */
 
 import { Link, useNavigate } from 'react-router-dom';
-import { CloseButton } from '../../components/ui/CloseButton';
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import styles from "./JoinUsPage.module.scss";
 import clsx from "clsx";
@@ -40,14 +39,7 @@ export const JoinUsPage = () => {
         className={styles.pageContainer}
         onClick={handleContainerClick}
       >
-        <CloseButton
-          onClick={() => navigate(-1)} // Ir a la página anterior // Go to previous page
-          className={styles.closeButton}
-          color="#FFB700"
-          ariaLabel="Volver al inicio"
-        />
-
-        <h1 className={styles.title}>Únete a la Revolución del Fitness</h1>
+        <h1 className={styles.title}>Únete a la revolución del Fitness</h1>
 
         <Row className="justify-content-center g-4">
           {/* --- Tarjeta 1: Soy un Socio --- */}
