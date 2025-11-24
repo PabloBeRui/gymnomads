@@ -63,6 +63,10 @@ import { GymContactPage } from "./pages/AboutUs/GymContactPage";
 // Import the route protector
 import { ProtectedRoute } from "./router/ProtectedRoute";
 
+// Importar componente para scroll automático al inicio
+// Import component for automatic scroll to top
+import ScrollToTop from "./components/ScrollToTop";
+
 function App() {
   const location = useLocation();
   const isLandingPage = location.pathname === "/";
@@ -74,7 +78,9 @@ function App() {
       <h2>Acceso Denegado</h2>
       <p>
         No tienes permiso para ver esta página.{" "}
-        <Link to="/" className="text-primary">Volver al inicio</Link>
+        <Link to="/" className="text-primary">
+          Volver al inicio
+        </Link>
       </p>
     </div>
   );
@@ -86,7 +92,9 @@ function App() {
       <h2>404 - Página no encontrada</h2>
       <p>
         Lo sentimos, la página que buscas no existe.{" "}
-        <Link to="/" className="text-primary">Volver al inicio</Link>
+        <Link to="/" className="text-primary">
+          Volver al inicio
+        </Link>
       </p>
     </div>
   );
@@ -106,13 +114,19 @@ function App() {
         CONTENEDOR PRINCIPAL DE LA APLICACIÓN
         MAIN APP CONTAINER
         ======================================== */}
-      <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", position: "relative" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          minHeight: "100vh",
+          position: "relative",
+        }}>
+        <ScrollToTop />
         <Toaster position="bottom-left" richColors closeButton />
         <NavbarComponent />
         <main
           style={{ flex: 1, paddingTop: "90px" }}
-          className={clsx({ "main-content-glass": !isLandingPage })}
-        >
+          className={clsx({ "main-content-glass": !isLandingPage })}>
           <Routes>
             {/* ========================================
               RUTAS PÚBLICAS
@@ -140,7 +154,10 @@ function App() {
               ======================================== */}
             <Route element={<ProtectedRoute />}>
               <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/visits/:visitId/qr" element={<UserVisitGymPage />} />
+              <Route
+                path="/visits/:visitId/qr"
+                element={<UserVisitGymPage />}
+              />
               <Route path="/my-visits" element={<MyVisitsPage />} />
             </Route>
 
@@ -148,7 +165,8 @@ function App() {
               RUTAS PROTEGIDAS: Admin y Manager
               PROTECTED ROUTES: Admin and Manager
               ======================================== */}
-            <Route element={<ProtectedRoute allowedRoles={["admin", "manager"]} />}>
+            <Route
+              element={<ProtectedRoute allowedRoles={["admin", "manager"]} />}>
               <Route path="/gyms/edit/:id" element={<EditGymPage />} />
               <Route path="/visits/manage" element={<VisitsManagementPage />} />
               <Route path="/users/manage" element={<UsersManagementPage />} />
@@ -160,7 +178,10 @@ function App() {
               ======================================== */}
             <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
               <Route path="/gyms/add" element={<AddGymPage />} />
-              <Route path="/managers/manage" element={<ManagersManagementPage />} />
+              <Route
+                path="/managers/manage"
+                element={<ManagersManagementPage />}
+              />
             </Route>
 
             {/* ========================================
