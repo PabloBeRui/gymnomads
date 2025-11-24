@@ -13,6 +13,8 @@
  * =============================================================================
  */
 
+@use "../../styles/variables" as *;
+
 .slide {
   height: 100vh; // Ocupar toda la altura del viewport / Occupy full viewport height
   width: 100%;
@@ -56,15 +58,30 @@
 }
 
 .title {
-  font-size: clamp(2.5rem, 5vw, 4rem); // Tamaño de fuente responsive / Responsive font size
+  font-size: clamp(
+    2.5rem,
+    5vw,
+    4rem
+  ); // Tamaño de fuente responsive / Responsive font size
   font-weight: bold;
   margin-bottom: 1rem;
-  color: var(--bs-dark); // Color de texto oscuro por defecto / Default dark text color
+  color: #fff; // Color blanco inicial (reemplaza text-light) / Initial white color (replaces text-light)
+  transition: color 1s ease-in-out; // Animación suave de color / Smooth color animation
+}
+
+.titleAnimated {
+  color: $primary; // Color primario al animar / Primary color on animation
 }
 
 .text {
-  font-size: clamp(1rem, 2.5vw, 1.25rem); // Tamaño de fuente responsive / Responsive font size
-  color: var(--bs-secondary); // Color de texto secundario // Secondary text color
+  font-size: clamp(
+    1rem,
+    2.5vw,
+    1.25rem
+  ); // Tamaño de fuente responsive / Responsive font size
+  color: var(
+    --bs-secondary
+  ); // Color de texto secundario // Secondary text color
   max-width: 600px;
   line-height: 1.6;
 }
@@ -79,7 +96,12 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.4); // Overlay oscuro semitransparente // Semi-transparent dark overlay
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.4
+  ); // Overlay oscuro semitransparente // Semi-transparent dark overlay
   z-index: 1; // Asegurar que esté debajo del contenido // Ensure it's below the content
 }
 
