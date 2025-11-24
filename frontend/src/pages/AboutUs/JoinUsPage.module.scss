@@ -36,7 +36,7 @@
   margin: 60px auto; // Margen superior/inferior y centrado horizontal // Top/bottom margin and horizontal centering
   padding: 60px 40px 40px 40px; // Aumentar padding superior // Increase top padding
   position: relative;
-  background-color: rgba($light, 0.95); // Fondo claro semitransparente // Light semi-transparent background
+  background-color: transparent; // Fondo transparente para que se vea el fondo global // Transparent background to show global background
   backdrop-filter: blur(10px); // Efecto glass // Glass effect
   border-radius: $border-radius-lg; // Bordes redondeados // Rounded borders
   box-shadow: $box_shadow_lg; // Sombra sutil // Subtle shadow
@@ -45,7 +45,7 @@
 
   // Ajustes para móviles // Mobile adjustments
   @media (max-width: 768px) {
-    width: 95%; // Ligeramente más ancho en móvil // Slightly wider on mobile
+    width: 98%; // Ligeramente más ancho en móvil // Slightly wider on mobile
     margin: 1.5rem auto; // Reducir margen vertical // Reduce vertical margin
     padding: 1.5rem; // Reducir padding interno // Reduce inner padding
   }
@@ -57,7 +57,7 @@
   font-weight: 700;
   color: $primary; // Color primario // Primary color
   margin-bottom: 40px;
-  text-transform: uppercase;
+  text-transform: none; // Asegurar que no herede mayúsculas // Ensure no uppercase inheritance
   letter-spacing: 1px;
   text-shadow: 0 2px 4px rgba($dark, 0.1);
 }
@@ -76,7 +76,9 @@
   box-shadow: $box-shadow; // Sombra base // Base shadow
 
   &:hover {
-    transform: translateY(-10px); // Elevación al pasar el ratón // Lift on hover
+    transform: translateY(
+      -10px
+    ); // Elevación al pasar el ratón // Lift on hover
     box-shadow: $box-shadow-lg; // Sombra al pasar el ratón // Shadow on hover
     // border-color: $primary; // (Opcional) Borde primario en hover // Primary border on hover
   }
@@ -119,7 +121,6 @@
   width: 100%; // Botón de ancho completo // Full width button
   padding: 0.75rem;
   font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 

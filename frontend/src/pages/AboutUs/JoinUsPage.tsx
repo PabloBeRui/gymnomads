@@ -47,7 +47,7 @@ export const JoinUsPage = () => {
           ariaLabel="Volver al inicio"
         />
 
-        <h1 className={styles.title}>Únete a la Revolución del Fitness</h1>
+        <h1 className={styles.title}>Únete a la revolución del fitness</h1>
 
         <Row className="justify-content-center g-4">
           {/* --- Tarjeta 1: Soy un Socio --- */}
