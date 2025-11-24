@@ -114,5 +114,6 @@
   position: absolute;
   top: 5px; // Sube un poco // Move up a bit
   right: 5px; // Mueve a la derecha un poco // Move right a bit
+  left: auto; // Asegurarse de que el botón se alinee a la derecha // Ensure the button aligns to the right
   z-index: 10;
 }
