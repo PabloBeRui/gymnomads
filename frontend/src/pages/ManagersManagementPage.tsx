@@ -35,7 +35,8 @@ import {
 } from "../components/ui/SortableTable";
 
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
-import { Container, Row, Col, Card, Spinner, Alert } from "react-bootstrap";
+import { Container, Row, Col, Card, Alert } from "react-bootstrap";
+import Spinner from "../components/ui/Spinner";
 
 // Importar el módulo SCSS / Import the SCSS module
 import styles from "./ManagersManagementPage.module.scss";
@@ -223,9 +224,7 @@ export const ManagersManagementPage = () => {
   if (isLoading && managers.length === 0) {
     return (
       <Container className={clsx(styles.loadingContainer, "text-center mt-5")}>
-        <Spinner animation="border" role="status" variant="primary">
-          <span className="visually-hidden">Cargando managers...</span>
-        </Spinner>
+        <Spinner center size="lg" />
       </Container>
     );
   }
@@ -253,44 +252,47 @@ export const ManagersManagementPage = () => {
 
       <Card className="mb-4">
         <Card.Header as="h5" className="bg-secondary text-white text-center">
-            Filtros y Métricas
+          Filtros y Métricas
         </Card.Header>
         <Card.Body>
-            <Row className="align-items-end">
-                {/* Métricas */}
-                <Col md={4} lg={3} className="mb-3 text-center">
-                    <p className="text-dark mb-0 small">
-                        {isLoading ? "Cargando..." : "Total de Managers"}
-                    </p>
-                    <h2 className="fw-bold text-primary mb-1">{totalItems}</h2>
-                </Col>
+          <Row className="align-items-end">
+            {/* Métricas */}
+            <Col md={4} lg={3} className="mb-3 text-center">
+              <div className="text-dark mb-0 small">
+                {isLoading ? <Spinner size="sm" /> : "Total de Managers"}
+              </div>
+              <h2 className="fw-bold text-primary mb-1">{totalItems}</h2>
+            </Col>
 
-                {/* Filtro */}
-                <Col md={8} lg={9} className="mb-3">
-                  <FilterInput
-                    label="Buscar Manager"
-                    icon={<i className="bi bi-search"></i>}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    onClear={() => setSearchTerm("")}
-                    placeholder="Manager, Gimnasio, Ciudad..."
-                  />
-                </Col>
-            </Row>
+            {/* Filtro */}
+            <Col md={8} lg={9} className="mb-3">
+              <FilterInput
+                label="Buscar Manager"
+                icon={<i className="bi bi-search"></i>}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onClear={() => setSearchTerm("")}
+                placeholder="Manager, Gimnasio, Ciudad..."
+              />
+            </Col>
+          </Row>
         </Card.Body>
       </Card>
-      
+
       {/* Advertencia sobre eliminación / Warning about deletion */}
       <Alert variant="info" className="mb-4">
         <i className="bi bi-info-circle-fill me-2"></i>
-        Haz click en una fila para ver y editar detalles (incluido email y teléfono). Los managers no se pueden eliminar directamente.
+        Haz click en una fila para ver y editar detalles (incluido email y
+        teléfono). Los managers no se pueden eliminar directamente.
       </Alert>
 
       {/* Tabla de managers / Managers table */}
       {managers.length === 0 ? (
         <div className="text-center p-5 bg-light rounded">
           {searchTerm ? (
-            <p className="text-dark">🔍 No se encontraron managers con el criterio de búsqueda.</p>
+            <p className="text-dark">
+              🔍 No se encontraron managers con el criterio de búsqueda.
+            </p>
           ) : (
             <p className="text-dark">📭 Aún no hay managers registrados.</p>
           )}

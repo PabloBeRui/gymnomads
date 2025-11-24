@@ -26,6 +26,7 @@
 import React, { useState, useEffect } from "react";
 // Importar nuestro traductor de iconos / Import our icon translator
 import { getWeatherIcon } from "../../utils/weather-utils";
+import Spinner from "../ui/Spinner";
 
 // Importar el módulo SCSS / Import the SCSS module
 import styles from "./WeatherWidget.module.scss";
@@ -103,7 +104,11 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
   // Renderizar estado de carga
   // Render loading state
   if (isLoading) {
-    return <div className={clsx(styles.placeholder, "text-dark")}>Cargando tiempo...</div>;
+    return (
+      <div className={clsx(styles.placeholder, "text-dark")}>
+        <Spinner size="sm" />
+      </div>
+    );
   }
 
   // Renderizar estado de error (falla silenciosa)
@@ -128,7 +133,9 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
         <div key={time} className={styles.dayContainer}>
           {/* Etiqueta del día (Hoy, Mañana, Pasado) */}
           {/* Day label (Today, Tomorrow, After) */}
-          <span className={clsx(styles.dayLabel, "text-dark")}>{dayLabels[index]}</span>
+          <span className={clsx(styles.dayLabel, "text-dark")}>
+            {dayLabels[index]}
+          </span>
 
           {/* Icono del tiempo */}
           {/* Weather icon */}
@@ -136,7 +143,9 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
 
           {/* Temperatura */}
           {/* Temperature */}
-          <span className="text-dark">{Math.round(weatherData.temperature_2m_max[index])}°C</span>
+          <span className="text-dark">
+            {Math.round(weatherData.temperature_2m_max[index])}°C
+          </span>
         </div>
       ))}
     </div>

@@ -37,7 +37,8 @@ import { WeatherWidget } from "../components/widgets/WeatherWidget";
 import { GymMap } from "../components/GymMap";
 
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
-import { Container, Button, Spinner, Alert, Col, Card,Row } from "react-bootstrap";
+import { Container, Button, Alert, Col, Card, Row } from "react-bootstrap";
+import Spinner from "../components/ui/Spinner";
 
 // Importar el módulo SCSS / Import the SCSS module
 import styles from "./GymPage.module.scss";
@@ -92,11 +93,10 @@ export const GymPage = () => {
 
         // Si el usuario es de tipo 'user', obtener sus estadísticas de visita
         // If the user is of type 'user', get their visit statistics
-        if (token && user?.role === 'user') {
+        if (token && user?.role === "user") {
           const stats = await getVisitsStats(token);
           setVisitStats(stats);
         }
-
       } catch (err) {
         const msg = handleApiError(
           err,
@@ -122,7 +122,9 @@ export const GymPage = () => {
     // Comprobar si el usuario ha alcanzado el límite de visitas mensuales
     // Check if the user has reached the monthly visit limit
     if ((visitStats?.thisMonth ?? 0) >= 10) {
-      toast.error("Has alcanzado el límite de 10 visitas a otros gimnasios este mes.");
+      toast.error(
+        "Has alcanzado el límite de 10 visitas a otros gimnasios este mes."
+      );
       return;
     }
     setShowConfirmModal(true);
@@ -170,9 +172,7 @@ export const GymPage = () => {
   if (isLoading) {
     return (
       <Container className={clsx(styles.loadingContainer, "text-center mt-5")}>
-        <Spinner animation="border" role="status" variant="primary">
-          <span className="visually-hidden">Cargando datos del gimnasio...</span>
-        </Spinner>
+        <Spinner center size="lg" />
       </Container>
     );
   }
@@ -181,9 +181,7 @@ export const GymPage = () => {
   if (error || !gym) {
     return (
       <Container className={styles.container}>
-        <Alert variant="danger">
-          {error || "No se encontró el gimnasio."}
-        </Alert>
+        <Alert variant="danger">{error || "No se encontró el gimnasio."}</Alert>
         <Button onClick={() => navigate("/gyms")} variant="primary">
           Volver a la lista
         </Button>
@@ -194,147 +192,181 @@ export const GymPage = () => {
   // Construcción de URLs de imágenes con fallbacks
   // Building image URLs with fallbacks
   const logoSrc = gym.logo_url
-    ? `${backendBaseUrl}/${gym.logo_url.startsWith("/") ? gym.logo_url.substring(1) : gym.logo_url
-    }`
+    ? `${backendBaseUrl}/${
+        gym.logo_url.startsWith("/") ? gym.logo_url.substring(1) : gym.logo_url
+      }`
     : "/images/gym-logo/default-gym-logo.png";
 
   const mainImageSrc = gym.main_image_url
-    ? `${backendBaseUrl}/${gym.main_image_url.startsWith("/")
-      ? gym.main_image_url.substring(1)
-      : gym.main_image_url
-    }`
+    ? `${backendBaseUrl}/${
+        gym.main_image_url.startsWith("/")
+          ? gym.main_image_url.substring(1)
+          : gym.main_image_url
+      }`
     : "/images/gym-image/default-gym-image.jpg";
 
   // Condición para mostrar el botón de visita
   // Condition to show the visit button
-  const canVisit = user &&
-    user.role === 'user' &&
+  const canVisit =
+    user &&
+    user.role === "user" &&
     gym &&
     user.home_gym_id !== gym.id &&
     user.home_gym_city?.toLowerCase() !== gym.city?.toLowerCase();
 
   // Render principal
-                  return (
-                    <div className={styles.pageWrapper} onClick={() => navigate("/gyms")}>
-                        <Container fluid="md" className={`${styles.contentContainer} py-4`} onClick={(e) => e.stopPropagation()}>
-                            <Row className="justify-content-center">
-                                <Col lg={11}>
-                                                                                                    {/* Fila superior para móvil, se oculta en escritorio */}
-                                                                                                    <Row className="d-md-none justify-content-between align-items-center mb-3">
-                                                                                                        <Col xs="auto">
-                                                                                                            <img src={logoSrc} alt={`Logo de ${gym.name}`} className={styles.gymLogoSmall} />
-                                                                                                        </Col>
-                                                                                                        <Col xs="auto">
-                                                                                                            <CloseButton onClick={() => navigate("/gyms")} color="#FFB700" />
-                                                                                                        </Col>
-                                                                                                    </Row>
-                                                                
-                                                                                                    {/* Fila del widget del tiempo, centrada en móvil, se oculta en escritorio */}
-                                                                                                    <Row className="d-md-none justify-content-center mb-4">
-                                                                                                        <Col xs="auto">
-                                                                                                            {gym.latitude && gym.longitude && (
-                                                                                                                <WeatherWidget latitude={gym.latitude} longitude={gym.longitude} />
-                                                                                                            )}
-                                                                                                        </Col>
-                                                                                                    </Row>
-                                                                
-                                                                                                    {/* Fila para escritorio, se oculta en móvil */}
-                                                                                                    <Row className="d-none d-md-flex justify-content-between align-items-center mb-4">
-                                                                                                        <Col md="auto">
-                                                                                                            {gym.latitude && gym.longitude && (
-                                                                                                                <WeatherWidget latitude={gym.latitude} longitude={gym.longitude} />
-                                                                                                            )}
-                                                                                                        </Col>
-                                                                                                        <Col md="auto">
-                                                                                                            <div className="d-flex align-items-center gap-3">
-                                                                                                                <img src={logoSrc} alt={`Logo de ${gym.name}`} className={styles.gymLogoSmall} />
-                                                                                                                <CloseButton onClick={() => navigate("/gyms")} color="#FFB700" />
-                                                                                                            </div>
-                                                                                                        </Col>
-                                                                                                    </Row>                                    {/* --- Hero Image y Detalles Principales --- */}
-                                    <Card className="mb-4 shadow-sm border-0">
-                                        <div className={styles.heroImageWrapper}>
-                                        <Card.Img variant="top" src={mainImageSrc} alt={`Imagen principal de ${gym.name}`} className={styles.heroImage} />
-                                        <div className={styles.heroOverlay}>
-                                            <div className="d-flex align-items-center mb-2">
-                                            <h1 className="text-primary fw-bold mb-0">{gym.name}</h1>
-                                            </div>
-                                            <p className="text-white mb-0 fs-5">
-                                            <i className="bi bi-geo-alt-fill me-2 text-primary"></i>
-                                            {gym.city}
-                                            </p>
-                                        </div>
-                                        </div>
-                                        <Card.Body className="p-4">
-                                        <Row className="align-items-center">
-                                            <Col md={8}>
-                                                <p className="text-secondary mb-0">
-                                                    <i className="bi bi-geo-alt-fill me-2 text-info"></i>{gym.address}
-                                                </p>
-                                            </Col>
-                                            <Col md={4} className="text-md-end mt-3 mt-md-0">
-                                            {canVisit && (
-                                                <Button
-                                                variant="primary"
-                                                onClick={handleVisitClick}
-                                                disabled={isProcessing}
-                                                className="w-100"
-                                                >
-                                                {isProcessing ? (
-                                                    <>
-                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" variant="light" />
-                                                    Registrando...
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                    <i className="bi bi-person-walking me-2"></i>Visitar
-                                                    </>
-                                                )}
-                                                </Button>
-                                            )}
-                                                                                        </Col>
-                                        </Row>
-                                        </Card.Body>
-                                    </Card>
-                
-                                    {/* --- Secciones de Detalles y Ubicación --- */}
-                                    <Row>
-                                        <Col lg={12} className="mb-4">
-                                        <Card className="h-100 shadow-sm border-0">
-                                            <Card.Body>
-                                            <h4 className="fw-bold mb-3 text-primary">Ubicación</h4>
-                                            {gym.latitude && gym.longitude ? (
-                                                <GymMap
-                                                lat={gym.latitude}
-                                                lon={gym.longitude}
-                                                gymName={gym.name}
-                                                logoUrl={logoSrc}
-                                                />
-                                            ) : (
-                                                <Alert variant="warning" className="p-3 text-center">
-                                                Ubicación no disponible en el mapa.
-                                                </Alert>
-                                            )}
-                                            </Card.Body>
-                                        </Card>
-                                        </Col>
-                                    </Row>
-                                </Col>
-                            </Row>
-                        </Container>
-                        {/* El modal se deja fuera del contenedor principal para que la lógica de stopPropagation no interfiera */}
-                        <ConfirmationModal
-                            isOpen={showConfirmModal}
-                            onCancel={handleCancelVisit}
-                            onConfirm={handleConfirmVisit}
-                            title="Confirmar Visita"
-                            message={`¿Estás seguro de que quieres registrar una visita a ${
-                            gym?.name || "este gimnasio"
-                            }?`}
-                            note="Esto contará como una visita válida para el día de hoy."
-                            confirmText={isProcessing ? "Registrando..." : "Confirmar Visita"}
-                            variant="info"
-                            isLoading={isProcessing}
-                        />
-                    </div>
-                  );}
+  return (
+    <div className={styles.pageWrapper} onClick={() => navigate("/gyms")}>
+      <Container
+        fluid="md"
+        className={`${styles.contentContainer} py-4`}
+        onClick={(e) => e.stopPropagation()}>
+        <Row className="justify-content-center">
+          <Col lg={11}>
+            {/* Fila superior para móvil, se oculta en escritorio */}
+            <Row className="d-md-none justify-content-between align-items-center mb-3">
+              <Col xs="auto">
+                <img
+                  src={logoSrc}
+                  alt={`Logo de ${gym.name}`}
+                  className={styles.gymLogoSmall}
+                />
+              </Col>
+              <Col xs="auto">
+                <CloseButton
+                  onClick={() => navigate("/gyms")}
+                  color="#FFB700"
+                />
+              </Col>
+            </Row>
+            {/* Fila del widget del tiempo, centrada en móvil, se oculta en escritorio */}
+            <Row className="d-md-none justify-content-center mb-4">
+              <Col xs="auto">
+                {gym.latitude && gym.longitude && (
+                  <WeatherWidget
+                    latitude={gym.latitude}
+                    longitude={gym.longitude}
+                  />
+                )}
+              </Col>
+            </Row>
+            {/* Fila para escritorio, se oculta en móvil */}
+            <Row className="d-none d-md-flex justify-content-between align-items-center mb-4">
+              <Col md="auto">
+                {gym.latitude && gym.longitude && (
+                  <WeatherWidget
+                    latitude={gym.latitude}
+                    longitude={gym.longitude}
+                  />
+                )}
+              </Col>
+              <Col md="auto">
+                <div className="d-flex align-items-center gap-3">
+                  <img
+                    src={logoSrc}
+                    alt={`Logo de ${gym.name}`}
+                    className={styles.gymLogoSmall}
+                  />
+                  <CloseButton
+                    onClick={() => navigate("/gyms")}
+                    color="#FFB700"
+                  />
+                </div>
+              </Col>
+            </Row>{" "}
+            {/* --- Hero Image y Detalles Principales --- */}
+            <Card className="mb-4 shadow-sm border-0">
+              <div className={styles.heroImageWrapper}>
+                <Card.Img
+                  variant="top"
+                  src={mainImageSrc}
+                  alt={`Imagen principal de ${gym.name}`}
+                  className={styles.heroImage}
+                />
+                <div className={styles.heroOverlay}>
+                  <div className="d-flex align-items-center mb-2">
+                    <h1 className="text-primary fw-bold mb-0">{gym.name}</h1>
+                  </div>
+                  <p className="text-white mb-0 fs-5">
+                    <i className="bi bi-geo-alt-fill me-2 text-primary"></i>
+                    {gym.city}
+                  </p>
+                </div>
+              </div>
+              <Card.Body className="p-4">
+                <Row className="align-items-center">
+                  <Col md={8}>
+                    <p className="text-secondary mb-0">
+                      <i className="bi bi-geo-alt-fill me-2 text-info"></i>
+                      {gym.address}
+                    </p>
+                  </Col>
+                  <Col md={4} className="text-md-end mt-3 mt-md-0">
+                    {canVisit && (
+                      <Button
+                        variant="primary"
+                        onClick={handleVisitClick}
+                        disabled={isProcessing}
+                        className="w-100">
+                        {isProcessing ? (
+                          <>
+                            <Spinner
+                              size="sm"
+                              className="me-2"
+                              variant="light"
+                            />
+                            Registrando...
+                          </>
+                        ) : (
+                          <>
+                            <i className="bi bi-person-walking me-2"></i>Visitar
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </Col>
+                </Row>
+              </Card.Body>
+            </Card>
+            {/* --- Secciones de Detalles y Ubicación --- */}
+            <Row>
+              <Col lg={12} className="mb-4">
+                <Card className="h-100 shadow-sm border-0">
+                  <Card.Body>
+                    <h4 className="fw-bold mb-3 text-primary">Ubicación</h4>
+                    {gym.latitude && gym.longitude ? (
+                      <GymMap
+                        lat={gym.latitude}
+                        lon={gym.longitude}
+                        gymName={gym.name}
+                        logoUrl={logoSrc}
+                      />
+                    ) : (
+                      <Alert variant="warning" className="p-3 text-center">
+                        Ubicación no disponible en el mapa.
+                      </Alert>
+                    )}
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </Container>
+      {/* El modal se deja fuera del contenedor principal para que la lógica de stopPropagation no interfiera */}
+      <ConfirmationModal
+        isOpen={showConfirmModal}
+        onCancel={handleCancelVisit}
+        onConfirm={handleConfirmVisit}
+        title="Confirmar Visita"
+        message={`¿Estás seguro de que quieres registrar una visita a ${
+          gym?.name || "este gimnasio"
+        }?`}
+        note="Esto contará como una visita válida para el día de hoy."
+        confirmText={isProcessing ? "Registrando..." : "Confirmar Visita"}
+        variant="info"
+        isLoading={isProcessing}
+      />
+    </div>
+  );
+};

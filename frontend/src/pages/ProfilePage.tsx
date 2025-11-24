@@ -20,7 +20,8 @@ import { useNavigate } from "react-router-dom"; // Importar useNavigate // Impor
 
 // Importar componentes de Bootstrap
 // Import Bootstrap components
-import { Container, Form, Button, Spinner,Row,Col,Card } from "react-bootstrap";
+import { Container, Form, Button, Row, Col, Card } from "react-bootstrap";
+import Spinner from "../components/ui/Spinner";
 
 // Importar contexto / Import context
 import { useAuth } from "../context/AuthContext";
@@ -77,7 +78,8 @@ export const ProfilePage: React.FC = () => {
   const [editPhone, setEditPhone] = useState<string>("");
 
   // --- Estado para el modal de contraseña / State for the password modal ---
-  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState<boolean>(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] =
+    useState<boolean>(false);
 
   // Hook para acciones de guardado/actualización (gestiona loading y errores)
   // Hook for save/update actions (handles loading + errors)
@@ -285,7 +287,9 @@ export const ProfilePage: React.FC = () => {
   }
 
   return (
-    <Container className={clsx("py-5", "position-relative")}> {/* Añadir position-relative para el posicionamiento absoluto del botón */}
+    <Container className={clsx("py-5", "position-relative")}>
+      {" "}
+      {/* Añadir position-relative para el posicionamiento absoluto del botón */}
       <CloseButton
         onClick={() => navigate(-1)}
         className={styles.closeButton}
@@ -319,8 +323,12 @@ export const ProfilePage: React.FC = () => {
                 firstName={user.first_name || ""}
                 lastName={user.last_name || ""}
                 size={150} // Tamaño un poco más grande
-                onClick={isEditing ? profileImageUpload.handleImageClick : undefined}
-                className={clsx("mb-3", { "cursor-pointer shadow-sm": isEditing })}
+                onClick={
+                  isEditing ? profileImageUpload.handleImageClick : undefined
+                }
+                className={clsx("mb-3", {
+                  "cursor-pointer shadow-sm": isEditing,
+                })}
               />
 
               {isEditing && (
@@ -337,7 +345,13 @@ export const ProfilePage: React.FC = () => {
                 {/* CAMPOS NO EDITABLES / NON-EDITABLE FIELDS */}
                 <Form.Group className="mb-3">
                   <Form.Label className="fw-bold text-dark">Email:</Form.Label>
-                  <Form.Control type="text" value={user.email} disabled readOnly className={styles.disabledFormControl} />
+                  <Form.Control
+                    type="text"
+                    value={user.email}
+                    disabled
+                    readOnly
+                    className={styles.disabledFormControl}
+                  />
                 </Form.Group>
 
                 {/* Mostrar Rol solo para Admin y Manager */}
@@ -345,29 +359,47 @@ export const ProfilePage: React.FC = () => {
                 {(user.role === "admin" || user.role === "manager") && (
                   <Form.Group className="mb-3">
                     <Form.Label className="fw-bold text-dark">Rol:</Form.Label>
-                    <Form.Control type="text" value={user.role} disabled readOnly className={styles.disabledFormControl} />
+                    <Form.Control
+                      type="text"
+                      value={user.role}
+                      disabled
+                      readOnly
+                      className={styles.disabledFormControl}
+                    />
                   </Form.Group>
                 )}
                 {user.role !== "admin" && (
-                    <Form.Group className="mb-3">
-                        <Form.Label className="fw-bold text-dark">Gimnasio:</Form.Label>
-                        <div className={`${styles.disabledFormControl} d-flex align-items-center`}>
-                            {gymFetchError ? (
-                                <span className="text-danger">{gymFetchError}</span>
-                             ) : gymName ? (
-                                <>
-                                    <img
-                                        src={gymLogoUrl ? `${backendBaseUrl}/${gymLogoUrl.replace(/^\/+/, "")}` : "/images/gym-logo/default-gym-logo.png"}
-                                        alt={`Logo de ${gymName}`}
-                                        className={styles.gymLogo}
-                                    />
-                                    <span>{gymName}</span>
-                                </>
-                            ) : (
-                                <span className="text-dark">Cargando...</span>
-                            )}
-                        </div>
-                    </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label className="fw-bold text-dark">
+                      Gimnasio:
+                    </Form.Label>
+                    <div
+                      className={`${styles.disabledFormControl} d-flex align-items-center`}>
+                      {gymFetchError ? (
+                        <span className="text-danger">{gymFetchError}</span>
+                      ) : gymName ? (
+                        <>
+                          <img
+                            src={
+                              gymLogoUrl
+                                ? `${backendBaseUrl}/${gymLogoUrl.replace(
+                                    /^\/+/,
+                                    ""
+                                  )}`
+                                : "/images/gym-logo/default-gym-logo.png"
+                            }
+                            alt={`Logo de ${gymName}`}
+                            className={styles.gymLogo}
+                          />
+                          <span>{gymName}</span>
+                        </>
+                      ) : (
+                        <span className="text-dark">
+                          <Spinner size="sm" />
+                        </span>
+                      )}
+                    </div>
+                  </Form.Group>
                 )}
               </Form>
             </Card.Body>
@@ -378,19 +410,37 @@ export const ProfilePage: React.FC = () => {
            */}
           <Card className="mb-4 shadow-sm border-0">
             <Card.Body className="p-4">
-              <h4 className="mb-4 fw-bold text-primary">Información Personal</h4>
+              <h4 className="mb-4 fw-bold text-primary">
+                Información Personal
+              </h4>
               <Form>
                 {user.role !== "admin" ? (
                   !isEditing ? (
                     // --- Modo Visualización / View Mode ---
                     <>
                       <Form.Group className="mb-3">
-                        <Form.Label className="fw-bold text-dark">Nombre Completo:</Form.Label>
-                        <Form.Control type="text" value={`${user.first_name} ${user.last_name}`} disabled readOnly className={styles.disabledFormControl} />
+                        <Form.Label className="fw-bold text-dark">
+                          Nombre Completo:
+                        </Form.Label>
+                        <Form.Control
+                          type="text"
+                          value={`${user.first_name} ${user.last_name}`}
+                          disabled
+                          readOnly
+                          className={styles.disabledFormControl}
+                        />
                       </Form.Group>
                       <Form.Group className="mb-3">
-                        <Form.Label className="fw-bold text-dark">Teléfono:</Form.Label>
-                        <Form.Control type="text" value={user.phone || "No especificado"} disabled readOnly className={styles.disabledFormControl} />
+                        <Form.Label className="fw-bold text-dark">
+                          Teléfono:
+                        </Form.Label>
+                        <Form.Control
+                          type="text"
+                          value={user.phone || "No especificado"}
+                          disabled
+                          readOnly
+                          className={styles.disabledFormControl}
+                        />
                       </Form.Group>
                     </>
                   ) : (
@@ -398,8 +448,12 @@ export const ProfilePage: React.FC = () => {
                     <>
                       <Row>
                         <Col md={6}>
-                          <Form.Group className="mb-3" controlId="edit-first-name">
-                            <Form.Label className="fw-bold text-dark">Nombre:</Form.Label>
+                          <Form.Group
+                            className="mb-3"
+                            controlId="edit-first-name">
+                            <Form.Label className="fw-bold text-dark">
+                              Nombre:
+                            </Form.Label>
                             <Form.Control
                               type="text"
                               value={editFirstName}
@@ -409,8 +463,12 @@ export const ProfilePage: React.FC = () => {
                           </Form.Group>
                         </Col>
                         <Col md={6}>
-                          <Form.Group className="mb-3" controlId="edit-last-name">
-                            <Form.Label className="fw-bold text-dark">Apellidos:</Form.Label>
+                          <Form.Group
+                            className="mb-3"
+                            controlId="edit-last-name">
+                            <Form.Label className="fw-bold text-dark">
+                              Apellidos:
+                            </Form.Label>
                             <Form.Control
                               type="text"
                               value={editLastName}
@@ -421,7 +479,9 @@ export const ProfilePage: React.FC = () => {
                         </Col>
                       </Row>
                       <Form.Group className="mb-3" controlId="edit-phone">
-                        <Form.Label className="fw-bold text-dark">Teléfono:</Form.Label>
+                        <Form.Label className="fw-bold text-dark">
+                          Teléfono:
+                        </Form.Label>
                         <Form.Control
                           type="tel"
                           value={editPhone}
@@ -442,17 +502,17 @@ export const ProfilePage: React.FC = () => {
                       <Button
                         variant="primary"
                         onClick={handleEditClick}
-                        aria-label="Editar perfil"
-                      >
-                        <i className="bi bi-pencil-fill me-2 text-dark"></i>Editar Perfil
+                        aria-label="Editar perfil">
+                        <i className="bi bi-pencil-fill me-2 text-dark"></i>
+                        Editar Perfil
                       </Button>
-                      {user.role !== 'admin' && (
+                      {user.role !== "admin" && (
                         <Button
                           variant="outline-primary" // Usar outline para el cambio de contraseña
                           onClick={() => setIsPasswordModalOpen(true)}
-                          aria-label="Cambiar contraseña"
-                        >
-                          <i className="bi bi-key-fill me-2 text-primary"></i>Cambiar Contraseña
+                          aria-label="Cambiar contraseña">
+                          <i className="bi bi-key-fill me-2 text-primary"></i>
+                          Cambiar Contraseña
                         </Button>
                       )}
                     </>
@@ -461,18 +521,20 @@ export const ProfilePage: React.FC = () => {
                       <Button
                         variant="secondary"
                         onClick={handleCancelClick}
-                        disabled={isSaving}
-                      >
+                        disabled={isSaving}>
                         Cancelar
                       </Button>
                       <Button
                         variant="primary"
                         onClick={handleSaveClick}
-                        disabled={isSaving}
-                      >
+                        disabled={isSaving}>
                         {isSaving ? (
                           <>
-                            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" variant="light" />
+                            <Spinner
+                              size="sm"
+                              variant="light"
+                              className="me-2"
+                            />
                             Guardando...
                           </>
                         ) : (
@@ -487,14 +549,12 @@ export const ProfilePage: React.FC = () => {
           </Card>
         </Col>
       </Row>
-
       {/* MENSAJES DE ESTADO / STATUS MESSAGES */}
       {isEditing && editError && (
         <div className="alert alert-danger mt-3" role="alert">
           {editError}
         </div>
       )}
-
       {/* Modal de Contraseña */}
       {/* Password Modal */}
       <ChangePasswordModal
@@ -503,5 +563,4 @@ export const ProfilePage: React.FC = () => {
       />
     </Container>
   );
-
 };

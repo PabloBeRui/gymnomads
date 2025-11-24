@@ -21,9 +21,10 @@ import type { VisitStats } from "../../interfaces/visit-interfaces"; // <-- Usam
 import { CloseButton } from "../ui/CloseButton"; // Importar el nuevo componente / Import the new component
 
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
-import { Modal, Button, Spinner, Alert, ButtonGroup } from "react-bootstrap";
+import { Modal, Button, Alert, ButtonGroup } from "react-bootstrap";
 import styles from "./VisitsStatsModal.module.scss"; // Importar el módulo SCSS / Import the SCSS module
 import clsx from "clsx"; // Importar clsx / Import clsx
+import Spinner from "../ui/Spinner";
 
 /* =============================================================================
     PROPS
@@ -137,8 +138,7 @@ export const VisitsStatsModal: React.FC<VisitsStatsModalProps> = ({
         {/* Mostrar estado de Carga / Show Loading state */}
         {isLoading && (
           <div className="text-center p-5">
-            <Spinner animation="border" variant="primary" />
-            <p className="mt-3 text-dark">Cargando estadísticas...</p>
+            <Spinner center size="lg" />
           </div>
         )}
 

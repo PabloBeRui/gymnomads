@@ -30,7 +30,8 @@ import {
 } from "../components/ui/SortableTable";
 
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
-import { Container, Row, Col, Card, Spinner, Alert } from "react-bootstrap";
+import { Container, Row, Col, Card, Alert } from "react-bootstrap";
+import Spinner from "../components/ui/Spinner";
 
 // Importar el módulo SCSS / Import the SCSS module
 import styles from "./MyVisitsPage.module.scss";
@@ -167,7 +168,6 @@ export const MyVisitsPage = () => {
     goToPage(1); // Resetear a la primera página con cada nueva búsqueda
   };
 
-
   const handleClearSearch = () => {
     setGymSearch("");
     goToPage(1); // Restablecer la página a la primera al limpiar la búsqueda
@@ -212,9 +212,7 @@ export const MyVisitsPage = () => {
   if (isLoading && visits.length === 0) {
     return (
       <Container className={clsx(styles.loading, "text-center mt-5")}>
-        <Spinner animation="border" role="status" variant="primary">
-          <span className="visually-hidden">Cargando tus visitas...</span>
-        </Spinner>
+        <Spinner center size="lg" />
       </Container>
     );
   }
@@ -243,11 +241,15 @@ export const MyVisitsPage = () => {
               }
             }}>
             <Card.Body>
-              <Card.Title className={clsx(styles.statNumber, "text-primary")}>{totalItems}</Card.Title>
+              <Card.Title className={clsx(styles.statNumber, "text-primary")}>
+                {totalItems}
+              </Card.Title>
               <Card.Text className={clsx(styles.statLabel, "text-dark")}>
-                {isLoading && visits.length === 0
-                  ? "Cargando..."
-                  : "Total de Visitas"}
+                {isLoading && visits.length === 0 ? (
+                  <Spinner size="sm" />
+                ) : (
+                  "Total de Visitas"
+                )}
               </Card.Text>
             </Card.Body>
           </Card>
@@ -261,14 +263,14 @@ export const MyVisitsPage = () => {
           label="Buscar Visitas por Gimnasio"
           value={gymSearch}
           onChange={handleSearchChange}
-          onClear={handleClearSearch} 
+          onClear={handleClearSearch}
           placeholder="🔍 Buscar por nombre de gimnasio..."
         />
       </div>
 
       {/* Indicador de carga durante la búsqueda */}
       {/* Loading indicator during search */}
-      {isLoading && <p className="text-center text-dark">Buscando...</p>}
+      {isLoading && <Spinner center size="sm" />}
 
       {/* Estado vacío o sin resultados */}
       {/* Empty state or no results */}

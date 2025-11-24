@@ -32,9 +32,10 @@ import { handleApiError } from "../../utils/error-handler";
 import { CloseButton } from "../ui/CloseButton"; // Importar el nuevo componente / Import the new component
 
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
-import { Modal, Form, Button, Alert, Spinner } from "react-bootstrap";
+import { Modal, Form, Button, Alert } from "react-bootstrap";
 import styles from "./ChangePasswordModal.module.scss"; // Importar el módulo SCSS / Import the SCSS module
 import clsx from "clsx"; // Importar clsx / Import clsx
+import Spinner from "../ui/Spinner";
 
 /* =============================================================================
     PROPS DEL COMPONENTE
@@ -171,7 +172,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
               type="submit"
               disabled={isChangingPassword}
             >
-              {isChangingPassword ? <Spinner animation="border" size="sm" variant="dark" /> : "Establecer Contraseña"}
+              {isChangingPassword ? <Spinner size="sm" variant="dark" /> : "Establecer Contraseña"}
             </Button>
           </div>
         </Form>

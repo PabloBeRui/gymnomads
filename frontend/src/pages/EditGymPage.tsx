@@ -65,7 +65,8 @@ import type { Gym } from "../interfaces/gym-interfaces";
 import { handleApiError } from "../utils/error-handler";
 
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
-import { Container, Form, Button, Alert, Spinner } from "react-bootstrap";
+import { Container, Form, Button, Alert } from "react-bootstrap";
+import Spinner from "../components/ui/Spinner";
 
 // Importar el módulo SCSS / Import the SCSS module
 import styles from "./EditGymPage.module.scss";
@@ -95,15 +96,21 @@ export const EditGymPage = () => {
   const [formError, setFormError] = useState<string | null>(null);
 
   // Load gym data
-  const { loading: isLoading, error: loadError, execute: executeLoadGym } =
-    useApiCall<Gym>("Error al cargar los datos del gimnasio.");
+  const {
+    loading: isLoading,
+    error: loadError,
+    execute: executeLoadGym,
+  } = useApiCall<Gym>("Error al cargar los datos del gimnasio.");
 
   /* ===========================================================================
      Image hooks (typed)
      - UploadArgs = [gymId, token]
      - UploadResult = { message, filePath }
      =========================================================================== */
-  const logoUpload = useImageUpload<[number | string, string], { message: string; filePath: string }>(
+  const logoUpload = useImageUpload<
+    [number | string, string],
+    { message: string; filePath: string }
+  >(
     {
       maxSizeMB: 5,
       allowedTypes: ["image/png", "image/jpeg", "image/jpg", "image/webp"],
@@ -116,7 +123,10 @@ export const EditGymPage = () => {
       await updateGymLogo(gymId, file, tokenArg)
   );
 
-  const mainImageUpload = useImageUpload<[number | string, string], { message: string; filePath: string }>(
+  const mainImageUpload = useImageUpload<
+    [number | string, string],
+    { message: string; filePath: string }
+  >(
     {
       maxSizeMB: 5,
       allowedTypes: ["image/png", "image/jpeg", "image/jpg", "image/webp"],
@@ -130,7 +140,8 @@ export const EditGymPage = () => {
   );
 
   // Disable submit while uploading images
-  const anyImageUploading = logoUpload.isUploading || mainImageUpload.isUploading;
+  const anyImageUploading =
+    logoUpload.isUploading || mainImageUpload.isUploading;
 
   // Role helper
   const isManagerEditing = user?.role === "manager";
@@ -168,19 +179,31 @@ export const EditGymPage = () => {
         setLongitude(data.longitude?.toString() || "");
 
         // Build preview URLs if backend provides paths
-        const backendBaseUrl = import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:3000";
+        const backendBaseUrl =
+          import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:3000";
 
         if (data.logo_url) {
-          const logoUrl = `${backendBaseUrl}/${data.logo_url.startsWith("/") ? data.logo_url.substring(1) : data.logo_url}`;
+          const logoUrl = `${backendBaseUrl}/${
+            data.logo_url.startsWith("/")
+              ? data.logo_url.substring(1)
+              : data.logo_url
+          }`;
           logoUpload.setPreviewUrl(logoUrl);
         }
 
         if (data.main_image_url) {
-          const mainImageUrl = `${backendBaseUrl}/${data.main_image_url.startsWith("/") ? data.main_image_url.substring(1) : data.main_image_url}`;
+          const mainImageUrl = `${backendBaseUrl}/${
+            data.main_image_url.startsWith("/")
+              ? data.main_image_url.substring(1)
+              : data.main_image_url
+          }`;
           mainImageUpload.setPreviewUrl(mainImageUrl);
         }
       } catch (err) {
-        const processed = handleApiError(err, "Error al cargar los datos del gimnasio.");
+        const processed = handleApiError(
+          err,
+          "Error al cargar los datos del gimnasio."
+        );
         setFormError(processed);
         toast.error(processed);
       }
@@ -194,7 +217,9 @@ export const EditGymPage = () => {
   /* ===========================================================================
      HANDLERS
      =========================================================================== */
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ): void => {
     if (isManagerEditing) return;
 
     const { name: field, value } = e.target;
@@ -219,7 +244,9 @@ export const EditGymPage = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
     setFormError(null);
     setIsSubmitting(true);
@@ -273,12 +300,21 @@ export const EditGymPage = () => {
       }
 
       try {
-        const gymDetails: Partial<Gym> = { name, address, city, latitude: latNum, longitude: lonNum };
+        const gymDetails: Partial<Gym> = {
+          name,
+          address,
+          city,
+          latitude: latNum,
+          longitude: lonNum,
+        };
         await updateGymDetails(id, gymDetails, token);
         toast.success("Gimnasio actualizado con éxito.");
         navigate("/gyms");
       } catch (err) {
-        const processed = handleApiError(err, "Error al actualizar el gimnasio.");
+        const processed = handleApiError(
+          err,
+          "Error al actualizar el gimnasio."
+        );
         setFormError(processed);
         toast.error(processed);
       } finally {
@@ -288,8 +324,10 @@ export const EditGymPage = () => {
       // Image uploads only
       const promises: Promise<unknown>[] = [];
 
-      if (logoUpload.selectedFile) promises.push(logoUpload.uploadImage(id, token));
-      if (mainImageUpload.selectedFile) promises.push(mainImageUpload.uploadImage(id, token));
+      if (logoUpload.selectedFile)
+        promises.push(logoUpload.uploadImage(id, token));
+      if (mainImageUpload.selectedFile)
+        promises.push(mainImageUpload.uploadImage(id, token));
 
       if (promises.length === 0) {
         toast.info("No seleccionaste nuevas imágenes para guardar.");
@@ -302,7 +340,10 @@ export const EditGymPage = () => {
         toast.success("Imágenes del gimnasio actualizadas.");
         navigate("/gyms");
       } catch (err) {
-        const processed = handleApiError(err, "Error al actualizar las imágenes.");
+        const processed = handleApiError(
+          err,
+          "Error al actualizar las imágenes."
+        );
         setFormError(processed);
         toast.error(processed);
       } finally {
@@ -317,20 +358,21 @@ export const EditGymPage = () => {
   /* ===========================================================================
      RENDER
      =========================================================================== */
-  if (isLoading) return (
-    <Container className="text-center mt-5">
-      <Spinner animation="border" role="status" variant="primary">
-        <span className="visually-hidden">Cargando...</span>
-      </Spinner>
-    </Container>
-  );
+  if (isLoading)
+    return (
+      <Container className="text-center mt-5">
+        <Spinner center size="lg" />
+      </Container>
+    );
 
   const displayError = loadError || formError;
 
   if (displayError || !originalGymData) {
     return (
       <Container className={styles.container}>
-        <Alert variant="danger">{displayError || "No se encontró el gimnasio."}</Alert>
+        <Alert variant="danger">
+          {displayError || "No se encontró el gimnasio."}
+        </Alert>
         <Button onClick={() => navigate("/gyms")} variant="primary">
           Volver a la lista
         </Button>
@@ -339,7 +381,9 @@ export const EditGymPage = () => {
   }
 
   return (
-    <Container className={clsx(styles.container, "py-5", "position-relative")}> {/* Añadir position-relative para el posicionamiento absoluto del botón */}
+    <Container className={clsx(styles.container, "py-5", "position-relative")}>
+      {" "}
+      {/* Añadir position-relative para el posicionamiento absoluto del botón */}
       <CloseButton
         onClick={() => navigate(-1)}
         className={styles.closeButton}
@@ -349,7 +393,6 @@ export const EditGymPage = () => {
       <h2 className="text-primary mb-4 text-center">
         Editar Gimnasio: {originalGymData.name} (ID: {id})
       </h2>
-
       <Form onSubmit={handleSubmit}>
         {/* TEXT FIELDS (Admin only) / CAMPOS DE TEXTO (solo Admin) */}
         <Form.Group className="mb-3">
@@ -449,7 +492,13 @@ export const EditGymPage = () => {
               />
             </>
           ) : (
-            logoUpload.previewUrl && <img src={logoUpload.previewUrl} alt="Logo actual" className={styles.previewImage} />
+            logoUpload.previewUrl && (
+              <img
+                src={logoUpload.previewUrl}
+                alt="Logo actual"
+                className={styles.previewImage}
+              />
+            )
           )}
         </Form.Group>
 
@@ -477,18 +526,40 @@ export const EditGymPage = () => {
               />
             </>
           ) : (
-            mainImageUpload.previewUrl && <img src={mainImageUpload.previewUrl} alt="Imagen principal actual" className={styles.previewImage} />
+            mainImageUpload.previewUrl && (
+              <img
+                src={mainImageUpload.previewUrl}
+                alt="Imagen principal actual"
+                className={styles.previewImage}
+              />
+            )
           )}
         </Form.Group>
 
         {/* ERROR MESSAGE & BUTTONS */}
         {displayError && <Alert variant="danger">{displayError}</Alert>}
 
-        <Button type="submit" variant="primary" disabled={isSubmitting || anyImageUploading}>
-          {isSubmitting || anyImageUploading ? "Guardando..." : isManagerEditing ? "Guardar Imágenes" : "Guardar Cambios"}
+        <Button
+          type="submit"
+          variant="primary"
+          disabled={isSubmitting || anyImageUploading}>
+          {isSubmitting || anyImageUploading ? (
+            <>
+              <Spinner size="sm" variant="light" className="me-2" />
+              Guardando...
+            </>
+          ) : isManagerEditing ? (
+            "Guardar Imágenes"
+          ) : (
+            "Guardar Cambios"
+          )}
         </Button>
 
-        <Button type="button" variant="secondary" onClick={() => navigate("/gyms")} className="ms-2">
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => navigate("/gyms")}
+          className="ms-2">
           Cancelar
         </Button>
       </Form>

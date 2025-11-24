@@ -17,6 +17,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 // Importar el hook de autenticación / Import the authentication hook
 import { useAuth } from "../context/AuthContext";
+import Spinner from "../components/ui/Spinner";
 
 // Definir las props  / Define props
 interface ProtectedRouteProps {
@@ -33,7 +34,7 @@ export const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
   if (isLoading) {
     // esperar a que termine la carga inicial antes de decidir.
     //  wait for the initial load to finish before deciding.
-    return <div className="text-primary">Verificando autenticación...</div>; // TODO Spinner
+    return <Spinner center size="lg" />;
   }
 
   // Comprobar si hay token después de la carga inicial.

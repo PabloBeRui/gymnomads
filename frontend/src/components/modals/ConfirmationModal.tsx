@@ -22,6 +22,7 @@ import { Modal, Button } from "react-bootstrap"; // Importar componentes de Reac
 import styles from "./ConfirmationModal.module.scss"; // Importar el módulo SCSS / Import the SCSS module
 import clsx from "clsx"; // Importar clsx / Import clsx
 import { CloseButton } from "../ui/CloseButton"; // Importar el componente CloseButton // Import the CloseButton component
+import Spinner from "../ui/Spinner";
 
 /* =============================================================================
    INTERFACES
@@ -136,7 +137,7 @@ export const ConfirmationModal = ({
           {cancelText}
         </Button>
         <Button variant={confirmButtonVariant} onClick={onConfirm} disabled={isLoading}>
-          {isLoading ? "Procesando..." : confirmText}
+          {isLoading ? <><Spinner size="sm" variant="light" className="me-2" />Procesando...</> : confirmText}
         </Button>
       </Modal.Footer>
     </Modal>

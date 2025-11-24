@@ -21,7 +21,7 @@ import { getUserProfile } from "../services/user-services";
 import { handleApiError } from "../utils/error-handler";
 
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
-import { Spinner } from "react-bootstrap";
+import Spinner from "../components/ui/Spinner";
 
 // Definir las props que recibirá el componente Provider (los componentes hijos).
 // Define the props for the Provider component (children components).
@@ -196,17 +196,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Render children only when initial loading is finished to avoid flickering.
   return (
     <AuthContext.Provider value={contextValue}>
-      {
-        !isLoading ? (
-          children
-        ) : (
-          <div className="d-flex justify-content-center align-items-center vh-100">
-            <Spinner animation="border" role="status" variant="primary">
-              <span className="visually-hidden">Cargando sesión...</span>
-            </Spinner>
-          </div>
-        )
-      }
+      {!isLoading ? children : <Spinner center size="lg" className="vh-100" />}
     </AuthContext.Provider>
   );
 };
