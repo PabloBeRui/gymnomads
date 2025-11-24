@@ -4,49 +4,210 @@
  * STYLES FOR: FaqPage
  * =============================================================================
  *
- * Descripción: Estilos para la página de Preguntas Frecuentes (FAQ).
- * Incluye el diseño para el disclaimer de advertencia y el formato de las respuestas.
+ * Descripción: Estilos para la página de Preguntas Frecuentes.
+ * Sigue el patrón de diseño "Split Layout" / "Zig-Zag" consistente con
+ * las otras páginas informativas (AboutUsPage, etc.).
  *
- * Description: Styles for the Frequently Asked Questions (FAQ) page.
- * Includes the design for the warning disclaimer and the formatting of answers.
+ * Description: Styles for the FAQ page.
+ * Follows the "Split Layout" / "Zig-Zag" design pattern consistent with
+ * other informational pages (AboutUsPage, etc.).
  *
  * =============================================================================
  */
-@use "sass:color";
-@use "../../styles/variables" as *; // Importar variables globales // Import global variables
+@use "../../styles/variables" as *;
 
-.disclaimer {
-  background-color: rgba($warning, 0.1); // Fondo de advertencia muy suave // Very soft warning background
-  border-left: 4px solid $warning; // Borde izquierdo sólido // Solid left border
-  padding: 1.5rem;
-  border-radius: 0 $border-radius $border-radius 0; // Bordes redondeados a la derecha // Rounded right borders
-  margin-top: 3rem;
-  font-size: 0.95rem;
-  color: color.adjust($dark, $lightness: 20%); // Texto gris oscuro // Dark gray text
-  font-style: italic;
+// Fondo global para el efecto modal/backdrop
+.backdrop {
+  width: 100%;
+  min-height: 100%;
   display: flex;
-  align-items: center;
-  gap: 10px;
+  justify-content: center;
+  align-items: flex-start; // Permite scroll
+  padding: 2rem 1rem;
+  cursor: pointer; // Clic fuera cierra
+}
 
-  &::before {
-    content: 'ℹ️'; // Icono visual // Visual icon
-    font-style: normal;
-    font-size: 1.2rem;
+.pageContainer {
+  position: relative;
+  max-width: 1100px;
+  width: 100%;
+  background-color: var(--bs-white);
+  border-radius: $border-radius-lg;
+  box-shadow: $box-shadow-lg;
+  overflow: hidden;
+  cursor: default; // Evitar cerrar al clicar dentro
+  display: flex;
+  flex-direction: column;
+
+  // Ajuste para móvil
+  @media (max-width: 768px) {
+    width: 98%; // Ancho casi total en móvil
+    margin-top: 1rem;
+    margin-bottom: 1rem;
   }
 }
 
-.answer {
-  padding: 1rem 1.5rem; // Padding interno // Internal padding
-  background-color: rgba($light, 0.5); // Fondo muy sutil // Very subtle background
-  border-left: 3px solid $primary; // Borde izquierdo con color primario // Left border with primary color
-  border-radius: 0 $border-radius $border-radius 0; // Bordes redondeados // Rounded borders
-  color: $dark; // Color de texto oscuro // Dark text color
-  margin: 0.5rem 0 2rem 0; // Margen inferior aumentado // Increased bottom margin
-  line-height: 1.6;
-  transition: transform 0.2s ease;
+.headerSection {
+  padding: 3rem 2rem 1rem 2rem;
+  text-align: center;
+  position: relative;
+
+  @media (max-width: 768px) {
+    padding: 2rem 1.5rem 1rem 1.5rem;
+  }
+}
+
+.title {
+  color: $primary;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  font-size: 2.5rem;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba($dark, 0.1);
+}
+
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 20;
+
+  @media (max-width: 768px) {
+    top: 15px;
+    right: 15px;
+  }
+}
+
+// Contenedor de las secciones alternas
+.contentWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.sectionRow {
+  display: flex;
+  flex-direction: column; // Móvil: Columna
+  border-bottom: 1px solid rgba($dark, 0.05);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  @media (min-width: 992px) {
+    flex-direction: row; // Escritorio: Fila
+    min-height: 400px; // Altura mínima por sección
+
+    // Alternar orden imagen/texto en filas pares
+    &.reversed {
+      flex-direction: row-reverse;
+    }
+  }
+}
+
+.imageCol {
+  flex: 1;
+  position: relative;
+  min-height: 300px; // Altura mínima para la imagen en móvil
+  overflow: hidden;
+
+  @media (min-width: 992px) {
+    max-width: 45%; // Un poco menos de la mitad para dar protagonismo al texto (que es largo)
+  }
+}
+
+.sectionImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
 
   &:hover {
-    transform: translateX(5px); // Pequeño desplazamiento al interactuar // Small shift on interaction
-    background-color: rgba($light, 0.8); // Fondo un poco más visible // Slightly more visible background
+    transform: scale(1.05);
+  }
+}
+
+.textCol {
+  flex: 1.2; // Más espacio para el texto
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: var(--bs-white);
+
+  @media (max-width: 768px) {
+    padding: 2rem 1.5rem;
+  }
+
+  // Títulos de sección (h2)
+  h2 {
+    color: $secondary;
+    font-weight: 700;
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    
+    // Pequeña línea decorativa debajo del título
+    &::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 4px;
+      background-color: $primary;
+      margin-top: 0.5rem;
+      border-radius: 2px;
+    }
+  }
+
+  // Preguntas (h4)
+  h4 {
+    color: $dark;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: baseline;
+
+    // Icono de pregunta antes del texto
+    &::before {
+      content: '?';
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 24px;
+      height: 24px;
+      background-color: rgba($primary, 0.2);
+      color: $secondary;
+      border-radius: 50%;
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+  }
+
+  // Respuestas (p)
+  p {
+    color: rgba($dark, 0.8);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    padding-left: 34px; // Indentación para alinear con el texto de la pregunta
+  }
+}
+
+.disclaimer {
+  padding: 1.5rem;
+  background-color: rgba($light, 0.5);
+  text-align: center;
+  font-size: 0.9rem;
+  color: rgba($dark, 0.6);
+  border-top: 1px solid rgba($dark, 0.05);
+  font-style: italic;
+  
+  strong {
+    color: $secondary;
+    font-style: normal;
   }
 }
