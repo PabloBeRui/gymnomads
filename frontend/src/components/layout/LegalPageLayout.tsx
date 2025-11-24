@@ -40,19 +40,36 @@ export const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({ title, childre
 
   const closeButtonStyle: React.CSSProperties = closeButtonTopOffset ? { top: closeButtonTopOffset } : {}; // Estilo dinámico // Dynamic style
 
+  // Manejador para clics en el fondo (wrapper)
+  // Handler for background clicks (wrapper)
+  const handleWrapperClick = () => {
+    handleClose();
+  };
+
+  // Detener la propagación del clic dentro del contenedor para evitar cierre accidental
+  // Stop click propagation inside the container to prevent accidental closing
+  const handleContainerClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   return (
-    <Container className={clsx(styles.container, "my-4 p-4 bg-white rounded shadow-sm")}>
-      <CloseButton
-        onClick={handleClose}
-        className={styles.closeButton}
-        style={closeButtonStyle} // Aplicar estilo dinámico // Apply dynamic style
-        color="#FFB700" // Color primario del proyecto // Project's primary color
-        ariaLabel="Cerrar página legal"
-      />
-      <h1 className={clsx(styles.title, "mb-4 text-center text-dark")}>{title}</h1>
-      <div className={clsx(styles.content, "text-dark")}>
-        {children}
-      </div>
-    </Container>
+    <div className={styles.wrapper} onClick={handleWrapperClick}>
+      <Container 
+        className={clsx(styles.container, "bg-white rounded shadow-sm")} // Eliminamos márgenes bootstrap (my-4) ya que los maneja el SCSS // Removed bootstrap margins (my-4) as SCSS handles them
+        onClick={handleContainerClick}
+      >
+        <CloseButton
+          onClick={handleClose}
+          className={styles.closeButton}
+          style={closeButtonStyle} // Aplicar estilo dinámico // Apply dynamic style
+          color="#FFB700" // Color primario del proyecto // Project's primary color
+          ariaLabel="Cerrar página legal"
+        />
+        <h1 className={clsx(styles.title, "mb-4 text-center text-dark")} dangerouslySetInnerHTML={{ __html: title }}></h1>
+        <div className={clsx(styles.content, "text-dark")}>
+          {children}
+        </div>
+      </Container>
+    </div>
   );
 };

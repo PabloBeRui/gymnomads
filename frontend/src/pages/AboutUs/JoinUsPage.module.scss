@@ -18,16 +18,37 @@
  */
 @use "../../styles/variables" as *; // Importar variables globales // Import global variables
 
+// Envoltura para detectar clics fuera del contenido
+// Wrapper to detect clicks outside the content
+.backdrop {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; // Alinear arriba para permitir scroll natural // Align top to allow natural scroll
+  padding: 1rem; // Padding alrededor del contenedor principal // Padding around main container
+  cursor: pointer; // Indicar que es clicable (para cerrar) // Indicate clickable (to close)
+}
+
 .pageContainer {
   max-width: 900px; // Ancho máximo del contenedor // Maximum width of container
+  width: 100%; // Asegurar que use el 100% del espacio disponible hasta max-width // Ensure it uses 100% of available space up to max-width
   margin: 60px auto; // Margen superior/inferior y centrado horizontal // Top/bottom margin and horizontal centering
   padding: 60px 40px 40px 40px; // Aumentar padding superior // Increase top padding
   position: relative;
   background-color: rgba($light, 0.95); // Fondo claro semitransparente // Light semi-transparent background
   backdrop-filter: blur(10px); // Efecto glass // Glass effect
   border-radius: $border-radius-lg; // Bordes redondeados // Rounded borders
-  box-shadow: $box-shadow-lg; // Sombra sutil // Subtle shadow
+  box-shadow: $box_shadow_lg; // Sombra sutil // Subtle shadow
   border: 1px solid rgba($dark, 0.05);
+  cursor: default; // Evitar que el cursor pointer del wrapper se herede // Prevent pointer cursor inheritance from wrapper
+
+  // Ajustes para móviles // Mobile adjustments
+  @media (max-width: 768px) {
+    width: 95%; // Ligeramente más ancho en móvil // Slightly wider on mobile
+    margin: 1.5rem auto; // Reducir margen vertical // Reduce vertical margin
+    padding: 1.5rem; // Reducir padding interno // Reduce inner padding
+  }
 }
 
 .title {
@@ -91,7 +112,7 @@
 // Style to position the new animated close button.
 .closeButton {
   position: absolute;
-  top: 15px; // Posición solicitada // Requested position
-  right: 10px; // Ajustar a la derecha // Adjust right
+  top: 5px; // Sube un poco // Move up a bit
+  right: 5px; // Mueve a la derecha un poco // Move right a bit
   z-index: 10;
 }

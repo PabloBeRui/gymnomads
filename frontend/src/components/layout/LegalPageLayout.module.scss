@@ -14,15 +14,36 @@
  */
 @use "../../styles/variables" as *; // Importar variables globales // Import global variables
 
+// Envoltura para detectar clics fuera del contenido
+// Wrapper to detect clicks outside the content
+.wrapper {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; // Alinear arriba para permitir scroll natural // Align top to allow natural scroll
+  cursor: pointer; // Indicar que es clicable (para cerrar) // Indicate clickable (to close)
+}
+
 .container {
   position: relative; // Necesario para el posicionamiento absoluto del CloseButton // Needed for absolute positioning of the CloseButton
   max-width: 900px; // Ancho máximo del contenedor (aumentado) // Increased max-width
+  width: 100%; // Por defecto ancho completo (respetando max-width) // Default full width (respecting max-width)
   margin: 3rem auto; // Centrado horizontal y margen superior/inferior // Horizontal centering and top/bottom margin
   padding: 2.5rem 3rem; // Espaciado interno (aumentado horizontalmente) // Inner spacing (increased horizontally)
   background-color: var(--bs-white); // Fondo blanco // White background
   border-radius: $border-radius-lg; // Bordes redondeados // Rounded borders
   box-shadow: $box-shadow-lg; // Sombra sutil // Subtle shadow
   line-height: 1.7; // Altura de línea para legibilidad // Line height for readability
+  cursor: default; // Evitar que el cursor pointer del wrapper se herede // Prevent pointer cursor inheritance from wrapper
+
+  // Ajustes para móviles
+  // Mobile adjustments
+  @media (max-width: 768px) {
+    width: 90%; // Dejar espacio a los lados para hacer clic // Leave space on sides to click
+    margin: 1.5rem auto; // Reducir margen vertical // Reduce vertical margin
+    padding: 1.5rem; // Reducir padding interno // Reduce inner padding
+  }
 
   // Estilos generales para el contenido dentro del layout
   // General styles for content within the layout

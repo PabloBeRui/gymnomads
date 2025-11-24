@@ -25,7 +25,7 @@ import styles from "./CookiesPolicyPage.module.scss";
 
 export const CookiesPolicyPage = () => {
   return (
-    <LegalPageLayout title="Política de Cookies">
+    <LegalPageLayout title="Política de <br/>Cookies">
       <>
         <p>
           <strong>Última actualización:</strong> 15 de noviembre de 2025

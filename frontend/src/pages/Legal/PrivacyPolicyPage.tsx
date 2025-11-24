@@ -25,7 +25,7 @@ import styles from "./PrivacyPolicyPage.module.scss";
 
 export const PrivacyPolicyPage = () => {
   return (
-    <LegalPageLayout title="Política de Privacidad">
+    <LegalPageLayout title="Política de <br/>Privacidad">
       <>
         <p>
           <strong>Última actualización:</strong> 15 de noviembre de 2025
