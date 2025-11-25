@@ -140,3 +140,60 @@
     padding: 5px;
     border: 1px solid rgba($light, 0.2); // Borde claro // Light border
 }
+
+// =============================================================================
+// ANIMACIÓN DEL BOTÓN DE VISITA
+// VISIT BUTTON ANIMATION
+// =============================================================================
+
+.visitButton {
+  position: relative;
+  overflow: hidden; // Importante para que el icono "entre" desde fuera // Important so the icon "enters" from outside
+  transition: all 0.3s ease;
+  
+  // Estado base del icono
+  // Icon base state
+  .visitIcon {
+    display: inline-block; // Asegurar que min-width funcione // Ensure min-width works
+    min-width: 1.2em; // Ancho fijo para evitar que el texto se mueva // Fixed width to prevent text shift
+    text-align: center; // Centrar el icono dentro de su min-width // Center icon within its min-width
+    transition: transform 0.3s ease;
+  }
+
+  // CLASE QUE ACTIVA LA ANIMACIÓN
+  // CLASS THAT ACTIVATES THE ANIMATION
+  &.animating {
+    // 1. Animación de colores invertidos (Fondo Oscuro -> Fondo Amarillo)
+    // 1. Inverted colors animation (Dark Background -> Yellow Background)
+    animation: colorRestore 3s ease-out forwards; // Aumentado a 3s para coincidir con el icono // Increased to 3s to match icon
+    
+    .visitIcon {
+      // Eliminada la animación de desplazamiento para evitar problemas de visibilidad
+      // Removed displacement animation to avoid visibility issues
+    }
+  }
+}
+
+// KEYFRAMES
+
+// Transición de colores: Empieza invertido y termina en el estilo normal del btn-primary
+// Color transition: Starts inverted and ends in normal btn-primary style
+@keyframes colorRestore {
+  0% {
+    background-color: $dark; // Fondo invertido // Inverted background
+    color: $primary;         // Texto invertido // Inverted text
+    border-color: $dark;
+  }
+  80% {
+     // Mantiene el color invertido la mayor parte del tiempo
+     // Keeps inverted color most of the time
+    background-color: $dark; 
+    color: $primary;
+    border-color: $dark;
+  }
+  100% {
+    background-color: $primary; // Vuelve al amarillo original // Returns to original yellow
+    color: $dark;               // Vuelve al texto oscuro // Returns to dark text
+    border-color: $primary;
+  }
+}

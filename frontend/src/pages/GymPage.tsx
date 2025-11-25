@@ -64,11 +64,42 @@ export const GymPage = () => {
   // Estado para las estadísticas de visitas del usuario
   // State for user's visit statistics
   const [visitStats, setVisitStats] = useState<VisitStats | null>(null);
+  
+  // Estado para la animación del botón de visita
+  // State for the visit button animation
+  const [animateVisit, setAnimateVisit] = useState(false);
+  const [isIconRunning, setIsIconRunning] = useState(false); // Nuevo estado para alternar el icono // New state to toggle icon
 
   // Fallback para backendBaseUrl
   // Fallback for backendBaseUrl
   const backendBaseUrl =
     import.meta.env.VITE_BACKEND_BASE_URL || window.location.origin;
+
+  // Efecto para activar la animación del botón al cargar
+  // Effect to trigger button animation on load
+  useEffect(() => {
+    // Activamos la animación general
+    setAnimateVisit(true);
+
+    // Intervalo para alternar el icono (simular correr)
+    // Interval to toggle icon (simulate running)
+    const iconInterval = setInterval(() => {
+      setIsIconRunning((prev) => !prev);
+    }, 200); // Cambia cada 200ms // Changes every 200ms
+
+    // Temporizador para finalizar la animación
+    // Timer to end animation
+    const timer = setTimeout(() => {
+      setAnimateVisit(false);
+      setIsIconRunning(false); // Asegurar que termine en estado "caminando" // Ensure it ends in "walking" state
+      clearInterval(iconInterval);
+    }, 3000);
+
+    return () => {
+      clearTimeout(timer);
+      clearInterval(iconInterval);
+    };
+  }, []);
 
   // Cargar datos del gimnasio al montar
   // Load gym data on mount
@@ -318,7 +349,7 @@ export const GymPage = () => {
                         variant="primary"
                         onClick={handleVisitClick}
                         disabled={isProcessing}
-                        className="w-100">
+                        className={clsx("w-100", styles.visitButton, { [styles.animating]: animateVisit })}>
                         {isProcessing ? (
                           <>
                             <Spinner
@@ -330,7 +361,7 @@ export const GymPage = () => {
                           </>
                         ) : (
                           <>
-                            <i className="bi bi-person-walking me-2"></i>Visitar
+                            <i className={clsx("bi", isIconRunning ? "bi-person-running" : "bi-person-walking", "me-2", styles.visitIcon)}></i>Visitar
                           </>
                         )}
                       </Button>
