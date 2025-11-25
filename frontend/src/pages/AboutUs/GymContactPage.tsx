@@ -8,7 +8,7 @@
  * puedan contactar para unirse a la red Gymnomads.
  * Refactorizado para usar React-Bootstrap y SASS Modules.
  *
- * Detailed description: Page with a form for interested gyms to contact
+ * Description: Page with a form for interested gyms to contact
  * to join the Gymnomads network.
  * Refactored to use React-Bootstrap and SASS Modules.
  *
@@ -19,10 +19,12 @@ import { toast } from "sonner";
 import { CloseButton } from "../../components/ui/CloseButton";
 import { useNavigate } from "react-router-dom";
 
-// Importar componentes de React-Bootstrap / Import React-Bootstrap components
+// Importar componentes de React-Bootstrap
+// Import React-Bootstrap components
 import { Form, Button, Spinner } from "react-bootstrap";
 
-// Importar el módulo SCSS / Import the SCSS module
+// Importar el módulo SCSS
+// Import the SCSS module
 import styles from "./GymContactPage.module.scss";
 import clsx from "clsx";
 
@@ -35,11 +37,14 @@ export const GymContactPage = () => {
   const [observations, setObservations] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Manejar el envío del formulario
+  // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     // Simulación de envío
+    // Submission simulation
     setTimeout(() => {
       toast.success(
         "¡Gracias por tu interés! Hemos recibido tus datos y te contactaremos pronto."
@@ -53,10 +58,14 @@ export const GymContactPage = () => {
     }, 1500);
   };
 
+  // Navegar hacia atrás al hacer clic en el fondo
+  // Navigate back on backdrop click
   const handleBackdropClick = () => {
     navigate(-1);
   };
 
+  // Evitar propagación del clic en el contenedor
+  // Prevent click propagation on container
   const handleContainerClick = (e: React.MouseEvent) => {
     e.stopPropagation();
   };

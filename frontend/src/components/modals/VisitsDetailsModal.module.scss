@@ -73,9 +73,7 @@
 // Class for the close button inside the modal
 .modalCloseButton {
   @media (max-width: 767.98px) {
-    position: absolute;
-    top: 1rem; // 1rem desde arriba // 1rem from top
-    right: 1rem; // 1rem desde la derecha // 1rem from right
+    display: none;
   }
 }
 

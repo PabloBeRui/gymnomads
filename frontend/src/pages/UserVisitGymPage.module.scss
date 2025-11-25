@@ -29,6 +29,10 @@
   top: 0; // Pegado al borde superior del contenedor // Stick to container top edge
   right: 15px; // Alinear con el padding derecho estándar de Bootstrap (aprox) // Align with Bootstrap standard right padding
   z-index: 10; // Asegurar que esté por encima de otros elementos // Ensure it's above other elements
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 }
 
 .customSuccessAlert {

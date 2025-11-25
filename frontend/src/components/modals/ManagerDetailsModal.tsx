@@ -218,7 +218,7 @@ export const ManagerDetailsModal = ({
         <Modal.Title className={clsx(styles.modalTitle, "text-primary")}>
           Información del Manager
         </Modal.Title>
-        <CloseButton onClick={handleClose} ariaLabel="Cerrar información del manager" color="#FFB700" />
+        <CloseButton onClick={handleClose} ariaLabel="Cerrar información del manager" color="#FFB700" className={styles.modalCloseButton} />
       </Modal.Header>
       <Modal.Body>
         {/* Header con Avatar, nombre y email / Header with Avatar, name and email */}

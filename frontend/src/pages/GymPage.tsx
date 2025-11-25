@@ -224,18 +224,13 @@ export const GymPage = () => {
         <Row className="justify-content-center">
           <Col lg={11}>
             {/* Fila superior para móvil, se oculta en escritorio */}
-            <Row className="d-md-none justify-content-between align-items-center mb-3">
+            {/* Fila del widget del tiempo, centrada en móvil, se oculta en escritorio */}
+            <Row className="d-md-none justify-content-center mb-3">
               <Col xs="auto">
                 <img
                   src={logoSrc}
                   alt={`Logo de ${gym.name}`}
                   className={styles.gymLogoSmall}
-                />
-              </Col>
-              <Col xs="auto">
-                <CloseButton
-                  onClick={() => navigate("/gyms")}
-                  color="#FFB700"
                 />
               </Col>
             </Row>

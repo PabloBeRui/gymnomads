@@ -138,9 +138,7 @@
   z-index: 20;
 
   @media (max-width: 768px) {
-    top: 10px;
-    right: 10px;
-    color: var(--bs-white) !important; // Forzar blanco en móvil
+    display: none;
   }
 }
 

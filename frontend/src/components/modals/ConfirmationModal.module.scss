@@ -71,3 +71,9 @@
   gap: 10px; // Espacio entre botones // Space between buttons
   justify-content: flex-end; // Botones a la derecha // Buttons to the right
 }
+
+.modalCloseButton {
+  @media (max-width: 768px) {
+    display: none;
+  }
+}

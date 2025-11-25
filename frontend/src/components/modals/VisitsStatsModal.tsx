@@ -115,7 +115,7 @@ export const VisitsStatsModal: React.FC<VisitsStatsModalProps> = ({
         <Modal.Title className={clsx(styles.modalTitle, "text-primary")}>
           {getTitle()}
         </Modal.Title>
-        <CloseButton onClick={handleClose} ariaLabel="Cerrar estadísticas de visitas" color="#FFB700" />
+        <CloseButton onClick={handleClose} ariaLabel="Cerrar estadísticas de visitas" color="#FFB700" className={styles.modalCloseButton} />
       </Modal.Header>
       <Modal.Body>
         {viewMode === "manager" && (

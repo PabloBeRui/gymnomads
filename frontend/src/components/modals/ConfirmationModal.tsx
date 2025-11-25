@@ -119,7 +119,7 @@ export const ConfirmationModal = ({
     <Modal show={isOpen} onHide={onCancel} centered>
       <Modal.Header className="d-flex justify-content-between align-items-center">
         <Modal.Title className={clsx(styles.modalTitle, "text-dark")}>{title}</Modal.Title>
-        <CloseButton onClick={onCancel} ariaLabel="Cerrar modal de confirmación" colorVariant="primary" />
+        <CloseButton onClick={onCancel} ariaLabel="Cerrar modal de confirmación" color="#FFB700" className={styles.modalCloseButton} />
       </Modal.Header>
       <Modal.Body>
         <p className={styles.modalText}>{message}</p>

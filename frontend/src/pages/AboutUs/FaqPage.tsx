@@ -21,10 +21,14 @@ import clsx from "clsx";
 export const FaqPage = () => {
   const navigate = useNavigate();
 
+  // Navegar hacia atrás al hacer clic en el fondo
+  // Navigate back on backdrop click
   const handleBackdropClick = () => {
     navigate(-1);
   };
 
+  // Evitar propagación del clic en el contenedor
+  // Prevent click propagation on container
   const handleContainerClick = (e: React.MouseEvent) => {
     e.stopPropagation();
   };

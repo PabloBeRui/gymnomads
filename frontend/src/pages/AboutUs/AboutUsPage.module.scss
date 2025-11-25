@@ -73,8 +73,7 @@
   z-index: 20;
 
   @media (max-width: 768px) {
-    top: 15px;
-    right: 15px;
+    display: none;
   }
 }
 

@@ -132,9 +132,7 @@
   z-index: 20; // Aumentar z-index para asegurar que esté sobre la imagen en móvil
 
   @media (max-width: 768px) {
-    top: 10px; // Ajuste fino para móvil
-    right: 10px;
-    color: var(--bs-white) !important; // Forzar blanco en móvil para contraste con la imagen oscura
+    display: none;
   }
 }
 

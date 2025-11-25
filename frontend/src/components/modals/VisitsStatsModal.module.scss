@@ -48,6 +48,12 @@
   margin-bottom: 25px;
 }
 
+.modalCloseButton {
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
 .modalTitle {
   font-size: 1.5rem;
   color: $dark; // Color de texto oscuro // Dark text color

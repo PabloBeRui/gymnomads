@@ -194,7 +194,6 @@
   z-index: 1056; // Asegurar que esté por encima del contenido del modal de React-Bootstrap.
 
   @media (max-width: 767.98px) {
-    top: 1rem;
-    right: 1rem;
+    display: none;
   }
 }

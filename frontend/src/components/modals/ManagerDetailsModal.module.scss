@@ -67,6 +67,12 @@
   border-bottom: 2px solid var(--bs-gray-300); // Borde inferior // Bottom border
 }
 
+.modalCloseButton {
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
 .modalTitle {
   font-size: 1.5rem;
   color: $dark; // Color de texto oscuro // Dark text color

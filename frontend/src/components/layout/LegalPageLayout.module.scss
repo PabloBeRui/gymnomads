@@ -97,4 +97,8 @@
   top: 15px; // Subir para que sobresalga // Move up to overlap
   right: 10px; // Alinear a la derecha // Align right
   z-index: 10; // Asegurar que esté por encima del contenido.
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 }
