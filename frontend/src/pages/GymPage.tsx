@@ -223,18 +223,22 @@ export const GymPage = () => {
         onClick={(e) => e.stopPropagation()}>
         <Row className="justify-content-center">
           <Col lg={11}>
-            {/* Fila superior para móvil, se oculta en escritorio */}
-            {/* Fila del widget del tiempo, centrada en móvil, se oculta en escritorio */}
-            <Row className="d-md-none justify-content-center mb-3">
-              <Col xs="auto">
+            {/* --- CABECERA MÓVIL (Logo y Título) --- */}
+            {/* --- MOBILE HEADER (Logo and Title) --- */}
+            <Row className={clsx("d-md-none", styles.mobileHeaderRow, "justify-content-start align-items-center mb-3")}>
+              <Col xs="auto" className="d-flex align-items-center">
                 <img
                   src={logoSrc}
                   alt={`Logo de ${gym.name}`}
                   className={styles.gymLogoSmall}
                 />
+                <h1 className={clsx(styles.mobileGymTitle, "ms-2")}>{gym.name}</h1>
               </Col>
+              {/* El CloseButton no se usa en móvil */}
             </Row>
-            {/* Fila del widget del tiempo, centrada en móvil, se oculta en escritorio */}
+
+            {/* --- WIDGET DEL TIEMPO (solo móvil) --- */}
+            {/* --- WEATHER WIDGET (mobile only) --- */}
             <Row className="d-md-none justify-content-center mb-4">
               <Col xs="auto">
                 {gym.latitude && gym.longitude && (
@@ -245,7 +249,9 @@ export const GymPage = () => {
                 )}
               </Col>
             </Row>
-            {/* Fila para escritorio, se oculta en móvil */}
+
+            {/* --- CABECERA DESKTOP (Weather, Logo y Botón de Cierre) --- */}
+            {/* --- DESKTOP HEADER (Weather, Logo, and Close Button) --- */}
             <Row className="d-none d-md-flex justify-content-between align-items-center mb-4">
               <Col md="auto">
                 {gym.latitude && gym.longitude && (
@@ -270,6 +276,7 @@ export const GymPage = () => {
               </Col>
             </Row>{" "}
             {/* --- Hero Image y Detalles Principales --- */}
+            {/* --- Hero Image and Main Details --- */}
             <Card className="mb-4 shadow-sm border-0">
               <div className={styles.heroImageWrapper}>
                 <Card.Img
@@ -279,10 +286,12 @@ export const GymPage = () => {
                   className={styles.heroImage}
                 />
                 <div className={styles.heroOverlay}>
-                  <div className="d-flex align-items-center mb-2">
-                    <h1 className="text-primary fw-bold mb-0">{gym.name}</h1>
-                  </div>
-                  <p className="text-white mb-0 fs-5">
+                  {/* Nombre del gimnasio (solo desktop, movido arriba para móvil) */}
+                  {/* Gym name (desktop only, moved above for mobile) */}
+                  <h1 className={clsx("text-primary fw-bold mb-0", "d-none d-md-block")}>{gym.name}</h1>
+                  {/* Ciudad del gimnasio (solo desktop, movida abajo para móvil) */}
+                  {/* Gym city (desktop only, moved below for mobile) */}
+                  <p className={clsx("text-white mb-0 fs-5", "d-none d-md-block")}>
                     <i className="bi bi-geo-alt-fill me-2 text-primary"></i>
                     {gym.city}
                   </p>
@@ -291,6 +300,12 @@ export const GymPage = () => {
               <Card.Body className="p-4">
                 <Row className="align-items-center">
                   <Col md={8}>
+                    {/* Ciudad del gimnasio (solo móvil, visible debajo de la imagen) */}
+                    {/* Gym city (mobile only, visible below the image) */}
+                    <p className={clsx("text-secondary mb-2 d-md-none", styles.mobileGymCity)}>
+                      <i className="bi bi-geo-alt-fill me-2 text-primary"></i>
+                      {gym.city}
+                    </p>
                     <p className="text-secondary mb-0">
                       <i className="bi bi-geo-alt-fill me-2 text-info"></i>
                       {gym.address}
