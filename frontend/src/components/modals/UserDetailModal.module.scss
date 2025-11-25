@@ -31,9 +31,9 @@
 
 .modalContent {
   background-color: var(--bs-white); // Fondo blanco // White background
-  padding: 30px;
+  padding: 20px; // Reducir padding // Reduce padding
   border-radius: 8px; // Bordes redondeados // Rounded borders
-  max-width: 600px; // Ancho máximo // Maximum width
+  max-width: 550px; // Reducir ancho máximo // Reduce max width
   width: 100%; // Ancho completo // Full width
   max-height: 90vh; // Altura máxima // Maximum height
   overflow-y: auto; // Scroll si el contenido es largo // Scroll if content is long

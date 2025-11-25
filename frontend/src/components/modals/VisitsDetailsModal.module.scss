@@ -114,13 +114,9 @@
   }
 
   @media (max-width: 767.98px) {
-    // Restaurar alineación para móvil (izquierda/start)
-    justify-content: start; 
-    justify-items: start;
+    justify-content: center; // Centrar el grid completo en móvil // Center the whole grid on mobile
+    justify-items: center;   // Centrar los ítems dentro de sus celdas // Center items within their cells
     grid-template-columns: auto 1fr; // Volver a columnas expandibles
-
-    // Áreas Móvil: Avatar y Nombre arriba, Email ocupa todo abajo
-    // Mobile Areas: Avatar and Name top, Email takes full bottom
     grid-template-areas:
       "avatar name"
       "email email";
