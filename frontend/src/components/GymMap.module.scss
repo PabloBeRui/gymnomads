@@ -18,6 +18,10 @@
   border: 1px solid var(--bs-gray-300); // Borde sutil // Subtle border
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); // Sombra suave // Soft shadow
   z-index: 0; // Asegura que el mapa esté en el fondo // Ensures map is in background
+
+  @media (max-width: 767.98px) {
+    height: 240px; // Reducir altura en un 20% para móvil
+  }
 }
 
 .popupWrapper {
