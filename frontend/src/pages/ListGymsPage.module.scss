@@ -164,7 +164,7 @@
   justify-content: center;
 
   @media (max-width: 768px) {
-    padding: 2rem 1.5rem;
+    padding: 0rem 1.5rem; // Reducir padding superior/inferior en móvil // Reduce top/bottom padding on mobile
     text-align: center;
   }
 }
