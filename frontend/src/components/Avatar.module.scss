@@ -5,6 +5,8 @@
  * =============================================================================
  */
 
+@use "../styles/variables" as *; // Importar variables globales // Import global variables
+
 .avatarContainer {
   /* Forma y alineación del contenido / Shape and content alignment */
   border-radius: 50%;
@@ -13,6 +15,7 @@
   justify-content: center;
   overflow: hidden;
   flex-shrink: 0;
+  border: 2px solid $primary !important; // Añadir borde con color primario // Add border with primary color
 
   /* Color y fuente para las iniciales / Color and font for initials */
   color: var(--bs-white);
