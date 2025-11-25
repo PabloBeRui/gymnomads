@@ -361,7 +361,7 @@ export const GymPage = () => {
                           </>
                         ) : (
                           <>
-                            <i className={clsx("bi", isIconRunning ? "bi-person-running" : "bi-person-walking", "me-2", styles.visitIcon)}></i>Visitar
+                            <i className={clsx("bi", isIconRunning ? "bi-person-running" : "bi-person-walking", "me-2", styles.visitIcon)}></i><span className="fw-bold">Visitar</span>
                           </>
                         )}
                       </Button>
