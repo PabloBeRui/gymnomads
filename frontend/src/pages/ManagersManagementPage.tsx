@@ -272,7 +272,7 @@ export const ManagersManagementPage = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onClear={() => setSearchTerm("")}
-                placeholder="Manager, Gimnasio, Ciudad..."
+                placeholder="Buscar Manager o Gimnasio"
               />
             </Col>
           </Row>
