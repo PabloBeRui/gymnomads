@@ -42,7 +42,7 @@
   cursor: default; // El cursor vuelve a la normalidad sobre el contenido // Cursor returns to normal over content
 
   @media (max-width: 767.98px) {
-    width: 90%; // Ocupar el 90% del ancho
+    width: 85%; // Reducir un poco más el ancho para móvil // Reduce width a bit more for mobile
     margin: 0.5rem auto; // Centrar y añadir margen superior/inferior para separación
     padding: 0.5rem; // Reducir padding interno para maximizar contenido
     border-radius: $border-radius-lg; // Restaurar border-radius
