@@ -122,7 +122,55 @@ function App() {
           position: "relative",
         }}>
         <ScrollToTop />
-        <Toaster position="bottom-left" richColors closeButton />
+        <Toaster
+          position="bottom-left"
+          closeButton
+          theme="dark" // Fondo oscuro para los toasts
+          toastOptions={{
+            style: {
+              background: '#194350', // Color $secondary (Azul Petróleo)
+              color: '#F8F9FA',      // Color $light (Claro) para el texto general
+              border: 'none',        // Sin borde por defecto, los bordes de estado serán 'border-left'
+              padding: '12px 16px',  // Ajuste de padding para el borde izquierdo
+            },
+            classNames: {
+              title: 'text-white',    // Título en blanco
+              description: 'text-gray-300', // Descripción en gris claro
+              closeButton: 'bg-white hover:bg-gray-200', // Botón de cierre en blanco
+            },
+            // Estilos por tipo de toast
+            success: {
+              style: { borderLeft: '5px solid #2A9D8F' }, // Color $success
+              classNames: {
+                icon: 'text-success', // Color del icono
+              },
+            },
+            error: {
+              style: { borderLeft: '5px solid #DC3545' }, // Color $danger
+              classNames: {
+                icon: 'text-danger', // Color del icono
+              },
+            },
+            warning: {
+              style: { borderLeft: '5px solid #E6B800' }, // Color $warning
+              classNames: {
+                icon: 'text-warning', // Color del icono
+              },
+            },
+            info: {
+              style: { borderLeft: '5px solid #0077B6' }, // Color $info
+              classNames: {
+                icon: 'text-info', // Color del icono
+              },
+            },
+            default: { // Para el toast sin tipo explícito
+              style: { borderLeft: '5px solid #FFB700' }, // Color $primary
+              classNames: {
+                icon: 'text-primary', // Color del icono
+              },
+            },
+          }}
+        />
         <NavbarComponent />
         <main
           style={{ flex: 1, paddingTop: "90px" }}
