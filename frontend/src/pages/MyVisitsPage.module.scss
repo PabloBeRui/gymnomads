@@ -22,7 +22,7 @@
   justify-content: center;
   align-items: flex-start; // Alineación superior para permitir scroll
   padding: 2rem 1rem; // Espaciado alrededor
-  // cursor: pointer; // No usamos cursor pointer aquí porque no es un modal cerrable al clic fuera
+  cursor: pointer; // Clic fuera cierra
 }
 
 .pageContainer {
@@ -39,7 +39,7 @@
 
   @media (max-width: 768px) {
     width: 100%;
-    border-radius: 0; // En móvil, quizás borde recto o reducido
+    border-radius: $border-radius; // Aplicar un border-radius para móvil
     margin-top: 0;
   }
 }
@@ -152,6 +152,19 @@
     color: $secondary;
     font-weight: 600;
     margin: 0;
+  }
+}
+
+
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+  display: block;
+
+  @media (max-width: 768px) {
+    display: none;
   }
 }
 

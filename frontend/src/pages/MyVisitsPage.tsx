@@ -1,18 +1,5 @@
-/**
- * =============================================================================
- * PÁGINA: MyVisitsPage
- * =============================================================================
- *
- * Página para mostrar las visitas de un usuario.
- * Rediseñada para coincidir con el estilo visual de "About Us" y "Join Us".
- *
- * Page to display user visits.
- * Redesigned to match the visual style of "About Us" and "Join Us".
- *
- * =============================================================================
- */
-
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // Importar useNavigate
 import { useAuth } from "../context/AuthContext";
 import { getMyVisits } from "../services/visit-services";
 import type { VisitWithDetails } from "../interfaces/visit-interfaces";
@@ -35,10 +22,12 @@ import Spinner from "../components/ui/Spinner";
 
 // Importar el módulo SCSS
 import styles from "./MyVisitsPage.module.scss";
+import { CloseButton } from "../components/ui/CloseButton";
 import clsx from "clsx";
 
 export const MyVisitsPage = () => {
   // --- ESTADOS Y HOOKS ---
+  const navigate = useNavigate(); // Hook de navegación
   const { token } = useAuth();
   const [visits, setVisits] = useState<VisitWithDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -57,6 +46,15 @@ export const MyVisitsPage = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedVisit, setSelectedVisit] = useState<VisitWithDetails | null>(null);
   const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
+
+  // --- MANEJADORES DE CIERRE DE PÁGINA (Estilo Modal) ---
+  const handleBackdropClick = () => {
+    navigate(-1); // Navegar hacia atrás al hacer clic en el fondo
+  };
+
+  const handleContainerClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Evitar que el clic en el contenido cierre la página
+  };
 
   // --- CARGA DE DATOS ---
   const fetchVisits = async () => {
@@ -148,9 +146,16 @@ export const MyVisitsPage = () => {
 
   // --- RENDERIZADO ---
   return (
-    <div className={styles.backdrop}>
-      <div className={styles.pageContainer}>
+    <div className={styles.backdrop} onClick={handleBackdropClick}>
+      <div className={styles.pageContainer} onClick={handleContainerClick}>
         
+        <CloseButton
+          onClick={handleBackdropClick}
+          className={styles.closeButton}
+          color="#FFB700" // Usar color primario (amarillo) para mejor visibilidad y consistencia
+          ariaLabel="Cerrar página"
+        />
+
         {/* === SECCIÓN SUPERIOR (Hero + Stats) === */}
         <div className={styles.topSection}>
           

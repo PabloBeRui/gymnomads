@@ -76,6 +76,7 @@ export const CloseButton: React.FC<CloseButtonProps> = ({
           viewBox="0 0 30 30"
           fill="none"
           stroke={color}
+          style={{ stroke: color }} // Forzar el color mediante estilo en línea
           strokeWidth="2.5"
           strokeLinecap="round"
           strokeMiterlimit="10"
