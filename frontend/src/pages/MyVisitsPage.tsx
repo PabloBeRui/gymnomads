@@ -1,5 +1,22 @@
+/**
+ * =============================================================================
+ * COMPONENTE: MyVisitsPage
+ * COMPONENT: MyVisitsPage
+ * =============================================================================
+ *
+ * Descripción: Página para mostrar el historial de visitas de un usuario.
+ * Presenta una lista paginada y filtrable de visitas, estadísticas rápidas
+ * y permite ver detalles de cada visita. Diseño moderno con cabecera Hero.
+ *
+ * Description: Page to display a user's visit history.
+ * Presents a paginated and filterable list of visits, quick statistics,
+ * and allows viewing details of each visit. Modern design with Hero header.
+ *
+ * =============================================================================
+ */
+
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Importar useNavigate
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getMyVisits } from "../services/visit-services";
 import type { VisitWithDetails } from "../interfaces/visit-interfaces";
@@ -16,23 +33,44 @@ import {
   type ColumnDefinition,
 } from "../components/ui/SortableTable";
 
-// Importar componentes de React-Bootstrap
-
+// Importar componentes de UI
+// Import UI components
 import Spinner from "../components/ui/Spinner";
-
-// Importar el módulo SCSS
-import styles from "./MyVisitsPage.module.scss";
 import { CloseButton } from "../components/ui/CloseButton";
+
+// Importar estilos y utilidades
+// Import styles and utilities
+import styles from "./MyVisitsPage.module.scss";
 import clsx from "clsx";
 
 export const MyVisitsPage = () => {
-  // --- ESTADOS Y HOOKS ---
-  const navigate = useNavigate(); // Hook de navegación
+  // =============================================================================
+  // Estados y Hooks
+  // States and Hooks
+  // =============================================================================
+
+  // Hook de navegación para cerrar la página
+  // Navigation hook to close the page
+  const navigate = useNavigate();
+
+  // Obtener token del contexto de autenticación
+  // Get token from authentication context
   const { token } = useAuth();
+
+  // Estado para almacenar la lista de visitas
+  // State to store the list of visits
   const [visits, setVisits] = useState<VisitWithDetails[]>([]);
+  
+  // Estado de carga inicial
+  // Initial loading state
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Estado para el término de búsqueda (filtro)
+  // State for search term (filter)
   const [gymSearch, setGymSearch] = useState("");
 
+  // Hook personalizado de paginación
+  // Custom pagination hook
   const {
     currentPage,
     itemsPerPage,
@@ -43,20 +81,34 @@ export const MyVisitsPage = () => {
     changeItemsPerPage,
   } = usePagination();
 
+  // Estados para modales (Detalles y Estadísticas)
+  // States for modals (Details and Statistics)
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedVisit, setSelectedVisit] = useState<VisitWithDetails | null>(null);
   const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
 
-  // --- MANEJADORES DE CIERRE DE PÁGINA (Estilo Modal) ---
+  // =============================================================================
+  // Manejadores de Navegación (Cierre tipo Modal)
+  // Navigation Handlers (Modal-like Close)
+  // =============================================================================
+
+  // Navegar hacia atrás al hacer clic en el fondo (backdrop)
+  // Navigate back when clicking on the background (backdrop)
   const handleBackdropClick = () => {
-    navigate(-1); // Navegar hacia atrás al hacer clic en el fondo
+    navigate(-1);
   };
 
+  // Evitar que el clic dentro del contenedor cierre la página
+  // Prevent click inside the container from closing the page
   const handleContainerClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Evitar que el clic en el contenido cierre la página
+    e.stopPropagation();
   };
 
-  // --- CARGA DE DATOS ---
+  // =============================================================================
+  // Efectos y Carga de Datos
+  // Effects and Data Loading
+  // =============================================================================
+
   const fetchVisits = async () => {
     if (!token) {
       setIsLoading(false);
@@ -64,11 +116,15 @@ export const MyVisitsPage = () => {
     }
     setIsLoading(true);
     try {
+      // Llamada a la API con paginación y filtros
+      // API call with pagination and filters
       const response = await getMyVisits(token, gymSearch, currentPage, itemsPerPage);
       const validData = Array.isArray(response.data) ? response.data : [];
       setVisits(validData);
       setTotalItems(response.total || 0);
     } catch (error) {
+      // Manejo centralizado de errores
+      // Centralized error handling
       const msg = handleApiError(error, "Error al cargar tus visitas.");
       toast.error(msg);
       setVisits([]);
@@ -77,6 +133,8 @@ export const MyVisitsPage = () => {
     }
   };
 
+  // Efecto para cargar datos cuando cambian los filtros o la paginación (con debounce)
+  // Effect to load data when filters or pagination change (with debounce)
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       fetchVisits();
@@ -85,7 +143,11 @@ export const MyVisitsPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, gymSearch, currentPage, itemsPerPage]);
 
-  // --- MANEJADORES ---
+  // =============================================================================
+  // Manejadores de Eventos
+  // Event Handlers
+  // =============================================================================
+
   const handleRowClick = (visit: VisitWithDetails) => {
     setSelectedVisit(visit);
     setShowDetailModal(true);
@@ -98,7 +160,7 @@ export const MyVisitsPage = () => {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setGymSearch(e.target.value);
-    goToPage(1);
+    goToPage(1); // Resetear a la primera página al buscar
   };
 
   const handleClearSearch = () => {
@@ -106,7 +168,11 @@ export const MyVisitsPage = () => {
     goToPage(1);
   };
 
-  // --- COLUMNAS DE LA TABLA ---
+  // =============================================================================
+  // Configuración de Columnas
+  // Columns Configuration
+  // =============================================================================
+
   const myVisitsColumns: ColumnDefinition<VisitWithDetails>[] = [
     {
       key: "gym_name",
@@ -144,22 +210,30 @@ export const MyVisitsPage = () => {
     },
   ];
 
-  // --- RENDERIZADO ---
+  // =============================================================================
+  // Renderizado
+  // Rendering
+  // =============================================================================
+
   return (
     <div className={styles.backdrop} onClick={handleBackdropClick}>
       <div className={styles.pageContainer} onClick={handleContainerClick}>
         
+        {/* Botón de cierre (visible solo en desktop) */}
+        {/* Close button (visible only on desktop) */}
         <CloseButton
           onClick={handleBackdropClick}
           className={styles.closeButton}
-          color="#FFB700" // Usar color primario (amarillo) para mejor visibilidad y consistencia
+          color="#FFB700" // Color primario para mejor visibilidad
           ariaLabel="Cerrar página"
         />
 
         {/* === SECCIÓN SUPERIOR (Hero + Stats) === */}
+        {/* === TOP SECTION (Hero + Stats) === */}
         <div className={styles.topSection}>
           
           {/* Columna de Información y Título */}
+          {/* Information and Title Column */}
           <div className={styles.infoCol}>
             <h1 className={styles.title}>Mis Visitas</h1>
             <p className={styles.subtitle}>
@@ -167,6 +241,7 @@ export const MyVisitsPage = () => {
             </p>
 
             {/* Mini Tarjetas de Estadísticas (Acceso rápido al modal) */}
+            {/* Mini Stats Cards (Quick access to modal) */}
             <div className={styles.miniStatsGrid}>
                <div 
                  className={styles.miniStatCard}
@@ -181,10 +256,11 @@ export const MyVisitsPage = () => {
                </div>
                
                {/* Botón decorativo/funcional para ver más detalles */}
+               {/* Decorative/functional button to view more details */}
                <div 
                  className={clsx(styles.miniStatCard, "d-flex align-items-center justify-content-center")}
                  onClick={() => setIsStatsModalOpen(true)}
-                 style={{ backgroundColor: '#194350', borderColor: '#194350' }} // Color secundario
+                 style={{ backgroundColor: '#194350', borderColor: '#194350' }} // Color secundario / Secondary color
                >
                   <span className="text-white fw-bold small">Ver Gráficos 📊</span>
                </div>
@@ -192,6 +268,7 @@ export const MyVisitsPage = () => {
           </div>
 
           {/* Columna de Imagen */}
+          {/* Image Column */}
           <div className={styles.imageCol}>
             <img 
               src="/images/my-visits-page/my-visits-page.png" 
@@ -202,9 +279,11 @@ export const MyVisitsPage = () => {
         </div>
 
         {/* === SECCIÓN DE CONTENIDO (Tabla y Filtros) === */}
+        {/* === CONTENT SECTION (Table and Filters) === */}
         <div className={styles.contentSection}>
             
             {/* Barra de Filtros */}
+            {/* Filter Bar */}
             <div className={styles.filtersBar}>
                 <div className={styles.filterInputWrapper}>
                     <FilterInput
@@ -217,9 +296,11 @@ export const MyVisitsPage = () => {
                     />
                 </div>
                 {/* Aquí se podrían añadir más filtros (fechas, etc.) en el futuro */}
+                {/* More filters (dates, etc.) could be added here in the future */}
             </div>
 
             {/* Contenido de la Tabla */}
+            {/* Table Content */}
             {isLoading && visits.length === 0 ? (
                 <div className={styles.loadingContainer}>
                     <Spinner center size="lg" />
@@ -260,6 +341,7 @@ export const MyVisitsPage = () => {
       </div>
 
       {/* === MODALES === */}
+      {/* === MODALS === */}
       <VisitsDetailsModal
         isOpen={showDetailModal}
         onClose={handleCloseModal}
