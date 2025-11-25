@@ -27,7 +27,7 @@ import { CloseButton } from "../ui/CloseButton";
 import { FaArrowRight } from "react-icons/fa";
 
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
-import { Modal, Button } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import styles from "./VisitsDetailsModal.module.scss"; // Importar el módulo SCSS / Import the SCSS module
 import clsx from "clsx"; // Importar clsx / Import clsx
 
