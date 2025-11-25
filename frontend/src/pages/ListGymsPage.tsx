@@ -31,7 +31,6 @@ import { usePagination } from "../hooks/usePagination";
 import { PaginationControls } from "../components/ui/PaginationControls";
 import { sortGymsByRole } from "../utils/gym-sorter";
 import {
-  Container,
   Row,
   Col,
   FormControl,
@@ -42,6 +41,7 @@ import {
 import Spinner from "../components/ui/Spinner";
 import styles from "./ListGymsPage.module.scss";
 import clsx from "clsx"; // Importar clsx / Import clsx
+import { CloseButton } from "../components/ui/CloseButton"; // Importar CloseButton
 
 export const ListGymsPage = () => {
   const { user, token } = useAuth();
@@ -72,6 +72,16 @@ export const ListGymsPage = () => {
   // URL base del backend para las imágenes // Backend base URL for images
   const backendBaseUrl =
     import.meta.env.VITE_BACKEND_BASE_URL || window.location.origin;
+
+  // Manejadores de navegación para cerrar la página (estilo modal)
+  // Navigation handlers to close the page (modal style)
+  const handleBackdropClick = () => {
+    navigate(-1); // Navegar hacia atrás al hacer clic en el fondo // Navigate back on backdrop click
+  };
+
+  const handleContainerClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Evitar que el clic en el contenido cierre la página // Prevent click inside content from closing page
+  };
 
   // Efecto para obtener los datos de los gimnasios (ADMIN) - Paginación en servidor
   // Effect to fetch gym data (ADMIN) - Server-side pagination
@@ -213,31 +223,69 @@ export const ListGymsPage = () => {
   // Renderizado del estado de carga // Loading state rendering
   if (isLoading && gyms.length === 0) {
     return (
-      <Container className="text-center p-5">
-        <Spinner center size="lg" />
-        <p className="mt-3 text-dark">Cargando gimnasios...</p>
-      </Container>
+      <div className={styles.backdrop}> {/* Usar backdrop */}
+        <div className={styles.pageContainer}> {/* Usar pageContainer */}
+          <div className="text-center p-5">
+            <Spinner center size="lg" />
+            <p className="mt-3 text-dark">Cargando gimnasios...</p>
+          </div>
+        </div>
+      </div>
     );
   }
 
   // Renderizado del estado de error // Error state rendering
   if (error) {
     return (
-      <Container className="text-center mt-5">
-        <Alert variant="danger">{error}</Alert>
-      </Container>
+      <div className={styles.backdrop}> {/* Usar backdrop */}
+        <div className={styles.pageContainer}> {/* Usar pageContainer */}
+          <div className="text-center mt-5">
+            <Alert variant="danger">{error}</Alert>
+          </div>
+        </div>
+      </div>
     );
   }
 
   // Renderizado principal // Main rendering
   return (
-    <Container className="py-5">
-      <header className="text-center mb-5">
-        <h1 className="fw-bold text-primary">Nuestros Gimnasios</h1>
-        <p className="fs-5 text-light">
-          Explora la red de gimnasios asociados a GymNomads.
-        </p>
-      </header>
+    <div className={styles.backdrop} onClick={handleBackdropClick}>
+      <div className={styles.pageContainer} onClick={handleContainerClick}>
+        {/* Botón de cierre (visible solo en desktop) */}
+        {/* Close button (visible only on desktop) */}
+        <CloseButton
+          onClick={handleBackdropClick}
+          className={styles.closeButton}
+          color="#FFB700" // Color primario para mejor visibilidad
+          ariaLabel="Cerrar página"
+        />
+
+        {/* === SECCIÓN SUPERIOR (Hero: Título y Subtítulo + Imagen) === */}
+        {/* === TOP SECTION (Hero: Title and Subtitle + Image) === */}
+        <div className={styles.topSection}>
+          {/* Columna de Información (Título y Subtítulo) */}
+          {/* Information Column (Title and Subtitle) */}
+          <div className={styles.infoCol}>
+            <h1 className={styles.title}>Nuestros Gimnasios</h1>
+            <p className={styles.subtitle}>
+              Explora la red de gimnasios asociados a GymNomads.
+            </p>
+          </div>
+
+          {/* Columna de Imagen */}
+          {/* Image Column */}
+          <div className={styles.imageCol}>
+            <img
+              src="/images/list-gyms-page/list-gyms-page.png"
+              alt="Gimnasios GymNomads"
+              className={styles.heroImage}
+            />
+          </div>
+        </div>
+
+        {/* === SECCIÓN DE CONTENIDO (Buscador, Tarjetas de Gimnasios y Paginación) === */}
+        {/* === CONTENT SECTION (Search Bar, Gym Cards, and Pagination) === */}
+        <div className={styles.contentSection}>
 
       <Row className="justify-content-center mb-5">
         <Col md={8} lg={6} className="mb-3 mb-md-0 me-md-3">
@@ -246,7 +294,8 @@ export const ListGymsPage = () => {
               className={clsx(
                 `bi bi-search ${styles.searchIcon}`,
                 "text-primary"
-              )}></i>
+              )}>
+            </i>
             <FormControl
               type="text"
               placeholder="Buscar por Nombre o Ciudad"
@@ -388,6 +437,9 @@ export const ListGymsPage = () => {
         </div>
       )}
 
+        </div> {/* Cierre de contentSection */}
+      </div>
+
       {/* Modal de confirmación para eliminar gimnasio */}
       {/* Confirmation modal for deleting a gym */}
       <ConfirmationModal
@@ -406,6 +458,6 @@ export const ListGymsPage = () => {
         cancelText="Cancelar"
         variant="danger"
       />
-    </Container>
+    </div>
   );
 };
