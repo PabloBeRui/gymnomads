@@ -100,9 +100,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             setToken(null);
             setUser(null);
           }
-          // redirigir a login si falla la verificación inicial del token
-          // redirect to login if the initial token verification fails
-          navigate("/login");
         }
       } else {
         // Registrar que no se encontró token.
