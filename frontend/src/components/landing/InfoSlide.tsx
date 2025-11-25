@@ -130,7 +130,14 @@ export const InfoSlide: React.FC<InfoSlideProps> = ({
         {/* Cambiar a text-light para contraste */}
         {/* Renderizar contenido extra (como el botón CTA) si existe */}
         {/* Render extra content (like the CTA button) if it exists */}
-        {children && <div className={styles.childrenContainer}>{children}</div>}
+        {children && (
+          <div
+            className={clsx(styles.childrenContainer, {
+              [styles.childrenAnimated]: isAnimated,
+            })}>
+            {children}
+          </div>
+        )}
       </div>
     </Container>
   );

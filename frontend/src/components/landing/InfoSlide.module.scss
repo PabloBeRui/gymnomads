@@ -89,6 +89,45 @@
 
 .childrenContainer {
   margin-top: 2.5rem; // Margen superior para el contenedor de elementos hijos // Top margin for children elements container
+
+  // Estilos para los botones/enlaces hijos directos
+  // Styles for direct child buttons/links
+  > :global(a),
+  > :global(button) {
+    // Estado INICIAL: Transparente, sin borde y ligeramente desplazado/invisible
+    // INITIAL STATE: Transparent, no border and slightly offset/invisible
+    background-color: transparent !important;
+    border: none !important; // Sin borde inicial // No initial border
+    color: transparent !important; // Texto transparente // Transparent text
+    opacity: 0 !important; // Invisible // Invisible
+    transform: translateY(20px) !important; // Desplazado hacia abajo // Shifted downwards
+    // Transición de 1s para coincidir con el título y las palabras del lema
+    // 1s transition to match title and tagline words
+    transition: background-color 1s ease-in-out, border-color 1s ease-in-out,
+      color 1s ease-in-out, opacity 1s ease-in-out, transform 1s ease-in-out !important;
+  }
+}
+
+.childrenAnimated {
+  // Estado FINAL: Color primario (animado)
+  // FINAL STATE: Primary color (animated)
+  > :global(a),
+  > :global(button) {
+    background-color: $primary !important;
+    border: 2px solid $primary !important; // Borde primario // Primary border
+    color: $dark !important;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+
+    // Mantener efecto hover una vez animado
+    // Keep hover effect once animated
+    &:hover {
+      background-color: $gold-hover !important;
+      border-color: $gold-hover !important;
+      color: $dark !important;
+      transform: scale(1.05);
+    }
+  }
 }
 
 .backgroundOverlay {
