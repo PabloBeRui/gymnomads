@@ -22,6 +22,8 @@ import { Toaster } from "sonner";
 // Componentes necesarios de react-router-dom
 // Necessary components from react-router-dom
 import { Routes, Route, Link, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion"; // Importar AnimatePresence
+import { PageTransition } from "./components/layout/PageTransition"; // Importar PageTransition
 import clsx from "clsx";
 
 // --- Componentes de Layout y UI Globales ---
@@ -175,69 +177,71 @@ function App() {
         <main
           style={{ flex: 1, paddingTop: "90px" }}
           className={clsx({ "main-content-glass": !isLandingPage })}>
-          <Routes>
-            {/* ========================================
-              RUTAS PÚBLICAS
-              PUBLIC ROUTES
-              ======================================== */}
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/register" element={<RegisterUserPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/gyms" element={<ListGymsPage />} />
-            <Route path="/gyms/:id" element={<GymPage />} />
-            <Route path="/unauthorized" element={<UnauthorizedPage />} />
-            {/* --- Rutas Legales e Info --- */}
-            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-            <Route path="/terms-conditions" element={<TermsOfServicePage />} />
-            <Route path="/cookies-policy" element={<CookiesPolicyPage />} />
-            <Route path="/legal-notice" element={<LegalNoticePage />} />
-            <Route path="/about-us" element={<AboutUsPage />} />
-            <Route path="/faq" element={<FaqPage />} />
-            <Route path="/join" element={<JoinUsPage />} />
-            <Route path="/gym-contact" element={<GymContactPage />} />
+          <AnimatePresence mode="wait"> {/* Añadir AnimatePresence para transiciones de página // Add AnimatePresence for page transitions */}
+            <Routes location={location} key={location.pathname}> {/* Usar location y key para animar cambios de ruta // Use location and key to animate route changes */}
+              {/* ========================================
+                RUTAS PÚBLICAS
+                PUBLIC ROUTES
+                ======================================== */}
+              <Route path="/" element={<PageTransition><LandingPage /></PageTransition>} />
+              <Route path="/register" element={<PageTransition><RegisterUserPage /></PageTransition>} />
+              <Route path="/login" element={<PageTransition><LoginPage /></PageTransition>} />
+              <Route path="/gyms" element={<PageTransition><ListGymsPage /></PageTransition>} />
+              <Route path="/gyms/:id" element={<PageTransition><GymPage /></PageTransition>} />
+              <Route path="/unauthorized" element={<PageTransition><UnauthorizedPage /></PageTransition>} />
+              {/* --- Rutas Legales e Info --- */}
+              <Route path="/privacy-policy" element={<PageTransition><PrivacyPolicyPage /></PageTransition>} />
+              <Route path="/terms-conditions" element={<PageTransition><TermsOfServicePage /></PageTransition>} />
+              <Route path="/cookies-policy" element={<PageTransition><CookiesPolicyPage /></PageTransition>} />
+              <Route path="/legal-notice" element={<PageTransition><LegalNoticePage /></PageTransition>} />
+              <Route path="/about-us" element={<PageTransition><AboutUsPage /></PageTransition>} />
+              <Route path="/faq" element={<PageTransition><FaqPage /></PageTransition>} />
+              <Route path="/join" element={<PageTransition><JoinUsPage /></PageTransition>} />
+              <Route path="/gym-contact" element={<PageTransition><GymContactPage /></PageTransition>} />
 
-            {/* ========================================
-              RUTAS PROTEGIDAS: Autenticación requerida (User, Manager, Admin)
-              PROTECTED ROUTES: Authentication required (User, Manager, Admin)
-              ======================================== */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/profile" element={<ProfilePage />} />
+              {/* ========================================
+                RUTAS PROTEGIDAS: Autenticación requerida (User, Manager, Admin)
+                PROTECTED ROUTES: Authentication required (User, Manager, Admin)
+                ======================================== */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/profile" element={<PageTransition><ProfilePage /></PageTransition>} />
+                <Route
+                  path="/visits/:visitId/qr"
+                  element={<PageTransition><UserVisitGymPage /></PageTransition>}
+                />
+                <Route path="/my-visits" element={<PageTransition><MyVisitsPage /></PageTransition>} />
+              </Route>
+
+              {/* ========================================
+                RUTAS PROTEGIDAS: Admin y Manager
+                PROTECTED ROUTES: Admin and Manager
+                ======================================== */}
               <Route
-                path="/visits/:visitId/qr"
-                element={<UserVisitGymPage />}
-              />
-              <Route path="/my-visits" element={<MyVisitsPage />} />
-            </Route>
+                element={<ProtectedRoute allowedRoles={["admin", "manager"]} />}>
+                <Route path="/gyms/edit/:id" element={<PageTransition><EditGymPage /></PageTransition>} />
+                <Route path="/visits/manage" element={<PageTransition><VisitsManagementPage /></PageTransition>} />
+                <Route path="/users/manage" element={<PageTransition><UsersManagementPage /></PageTransition>} />
+              </Route>
 
-            {/* ========================================
-              RUTAS PROTEGIDAS: Admin y Manager
-              PROTECTED ROUTES: Admin and Manager
-              ======================================== */}
-            <Route
-              element={<ProtectedRoute allowedRoles={["admin", "manager"]} />}>
-              <Route path="/gyms/edit/:id" element={<EditGymPage />} />
-              <Route path="/visits/manage" element={<VisitsManagementPage />} />
-              <Route path="/users/manage" element={<UsersManagementPage />} />
-            </Route>
+              {/* ========================================
+                RUTAS PROTEGIDAS: Solo Admin
+                PROTECTED ROUTES: Admin only
+                ======================================== */}
+              <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+                <Route path="/gyms/add" element={<PageTransition><AddGymPage /></PageTransition>} />
+                <Route
+                  path="/managers/manage"
+                  element={<PageTransition><ManagersManagementPage /></PageTransition>}
+                />
+              </Route>
 
-            {/* ========================================
-              RUTAS PROTEGIDAS: Solo Admin
-              PROTECTED ROUTES: Admin only
-              ======================================== */}
-            <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
-              <Route path="/gyms/add" element={<AddGymPage />} />
-              <Route
-                path="/managers/manage"
-                element={<ManagersManagementPage />}
-              />
-            </Route>
-
-            {/* ========================================
-              RUTA NOT FOUND (404)
-              NOT FOUND ROUTE (404)
-              ======================================== */}
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
+              {/* ========================================
+                RUTA NOT FOUND (404)
+                NOT FOUND ROUTE (404)
+                ======================================== */}
+              <Route path="*" element={<PageTransition><NotFoundPage /></PageTransition>} />
+            </Routes>
+          </AnimatePresence> {/* Cierre de AnimatePresence // Close AnimatePresence */}
         </main>
         <Footer />
         <CookieConsentModal />
