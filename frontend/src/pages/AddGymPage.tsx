@@ -6,6 +6,7 @@
  * Page para que un administrador añada un nuevo gimnasio.
  * Al crear el gimnasio, automáticamente se crea un manager asociado con
  * datos reales de la persona responsable.
+ * Refactorizado para usar React-Bootstrap y SASS Modules.
  *
  * MEJORAS IMPLEMENTADAS:
  * - Validación de confirmación de contraseña del manager
@@ -16,6 +17,7 @@
  * Page for an administrator to add a new gym.
  * When creating a gym, a manager is automatically created with real data
  * of the responsible person.
+ * Refactored to use React-Bootstrap and SASS Modules.
  *
  * IMPLEMENTED IMPROVEMENTS:
  * - Manager password confirmation validation
@@ -24,7 +26,6 @@
  * - Clear visual separation between gym and manager data
  *
  * =============================================================================
-
  */
 
 import React, { useState } from "react";
@@ -46,98 +47,14 @@ import { handleApiError } from "../utils/error-handler";
 // Tipos / Types
 import type { CreateGymManagerResponse } from "../interfaces/gym-interfaces";
 
-/**
- * =============================================================================
- * ESTILOS
- * STYLES
- * =============================================================================
- */
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    padding: "20px",
-    maxWidth: "800px",
-    margin: "20px auto",
-    border: "1px solid #ccc",
-    borderRadius: "8px",
-  },
-  formGroup: {
-    marginBottom: "15px",
-  },
-  label: {
-    display: "block",
-    marginBottom: "5px",
-    fontWeight: "bold",
-  },
-  input: {
-    width: "100%",
-    padding: "8px",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    boxSizing: "border-box",
-  },
-  button: {
-    padding: "10px 15px",
-    backgroundColor: "#28a745",
-    color: "white",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-    marginTop: "10px",
-  },
-  errorText: {
-    color: "red",
-    fontSize: "0.9em",
-    marginTop: "10px",
-  },
-  infoText: {
-    color: "#666",
-    fontSize: "0.9em",
-    fontStyle: "italic",
-    marginTop: "10px",
-    padding: "10px",
-    backgroundColor: "#f0f0f0",
-    borderRadius: "4px",
-  },
-  warningText: {
-    color: "#856404",
-    fontSize: "0.9em",
-    marginTop: "10px",
-    padding: "10px",
-    backgroundColor: "#fff3cd",
-    border: "1px solid #ffeeba",
-    borderRadius: "4px",
-  },
-  managerSection: {
-    marginTop: "30px",
-    padding: "20px",
-    backgroundColor: "#f8f9fa",
-    borderRadius: "8px",
-    border: "2px solid #007bff",
-  },
-  sectionTitle: {
-    marginTop: 0,
-    color: "#007bff",
-  },
-  emailPreview: {
-    fontSize: "0.9em",
-    color: "#666",
-    marginBottom: "15px",
-  },
-  helperText: {
-    color: "#666",
-    fontSize: "0.85em",
-  },
-  passwordMatch: {
-    color: "#28a745",
-    fontSize: "0.85em",
-    marginTop: "5px",
-  },
-  passwordMismatch: {
-    color: "#dc3545",
-    fontSize: "0.85em",
-    marginTop: "5px",
-  },
-};
+// Importar componentes de React-Bootstrap / Import React-Bootstrap components
+import { Container, Form, Button, Alert } from "react-bootstrap";
+
+import { CloseButton } from "../components/ui/CloseButton"; // Importar el botón de cierre // Import the close button
+
+// Importar el módulo SCSS / Import the SCSS module
+import styles from "./AddGymPage.module.scss";
+import clsx from "clsx"; // Importar clsx / Import clsx
 
 /**
  * =============================================================================
@@ -383,243 +300,238 @@ export const AddGymPage = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <h2>Añadir Nuevo Gimnasio</h2>
+    <Container className={clsx(styles.container, "py-5")}>
+      <CloseButton
+        onClick={() => navigate(-1)}
+        className={styles.closeButton}
+        color="#FFB700"
+        ariaLabel="Volver a la página anterior"
+      />
+      <h2 className="text-primary mb-4 text-center">Añadir Nuevo Gimnasio</h2>
 
-      <p style={styles.warningText}>
-        ⚠️ <strong>Importante:</strong> Al crear el gimnasio, automáticamente se
+      <Alert variant="warning" className="mb-4">
+        <strong>Importante:</strong> Al crear el gimnasio, automáticamente se
         creará un usuario manager con los datos de la persona responsable. El
         email del manager será generado automáticamente a partir del nombre del
-        gimnasio (ejemplo: nombregimnasio@gymnomads.com).
-      </p>
+        gimnasio (ejemplo: <span className="text-primary">nombregimnasio@gymnomads.com</span>).
+      </Alert>
 
-      <form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit}>
         {/* ===== SECCIÓN: Datos del Gimnasio ===== */}
         {/* ===== SECTION: Gym Data ===== */}
+        <h3 className="text-primary mb-3">Datos del Gimnasio</h3>
 
         {/* Nombre del Gimnasio / Gym Name */}
-        <div style={styles.formGroup}>
-          <label htmlFor="name" style={styles.label}>
-            Nombre del Gimnasio: <span style={{ color: "red" }}>*</span>
-          </label>
-          <input
+        <Form.Group className="mb-3" controlId="name">
+          <Form.Label className="text-dark">
+            Nombre del Gimnasio: <span className="text-danger">*</span>
+          </Form.Label>
+          <Form.Control
             name="name"
-            id="name"
             type="text"
             value={name}
             onChange={handleChange}
-            style={styles.input}
             required
             placeholder="Ej: CrossFit Madrid Centro"
           />
-        </div>
+        </Form.Group>
 
         {/* Dirección / Address */}
-        <div style={styles.formGroup}>
-          <label htmlFor="address" style={styles.label}>
-            Dirección: <span style={{ color: "red" }}>*</span>
-          </label>
-          <input
+        <Form.Group className="mb-3" controlId="address">
+          <Form.Label className="text-dark">
+            Dirección: <span className="text-danger">*</span>
+          </Form.Label>
+          <Form.Control
             name="address"
-            id="address"
             type="text"
             value={address}
             onChange={handleChange}
-            style={styles.input}
             required
             placeholder="Ej: Calle Gran Vía 123"
           />
-        </div>
+        </Form.Group>
 
         {/* Ciudad / City */}
-        <div style={styles.formGroup}>
-          <label htmlFor="city" style={styles.label}>
-            Ciudad: <span style={{ color: "red" }}>*</span>
-          </label>
-          <input
+        <Form.Group className="mb-3" controlId="city">
+          <Form.Label className="text-dark">
+            Ciudad: <span className="text-danger">*</span>
+          </Form.Label>
+          <Form.Control
             name="city"
-            id="city"
             type="text"
             value={city}
             onChange={handleChange}
-            style={styles.input}
             required
             placeholder="Ej: Madrid"
           />
-        </div>
+        </Form.Group>
 
         {/* Latitud / Latitude */}
-        <div style={styles.formGroup}>
-          <label htmlFor="latitude" style={styles.label}>
-            Latitud: <span style={{ color: "red" }}>*</span>
-          </label>
-          <input
+        <Form.Group className="mb-3" controlId="latitude">
+          <Form.Label className="text-dark">
+            Latitud: <span className="text-danger">*</span>
+          </Form.Label>
+          <Form.Control
             name="latitude"
-            id="latitude"
             type="number"
             step="any"
             value={latitude}
             onChange={handleChange}
-            style={styles.input}
             required
             placeholder="Ej: 40.416775"
             min={-90}
             max={90}
           />
-          <small style={styles.helperText}>Debe estar entre -90 y 90</small>
-        </div>
+          <Form.Text className={clsx(styles.helperText, "text-dark")}>
+            Debe estar entre -90 y 90
+          </Form.Text>
+        </Form.Group>
 
         {/* Longitud / Longitude */}
-        <div style={styles.formGroup}>
-          <label htmlFor="longitude" style={styles.label}>
-            Longitud: <span style={{ color: "red" }}>*</span>
-          </label>
-          <input
+        <Form.Group className="mb-3" controlId="longitude">
+          <Form.Label className="text-dark">
+            Longitud: <span className="text-danger">*</span>
+          </Form.Label>
+          <Form.Control
             name="longitude"
-            id="longitude"
             type="number"
             step="any"
             value={longitude}
             onChange={handleChange}
-            style={styles.input}
             required
             placeholder="Ej: -3.70379"
             min={-180}
             max={180}
           />
-          <small style={styles.helperText}>Debe estar entre -180 y 180</small>
-        </div>
+          <Form.Text className={clsx(styles.helperText, "text-dark")}>
+            Debe estar entre -180 y 180
+          </Form.Text>
+        </Form.Group>
 
         {/* ===== SECCIÓN: Datos del Manager Responsable ===== */}
         {/* ===== SECTION: Responsible Manager Data ===== */}
-        <div style={styles.managerSection}>
-          <h3 style={styles.sectionTitle}>👤 Datos del Manager Responsable</h3>
-          <p style={styles.emailPreview}>
-            Email: <strong>{generateManagerEmail(name)}</strong>
+        <div className={clsx(styles.managerSection, "mt-4")}>
+          <h3 className={clsx(styles.sectionTitle, "text-primary", "mb-3")}>
+            👤 Datos del Manager Responsable
+          </h3>
+          <p className={clsx(styles.emailPreview, "text-dark")}>
+            Email: <strong className="text-primary">{generateManagerEmail(name)}</strong>
           </p>
 
           {/* Nombre del Manager / Manager First Name */}
-          <div style={styles.formGroup}>
-            <label htmlFor="managerFirstName" style={styles.label}>
-              Nombre: <span style={{ color: "red" }}>*</span>
-            </label>
-            <input
+          <Form.Group className="mb-3" controlId="managerFirstName">
+            <Form.Label className="text-dark">
+              Nombre: <span className="text-danger">*</span>
+            </Form.Label>
+            <Form.Control
               name="managerFirstName"
-              id="managerFirstName"
               type="text"
               value={managerFirstName}
               onChange={handleChange}
-              style={styles.input}
               required
               placeholder="Ej: Pablo"
               minLength={2}
             />
-            <small style={styles.helperText}>
+            <Form.Text className={clsx(styles.helperText, "text-dark")}>
               Nombre real de la persona responsable del gimnasio
-            </small>
-          </div>
+            </Form.Text>
+          </Form.Group>
 
           {/* Apellidos del Manager / Manager Last Name */}
-          <div style={styles.formGroup}>
-            <label htmlFor="managerLastName" style={styles.label}>
-              Apellidos: <span style={{ color: "red" }}>*</span>
-            </label>
-            <input
+          <Form.Group className="mb-3" controlId="managerLastName">
+            <Form.Label className="text-dark">
+              Apellidos: <span className="text-danger">*</span>
+            </Form.Label>
+            <Form.Control
               name="managerLastName"
-              id="managerLastName"
               type="text"
               value={managerLastName}
               onChange={handleChange}
-              style={styles.input}
               required
               placeholder="Ej: Bernabéu Ruiz"
               minLength={2}
             />
-          </div>
+          </Form.Group>
 
           {/* Teléfono del Manager (Opcional) / Manager Phone (Optional) */}
-          <div style={styles.formGroup}>
-            <label htmlFor="managerPhone" style={styles.label}>
-              Teléfono(opcional):
-            </label>
-            <input
+          <Form.Group className="mb-3" controlId="managerPhone">
+            <Form.Label className="text-dark">Teléfono(opcional):</Form.Label>
+            <Form.Control
               name="managerPhone"
-              id="managerPhone"
               type="tel"
               value={managerPhone}
               onChange={handleChange}
-              style={styles.input}
               placeholder="Ej: +34 666 555 444"
             />
-          </div>
+          </Form.Group>
 
           {/* Contraseña del Manager / Manager Password */}
-          <div style={styles.formGroup}>
-            <label htmlFor="managerPassword" style={styles.label}>
-              Contraseña: <span style={{ color: "red" }}>*</span>
-            </label>
-            <input
+          <Form.Group className="mb-3" controlId="managerPassword">
+            <Form.Label className="text-dark">
+              Contraseña: <span className="text-danger">*</span>
+            </Form.Label>
+            <Form.Control
               name="managerPassword"
-              id="managerPassword"
               type="password"
               value={managerPassword}
               onChange={handleChange}
-              style={styles.input}
               required
               placeholder="Mínimo 6 caracteres"
               minLength={6}
             />
-            <small style={styles.helperText}>
+            <Form.Text className={clsx(styles.helperText, "text-dark")}>
               Esta contraseña será utilizada por el manager para acceder al
               sistema
-            </small>
-          </div>
+            </Form.Text>
+          </Form.Group>
 
           {/* Confirmar Contraseña del Manager / Confirm Manager Password (← NUEVO) */}
-          <div style={styles.formGroup}>
-            <label htmlFor="managerPasswordConfirm" style={styles.label}>
-              Confirmar Contraseña: <span style={{ color: "red" }}>*</span>
-            </label>
-            <input
+          <Form.Group className="mb-3" controlId="managerPasswordConfirm">
+            <Form.Label className="text-dark">
+              Confirmar Contraseña: <span className="text-danger">*</span>
+            </Form.Label>
+            <Form.Control
               name="managerPasswordConfirm"
-              id="managerPasswordConfirm"
               type="password"
               value={managerPasswordConfirm}
               onChange={handleChange}
-              style={styles.input}
               required
               placeholder="Repite la contraseña"
               minLength={6}
             />
             {/* Indicador visual de coincidencia / Visual match indicator */}
             {passwordsMatch() && (
-              <small style={styles.passwordMatch}>
+              <small className={clsx(styles.passwordMatch, "text-success")}>
                 ✓ Las contraseñas coinciden
               </small>
             )}
             {passwordsMismatch() && (
-              <small style={styles.passwordMismatch}>
+              <small className={clsx(styles.passwordMismatch, "text-danger")}>
                 ✗ Las contraseñas no coinciden
               </small>
             )}
-          </div>
+          </Form.Group>
         </div>
 
         {/* Mostrar error si existe / Show error if exists */}
-        {error && <p style={styles.errorText}>{error}</p>}
+        {error && <Alert variant="danger">{error}</Alert>}
 
         {/* Botón de envío / Submit button */}
-        <button type="submit" style={styles.button} disabled={isSubmitting}>
+        <Button
+          variant="success"
+          type="submit"
+          disabled={isSubmitting}
+          className="mt-3">
           {isSubmitting ? "Creando gimnasio y manager..." : "Crear Gimnasio"}
-        </button>
-      </form>
+        </Button>
+      </Form>
 
       {/* Nota informativa / Informative note */}
-      <p style={styles.infoText}>
+      <Alert variant="info" className="mt-4">
         ℹ️ <strong>Nota:</strong> Las imágenes del gimnasio (logo e imagen
         principal) podrán ser añadidas por el manager desde la página de edición
         una vez creado el gimnasio.
-      </p>
-    </div>
+      </Alert>
+    </Container>
   );
 };

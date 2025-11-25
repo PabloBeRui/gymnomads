@@ -1,4 +1,20 @@
-import { useState, useEffect } from "react";
+/**
+ * =============================================================================
+ * PÁGINA: ManagersManagementPage
+ * =============================================================================
+ *
+ * Muestra una lista de managers con un orden inicial que depende del rol del
+ * usuario. Permite la búsqueda y paginación.
+ * Refactorizado para usar React-Bootstrap y SASS Modules.
+ *
+ * Displays a list of managers with an initial order that depends on the user's
+ * role. Allows searching and pagination.
+ * Refactored to use React-Bootstrap and SASS Modules.
+ *
+ * =============================================================================
+ */
+
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getAllManagers, updateManager } from "../services/user-services";
 import type {
@@ -10,6 +26,7 @@ import { handleApiError } from "../utils/error-handler";
 import { ManagerDetailsModal } from "../components/modals/ManagerDetailsModal";
 import { Avatar } from "../components/Avatar";
 import { usePagination } from "../hooks/usePagination";
+import { useMediaQuery } from "../hooks/useMediaQuery"; // Importar el nuevo hook
 import { PaginationControls } from "../components/ui/PaginationControls";
 import { FilterInput } from "../components/forms/FilterInput";
 import {
@@ -17,109 +34,13 @@ import {
   type ColumnDefinition,
 } from "../components/ui/SortableTable";
 
-/* =============================================================================
-   ESTILOS (inline)
-   STYLES (inline)
-   ============================================================================= */
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    padding: "20px",
-    maxWidth: "1400px",
-    margin: "0 auto",
-  },
-  header: {
-    marginBottom: "30px",
-  },
-  title: {
-    fontSize: "2rem",
-    marginBottom: "10px",
-    color: "#333",
-  },
-  subtitle: {
-    fontSize: "1rem",
-    color: "#666",
-  },
-  filtersContainer: {
-    display: "flex",
-    gap: "15px",
-    marginBottom: "30px",
-    flexWrap: "wrap",
-    alignItems: "flex-end",
-  },
-  filterGroup: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "5px",
-    flex: "1 1 300px",
-  },
-  label: {
-    fontSize: "0.9rem",
-    fontWeight: "bold",
-    color: "#495057",
-  },
-  input: {
-    padding: "10px",
-    fontSize: "1rem",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    width: "100%",
-  },
-  clearButton: {
-    padding: "10px 20px",
-    fontSize: "1rem",
-    backgroundColor: "#6c757d",
-    color: "white",
-    border: "none",
-    borderRadius: "4px",
-    cursor: "pointer",
-  },
-  loadingContainer: {
-    padding: "40px",
-    textAlign: "center",
-  },
-  errorText: {
-    color: "red",
-    padding: "20px",
-    textAlign: "center",
-  },
-  emptyState: {
-    padding: "40px",
-    textAlign: "center",
-    color: "#6c757d",
-    fontSize: "1.1rem",
-  },
-  statsContainer: {
-    display: "flex",
-    gap: "20px",
-    marginBottom: "30px",
-    flexWrap: "wrap",
-  },
-  statCard: {
-    flex: "1 1 200px",
-    padding: "20px",
-    backgroundColor: "#f8f9fa",
-    borderRadius: "8px",
-    border: "1px solid #dee2e6",
-  },
-  statNumber: {
-    fontSize: "2rem",
-    fontWeight: "bold",
-    color: "#007bff",
-  },
-  statLabel: {
-    fontSize: "0.9rem",
-    color: "#6c757d",
-    marginTop: "5px",
-  },
-  warningBox: {
-    padding: "15px",
-    backgroundColor: "#fff3cd",
-    border: "1px solid #ffeeba",
-    borderRadius: "8px",
-    marginBottom: "20px",
-    color: "#856404",
-  },
-};
+// Importar componentes de React-Bootstrap / Import React-Bootstrap components
+import { Container, Row, Col, Card, Alert } from "react-bootstrap";
+import Spinner from "../components/ui/Spinner";
+
+// Importar el módulo SCSS / Import the SCSS module
+import styles from "./ManagersManagementPage.module.scss";
+import clsx from "clsx"; // Importar clsx / Import clsx
 
 /* =============================================================================
    COMPONENTE: ManagersManagementPage
@@ -153,6 +74,9 @@ export const ManagersManagementPage = () => {
   const [selectedManager, setSelectedManager] = useState<ManagerWithGym | null>(
     null
   );
+
+  // Hook para responsividad / Hook for responsiveness
+  const isLargeScreen = useMediaQuery("(min-width: 768px)");
 
   // Cargar managers / Load managers
   const fetchManagers = async () => {
@@ -203,12 +127,6 @@ export const ManagersManagementPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, currentPage, itemsPerPage]);
 
-  // Limpiar filtro / Clear filter
-  const handleClearFilter = () => {
-    setSearchTerm("");
-    goToPage(1);
-  };
-
   // Manejar click en fila para ver detalles / Handle row click to view details
   const handleRowClick = (manager: ManagerWithGym) => {
     setSelectedManager(manager);
@@ -253,127 +171,130 @@ export const ManagersManagementPage = () => {
 
   // --- Definición de columnas para la tabla ---
   // --- Column definitions for the table ---
-  const managerColumns: ColumnDefinition<ManagerWithGym>[] = [
-    {
-      key: "first_name",
-      header: "Manager",
-      render: (manager) => (
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <Avatar
-            src={manager.profile_picture}
-            firstName={manager.first_name}
-            lastName={manager.last_name}
-            size={35}
-          />
-          <span>
-            {manager.first_name} {manager.last_name}
-          </span>
-        </div>
-      ),
-    },
-    {
-      key: "gym_name",
-      header: "Gimnasio",
-      render: (manager) => (
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <Avatar
-            src={manager.logo_url}
-            firstName={manager.gym_name}
-            lastName=""
-            size={35}
-          />
-          <span>{manager.gym_name}</span>
-        </div>
-      ),
-    },
-  ];
+  const managerColumns: ColumnDefinition<ManagerWithGym>[] = useMemo(() => {
+    const columns: ColumnDefinition<ManagerWithGym>[] = [
+      {
+        key: "first_name",
+        header: "Manager",
+        render: (manager) => (
+          <div className="d-flex align-items-center gap-2">
+            <Avatar
+              src={manager.profile_picture}
+              firstName={manager.first_name}
+              lastName={manager.last_name}
+              size={35}
+            />
+            <span>
+              {isLargeScreen
+                ? `${manager.first_name} ${manager.last_name}`
+                : manager.first_name}
+            </span>
+          </div>
+        ),
+      },
+      {
+        key: "gym_name",
+        header: "Gimnasio",
+        render: (manager) => (
+          <div className="d-flex align-items-center gap-2">
+            <Avatar
+              src={manager.logo_url}
+              firstName={manager.gym_name}
+              lastName=""
+              size={35}
+            />
+            <span>{manager.gym_name}</span>
+          </div>
+        ),
+      },
+    ];
+
+    if (isLargeScreen) {
+      columns.push({
+        key: "gym_city",
+        header: "Ciudad",
+        render: (manager) => <span>{manager.gym_city}</span>,
+      });
+    }
+
+    return columns;
+  }, [isLargeScreen]);
 
   // Render loading
   if (isLoading && managers.length === 0) {
     return (
-      <div style={styles.loadingContainer}>
-        <p>Cargando managers...</p>
-      </div>
+      <Container className={clsx(styles.loadingContainer, "text-center mt-5")}>
+        <Spinner center size="lg" />
+      </Container>
     );
   }
 
   // Render error
   if (error && managers.length === 0) {
     return (
-      <div style={styles.container}>
-        <div style={styles.errorText}>{error}</div>
-      </div>
+      <Container className="mt-4">
+        <Alert variant="danger">{error}</Alert>
+      </Container>
     );
   }
 
   // Render principal / Main render
   return (
-    <div style={styles.container}>
+    <Container fluid="xl" className="py-4">
       {/* Encabezado / Header */}
-      <div style={styles.header}>
-        <h1 style={styles.title}>Gestión de Managers</h1>
-        <p style={styles.subtitle}>
+      <div className="mb-4 text-center">
+        <h1 className="h2 text-primary">Gestión de Managers</h1>
+        <p className="text-light">
           Visualiza, edita y filtra todos los gerentes registrados en la
-          plataforma. Haz click en una fila para ver y editar detalles completos
-          (incluido email y teléfono).
+          plataforma.
         </p>
       </div>
 
+      <Card className="mb-4">
+        <Card.Header as="h5" className="bg-secondary text-white text-center">
+          Filtros y Métricas
+        </Card.Header>
+        <Card.Body>
+          <Row className="align-items-end">
+            {/* Métricas */}
+            <Col md={4} lg={3} className="mb-3 text-center">
+              <div className="text-dark mb-0 small">
+                {isLoading ? <Spinner size="sm" /> : "Total de Managers"}
+              </div>
+              <h2 className="fw-bold text-primary mb-1">{totalItems}</h2>
+            </Col>
+
+            {/* Filtro */}
+            <Col md={8} lg={9} className="mb-3">
+              <FilterInput
+                label="Buscar Manager"
+                icon={<i className="bi bi-search"></i>}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onClear={() => setSearchTerm("")}
+                placeholder="Buscar Manager o Gimnasio"
+              />
+            </Col>
+          </Row>
+        </Card.Body>
+      </Card>
+
       {/* Advertencia sobre eliminación / Warning about deletion */}
-      <div style={styles.warningBox}>
-        <strong>ℹ️ Nota importante:</strong> Los managers no se pueden eliminar
-        directamente desde esta página. Para eliminar un manager, debes eliminar
-        el gimnasio asociado desde la página de gestión de gimnasios.
-      </div>
-
-      {/* Estadísticas / Statistics */}
-      <div style={styles.statsContainer}>
-        <div style={styles.statCard}>
-          <div style={styles.statNumber}>{totalItems}</div>
-          <div style={styles.statLabel}>
-            {isLoading ? "Cargando..." : "Total de Managers"}
-          </div>
-        </div>
-      </div>
-
-      {/* Filtro único / Single filter */}
-      <div style={styles.filtersContainer}>
-        <FilterInput
-          label="Buscar Manager"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Manager, Gimnasio, Ciudad"
-          helpText="La búsqueda filtra por todos los campos visibles"
-        />
-
-        {searchTerm && (
-          <button
-            onClick={handleClearFilter}
-            style={styles.clearButton}
-            disabled={isLoading}>
-            Limpiar Búsqueda
-          </button>
-        )}
-      </div>
+      <Alert variant="info" className="mb-4">
+        <i className="bi bi-info-circle-fill me-2"></i>
+        Haz click en una fila para ver y editar detalles (incluido email y
+        teléfono). Los managers no se pueden eliminar directamente.
+      </Alert>
 
       {/* Tabla de managers / Managers table */}
       {managers.length === 0 ? (
-        <div style={styles.emptyState}>
+        <div className="text-center p-5 bg-light rounded">
           {searchTerm ? (
-            <>
-              <p>🔍 No se encontraron managers con el criterio de búsqueda.</p>
-              <button
-                onClick={handleClearFilter}
-                style={{
-                  ...styles.clearButton,
-                  marginTop: "15px",
-                  cursor: "pointer",
-                }}>
-                Limpiar búsqueda
-              </button>
-            </>
+            <p className="text-dark">
+              🔍 No se encontraron managers con el criterio de búsqueda.
+            </p>
           ) : (
-            <p>📭 Aún no hay managers registrados.</p>
+            <p className="text-dark">📭 Aún no hay managers registrados.</p>
           )}
         </div>
       ) : (
@@ -400,6 +321,6 @@ export const ManagersManagementPage = () => {
         manager={selectedManager}
         onSave={handleSaveManager}
       />
-    </div>
+    </Container>
   );
 };

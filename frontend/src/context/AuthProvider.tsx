@@ -20,19 +20,38 @@ import { getUserProfile } from "../services/user-services";
 // Import the centralized utility for handling API errors.
 import { handleApiError } from "../utils/error-handler";
 
+// Importar componentes de React-Bootstrap / Import React-Bootstrap components
+import Spinner from "../components/ui/Spinner";
+
 // Definir las props que recibirá el componente Provider (los componentes hijos).
 // Define the props for the Provider component (children components).
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-//  AuthProvider component.
-
+/**
+ * =============================================================================
+ * COMPONENTE: AuthProvider
+ * COMPONENT: AuthProvider
+ * =============================================================================
+ *
+ * Proveedor de contexto de autenticación para la aplicación.
+ * Gestiona el estado del token de autenticación y los datos del usuario,
+ * y proporciona funciones para iniciar y cerrar sesión.
+ * Refactorizado para usar React-Bootstrap Spinner.
+ *
+ * Authentication context provider for the application.
+ * Manages the authentication token state and user data,
+ * and provides functions for logging in and out.
+ * Refactored to use React-Bootstrap Spinner.
+ *
+ * =============================================================================
+ */
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Obtener función para navegar / Get function to navigate
   const navigate = useNavigate();
 
-  // --- Estados Internos del Provider ---
+  // --- Estados Internos del Provider --- / --- Internal Provider States ---
 
   // Crear useState para el token, leyendo valor inicial de localStorage.
   // Create useState for the token, reading the initial value from localStorage.
@@ -46,7 +65,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Create useState to indicate if the initial token check is in progress.
   const [isLoading, setIsLoading] = useState<boolean>(true); // Empezar en true / Start as true
 
-  // --- Efecto Inicial para Comprobar Token ---
+  // --- Efecto Inicial para Comprobar Token --- / --- Initial Effect to Check Token ---
 
   // Ejecutar useEffect una vez al montar para comprobar el estado inicial de autenticación.
   // Run useEffect once on mount to check the initial authentication status.
@@ -74,16 +93,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             "AuthProvider: Error al verificar token/obtener perfil:",
             error
           );
-          handleApiError(error); // Procesar error (limpia token si es 401/403)
+          handleApiError(error); // Procesar error (limpia token si es 401/403) / Process error (clears token if 401/403)
           // Asegurarse de limpiar estados locales si handleApiError limpió el token.
           // Ensure local states are cleared if handleApiError cleared the token.
           if (!localStorage.getItem("authToken")) {
             setToken(null);
             setUser(null);
           }
-          // redirigir a login si falla la verificación inicial del token
-          // redirect to login if the initial token verification fails
-          navigate("/login");
         }
       } else {
         // Registrar que no se encontró token.
@@ -105,7 +121,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Array vacío asegura una única ejecución al montar. / Empty array ensures single execution on mount.
 
-  // --- Funciones de Autenticación (Proporcionadas por el Contexto) ---
+  // --- Funciones de Autenticación (Proporcionadas por el Contexto) --- / --- Authentication Functions (Provided by Context) ---
 
   // Definir función asíncrona para manejar el login.
   // Define async function to handle login.
@@ -169,7 +185,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser,
   };
 
-  // --- Renderizado del Provider ---
+  // --- Renderizado del Provider --- / --- Provider Rendering ---
 
   // Devolver el Provider del contexto, pasando el 'value'.
   // Return the context Provider, passing the 'value'.
@@ -177,13 +193,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Render children only when initial loading is finished to avoid flickering.
   return (
     <AuthContext.Provider value={contextValue}>
-      {
-        !isLoading ? (
-          children
-        ) : (
-          <div>Cargando sesión...</div>
-        ) /* //TODO futuro Spinner */
-      }
+      {!isLoading ? children : <Spinner center size="lg" className="vh-100" />}
     </AuthContext.Provider>
   );
 };

@@ -1,0 +1,27 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: CookiesPolicyPage
+ * STYLES FOR: CookiesPolicyPage
+ * =============================================================================
+ *
+ * Descripción: Estilos para la página de Política de Cookies.
+ * Incluye el diseño para el disclaimer de advertencia.
+ *
+ * Description: Styles for the Cookies Policy page.
+ * Includes the design for the warning disclaimer.
+ *
+ * =============================================================================
+ */
+@use "sass:color";
+@use "../../styles/variables" as *; // Importar variables globales // Import global variables
+
+.disclaimer {
+  background-color: color.adjust($warning, $lightness: 20%); // Fondo de advertencia claro // Light warning background
+  border: 1px solid color.adjust($warning, $lightness: 10%); // Borde de advertencia // Warning border
+  padding: 15px;
+  border-radius: 4px; // Bordes redondeados // Rounded borders
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: color.adjust($warning, $lightness: -25%); // Texto de advertencia oscuro // Dark warning text
+  text-align: left;
+}

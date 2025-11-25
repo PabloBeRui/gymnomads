@@ -7,32 +7,25 @@
  * Página que muestra la Política de Cookies de Gymnomads.
  * Utiliza el layout reutilizable `LegalPageLayout` para mantener la consistencia
  * visual con otras páginas legales.
+ * Refactorizado para usar SASS Modules.
  *
  * Page that displays the Gymnomads Cookies Policy.
  * It uses the reusable `LegalPageLayout` to maintain visual consistency
  * with other legal pages.
+ * Refactored to use SASS Modules.
  *
  * =============================================================================
  */
 
 import { LegalPageLayout } from '../../components/layout/LegalPageLayout';
 
-// Estilo para el bloque de descargo de responsabilidad
-// Style for the disclaimer block
-const disclaimerStyle: React.CSSProperties = {
-  backgroundColor: '#fffbe6',
-  border: '1px solid #ffe58f',
-  padding: '15px',
-  borderRadius: '4px',
-  marginTop: '20px',
-  fontSize: '0.9rem',
-  color: '#6d4f00',
-  textAlign: 'left',
-};
+// Importar el módulo SCSS / Import the SCSS module
+import styles from "./CookiesPolicyPage.module.scss";
+// import clsx from "clsx"; // Importar clsx / Import clsx
 
 export const CookiesPolicyPage = () => {
   return (
-    <LegalPageLayout title="Política de Cookies">
+    <LegalPageLayout title="Política de <br/>Cookies">
       <>
         <p>
           <strong>Última actualización:</strong> 15 de noviembre de 2025
@@ -70,7 +63,7 @@ export const CookiesPolicyPage = () => {
             utilizamos una cookie (`analytics_enabled`) para recopilar
             información anónima sobre cómo los visitantes utilizan nuestro
             sitio web. Esto nos ayuda a entender qué páginas son más
-            populares y cómo podemos mejorar la aplicación.
+            popular y cómo podemos mejorar la aplicación.
           </li>
           <li>
             <strong>Cookies de Funcionalidad:</strong> Se utilizan para
@@ -109,7 +102,7 @@ export const CookiesPolicyPage = () => {
           algunas partes de nuestra Plataforma no funcionen correctamente.
         </p>
 
-        <div style={disclaimerStyle}>
+        <div className={styles.disclaimer}>
           <strong>Nota del Desarrollador:</strong> Este es un texto de
           marcador de posición. Para un lanzamiento de producción real, este
           contenido debe ser redactado y validado por un asesor legal para

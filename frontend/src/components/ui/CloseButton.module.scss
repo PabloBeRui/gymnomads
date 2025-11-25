@@ -1,0 +1,50 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: CloseButton (Refactorizado)
+ * STYLES FOR: CloseButton (Refactored)
+ * =============================================================================
+ *
+ * Descripción: Estilos para el nuevo componente de botón de cierre animado.
+ * Controla la animación, el posicionamiento y la apariencia del icono SVG.
+ *
+ * Description: Styles for the new animated close button component.
+ * Controls the animation, positioning, and appearance of the SVG icon.
+ *
+ * =============================================================================
+ */
+
+// Contenedor principal del botón para posicionamiento.
+// Main button container for positioning.
+.closeButton {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 5px; // Un poco de espacio para que no esté pegado al borde. // A bit of space so it's not stuck to the edge.
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10; // Asegura que esté por encima de otros elementos del modal/página. // Ensures it's above other modal/page elements.
+
+  // Eliminar el contorno azul de enfoque de Bootstrap en los botones.
+  // Remove Bootstrap's blue focus outline on buttons.
+  &:focus, &:active {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+}
+
+// Contenedor del SVG que maneja la animación.
+// SVG container that handles the animation.
+.iconContainer {
+  transform-origin: 50% 50%;
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  transform: scale(1);
+  opacity: 1;
+}
+
+// Clase de animación que se aplica al hacer clic para "desaparecer" el icono.
+// Animation class applied on click to "disappear" the icon.
+.closing {
+  transform: scale(0);
+  opacity: 0;
+}

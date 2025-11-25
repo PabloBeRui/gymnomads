@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../context/AuthContext";
 import {
   getAllUsers,
@@ -15,145 +15,46 @@ import { handleApiError } from "../utils/error-handler";
 import { Avatar } from "../components/Avatar";
 import { UserDetailModal } from "../components/modals/UserDetailModal";
 import { usePagination } from "../hooks/usePagination";
+import { useMediaQuery } from "../hooks/useMediaQuery"; // Importar el nuevo hook
 import { PaginationControls } from "../components/ui/PaginationControls";
 import { FilterInput } from "../components/forms/FilterInput";
 import {
   SortableTable,
   type ColumnDefinition,
 } from "../components/ui/SortableTable";
+import { Container, Row, Col, Form, Card, Alert } from "react-bootstrap";
+import Spinner from "../components/ui/Spinner";
+import styles from "./UsersManagementPage.module.scss";
+import clsx from "clsx";
 
-/* =============================================================================
-   ESTILOS (inline)
-   STYLES (inline)
-   ============================================================================= */
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    padding: "20px",
-    maxWidth: "1400px",
-    margin: "0 auto",
-  },
-  header: {
-    marginBottom: "30px",
-  },
-  title: {
-    fontSize: "2rem",
-    marginBottom: "10px",
-    color: "#333",
-  },
-  subtitle: {
-    fontSize: "1rem",
-    color: "#666",
-  },
-  filtersContainer: {
-    display: "flex",
-    gap: "15px",
-    marginBottom: "30px",
-    flexWrap: "wrap",
-    alignItems: "flex-end",
-  },
-  filterGroup: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "5px",
-  },
-  label: {
-    fontSize: "0.9rem",
-    fontWeight: "bold",
-    color: "#495057",
-  },
-  input: {
-    padding: "10px",
-    fontSize: "1rem",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    minWidth: "200px",
-  },
-  select: {
-    padding: "10px",
-    fontSize: "1rem",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    minWidth: "200px",
-    backgroundColor: "white",
-  },
-  clearButton: {
-    padding: "10px 20px",
-    fontSize: "1rem",
-    backgroundColor: "#6c757d",
-    color: "white",
-    border: "none",
-    borderRadius: "4px",
-    cursor: "pointer",
-  },
-  loadingContainer: {
-    padding: "40px",
-    textAlign: "center",
-  },
-  errorText: {
-    color: "red",
-    padding: "20px",
-    textAlign: "center",
-  },
-  emptyState: {
-    padding: "40px",
-    textAlign: "center",
-    color: "#6c757d",
-    fontSize: "1.1rem",
-  },
-  statsContainer: {
-    display: "flex",
-    gap: "20px",
-    marginBottom: "30px",
-    flexWrap: "wrap",
-  },
-  statCard: {
-    flex: "1 1 200px",
-    padding: "20px",
-    backgroundColor: "#f8f9fa",
-    borderRadius: "8px",
-    border: "1px solid #dee2e6",
-  },
-  statNumber: {
-    fontSize: "2rem",
-    fontWeight: "bold",
-    color: "#28a745",
-  },
-  statLabel: {
-    fontSize: "0.9rem",
-    color: "#6c757d",
-    marginTop: "5px",
-  },
-  gymSearchInput: {
-    padding: "8px",
-    fontSize: "0.9rem",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    minWidth: "200px",
-    marginBottom: "5px",
-  },
-  noResultsText: {
-    color: "#dc3545",
-    fontSize: "0.85rem",
-    marginTop: "5px",
-  },
-};
-
-/* =============================================================================
-   COMPONENTE: UsersManagementPage
-   COMPONENT: UsersManagementPage
-   ============================================================================= */
+/**
+ * =============================================================================
+ * COMPONENTE: UsersManagementPage
+ * COMPONENT:  UsersManagementPage
+ * =============================================================================
+ *
+ * Descripción: Página para la gestión de usuarios. Los administradores pueden
+ * ver y filtrar todos los usuarios de la plataforma, mientras que los gerentes
+ * solo pueden ver los usuarios de su propio gimnasio.
+ *
+ * Description: Page for user management. Administrators can view and filter
+ * all users on the platform, while managers can only see the users from
+ * their own gym.
+ *
+ * =============================================================================
+ */
 export const UsersManagementPage = () => {
   const { user, token } = useAuth();
   const isAdmin = user?.role === "admin";
   const isManager = user?.role === "manager";
 
-  // Estados del componente / Component states
+  // Estados del componente // Component states
   const [users, setUsers] = useState<(UserWithGym | GymUser)[]>([]);
   const [gyms, setGyms] = useState<Gym[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Hook de paginación / Pagination hook
+  // Hook de paginación // Pagination hook
   const {
     currentPage,
     itemsPerPage,
@@ -164,34 +65,33 @@ export const UsersManagementPage = () => {
     changeItemsPerPage,
   } = usePagination();
 
-  // Estados de filtros / Filter states
+  // Estados de filtros // Filter states
   const [selectedGymId, setSelectedGymId] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [gymSearchTerm, setGymSearchTerm] = useState<string>("");
 
-  // Estados para el modal / States for modal
+  // Estados para el modal // States for modal
   const [showDetailModal, setShowDetailModal] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<
     UserWithGym | GymUser | null
   >(null);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
-  // Cargar gimnasios (solo para admin) / Load gyms (admin only)
+  // Hook para responsividad / Hook for responsiveness
+  const isLargeScreen = useMediaQuery("(min-width: 768px)");
+
+  // Cargar gimnasios (solo para admin) // Load gyms (admin only)
   useEffect(() => {
     if (!isAdmin || !token) return;
 
     const fetchGyms = async () => {
       try {
-        // Pedir una cantidad alta para asegurar que traemos todos para el filtro
-        // Request a high amount to ensure we fetch all for the filter
         const gymsData = await getAllGyms(token, { limit: 1000 });
-        // Validar que gymsData.data es un array / Validar que gymsData.data es un array
-        const validGymsData = Array.isArray(gymsData.data) ? gymsData.data : [];
-        setGyms(validGymsData);
+        const validGyms = Array.isArray(gymsData.data) ? gymsData.data : [];
+        setGyms(validGyms);
       } catch (err) {
         const msg = handleApiError(err, "Error al cargar gimnasios.");
         toast.error("No se pudieron cargar los gimnasios.");
-        // Ensure gyms is always an array / Asegurar que gyms siempre es un array
         setGyms([]);
         if (import.meta.env.DEV) {
           console.error("Error al cargar gimnasios:", msg);
@@ -202,14 +102,14 @@ export const UsersManagementPage = () => {
     fetchGyms();
   }, [isAdmin, token]);
 
-  // Filtrar gimnasios según el término de búsqueda / Filter gyms by search term
+  // Filtrar gimnasios según el término de búsqueda // Filter gyms by search term
   const filteredGyms = gyms.filter(
     (gym) =>
       gym.name.toLowerCase().includes(gymSearchTerm.toLowerCase()) ||
       gym.city.toLowerCase().includes(gymSearchTerm.toLowerCase())
   );
 
-  // Cargar usuarios / Load users
+  // Cargar usuarios // Load users
   const fetchUsers = async () => {
     if (!token) {
       setError("No estás autenticado.");
@@ -222,7 +122,6 @@ export const UsersManagementPage = () => {
 
     try {
       let response;
-
       if (isAdmin) {
         const gymIdAsNumber = Number(selectedGymId);
         const filters: GetAllUsersFilters = {
@@ -230,14 +129,12 @@ export const UsersManagementPage = () => {
           page: currentPage,
           limit: itemsPerPage,
         };
-
         if (selectedGymId === "deleted") {
           filters.gym_status = "deleted";
         } else if (gymIdAsNumber > 0) {
           filters.gym_id = gymIdAsNumber;
           filters.gym_status = "active";
         }
-
         response = await getAllUsers(token, filters);
       } else if (isManager && user?.home_gym_id) {
         const filters: GetUsersByGymFilters = {
@@ -250,7 +147,6 @@ export const UsersManagementPage = () => {
         throw new Error("No tienes permisos para ver esta página.");
       }
 
-      // Validate that response.data is an array / Validar que response.data es un array
       const validData = Array.isArray(response.data) ? response.data : [];
       setUsers(validData);
       setTotalItems(response.total || 0);
@@ -258,7 +154,6 @@ export const UsersManagementPage = () => {
       const msg = handleApiError(err, "Error al cargar los usuarios.");
       setError(msg);
       toast.error("No se pudieron cargar los usuarios.");
-      // Ensure users is always an array / Asegurar que users siempre es un array
       setUsers([]);
       if (import.meta.env.DEV) {
         console.error("Error al cargar usuarios:", msg);
@@ -268,26 +163,16 @@ export const UsersManagementPage = () => {
     }
   };
 
-  // Efecto con debounce para cargar usuarios cuando cambien los filtros
-  // Effect with debounce to load users when filters change
+  // Efecto con debounce para cargar usuarios // Debounce effect for loading users
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       fetchUsers();
     }, 500);
-
     return () => clearTimeout(timeoutId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedGymId, searchTerm, currentPage, itemsPerPage]);
 
-  // Limpiar filtros / Clear filters
-  const handleClearFilters = () => {
-    setSelectedGymId("");
-    setSearchTerm("");
-    setGymSearchTerm("");
-    goToPage(1);
-  };
-
-  // Formatear fecha para mostrar / Format date for display
+  // Formatear fecha para mostrar // Format date for display
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     return date.toLocaleDateString("es-ES", {
@@ -297,30 +182,31 @@ export const UsersManagementPage = () => {
     });
   };
 
-  // --- Lógica del Modal /  Modal Logic ---
+  // --- Lógica del Modal --- // --- Modal Logic ---
 
+  // Abrir modal con datos del usuario // Open modal with user data
   const handleRowClick = (user: UserWithGym | GymUser) => {
     setSelectedUser(user);
     setShowDetailModal(true);
   };
 
+  // Cerrar modal // Close modal
   const handleCloseModal = () => {
     setShowDetailModal(false);
     setSelectedUser(null);
   };
 
+  // Eliminar usuario // Delete user
   const handleDeleteUser = async (userId: number) => {
     if (!token) {
       toast.error("No estás autenticado.");
       return;
     }
-
     setIsDeleting(true);
     try {
       await deleteUser(token, userId);
       toast.success("Usuario eliminado correctamente.");
-      // Refrescar la lista de usuarios en la página actual
-      fetchUsers();
+      await fetchUsers();
     } catch (err) {
       const msg = handleApiError(err, "Error al eliminar el usuario.");
       toast.error(msg);
@@ -330,181 +216,165 @@ export const UsersManagementPage = () => {
     }
   };
 
-  // --- Definición de columnas para la tabla ---
-  // --- Column definitions for the table ---
-  const userColumns: ColumnDefinition<UserWithGym | GymUser>[] = [
-    {
-      key: "first_name",
-      header: "Nombre",
-      render: (u) => (
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <Avatar
-            src={u.profile_picture}
-            firstName={u.first_name}
-            lastName={u.last_name}
-            size={35}
-          />
-          <span>
-            {u.first_name} {u.last_name}
-          </span>
-        </div>
-      ),
-    },
-    // Añadir columnas condicionalmente / Conditionally add columns
-    ...(isAdmin
-      ? [
-          {
-            key: "gym_name" as keyof (UserWithGym | GymUser),
-            header: "Gimnasio",
-            render: (u: UserWithGym | GymUser) => {
-              const userWithGym = u as UserWithGym;
-              return (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                  }}>
-                  <Avatar
-                    src={userWithGym.logo_url}
-                    firstName={userWithGym.gym_name}
-                    lastName=""
-                    size={35}
-                  />
-                  <span>
-                    {userWithGym.gym_name}
-                    {userWithGym.is_gym_deleted && " (Eliminado)"}
-                  </span>
-                </div>
-              );
-            },
-          },
-        ]
-      : [
-          {
-            key: "registered_at" as keyof (UserWithGym | GymUser),
-            header: "Fecha de Registro",
-            render: (u: UserWithGym | GymUser) => formatDate(u.registered_at),
-          },
-        ]),
-  ];
+  // Definición de columnas para la tabla // Column definitions for the table
+  const userColumns: ColumnDefinition<UserWithGym | GymUser>[] = useMemo(() => {
+    const columns: ColumnDefinition<UserWithGym | GymUser>[] = [
+      {
+        key: "first_name",
+        header: "Nombre",
+        render: (u) => (
+          <div className={styles.avatarCell}>
+            <Avatar
+              src={u.profile_picture}
+              firstName={u.first_name}
+              lastName={u.last_name}
+              size={35}
+            />
+            <span className="text-dark">
+              {isLargeScreen ? `${u.first_name} ${u.last_name}` : u.first_name}
+            </span>
+          </div>
+        ),
+      },
+    ];
 
-  // Render loading
+    // Columnas específicas para admin
+    if (isAdmin) {
+      columns.push({
+        key: "gym_name" as keyof (UserWithGym | GymUser),
+        header: "Gimnasio",
+        render: (u: UserWithGym | GymUser) => {
+          const userWithGym = u as UserWithGym;
+          return (
+            <div className={styles.avatarCell}>
+              <Avatar
+                src={userWithGym.logo_url}
+                firstName={userWithGym.gym_name}
+                size={35}
+              />
+              <span
+                className={clsx({
+                  "text-dark": !userWithGym.is_gym_deleted,
+                  [styles.deletedGym]: userWithGym.is_gym_deleted,
+                })}
+                title={userWithGym.is_gym_deleted ? "Gimnasio Eliminado" : ""}>
+                {userWithGym.gym_name}
+              </span>
+            </div>
+          );
+        },
+      });
+    }
+
+    // Columna de fecha de registro para manager
+    if (isLargeScreen) {
+      columns.push({
+        key: "registered_at" as keyof (UserWithGym | GymUser),
+        header: "Miembro desde",
+        render: (u: UserWithGym | GymUser) => formatDate(u.registered_at),
+      });
+    }
+
+    return columns;
+  }, [isLargeScreen, isAdmin]);
+
+  // Renderizado de estado de carga // Loading state rendering
   if (isLoading && users.length === 0) {
-    return (
-      <div style={styles.loadingContainer}>
-        <p>Cargando usuarios...</p>
-      </div>
-    );
+    return <Spinner center size="lg" className="vh-100" />;
   }
 
-  // Render error
+  // Renderizado de estado de error // Error state rendering
   if (error && users.length === 0) {
     return (
-      <div style={styles.container}>
-        <div style={styles.errorText}>{error}</div>
-      </div>
+      <Container className="text-center mt-5">
+        <Alert variant="danger">{error}</Alert>
+      </Container>
     );
   }
 
-  // Render principal / Main render
+  // Renderizado principal // Main rendering
   return (
-    <div style={styles.container}>
-      {/* Encabezado / Header */}
-      <div style={styles.header}>
-        <h1 style={styles.title}>
+    <Container fluid="xl" className="py-4">
+      <header className="mb-4 text-center">
+        <h1 className="h2 text-primary">
           {isAdmin ? "Gestión de Usuarios" : "Usuarios de mi Gimnasio"}
         </h1>
-        <p style={styles.subtitle}>
+        <p className="text-light">
           {isAdmin
-            ? "Visualiza y filtra todos los usuarios registrados en la plataforma."
+            ? "Visualiza y filtra todos los usuarios de la plataforma."
             : "Visualiza y filtra los usuarios registrados en tu gimnasio."}
         </p>
-      </div>
+      </header>
 
-      {/* Estadísticas / Statistics */}
-      <div style={styles.statsContainer}>
-        <div style={styles.statCard}>
-          <div style={styles.statNumber}>{totalItems}</div>
-          <div style={styles.statLabel}>
-            {isLoading ? "Cargando..." : "Total de Usuarios"}
-          </div>
-        </div>
-      </div>
+      <Card className="mb-4">
+        <Card.Header as="h5" className="bg-secondary text-white text-center">
+          Filtros y Métricas
+        </Card.Header>
+        <Card.Body>
+          <Row className="align-items-end">
+            {/* Métricas */}
+            <Col md={4} lg={3} className="mb-3 text-center">
+              <div className="text-dark mb-0 small">
+                {isLoading ? <Spinner size="sm" /> : "Total de Usuarios"}
+              </div>
+              <h2 className="fw-bold text-primary">{totalItems}</h2>
+            </Col>
 
-      {/* Filtros / Filters */}
-      <div style={styles.filtersContainer}>
-        {isAdmin && (
-          <div style={styles.filterGroup}>
-            <label htmlFor="gymFilter" style={styles.label}>
-              Filtrar por Gimnasio
-            </label>
-            <input
-              type="text"
-              placeholder="🔍 Buscar por nombre o ciudad..."
-              value={gymSearchTerm}
-              onChange={(e) => setGymSearchTerm(e.target.value)}
-              style={styles.gymSearchInput}
-            />
-            <select
-              id="gymFilter"
-              value={selectedGymId}
-              onChange={(e) => setSelectedGymId(e.target.value)}
-              style={styles.select}>
-              <option value="">Todos los Usuarios</option>
-              <option
-                value="deleted"
-                style={{ backgroundColor: "#ffebee", color: "#c62828" }}>
-                Usuarios de Gimnasios Eliminados
-              </option>
-              {filteredGyms.map((gym) => (
-                <option key={gym.id} value={gym.id}>
-                  {gym.name} - {gym.city}
-                </option>
-              ))}
-            </select>
-            {gymSearchTerm && filteredGyms.length === 0 && (
-              <small style={styles.noResultsText}>
-                No se encontraron gimnasios
-              </small>
+            {/* Filtros */}
+            {isAdmin && (
+              <Col md={8} lg={5} className="mb-3">
+                <FilterInput
+                  label="Buscar Gimnasio"
+                  icon={<i className="bi bi-search"></i>}
+                  placeholder="Nombre o ciudad..."
+                  value={gymSearchTerm}
+                  onChange={(e) => setGymSearchTerm(e.target.value)}
+                  onClear={() => setGymSearchTerm("")}
+                  id="gymSearchFilter"
+                />
+                <Form.Select
+                  value={selectedGymId}
+                  onChange={(e) => setSelectedGymId(e.target.value)}
+                  aria-label="Filtrar por gimnasio"
+                  className="mt-2">
+                  <option value="">Todos los Usuarios</option>
+                  <option value="deleted" className={styles.deletedOption}>
+                    Usuarios de Gimnasios Eliminados
+                  </option>
+                  {filteredGyms.map((gym) => (
+                    <option key={gym.id} value={gym.id}>
+                      {gym.name} - {gym.city}
+                    </option>
+                  ))}
+                </Form.Select>
+                {gymSearchTerm && filteredGyms.length === 0 && (
+                  <small className="text-danger mt-1 d-block">
+                    No se encontraron gimnasios
+                  </small>
+                )}
+              </Col>
             )}
-          </div>
-        )}
+            <Col md={4} lg={4} className="mb-3">
+              <FilterInput
+                label="Buscar Usuario"
+                icon={<i className="bi bi-search"></i>}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onClear={() => setSearchTerm("")}
+                placeholder="Nombre o email..."
+              />
+            </Col>
+          </Row>
+        </Card.Body>
+      </Card>
 
-        <FilterInput
-          label="Buscar Usuario"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Nombre o email..."
-        />
-
-        <button
-          onClick={handleClearFilters}
-          style={styles.clearButton}
-          disabled={isLoading}>
-          Limpiar Filtros
-        </button>
-      </div>
-
-      {/* Tabla de usuarios / Users table */}
       {users.length === 0 ? (
-        <div style={styles.emptyState}>
-          {searchTerm || selectedGymId ? (
-            <>
-              <p>🔍 No se encontraron usuarios con los filtros aplicados.</p>
-              <button
-                onClick={handleClearFilters}
-                style={{
-                  ...styles.clearButton,
-                  marginTop: "15px",
-                  cursor: "pointer",
-                }}>
-                Limpiar filtros
-              </button>
-            </>
-          ) : (
-            <p>📭 Aún no hay usuarios registrados.</p>
-          )}
+        <div className="text-center p-5 bg-light rounded">
+          <h5 className="text-dark">
+            {searchTerm || selectedGymId
+              ? "🔍 No se encontraron usuarios con los filtros aplicados."
+              : "📭 Aún no hay usuarios registrados."}
+          </h5>
         </div>
       ) : (
         <>
@@ -531,6 +401,6 @@ export const UsersManagementPage = () => {
         onDelete={handleDeleteUser}
         isDeleting={isDeleting}
       />
-    </div>
+    </Container>
   );
 };

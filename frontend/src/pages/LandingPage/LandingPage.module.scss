@@ -1,0 +1,57 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: LandingPage
+ * STYLES FOR: LandingPage
+ * =============================================================================
+ *
+ * Descripción: Estilos para la página de aterrizaje (LandingPage).
+ * Incluye el diseño del contenedor principal de la página con scroll-snap,
+ * y el botón de llamada a la acción (CTA) con sus efectos de hover.
+ *
+ * Description: Styles for the LandingPage.
+ * Includes the design of the main page container with scroll-snap,
+ * and the call-to-action (CTA) button with its hover effects.
+ *
+ * =============================================================================
+ */
+@use "../../styles/variables" as *; // Importar variables globales // Import global variables
+
+.pageContainer {
+  height: auto; // La altura se ajustará al contenido // Height will adjust to content
+  position: relative; // Necesario para el posicionamiento de los hijos // Needed for children positioning
+}
+
+.scrollContainer {
+  height: 100vh;
+  width: 100%;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+  scroll-snap-type: y proximity;
+
+  /* Ocultar barra de desplazamiento para navegadores WebKit (Chrome, Safari, etc.) */
+  &::-webkit-scrollbar {
+    width: 0px; // Hacer la barra de desplazamiento invisible
+    background: transparent; // Asegurar que no se muestre ningún color de fondo
+  }
+
+  /* Ocultar barra de desplazamiento para Firefox */
+  scrollbar-width: none;
+}
+
+.ctaButton {
+  padding: 12px 30px;
+  font-size: 1.1rem;
+  font-weight: 700; // Cambiado de 600 a 700 para consistencia // Changed from 600 to 700 for consistency
+  color: $dark; // Color de texto oscuro // Dark text color
+  background-color: $primary; // Color primario de fondo // Primary background color
+  border: none;
+  border-radius: 5px; // Bordes ligeramente redondeados // Slightly rounded borders
+  cursor: pointer;
+  text-decoration: none; // Sin subrayado // No underline
+  transition: transform 0.2s, background-color 0.2s; // Transiciones suaves // Smooth transitions
+}
+
+.ctaButton:hover {
+  background-color: $gold-hover; // Color de hover dorado // Gold hover color
+  transform: scale(1.05); // Escala ligeramente al pasar el ratón // Slightly scales on hover
+}

@@ -21,7 +21,10 @@ import { Toaster } from "sonner";
 
 // Componentes necesarios de react-router-dom
 // Necessary components from react-router-dom
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion"; // Importar AnimatePresence
+import { PageTransition } from "./components/layout/PageTransition"; // Importar PageTransition
+import clsx from "clsx";
 
 // --- Componentes de Layout y UI Globales ---
 // --- Global Layout and UI Components ---
@@ -62,7 +65,14 @@ import { GymContactPage } from "./pages/AboutUs/GymContactPage";
 // Import the route protector
 import { ProtectedRoute } from "./router/ProtectedRoute";
 
+// Importar componente para scroll automático al inicio
+// Import component for automatic scroll to top
+import ScrollToTop from "./components/ScrollToTop";
+
 function App() {
+  const location = useLocation();
+  const isLandingPage = location.pathname === "/";
+
   // Componente placeholder para la página de "No Autorizado" (Error 403)
   // Placeholder component for the "Unauthorized" page (Error 403)
   const UnauthorizedPage = () => (
@@ -70,7 +80,9 @@ function App() {
       <h2>Acceso Denegado</h2>
       <p>
         No tienes permiso para ver esta página.{" "}
-        <Link to="/">Volver al inicio</Link>
+        <Link to="/" className="text-primary">
+          Volver al inicio
+        </Link>
       </p>
     </div>
   );
@@ -82,96 +94,128 @@ function App() {
       <h2>404 - Página no encontrada</h2>
       <p>
         Lo sentimos, la página que buscas no existe.{" "}
-        <Link to="/">Volver al inicio</Link>
+        <Link to="/" className="text-primary">
+          Volver al inicio
+        </Link>
       </p>
     </div>
   );
 
   return (
-    // Contenedor principal para layout "sticky footer"
-    // Main container for "sticky footer" layout
-    <div
-      style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      {/* Sistema global de notificaciones */}
-      {/* Global notification system */}
-      <Toaster position="bottom-left" richColors closeButton />
+    <>
+      {/* ========================================
+        FONDO DE VIDEO GLOBAL Y FIJO
+        GLOBAL FIXED VIDEO BACKGROUND
+        ======================================== */}
+      <video autoPlay muted loop playsInline className="video-bg">
+        <source src="/videos/landing_video_1.mp4" type="video/mp4" />
+      </video>
+      <div className="overlay-bg"></div>
 
-      {/* Barra de navegación principal */}
-      {/* Main navigation bar */}
-      <NavbarComponent />
+      {/* ========================================
+        CONTENEDOR PRINCIPAL DE LA APLICACIÓN
+        MAIN APP CONTAINER
+        ======================================== */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          minHeight: "100vh",
+          position: "relative",
+        }}>
+        <ScrollToTop />
+        <Toaster
+          position="bottom-left"
+          closeButton
+          theme="dark" // Fondo oscuro para los toasts
+          toastOptions={{
+            style: {
+              background: '#194350', // Color $secondary (Azul Petróleo)
+              color: '#F8F9FA',      // Color $light (Claro) para el texto general
+              border: 'none',        // Sin borde por defecto, los bordes de estado serán 'border-left'
+              padding: '12px 16px',  // Ajuste de padding para el borde izquierdo
+            },
+            classNames: {
+              title: 'text-white',    // Título en blanco
+              description: 'text-gray-300', // Descripción en gris claro
+              closeButton: 'bg-white hover:bg-gray-200', // Botón de cierre en blanco
+            },
+          }}
+        />
+        <NavbarComponent />
+        <main
+          style={{ flex: 1, paddingTop: "90px" }}
+          className={clsx({ "main-content-glass": !isLandingPage })}>
+          <AnimatePresence mode="wait"> {/* Añadir AnimatePresence para transiciones de página // Add AnimatePresence for page transitions */}
+            <Routes location={location} key={location.pathname}> {/* Usar location y key para animar cambios de ruta // Use location and key to animate route changes */}
+              {/* ========================================
+                RUTAS PÚBLICAS
+                PUBLIC ROUTES
+                ======================================== */}
+              <Route path="/" element={<PageTransition><LandingPage /></PageTransition>} />
+              <Route path="/register" element={<PageTransition><RegisterUserPage /></PageTransition>} />
+              <Route path="/login" element={<PageTransition><LoginPage /></PageTransition>} />
+              <Route path="/gyms" element={<PageTransition><ListGymsPage /></PageTransition>} />
+              <Route path="/gyms/:id" element={<PageTransition><GymPage /></PageTransition>} />
+              <Route path="/unauthorized" element={<PageTransition><UnauthorizedPage /></PageTransition>} />
+              {/* --- Rutas Legales e Info --- */}
+              <Route path="/privacy-policy" element={<PageTransition><PrivacyPolicyPage /></PageTransition>} />
+              <Route path="/terms-conditions" element={<PageTransition><TermsOfServicePage /></PageTransition>} />
+              <Route path="/cookies-policy" element={<PageTransition><CookiesPolicyPage /></PageTransition>} />
+              <Route path="/legal-notice" element={<PageTransition><LegalNoticePage /></PageTransition>} />
+              <Route path="/about-us" element={<PageTransition><AboutUsPage /></PageTransition>} />
+              <Route path="/faq" element={<PageTransition><FaqPage /></PageTransition>} />
+              <Route path="/join" element={<PageTransition><JoinUsPage /></PageTransition>} />
+              <Route path="/gym-contact" element={<PageTransition><GymContactPage /></PageTransition>} />
 
-      {/* Contenido principal de la página */}
-      {/* Main page content */}
-      <main style={{ flex: 1 }}>
-        {/* Definir las rutas de la aplicación */}
-        {/* Define the application routes */}
-        <Routes>
-          {/* ========================================
-              RUTAS PÚBLICAS
-              PUBLIC ROUTES
-              ======================================== */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/register" element={<RegisterUserPage />} />{" "}
-          {/* Ruta corregida */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/gyms" element={<ListGymsPage />} />
-          <Route path="/gyms/:id" element={<GymPage />} />
-          <Route path="/unauthorized" element={<UnauthorizedPage />} />
-          {/* --- Rutas Legales e Info --- */}
-          <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-          <Route path="/terms-conditions" element={<TermsOfServicePage />} />
-          <Route path="/cookies-policy" element={<CookiesPolicyPage />} />
-          <Route path="/legal-notice" element={<LegalNoticePage />} />
-          <Route path="/about-us" element={<AboutUsPage />} />
-          <Route path="/faq" element={<FaqPage />} />
-          <Route path="/join" element={<JoinUsPage />} />
-          <Route path="/gym-contact" element={<GymContactPage />} />
-          {/* ========================================
-              RUTAS PROTEGIDAS: Autenticación requerida (User, Manager, Admin)
-              PROTECTED ROUTES: Authentication required (User, Manager, Admin)
-              ======================================== */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/visits/:visitId/qr" element={<UserVisitGymPage />} />
-            <Route path="/my-visits" element={<MyVisitsPage />} />
-          </Route>
-          {/* ========================================
-              RUTAS PROTEGIDAS: Admin y Manager
-              PROTECTED ROUTES: Admin and Manager
-              ======================================== */}
-          <Route
-            element={<ProtectedRoute allowedRoles={["admin", "manager"]} />}>
-            <Route path="/gyms/edit/:id" element={<EditGymPage />} />
-            <Route path="/visits/manage" element={<VisitsManagementPage />} />
-            <Route path="/users/manage" element={<UsersManagementPage />} />
-          </Route>
-          {/* ========================================
-              RUTAS PROTEGIDAS: Solo Admin
-              PROTECTED ROUTES: Admin only
-              ======================================== */}
-          <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
-            <Route path="/gyms/add" element={<AddGymPage />} />
-            <Route
-              path="/managers/manage"
-              element={<ManagersManagementPage />}
-            />
-          </Route>
-          {/* ========================================
-              RUTA NOT FOUND (404)
-              NOT FOUND ROUTE (404)
-              ======================================== */}
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </main>
+              {/* ========================================
+                RUTAS PROTEGIDAS: Autenticación requerida (User, Manager, Admin)
+                PROTECTED ROUTES: Authentication required (User, Manager, Admin)
+                ======================================== */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/profile" element={<PageTransition><ProfilePage /></PageTransition>} />
+                <Route
+                  path="/visits/:visitId/qr"
+                  element={<PageTransition><UserVisitGymPage /></PageTransition>}
+                />
+                <Route path="/my-visits" element={<PageTransition><MyVisitsPage /></PageTransition>} />
+              </Route>
 
-      {/* Footer global */}
-      {/* Global footer */}
-      <Footer />
+              {/* ========================================
+                RUTAS PROTEGIDAS: Admin y Manager
+                PROTECTED ROUTES: Admin and Manager
+                ======================================== */}
+              <Route
+                element={<ProtectedRoute allowedRoles={["admin", "manager"]} />}>
+                <Route path="/gyms/edit/:id" element={<PageTransition><EditGymPage /></PageTransition>} />
+                <Route path="/visits/manage" element={<PageTransition><VisitsManagementPage /></PageTransition>} />
+                <Route path="/users/manage" element={<PageTransition><UsersManagementPage /></PageTransition>} />
+              </Route>
 
-      {/* Modal global de consentimiento de cookies */}
-      {/* Global cookie consent modal */}
-      <CookieConsentModal />
-    </div>
+              {/* ========================================
+                RUTAS PROTEGIDAS: Solo Admin
+                PROTECTED ROUTES: Admin only
+                ======================================== */}
+              <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+                <Route path="/gyms/add" element={<PageTransition><AddGymPage /></PageTransition>} />
+                <Route
+                  path="/managers/manage"
+                  element={<PageTransition><ManagersManagementPage /></PageTransition>}
+                />
+              </Route>
+
+              {/* ========================================
+                RUTA NOT FOUND (404)
+                NOT FOUND ROUTE (404)
+                ======================================== */}
+              <Route path="*" element={<PageTransition><NotFoundPage /></PageTransition>} />
+            </Routes>
+          </AnimatePresence> {/* Cierre de AnimatePresence // Close AnimatePresence */}
+        </main>
+        <Footer />
+        <CookieConsentModal />
+      </div>
+    </>
   );
 }
 

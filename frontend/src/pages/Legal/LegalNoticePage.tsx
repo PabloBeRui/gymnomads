@@ -7,28 +7,21 @@
  * Página que muestra el Aviso Legal de Gymnomads.
  * Utiliza el layout reutilizable `LegalPageLayout` para mantener la consistencia
  * visual con otras páginas legales.
+ * Refactorizado para usar SASS Modules.
  *
  * Page that displays the Gymnomads Legal Notice.
  * It uses the reusable `LegalPageLayout` to maintain visual consistency
  * with other legal pages.
+ * Refactored to use SASS Modules.
  *
  * =============================================================================
  */
 
 import { LegalPageLayout } from '../../components/layout/LegalPageLayout';
 
-// Estilo para el bloque de descargo de responsabilidad
-// Style for the disclaimer block
-const disclaimerStyle: React.CSSProperties = {
-  backgroundColor: '#fffbe6',
-  border: '1px solid #ffe58f',
-  padding: '15px',
-  borderRadius: '4px',
-  marginTop: '20px',
-  fontSize: '0.9rem',
-  color: '#6d4f00',
-  textAlign: 'left',
-};
+// Importar el módulo SCSS / Import the SCSS module
+import styles from "./LegalNoticePage.module.scss";
+// import clsx from "clsx"; // Importar clsx / Import clsx
 
 export const LegalNoticePage = () => {
   return (
@@ -102,7 +95,7 @@ export const LegalNoticePage = () => {
           Tribunales de la ciudad de Madrid.
         </p>
 
-        <div style={disclaimerStyle}>
+        <div className={styles.disclaimer}>
           <strong>Nota del Desarrollador:</strong> Este es un texto de
           marcador de posición. Toda la información (CIF, Razón Social,
           dirección) es ficticia y se utiliza únicamente para los fines de

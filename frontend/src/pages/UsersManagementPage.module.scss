@@ -1,0 +1,44 @@
+/**
+ * =============================================================================
+ * Estilos para la página de gestión de usuarios (UsersManagementPage)
+ * Styles for the Users Management Page (UsersManagementPage)
+ * =============================================================================
+ *
+ * Descripción: Estilos para el componente UsersManagementPage, que gestiona
+ * la visualización y filtrado de usuarios. Incluye el diseño para la celda
+ * de avatar y la opción de gimnasios eliminados en el filtro.
+ *
+ * Description: Styles for the UsersManagementPage component, which manages
+ * user display and filtering. Includes the design for the avatar cell
+ * and the deleted gyms option in the filter.
+ *
+ * =============================================================================
+ */
+@use "sass:color";
+@use "../styles/variables" as *; // Importar variables globales // Import global variables
+
+// Contenedor para el avatar y el texto, asegura alineación vertical.
+// Usado en las celdas de la tabla de usuarios.
+// Container for the avatar and text, ensures vertical alignment.
+// Used in the user table cells.
+.avatarCell {
+    display: flex;
+    align-items: center; // Centrado vertical // Vertical centering
+    gap: 10px; // Espacio entre elementos // Space between elements
+}
+
+// Estilo para la opción de "Gimnasios Eliminados" en el selector de filtro.
+// Style for the "Deleted Gyms" option in the filter select.
+.deletedOption {
+    background-color: color.adjust($danger, $lightness: 30%); // Fondo rojo claro // Light red background
+    color: $danger; // Texto rojo oscuro // Dark red text
+    font-weight: bold; // Texto en negrita // Bold text
+}
+
+// Estilo para el nombre de un gimnasio eliminado en la tabla
+// Style for a deleted gym's name in the table
+.deletedGym {
+    color: $danger;
+    text-decoration: line-through;
+    opacity: 0.8;
+}

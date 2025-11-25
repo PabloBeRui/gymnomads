@@ -1,0 +1,79 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: PaginationControls
+ * STYLES FOR: PaginationControls
+ * =============================================================================
+ *
+ * Descripción: Estilos para los controles de paginación.
+ * Incluye el diseño del contenedor de paginación, el selector de ítems por página,
+ * los botones de página (anterior, siguiente, números) y elipses.
+ *
+ * Description: Styles for pagination controls.
+ * Includes the design of the pagination container, items-per-page selector,
+ * page buttons (previous, next, numbers), and ellipses.
+ *
+ * =============================================================================
+ */
+@use "../../styles/variables" as *; // Importar variables globales // Import global variables
+
+.paginationContainer {
+  display: flex;
+  justify-content: space-between; // Por defecto para pantallas grandes
+  align-items: center;
+  padding: 1rem 0;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  // En pantallas pequeñas, alinear todo al centro
+  @media (max-width: 767.98px) {
+    justify-content: center;
+  }
+}
+
+.selectorContainer {
+  display: flex;
+  align-items: center; // Centrado vertical // Vertical centering
+  gap: 8px; // Espacio entre elementos // Space between elements
+}
+
+.pageButtonsContainer {
+  display: flex;
+  align-items: center; // Centrado vertical // Vertical centering
+}
+
+.pageButton {
+  margin: 0 4px;
+  padding: 8px 12px;
+  border: 1px solid var(--bs-gray-300); // Borde estándar // Standard border
+  border-radius: 4px; // Bordes redondeados // Rounded borders
+  background: var(--bs-white); // Fondo blanco // White background
+  cursor: pointer;
+  min-width: 40px; // Ancho mínimo // Minimum width
+  text-align: center;
+  transition: all 0.2s ease-in-out; // Transición suave // Smooth transition
+}
+
+.pageButton:hover:not(:disabled) {
+  background: $light; // Fondo claro al pasar el ratón // Light background on hover
+  border-color: var(--bs-gray-400); // Borde ligeramente más oscuro // Slightly darker border
+}
+
+.pageButton.active {
+  background: $primary; // Fondo primario para el botón activo // Primary background for active button
+  color: $dark; // Texto oscuro para el botón activo // Dark text for active button
+  border-color: $primary; // Borde primario // Primary border
+  font-weight: bold;
+}
+
+.pageButton:disabled {
+  cursor: not-allowed; // Cursor no permitido // Not-allowed cursor
+  opacity: 0.6; // Opacidad reducida // Reduced opacity
+}
+
+.ellipsis {
+  margin: 0 4px;
+  padding: 8px 12px;
+  border: none;
+  cursor: default;
+  color: var(--bs-gray-600); // Color gris tenue // Subtle gray color
+}

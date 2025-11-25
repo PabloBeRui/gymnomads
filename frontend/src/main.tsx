@@ -4,7 +4,7 @@ import "./index.scss";
 import App from "./App.tsx";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthProvider.tsx";
-import 'bootstrap/dist/css/bootstrap.min.css'; // importar globalmente bootstrap /  import bootstrap globally 
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     {/* Envolver App con BrowserRouter para habilitar el enrutamiento */}

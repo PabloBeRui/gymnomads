@@ -1,98 +1,92 @@
 import React from "react";
 import { getInitials, getColorFromString } from "../utils/avatar-utils";
+import styles from "./Avatar.module.scss";
+import clsx from "clsx";
 
-// Propiedades del componente Avatar
-// Avatar component properties
+/**
+ * =============================================================================
+ * COMPONENTE: Avatar
+ * COMPONENT:  Avatar
+ * =============================================================================
+ *
+ * Descripción: Muestra una imagen de perfil o, en su defecto, las iniciales
+ * del usuario sobre un fondo de color generado a partir de su nombre.
+ * El tamaño se controla ahora principalmente a través de una variable CSS
+ * `--avatar-size` para mayor flexibilidad.
+ *
+ * Description: Displays a profile picture or, as a fallback, the user's
+ * initials on a colored background generated from their name. The size is
+ * now primarily controlled via a CSS variable `--avatar-size` for greater
+ * flexibility.
+ *
+ * =============================================================================
+ */
 interface AvatarProps {
-  src?: string | null; // URL de la imagen de perfil / Profile picture URL
-  firstName: string; // Nombre del usuario / User's first name
-  lastName: string; // Apellido del usuario / User's last name
-  size?: number; // Tamaño del avatar en píxeles (default: 40) / Avatar size in pixels (default: 40)
-  onClick?: () => void; // Función al hacer click / Click handler function
-  className?: string; // Clases CSS adicionales / Additional CSS classes
+    src?: string | null; // URL de la imagen de perfil / Profile picture URL
+    firstName: string; // Nombre del usuario / User's first name
+    lastName?: string; // Apellido del usuario (opcional) / User's last name (optional)
+    size?: number; // Tamaño del avatar. Se usa para la variable CSS. / Avatar size. Used for the CSS variable.
+    onClick?: () => void; // Función al hacer click / Click handler function
+    className?: string; // Clases CSS adicionales / Additional CSS classes
 }
 
 export const Avatar: React.FC<AvatarProps> = ({
-  src,
-  firstName,
-  lastName,
-  size = 40,
-  onClick,
-  className = "",
+    src,
+    firstName,
+    lastName = '', // Valor por defecto para evitar undefined
+    size,
+    onClick,
+    className = "",
 }) => {
-  // Obtener iniciales para el fallback
-  // Get initials for fallback
-  const initials = getInitials(firstName, lastName);
+    // Obtener iniciales para el fallback / Get initials for fallback
+    const initials = getInitials(firstName, lastName);
 
-  // Obtener color único basado en el nombre completo
-  // Get unique color based on full name
-  const backgroundColor = getColorFromString(`${firstName}${lastName}`);
+    // Obtener color único basado en el nombre completo / Get unique color based on full name
+    const backgroundColor = getColorFromString(`${firstName}${lastName}`);
 
-  // Estado para manejar errores de carga de imagen
-  // State to handle image loading errors
-  const [imageError, setImageError] = React.useState(false);
+    // Estado para manejar errores de carga de imagen / State to handle image loading errors
+    const [imageError, setImageError] = React.useState(false);
 
-  // Determinar si mostrar imagen o iniciales
-  // Determine whether to show image or initials
-  const showImage = src && !imageError;
+    // Determinar si mostrar imagen o iniciales / Determine whether to show image or initials
+    const showImage = src && !imageError;
 
-  // Estilos del contenedor del avatar
-  // Avatar container styles
-  const styles: { [key: string]: React.CSSProperties } = {
-    container: {
-      width: `${size}px`,
-      height: `${size}px`,
-      borderRadius: "50%",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      backgroundColor: showImage ? "transparent" : backgroundColor,
-      color: "#fff",
-      fontWeight: "600",
-      fontSize: `${size * 0.4}px`, // Tamaño de fuente proporcional / Proportional font size
-      cursor: onClick ? "pointer" : "default",
-      overflow: "hidden",
-      flexShrink: 0, // Evita que el avatar se encoja / Prevent avatar from shrinking
-      userSelect: "none",
-      transition: "transform 0.2s ease",
-    },
-    image: {
-      width: "100%",
-      height: "100%",
-      objectFit: "cover",
-    },
-  };
+    // Estilos dinámicos: ahora solo para el color de fondo y la variable de tamaño.
+    // Dynamic styles: now only for background color and the size variable.
+    const dynamicStyles: React.CSSProperties & { [key: string]: string | number } = {
+        backgroundColor: showImage ? "transparent" : backgroundColor,
+    };
 
-  // Efecto hover si hay onClick
-  // Hover effect if onClick exists
-  const [isHovered, setIsHovered] = React.useState(false);
-  const containerStyle = {
-    ...styles.container,
-    ...(onClick && isHovered ? { transform: "scale(1.05)" } : {}),
-  };
+    // Si se proporciona un tamaño, se pasa como una variable CSS.
+    // If a size is provided, it's passed as a CSS variable.
+    if (size) {
+        dynamicStyles["--avatar-size"] = `${size}px`;
+    }
 
-  return (
-    <div
-      className={className}
-      style={containerStyle}
-      onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      title={`${firstName} ${lastName}`} // Tooltip con nombre completo / Tooltip with full name
-      role={onClick ? "button" : "img"}
-      aria-label={`Avatar de ${firstName} ${lastName}`}
-    >
-      {showImage ? (
-        <img
-          src={src}
-          alt={`${firstName} ${lastName}`}
-          style={styles.image}
-          onError={() => setImageError(true)} // Si falla la carga, mostrar iniciales / Show initials if loading fails
-        />
-      ) : (
-        <span>{initials}</span>
-      )}
-    </div>
-  );
+    const fullName = lastName ? `${firstName} ${lastName}` : firstName;
+
+    return (
+        <div
+            className={clsx(
+                styles.avatarContainer,
+                { [styles.clickable]: onClick },
+                className
+            )}
+            style={dynamicStyles}
+            onClick={onClick}
+            title={fullName} // Tooltip con nombre completo / Tooltip with full name
+            role={onClick ? "button" : "img"}
+            aria-label={`Avatar de ${fullName}`}
+        >
+            {showImage ? (
+                <img
+                    src={src}
+                    alt={fullName}
+                    className={styles.avatarImage}
+                    onError={() => setImageError(true)} // Si falla la carga, mostrar iniciales / Show initials if loading fails
+                />
+            ) : (
+                <span>{initials}</span>
+            )}
+        </div>
+    );
 };
-

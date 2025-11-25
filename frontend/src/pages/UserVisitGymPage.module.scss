@@ -1,0 +1,131 @@
+/**
+ * =============================================================================
+ * Estilos para la página de visita de usuario a gimnasio (UserVisitGymPage)
+ * Styles for the User Gym Visit Page (UserVisitGymPage)
+ * =============================================================================
+ *
+ * Descripción: Estilos para el componente UserVisitGymPage.
+ * Define el posicionamiento del botón de cierre y el contenedor relativo.
+ *
+ * Description: Styles for the UserVisitGymPage component.
+ * Defines the positioning for the close button and the relative container.
+ *
+ * =============================================================================
+ */
+@use "sass:color";
+@use "../styles/variables" as *; // Importar variables globales // Import global variables
+
+// Clase para el contenedor que actuará como referencia para posicionamiento absoluto
+// Class for the container that will act as a reference for absolute positioning
+.relativeCol {
+  position: relative;
+  padding-top: 3rem; // Reservar espacio superior para el botón de cierre // Reserve top space for close button
+}
+
+// Estilo para posicionar el CloseButton en la esquina superior derecha
+// Style to position the CloseButton in the top right corner
+.pageCloseButton {
+  position: absolute;
+  top: 0; // Pegado al borde superior del contenedor // Stick to container top edge
+  right: 15px; // Alinear con el padding derecho estándar de Bootstrap (aprox) // Align with Bootstrap standard right padding
+  z-index: 10; // Asegurar que esté por encima de otros elementos // Ensure it's above other elements
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.customSuccessAlert {
+  background-color: $secondary; // Fondo oscuro para el Alert // Dark background for Alert
+  color: $light; // Texto claro por defecto para el Alert // Light text by default for Alert
+  border-color: $secondary; // Borde acorde al fondo // Border matching background
+
+  h4 {
+    color: $primary; // Título en color primario // Title in primary color
+    margin-bottom: 0.5rem; // Espacio entre h4 y p // Space between h4 and p
+  }
+
+  p {
+    color: $light; // Párrafo en color claro // Paragraph in light color
+    margin-bottom: 0; // Sin margen inferior // No bottom margin
+  }
+}
+
+// =============================================================================
+// ESTILOS DE IMPRESIÓN
+// PRINT STYLES
+// =============================================================================
+@media print {
+  // Ocultar elementos de la interfaz general (Navbar, Footer, Botones flotantes, Alertas de éxito)
+  // Hide general UI elements (Navbar, Footer, Floating buttons, Success alerts)
+  :global(nav),
+  :global(footer),
+  :global(.btn),
+  .pageCloseButton,
+  .customSuccessAlert, 
+  :global(.alert-success) {
+    display: none !important;
+  }
+
+  // Resetear estilos del cuerpo para impresión
+  // Reset body styles for printing
+  :global(body),
+  :global(#root),
+  :global(main),
+  :global(.container),
+  .relativeCol {
+    background-color: white !important;
+    color: black !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  // Asegurar que el contenido de la página sea visible y ocupe todo el ancho
+  // Ensure page content is visible and takes full width
+  .relativeCol {
+    position: static !important; // Quitar posición relativa // Remove relative position
+    padding-top: 0 !important; // Quitar padding superior // Remove top padding
+  }
+
+  // Estilos específicos para las tarjetas (QR y Detalles)
+  // Specific styles for cards (QR and Details)
+  :global(.card) {
+    border: 1px solid #ddd !important; // Borde simple // Simple border
+    box-shadow: none !important; // Sin sombras // No shadows
+    break-inside: avoid; // Evitar partir la tarjeta entre páginas // Avoid breaking card across pages
+    margin-bottom: 20px !important;
+  }
+
+  // Forzar que el acordeón de detalles esté siempre expandido al imprimir
+  // Force details accordion to be always expanded when printing
+  :global(.collapse:not(.show)) {
+    display: block !important;
+    height: auto !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  // Ocultar icono de flecha del acordeón
+  // Hide accordion arrow icon
+  :global(.bi-chevron-down), :global(.bi-chevron-up) {
+    display: none !important;
+  }
+
+  // Asegurar colores oscuros para texto en impresión
+  // Ensure dark colors for text in print
+  :global(.text-primary),
+  :global(.text-light),
+  :global(.text-white) {
+    color: black !important;
+  }
+  
+  :global(.bg-primary),
+  :global(.bg-secondary) {
+      background-color: transparent !important;
+      color: black !important;
+      border-bottom: 2px solid black !important;
+  }
+}

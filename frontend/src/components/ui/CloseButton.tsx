@@ -1,109 +1,92 @@
 /**
  * =============================================================================
- * COMPONENTE: CloseButton
- * COMPONENT: CloseButton
+ * COMPONENTE: CloseButton (Animado)
+ * COMPONENT:  CloseButton (Animated)
  * =============================================================================
  *
- * Botón de cierre reutilizable para modales y páginas.
- * Proporciona una "X" estilizada que permite al usuario cerrar una vista.
- * Su comportamiento es configurable:
- * - Si se proporciona `onClick`, ejecuta esa función (ideal para modales).
- * - Si se proporciona `navigateTo`, navega a la ruta especificada (ideal para páginas).
- * - Si no se proporciona ninguno, navega hacia atrás en el historial del navegador.
+ * @description Botón de cierre reutilizable y animado que usa un icono SVG.
+ * Al hacer clic, ejecuta una animación de "desaparición" antes de llamar
+ * a la función `onClick`.
+ * 
+ * @description Reusable and animated close button using an SVG icon.
+ * On click, it performs a "disappearing" animation before calling the
+ * `onClick` function.
  *
- * Reusable close button for modals and pages.
- * Provides a stylized "X" that allows the user to close a view.
- * Its behavior is configurable:
- * - If `onClick` is provided, it executes that function (ideal for modals).
- * - If `navigateTo` is provided, it navigates to the specified route (ideal for pages).
- * - If neither is provided, it navigates back in the browser history.
- *
+ * @props {() => void} onClick - La función a ejecutar después de la animación de cierre.
+ * @props {string} [color='#1A202C'] - El color del trazo (stroke) del icono SVG.
+ * @props {number} [size=30] - El tamaño (ancho y alto) del icono SVG en píxeles.
+ * @props {string} [className] - Clases CSS adicionales para posicionamiento.
+ * @props {string} [ariaLabel='Cerrar'] - Etiqueta de accesibilidad.
  * =============================================================================
  */
+import React, { useState } from 'react';
+import styles from './CloseButton.module.scss';
+import clsx from 'clsx';
 
-import React from "react";
-import { useNavigate } from "react-router-dom";
-
-/* =============================================================================
-   INTERFACES
-   INTERFACES
-   ============================================================================= */
 interface CloseButtonProps {
-  //  Función a ejecutar al hacer clic (para modales).
-  //  Function to execute on click (for modals).
-  onClick?: () => void;
-  //  Ruta a la que navegar (para páginas).
-  //  Route to navigate to (for pages).
-  navigateTo?: string;
-  //  Etiqueta de accesibilidad para el botón.
-  //  Accessibility label for the button.
+  onClick: () => void;
+  color?: string;
+  size?: number;
+  className?: string;
+  style?: React.CSSProperties; // Añadir prop style // Add style prop
   ariaLabel?: string;
 }
 
-/* =============================================================================
-   ESTILOS (inline)
-   STYLES (inline)
-   ============================================================================= */
-const styles: { [key: string]: React.CSSProperties } = {
-  closeButton: {
-    position: "absolute",
-    top: "10px",
-    right: "10px",
-    backgroundColor: "transparent",
-    border: "none",
-    fontSize: "1.5rem",
-    cursor: "pointer",
-    color: "#333",
-    padding: "5px 10px",
-    borderRadius: "50%",
-    transition: "background-color 0.2s",
-    zIndex: 10, // Asegurar que esté por encima de otros elementos // Ensure it's above other elements
-  },
-  closeButtonHover: {
-    backgroundColor: "#eee",
-  },
-};
-
-/* =============================================================================
-   COMPONENTE: CloseButton
-   COMPONENT: CloseButton
-   ============================================================================= */
 export const CloseButton: React.FC<CloseButtonProps> = ({
   onClick,
-  navigateTo,
-  ariaLabel = "Cerrar", // Valor por defecto // Default value
+  color = '#FFB700', // Cambiar por defecto al color primario (#FFB700) // Change default to primary color (#FFB700)
+  size = 30,
+  className,
+  style, // Desestructurar style // Destructure style
+  ariaLabel = 'Cerrar',
 }) => {
-  const navigate = useNavigate();
+  const [isClosing, setIsClosing] = useState(false);
 
-  // Español: Manejador de clic para el botón.
-  // English: Click handler for the button.
   const handleClick = () => {
-    if (onClick) {
+    // 1. Activar el estado de cierre para aplicar la clase de animación
+    // 1. Activate closing state to apply the animation class
+    setIsClosing(true);
+
+    // 2. Esperar a que la animación termine (300ms) antes de llamar a la función onClick
+    // 2. Wait for the animation to finish (300ms) before calling the onClick function
+    setTimeout(() => {
       onClick();
-    } else if (navigateTo) {
-      navigate(navigateTo);
-    } else {
-      // Español: Comportamiento por defecto: ir hacia atrás en el historial del navegador.
-      // English: Default behavior: go back in browser history.
-      navigate(-1);
-    }
+      // 3. Resetear el estado por si el componente se reutiliza sin desmontarse
+      // 3. Reset the state in case the component is reused without unmounting
+      setIsClosing(false);
+    }, 300);
   };
 
   return (
     <button
-      style={styles.closeButton}
+      className={clsx(styles.closeButton, className)}
+      style={style} // Aplicar style al botón // Apply style to button
       onClick={handleClick}
       aria-label={ariaLabel}
-      onMouseEnter={(e) =>
-        (e.target as HTMLButtonElement).style.backgroundColor =
-          styles.closeButtonHover.backgroundColor || ""
-      }
-      onMouseLeave={(e) =>
-        (e.target as HTMLButtonElement).style.backgroundColor =
-          styles.closeButton.backgroundColor || ""
-      }
+      disabled={isClosing} // Deshabilitar el botón durante la animación // Disable button during animation
     >
-      &times;
+      <div
+        className={clsx(styles.iconContainer, { [styles.closing]: isClosing })}
+        style={{ width: size, height: size }}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={size}
+          height={size}
+          viewBox="0 0 30 30"
+          fill="none"
+          stroke={color}
+          style={{ stroke: color }} // Forzar el color mediante estilo en línea
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeMiterlimit="10"
+        >
+          {/* Este SVG ahora forma una 'X' directamente, sin necesitar rotación inicial. */}
+          {/* This SVG now forms an 'X' directly, without needing initial rotation. */}
+          <line x1="6" y1="6" x2="24" y2="24" />
+          <line x1="24" y1="6" x2="6" y2="24" />
+        </svg>
+      </div>
     </button>
   );
 };

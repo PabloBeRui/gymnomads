@@ -1,0 +1,104 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: LegalPageLayout
+ * STYLES FOR: LegalPageLayout
+ * =============================================================================
+ *
+ * Descripción: Estilos para el layout de páginas legales, como política de privacidad.
+ * Proporciona un contenedor centrado con sombra y un botón de cierre.
+ *
+ * Description: Styles for the legal pages layout, such as privacy policy.
+ * Provides a centered container with shadow and a close button.
+ *
+ * =============================================================================
+ */
+@use "../../styles/variables" as *; // Importar variables globales // Import global variables
+
+// Envoltura para detectar clics fuera del contenido
+// Wrapper to detect clicks outside the content
+.wrapper {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; // Alinear arriba para permitir scroll natural // Align top to allow natural scroll
+  cursor: pointer; // Indicar que es clicable (para cerrar) // Indicate clickable (to close)
+}
+
+.container {
+  position: relative; // Necesario para el posicionamiento absoluto del CloseButton // Needed for absolute positioning of the CloseButton
+  max-width: 900px; // Ancho máximo del contenedor (aumentado) // Increased max-width
+  width: 100%; // Por defecto ancho completo (respetando max-width) // Default full width (respecting max-width)
+  margin: 3rem auto; // Centrado horizontal y margen superior/inferior // Horizontal centering and top/bottom margin
+  padding: 2.5rem 3rem; // Espaciado interno (aumentado horizontalmente) // Inner spacing (increased horizontally)
+  background-color: var(--bs-white); // Fondo blanco // White background
+  border-radius: $border-radius-lg; // Bordes redondeados // Rounded borders
+  box-shadow: $box-shadow-lg; // Sombra sutil // Subtle shadow
+  line-height: 1.7; // Altura de línea para legibilidad // Line height for readability
+  cursor: default; // Evitar que el cursor pointer del wrapper se herede // Prevent pointer cursor inheritance from wrapper
+
+  // Ajustes para móviles
+  // Mobile adjustments
+  @media (max-width: 768px) {
+    width: 90%; // Dejar espacio a los lados para hacer clic // Leave space on sides to click
+    margin: 1.5rem auto; // Reducir margen vertical // Reduce vertical margin
+    padding: 1.5rem; // Reducir padding interno // Reduce inner padding
+  }
+
+  // Estilos generales para el contenido dentro del layout
+  // General styles for content within the layout
+  h2 {
+    color: $primary; // Títulos en color primario // Primary color titles
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba($primary, 0.2); // Subrayado sutil // Subtle underline
+  }
+
+  h4 {
+    color: $secondary; // Subtítulos en color secundario // Secondary color subtitles
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    color: $dark; // Texto principal oscuro // Dark main text
+    margin-bottom: 1rem;
+  }
+
+  ol, ul {
+    color: $dark; // Listas en color oscuro // Dark lists
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+.title {
+  margin-bottom: 2rem; // Margen inferior // Bottom margin
+  text-align: center; // Texto centrado // Centered text
+  color: var(--bs-dark); // Color de texto oscuro // Dark text color
+}
+
+.content {
+  color: var(--bs-secondary); // Color de texto secundario // Secondary text color
+}
+
+// Estilo para posicionar el nuevo botón de cierre animado.
+// Style to position the new animated close button.
+.closeButton {
+  position: absolute;
+  top: 15px; // Subir para que sobresalga // Move up to overlap
+  right: 10px; // Alinear a la derecha // Align right
+  z-index: 10; // Asegurar que esté por encima del contenido.
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}

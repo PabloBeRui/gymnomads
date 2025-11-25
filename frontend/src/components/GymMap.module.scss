@@ -1,0 +1,47 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: GymMap
+ * STYLES FOR: GymMap
+ * =============================================================================
+ *
+ * Descripción: Estilos para el componente GymMap, que muestra un mapa Leaflet.
+ *
+ * Description: Styles for the GymMap component, which displays a Leaflet map.
+ *
+ * =============================================================================
+ */
+
+.mapContainer {
+  height: 300px; // Altura fija para el mapa // Fixed height for the map
+  width: 100%; // Ancho completo // Full width
+  border-radius: 8px; // Bordes redondeados // Rounded borders
+  border: 1px solid var(--bs-gray-300); // Borde sutil // Subtle border
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); // Sombra suave // Soft shadow
+  z-index: 0; // Asegura que el mapa esté en el fondo // Ensures map is in background
+
+  @media (max-width: 767.98px) {
+    height: 240px; // Reducir altura en un 20% para móvil
+  }
+}
+
+.popupWrapper {
+  display: flex;
+  align-items: center; // Centra los ítems verticalmente // Vertically centers items
+  gap: 8px; // Espacio entre ítems // Space between items
+  margin: 0;
+  padding: 0;
+}
+
+.popupLogo {
+  width: 24px; // Ancho fijo para el logo // Fixed width for the logo
+  height: 24px; // Altura fija para el logo // Fixed height for the logo
+  object-fit: contain; // Ajusta la imagen dentro del contenedor // Adjusts image within container
+  border-radius: 4px; // Bordes ligeramente redondeados // Slightly rounded borders
+  flex-shrink: 0; // Evita que el logo se encoja // Prevents logo from shrinking
+}
+
+.popupText {
+  margin: 0;
+  font-weight: 600; // Texto en negrita // Bold text
+  text-align: left; // Alineación izquierda // Left alignment
+}

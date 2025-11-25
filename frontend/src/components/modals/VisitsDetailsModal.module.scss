@@ -1,0 +1,240 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: VisitsDetailsModal
+ * STYLES FOR: VisitsDetailsModal
+ * =============================================================================
+ *
+ * Descripción: Estilos para el modal que muestra los detalles de una visita
+ * específica. Incluye el diseño del overlay, el contenido del modal,
+ * encabezados, información de perfil de usuario, bloques de información del
+ * gimnasio de origen y destino, flecha de trayectoria, y detalles de fecha/hora.
+ *
+ * Description: Styles for the modal that displays the details of a specific
+ * visit. Includes the design of the overlay, modal content, headers, user
+ * profile information, origin and destination gym information blocks,
+ * journey arrow, and date/time details.
+ *
+ * =============================================================================
+ */
+@use "../../styles/variables" as *; // Importar variables globales // Import global variables
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); // Fondo semitransparente // Semi-transparent background
+  display: flex;
+  align-items: center; // Centrado vertical // Vertical centering
+  justify-content: center; // Centrado horizontal // Horizontal centering
+  z-index: 1000; // Por encima de otros elementos // Above other elements
+}
+
+.modalContent {
+  background-color: var(--bs-white); // Fondo blanco // White background
+  padding: 30px;
+  border-radius: 8px; // Bordes redondeados // Rounded borders
+  max-width: 600px; // Ancho máximo // Maximum width
+  width: 90%; // Ancho responsivo // Responsive width
+  max-height: 90vh; // Altura máxima // Maximum height
+  overflow-y: auto; // Scroll si el contenido es largo // Scroll if content is long
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); // Sombra // Shadow
+  position: relative;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between; // Espacio entre elementos // Space between elements
+  align-items: center; // Centrado vertical de elementos por defecto // Default vertical centering
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--bs-gray-300); // Borde inferior // Bottom border
+  position: relative; // Necesario para el posicionamiento absoluto del botón de cierre // Needed for absolute positioning of close button
+
+  @media (max-width: 767.98px) {
+    padding-top: 1rem; // Ajustar padding superior para el botón de cierre // Adjust top padding for close button
+    padding-right: 1rem; // Ajustar padding derecho para el botón de cierre // Adjust right padding for close button
+    align-items: flex-start; // Alinear elementos al inicio para que el título no empuje el botón // Align items to start so the title doesn't push the button
+  }
+}
+
+.modalTitle {
+  font-size: 1.5rem;
+  color: $dark; // Color de texto oscuro // Dark text color
+  margin: 0;
+  text-align: center; // Centrar el título del modal para manager // Center modal title for manager
+  width: 100%; // Asegurar ancho completo para centrado // Ensure full width for centering
+  
+  @media (max-width: 767.98px) {
+    text-align: left; // Revertir a izquierda en móvil si es necesario, o mantener centrado si se prefiere consistencia. El usuario pidió "texto de detalle de la visita... centrado", asumo general. Pero si hay botón de cierre en móvil (que ya no hay), el título podría chocar. Como no hay botón en móvil, centrado está bien o izquierda con padding. El usuario dijo "unicamente en version NO movil quiero que el div... este tambien centrado". Lo del título parece general.
+    padding-right: 0; // Resetear padding
+  }
+}
+
+// Clase para el botón de cierre dentro del modal
+// Class for the close button inside the modal
+.modalCloseButton {
+  @media (max-width: 767.98px) {
+    display: none;
+  }
+}
+
+.profileHeader {
+  display: grid;
+  grid-template-columns: auto 1fr; // Avatar automático, texto ocupa el resto // Avatar auto, text takes rest
+  gap: 5px 20px; // Gap vertical pequeño, horizontal grande // Small vertical gap, large horizontal gap
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--bs-gray-200); // Borde inferior // Bottom border
+  justify-content: center; // Centrar todo el grid horizontalmente en el contenedor // Center the whole grid horizontally
+  justify-items: center; // Centrar los items dentro de sus celdas (para el avatar y textos si ocupan toda la celda) // Center items within cells
+
+  // Áreas por defecto (Escritorio) - Ajustadas para centrado
+  // Default Areas (Desktop) - Adjusted for centering
+  grid-template-areas:
+    "avatar name"
+    "avatar email";
+  
+  // Ajuste para que el texto no se centre "raro" si es grid. 
+  // Mejor enfoque para centrar el bloque conjunto avatar+texto en escritorio:
+  // Usar flexbox o mantener grid pero con contenido centrado.
+  // Si usamos 'justify-content: center', el bloque entero se centra.
+  
+  @media (min-width: 768px) {
+      // En escritorio, queremos que el CONTENIDO (avatar + info) esté centrado visualmente.
+      // La estructura grid actual "avatar name" / "avatar email" es buena, pero por defecto se estira o pega a la izquierda.
+      // Al poner justify-content: center, todo el bloque se va al centro.
+      grid-template-columns: auto auto; // Ajustar columnas al contenido para que se centren juntas
+      text-align: left; // El texto dentro del bloque (nombre, email) se lee mejor a la izquierda del avatar, o alineado a la izquierda respecto a sí mismo.
+      // Pero el usuario pidió "el div que contiene avatar nombre y mail este tambien centrado".
+      // Si el bloque está centrado, el texto debería alinearse a la izquierda del bloque (junto al avatar).
+      justify-items: start; // Los elementos dentro del grid (nombre, email) alineados al inicio de su celda
+  }
+
+  @media (max-width: 767.98px) {
+    justify-content: center; // Centrar el grid completo en móvil // Center the whole grid on mobile
+    justify-items: center;   // Centrar los ítems dentro de sus celdas // Center items within their cells
+    grid-template-columns: auto 1fr; // Volver a columnas expandibles
+    grid-template-areas:
+      "avatar name"
+      "email email";
+    gap: 0.5rem 1rem;
+  }
+}
+
+.avatar {
+  grid-area: avatar;
+}
+
+// Clase .profileInfo ELIMINADA (refactorización a Grid)
+// .profileInfo class REMOVED (Grid refactoring)
+
+.profileName {
+  grid-area: name;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: $dark; // Color de texto oscuro // Dark text color
+  margin: 0;
+  align-self: end; // Alinear abajo en su celda (cerca del email) // Align bottom in cell (near email)
+  
+  @media (max-width: 767.98px) {
+    align-self: center; // Centrado vertical con avatar en móvil // Vertically centered with avatar on mobile
+    margin-right: 0; // Resetear margen // Reset margin
+  }
+}
+
+.profileEmail {
+  grid-area: email;
+  font-size: 1rem;
+  color: $secondary; // Color de texto secundario // Secondary text color
+  margin: 0;
+  align-self: start; // Alinear arriba en su celda // Align top in cell
+  
+  @media (max-width: 767.98px) {
+    word-break: break-all; // Romper palabras largas // Break long words
+    margin-top: 0.5rem;
+    text-align: center; // Centrar el texto del email en móvil // Center email text on mobile
+  }
+}
+
+.infoSection {
+  margin-bottom: 20px; // Espacio inferior de la sección de información // Bottom space for info section
+}
+
+.journeyContainer {
+  display: flex;
+  align-items: center; // Centrado vertical // Vertical centering
+  justify-content: center; // Centrado horizontal // Horizontal centering
+  gap: 10px; // Espacio entre elementos // Space between elements
+  margin-bottom: 20px;
+}
+
+.gymInfoBlock {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center; // Centrado horizontal // Horizontal centering
+  text-align: center;
+  padding: 15px;
+  background-color: $light; // Fondo claro // Light background
+  border-radius: 8px; // Bordes redondeados // Rounded borders
+  gap: 8px; // Espacio entre elementos // Space between elements
+}
+
+.gymInfoLabel {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: $dark; // Color de texto oscuro // Dark text color
+}
+
+.gymInfoName {
+  font-size: 1rem;
+  font-weight: 600;
+  color: $dark; // Color de texto oscuro // Dark text color
+}
+
+.gymInfoCity {
+  font-size: 0.9rem;
+  color: $secondary; // Color de texto secundario // Secondary text color
+}
+
+.journeyArrow {
+  font-size: 1.5rem;
+  color: $secondary; // Color secundario para la flecha // Secondary color for arrow
+  flex-shrink: 0; // Evita que la flecha se encoja // Prevents arrow from shrinking
+}
+
+.dateRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center; // Centrar horizontalmente los elementos // Horizontally center items
+  text-align: center; // Centrar el texto dentro de los elementos // Center text within items
+  margin-bottom: 15px;
+}
+
+.dateLabel {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: $dark; // Color de texto oscuro // Dark text color
+  margin-bottom: 5px;
+}
+
+.dateValue {
+  font-size: 1rem;
+  color: $dark; // Color de texto oscuro // Dark text color
+  padding: 8px 12px;
+  background-color: $light; // Fondo claro // Light background
+  border-radius: 4px; // Bordes redondeados // Rounded borders
+  width: fit-content; // Ajustar el ancho al contenido // Adjust width to content
+}
+
+.buttonContainer {
+  display: flex;
+  gap: 10px; // Espacio entre botones // Space between buttons
+  justify-content: flex-end; // Botones a la derecha // Buttons to the right
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid var(--bs-gray-300); // Borde superior // Top border
+}

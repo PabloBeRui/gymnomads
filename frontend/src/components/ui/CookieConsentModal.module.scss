@@ -1,0 +1,62 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: CookieConsentModal
+ * STYLES FOR: CookieConsentModal
+ * =============================================================================
+ *
+ * Descripción: Estilos personalizados para el modal de consentimiento de cookies.
+ * Se simplifica para trabajar con los estilos nativos de Bootstrap Modal,
+ * personalizando solo la estética interna y el contenedor.
+ *
+ * Description: Custom styles for the cookie consent modal.
+ * Simplified to work with native Bootstrap Modal styles,
+ * customizing only the internal aesthetics and container.
+ *
+ * =============================================================================
+ */
+@use "../../styles/variables" as *; // Importar variables globales // Import global variables
+
+// Clase para personalizar el contenedor principal del modal (pass to contentClassName)
+// Class to customize the main modal container
+.cookieModalContent {
+  border: none; // Sin bordes predeterminados // No default borders
+  border-radius: 1rem; // Bordes más redondeados // More rounded borders
+  box-shadow: $box-shadow-lg; // Sombra pronunciada // Prominent shadow
+  overflow: hidden; // Para que el borde redondeado recorte el contenido // So rounded border clips content
+}
+
+.body {
+  padding: 2rem; // Espaciado interno generoso // Generous internal spacing
+  text-align: center; // Texto centrado para mejor lectura en este tipo de avisos // Centered text for better reading in this type of notice
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $primary; // Color primario para destacar // Primary color to highlight
+  margin-bottom: 1rem;
+}
+
+.text {
+  font-size: 1rem;
+  color: $dark; // Color de texto oscuro // Dark text color
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.buttonContainer {
+  display: flex;
+  gap: 1rem; // Espacio entre botones // Space between buttons
+  justify-content: center; // Botones centrados // Centered buttons
+  
+  // En móvil, botones apilados
+  // On mobile, stacked buttons
+  @media (max-width: 576px) {
+    flex-direction: column;
+    width: 100%;
+    
+    button {
+      width: 100%;
+    }
+  }
+}

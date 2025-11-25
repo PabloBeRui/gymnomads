@@ -1,17 +1,25 @@
 import React from 'react';
 
+// Importar componentes de React-Bootstrap / Import React-Bootstrap components
+import { Pagination, Form } from "react-bootstrap";
+import styles from "./PaginationControls.module.scss"; // Importar el módulo SCSS / Import the SCSS module
+import clsx from "clsx"; // Importar clsx / Import clsx
+
 /**
  * =============================================================================
  * COMPONENTE: PaginationControls
+ * COMPONENT: PaginationControls
  * =============================================================================
  *
  * Componente reutilizable para la interfaz de paginación.
  * Muestra botones para navegar entre páginas y un selector para cambiar
  * la cantidad de elementos por página.
+ * Refactorizado para usar React-Bootstrap y SASS Modules.
  *
  * Reusable component for the pagination interface.
  * Displays buttons to navigate between pages and a selector to change
  * the number of items per page.
+ * Refactored to use React-Bootstrap and SASS Modules.
  *
  * =============================================================================
  */
@@ -23,51 +31,6 @@ interface PaginationControlsProps {
   onPageChange: (page: number) => void;
   onItemsPerPageChange: (limit: number) => void;
 }
-
-const pageButtonStyle: React.CSSProperties = {
-  margin: '0 4px',
-  padding: '8px 12px',
-  border: '1px solid #ddd',
-  borderRadius: '4px',
-  background: '#fff',
-  cursor: 'pointer',
-  minWidth: '40px',
-  textAlign: 'center',
-};
-
-const activePageButtonStyle: React.CSSProperties = {
-  ...pageButtonStyle,
-  background: '#337ab7',
-  color: '#fff',
-  borderColor: '#337ab7',
-  fontWeight: 'bold',
-};
-
-const disabledPageButtonStyle: React.CSSProperties = {
-  ...pageButtonStyle,
-  cursor: 'not-allowed',
-  opacity: 0.5,
-};
-
-const containerStyle: React.CSSProperties = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  padding: '16px 0',
-  flexWrap: 'wrap',
-  gap: '16px',
-};
-
-const pageButtonsContainerStyle: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-};
-
-const selectorContainerStyle: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: '8px',
-};
 
 export const PaginationControls: React.FC<PaginationControlsProps> = ({
   currentPage,
@@ -132,54 +95,50 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
   // Component Rendering
   // =============================================================================
   return (
-    <div style={containerStyle}>
-      <div style={selectorContainerStyle}>
-        <label htmlFor="items-per-page">Mostrar:</label>
-        <select
+    <div className={styles.paginationContainer}>
+      <div className={styles.selectorContainer}>
+        <Form.Label htmlFor="items-per-page" className={clsx("me-2", "text-dark")}>Mostrar:</Form.Label>
+        <Form.Select
           id="items-per-page"
           value={itemsPerPage}
           onChange={(e) => onItemsPerPageChange(Number(e.target.value))}
-          style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+          className="w-auto"
         >
           <option value={10}>10</option>
           <option value={25}>25</option>
           <option value={50}>50</option>
-        </select>
+        </Form.Select>
       </div>
 
-      <div style={pageButtonsContainerStyle}>
-        <button
-          style={currentPage === 1 ? disabledPageButtonStyle : pageButtonStyle}
+      <Pagination className={styles.pageButtonsContainer}>
+        <Pagination.Prev
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
           Anterior
-        </button>
+        </Pagination.Prev>
 
         {pageNumbers.map((num, index) =>
           typeof num === 'number' ? (
-            <button
+            <Pagination.Item
               key={index}
-              style={currentPage === num ? activePageButtonStyle : pageButtonStyle}
+              active={currentPage === num}
               onClick={() => onPageChange(num)}
             >
               {num}
-            </button>
+            </Pagination.Item>
           ) : (
-            <span key={index} style={{ ...pageButtonStyle, border: 'none', cursor: 'default' }}>
-              {num}
-            </span>
+            <Pagination.Ellipsis key={index} />
           )
         )}
 
-        <button
-          style={currentPage === totalPages ? disabledPageButtonStyle : pageButtonStyle}
+        <Pagination.Next
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
           Siguiente
-        </button>
-      </div>
+        </Pagination.Next>
+      </Pagination>
     </div>
   );
 };

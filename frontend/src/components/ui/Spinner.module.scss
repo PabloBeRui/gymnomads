@@ -1,0 +1,61 @@
+@use "../../styles/variables" as *;
+
+.spinnerWrapper {
+  display: inline-flex;
+
+  &.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 2rem;
+  }
+
+  &.fullScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba($dark, 0.5);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.customSpinner {
+  width: 3rem;
+  height: 3rem;
+  color: $primary;
+
+  &.light {
+    color: $light !important;
+  }
+
+  &.dark {
+    color: $dark !important;
+  }
+
+  &.primary {
+    color: $primary !important;
+  }
+
+  &.sm {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-width: 0.2em;
+  }
+
+  &.md {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  &.lg {
+    width: 5rem;
+    height: 5rem;
+    border-width: 0.3em;
+  }
+}

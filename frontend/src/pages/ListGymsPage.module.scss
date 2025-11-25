@@ -1,0 +1,251 @@
+/**
+ * =============================================================================
+ * Estilos para la página de listado de gimnasios (ListGymsPage)
+ * Styles for the Gyms Listing Page (ListGymsPage)
+ * =============================================================================
+ *
+ * Descripción: Define los estilos para el listado de gimnasios, incluyendo
+ * tarjetas individuales de gimnasios, efectos de hover, imágenes, overlays,
+ * pie de tarjeta y la barra de búsqueda con su icono.
+ *
+ * Description: Defines styles for the gym listing, including individual gym
+ * cards, hover effects, images, overlays, card footer, and the search bar
+ * with its icon.
+ *
+ * =============================================================================
+ */
+@use "../styles/variables" as *; // Importar variables globales // Import global variables
+
+// Estilo para la tarjeta individual del gimnasio
+// Style for the individual gym card
+.gymCard {
+    position: relative;
+    overflow: hidden; // Asegura que el overlay no se desborde // Ensures overlay doesn't overflow
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; // Transiciones suaves // Smooth transitions
+    border-radius: var(--bs-border-radius-lg); // Usa border-radius de Bootstrap // Uses Bootstrap's border-radius
+    cursor: pointer;
+
+    // Efecto de hover para la tarjeta completa
+    // Hover effect for the entire card
+    &:hover {
+        transform: translateY(-8px); // Elevación al pasar el ratón // Lift on hover
+        box-shadow: $box-shadow-lg !important; // Usa sombra grande del tema // Uses large theme shadow
+    }
+}
+
+.cardImageWrapper {
+    position: relative;
+    height: 180px; // Altura fija para las imágenes de la tarjeta // Fixed height for card images
+    overflow: hidden;
+    border-top-left-radius: var(--bs-border-radius-lg); // Bordes superiores redondeados // Rounded top borders
+    border-top-right-radius: var(--bs-border-radius-lg); // Bordes superiores redondeados // Rounded top borders
+}
+
+.gymImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; // La imagen cubre el área // Image covers the area
+    transition: transform 0.3s ease-in-out; // Transición suave para el zoom // Smooth transition for zoom
+
+    .gymCard:hover & {
+        transform: scale(1.05); // Zoom sutil en hover // Subtle zoom on hover
+    }
+}
+
+.cardOverlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%); // Degradado oscuro // Dark gradient
+    padding: 1rem;
+    padding-top: 2rem; // Más padding para que el texto no toque el borde // More padding so text doesn't touch the edge
+    font-size: 1.25rem;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5); // Sombra de texto // Text shadow
+
+    h5 {
+        margin-bottom: 0; // Sin margen inferior en el título // No bottom margin on title
+    }
+}
+
+// Estilo para el pie de la tarjeta del gimnasio (si se mantiene)
+// Style for the gym card footer (if kept)
+.cardFooter {
+    background-color: var(--bs-body-bg); // Usar el color de fondo del cuerpo de Bootstrap // Uses Bootstrap body background color
+    border-top: 1px solid var(--bs-border-color); // Borde superior // Top border
+    padding: 0.75rem 1.25rem; // Padding estándar de Bootstrap // Standard Bootstrap padding
+}
+
+// Estilos para la barra de búsqueda
+// Styles for the search bar
+.searchWrapper {
+    position: relative;
+    .searchInput {
+        padding-left: 3rem; // Espacio para el icono // Space for the icon
+        border-radius: 50px; // Bordes muy redondeados // Very rounded borders
+        border-color: var(--bs-gray-300); // Borde más suave // Softer border
+        box-shadow: $box-shadow-sm; // Sombra sutil // Subtle shadow
+        &:focus {
+            box-shadow: 0 0 0 0.25rem rgba($primary, 0.25) !important; // Sombra prominente al enfocar con color primario // Prominent shadow on focus with primary color
+            border-color: $primary; // Color de borde primario al enfocar // Primary border color on focus
+        }
+    }
+
+    .searchIcon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: $dark; // Color oscuro para el icono // Dark color for icon
+        font-size: 1.25rem;
+        z-index: 2; // Asegura que el icono esté encima del input // Ensures icon is above input
+        
+        // Animación de pulso al cargar para llamar la atención
+        // Pulse animation on load to draw attention
+        animation: pulseSearch 2s ease-in-out 2; 
+    }
+}
+
+// Animación para la lupa de búsqueda
+// Animation for the search magnifying glass
+@keyframes pulseSearch {
+  0%, 100% {
+    color: $dark;
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    color: $primary; // Cambiar a color primario // Change to primary color
+    transform: translateY(-50%) scale(1.3); // Aumentar tamaño ligeramente // Slightly increase size
+  }
+}
+
+.cardBodyLogo {
+    height: 65px;
+    width: 65px;
+    object-fit: contain;
+    border-radius: var(--bs-border-radius); // Bordes redondeados // Rounded borders
+    padding: 5px;
+    background-color: transparent; // Fondo transparente
+}
+
+// =============================================================================
+// ESTILOS ADICIONALES PARA EL NUEVO DISEÑO DE PÁGINA (HERO SECTION)
+// ADDITIONAL STYLES FOR THE NEW PAGE DESIGN (HERO SECTION)
+// =============================================================================
+
+.backdrop {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem 1rem;
+  cursor: pointer;
+}
+
+.pageContainer {
+  position: relative;
+  max-width: 1200px;
+  width: 100%;
+  background-color: var(--bs-white);
+  border-radius: $border-radius-lg;
+  box-shadow: $box-shadow-lg;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2rem;
+  cursor: default;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    border-radius: $border-radius;
+    margin-top: 0;
+  }
+}
+
+.topSection {
+  display: flex;
+  flex-direction: column-reverse;
+  border-bottom: 1px solid rgba($dark, 0.1);
+  background-color: $light;
+
+  @media (min-width: 992px) {
+    flex-direction: row;
+    min-height: 350px;
+  }
+}
+
+.infoCol {
+  flex: 1;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  @media (max-width: 768px) {
+    padding: 0rem 1.5rem; // Reducir padding superior/inferior en móvil // Reduce top/bottom padding on mobile
+    text-align: center;
+  }
+}
+
+.imageCol {
+  flex: 1;
+  position: relative;
+  min-height: 250px;
+  overflow: hidden;
+
+  @media (min-width: 992px) {
+    max-width: 45%;
+    border-left: 1px solid rgba($dark, 0.1);
+  }
+}
+
+.heroImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.title {
+  color: $primary;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  font-size: 2.5rem;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba($dark, 0.1);
+}
+
+.subtitle {
+  color: $secondary;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  
+  @media (max-width: 768px) {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.contentSection {
+  padding: 2rem;
+  background-color: var(--bs-white);
+  min-height: 400px;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+}
+
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+  display: block;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}

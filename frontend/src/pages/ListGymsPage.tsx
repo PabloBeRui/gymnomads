@@ -1,16 +1,17 @@
-/* =============================================================================
-   PÁGINA: ListGymsPage
-   PAGE:     ListGymsPage
-   =============================================================================
+/**
+ * =============================================================================
+ * COMPONENTE: ListGymsPage
+ * COMPONENT:  ListGymsPage
+ * =============================================================================
  *
- * Muestra una lista de gimnasios con un orden inicial que depende del rol del
- * usuario. Permite la búsqueda y paginación.
+ * Descripción: Muestra una lista de gimnasios con un orden inicial que depende
+ * del rol del usuario. Permite la búsqueda y paginación.
  * - Admin: ve los gimnasios ordenados alfabéticamente con paginación de backend.
  * - Manager: ve su gimnasio primero, y el resto de forma aleatoria.
- * - User/Guest: ve los gimnasios en orden aleatorio.
+ * - User/Guest: ve los gimnasios en un orden aleatorio.
  *
- * Displays a list of gyms with an initial order that depends on the user's
- * role. Allows searching and pagination.
+ * Description: Displays a list of gyms with an initial order that depends on
+ * the user's role. It allows searching and pagination.
  * - Admin: sees gyms sorted alphabetically with backend pagination.
  * - Manager: sees their own gym first, with the rest in random order.
  * - User/Guest: sees gyms in a random order.
@@ -21,7 +22,7 @@
 import { useState, useEffect } from "react";
 import { getAllGyms, deleteGym } from "../services/gym-services";
 import { useAuth } from "../context/AuthContext";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import type { Gym } from "../interfaces/gym-interfaces";
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
@@ -29,101 +30,32 @@ import { ConfirmationModal } from "../components/modals/ConfirmationModal";
 import { usePagination } from "../hooks/usePagination";
 import { PaginationControls } from "../components/ui/PaginationControls";
 import { sortGymsByRole } from "../utils/gym-sorter";
-
-
-/* =============================================================================
-   ESTILOS (inline)
-   STYLES (inline)
-   ============================================================================= */
-const styles: { [key: string]: React.CSSProperties } = {
-  container: { padding: "20px", maxWidth: "1200px", margin: "0 auto" },
-  addGymButton: {
-    display: "inline-block",
-    marginBottom: "20px",
-    padding: "10px 15px",
-    backgroundColor: "#007bff",
-    color: "white",
-    textDecoration: "none",
-    borderRadius: "5px",
-    border: "none",
-    cursor: "pointer",
-  },
-  searchInput: {
-    width: "100%",
-    padding: "10px",
-    marginBottom: "20px",
-    fontSize: "1rem",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    boxSizing: "border-box",
-  },
-  gymList: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "20px",
-    marginTop: "20px",
-  },
-  gymCard: {
-    border: "1px solid #ccc",
-    borderRadius: "8px",
-    padding: "15px",
-    flex: "1 1 300px",
-    boxSizing: "border-box",
-    backgroundColor: "white",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-  },
-  gymLogo: {
-    width: "100%",
-    height: "150px",
-    objectFit: "contain",
-    marginBottom: "15px",
-    borderBottom: "1px solid #eee",
-    paddingBottom: "10px",
-  },
-  cardBody: { marginBottom: "10px" },
-  cardFooter: {
-    marginTop: "10px",
-    paddingTop: "10px",
-    borderTop: "1px solid #eee",
-    color: "#6c757d",
-  },
-  button: { marginRight: "10px", padding: "5px 10px", cursor: "pointer" },
-  deleteButton: {
-    marginRight: "10px",
-    padding: "5px 10px",
-    cursor: "pointer",
-    backgroundColor: "#dc3545",
-    color: "white",
-    border: "none",
-    borderRadius: "4px",
-  },
-  noResultsText: {
-    color: "#666",
-    fontStyle: "italic",
-    width: "100%",
-    textAlign: "center",
-    padding: "40px 0",
-  },
-};
-
+import {
+  Row,
+  Col,
+  FormControl,
+  Button,
+  Card,
+  Alert,
+} from "react-bootstrap";
+import Spinner from "../components/ui/Spinner";
+import styles from "./ListGymsPage.module.scss";
+import clsx from "clsx"; // Importar clsx / Import clsx
+import { CloseButton } from "../components/ui/CloseButton"; // Importar CloseButton
 
 export const ListGymsPage = () => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
   const isAdmin = user?.role === "admin";
 
-  // Estados del componente
-  // Component states
+  // Estados del componente // Component states
   const [gyms, setGyms] = useState<Gym[]>([]); // Gimnasios para la página actual // Gyms for the current page
   const [unpaginatedGyms, setUnpaginatedGyms] = useState<Gym[]>([]); // Lista completa para no-admins // Full list for non-admins
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  // Hook de paginación
-  // Pagination hook
+  // Hook de paginación // Pagination hook
   const {
     currentPage,
     itemsPerPage,
@@ -131,51 +63,77 @@ export const ListGymsPage = () => {
     setTotalItems,
     goToPage,
     changeItemsPerPage,
-  } = usePagination();
+  } = usePagination({ initialItemsPerPage: 6 });
 
-  // Estados para modal de eliminación
-  // States for delete modal
+  // Estados para modal de eliminación // States for delete modal
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [gymToDelete, setGymToDelete] = useState<Gym | null>(null);
 
+  // URL base del backend para las imágenes // Backend base URL for images
   const backendBaseUrl =
     import.meta.env.VITE_BACKEND_BASE_URL || window.location.origin;
 
-  // Efecto para obtener los datos de los gimnasios
-  // Effect to fetch gym data
+  // Manejadores de navegación para cerrar la página (estilo modal)
+  // Navigation handlers to close the page (modal style)
+  const handleBackdropClick = () => {
+    navigate(-1); // Navegar hacia atrás al hacer clic en el fondo // Navigate back on backdrop click
+  };
+
+  const handleContainerClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Evitar que el clic en el contenido cierre la página // Prevent click inside content from closing page
+  };
+
+  // Efecto para obtener los datos de los gimnasios (ADMIN) - Paginación en servidor
+  // Effect to fetch gym data (ADMIN) - Server-side pagination
   useEffect(() => {
-    const fetchGyms = async () => {
+    if (!isAdmin) return;
+
+    const fetchAdminGyms = async () => {
       setError(null);
       setIsLoading(true);
       try {
         const commonFilters = { search: searchTerm.trim() || undefined };
-        let response;
+        const adminFilters = {
+          ...commonFilters,
+          page: currentPage,
+          limit: itemsPerPage,
+          orderBy: "name_asc" as const,
+        };
+        const response = await getAllGyms(token ?? undefined, adminFilters);
+        setGyms(response.data);
+        setTotalItems(response.total);
+      } catch (err) {
+        const msg = handleApiError(
+          err,
+          "Hubo un problema al cargar los gimnasios."
+        );
+        setError(msg);
+        toast.error(msg);
+        setGyms([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-        if (isAdmin) {
-          // Admin: usa paginación del backend y ordena por nombre
-          // Admin: uses backend pagination and sorts by name
-          const adminFilters = {
-            ...commonFilters,
-            page: currentPage,
-            limit: itemsPerPage,
-            orderBy: "name_asc" as const,
-          };
-          // El token de useAuth puede ser string | null. Usamos ?? undefined para asegurar que sea string | undefined.
-          // The token from useAuth can be string | null. We use ?? undefined to ensure it's string | undefined.
-          response = await getAllGyms(token ?? undefined, adminFilters);
-          setGyms(response.data);
-          setTotalItems(response.total);
-        } else {
-          // No-Admin: obtiene todos los gimnasios para ordenar en el frontend
-          // Non-Admin: gets all gyms to sort on the frontend
-          const userFilters = { ...commonFilters, limit: 1000 }; // Límite alto // High limit
-          // El token de useAuth puede ser string | null. Usamos ?? undefined para asegurar que sea string | undefined.
-          // The token from useAuth can be string | null. We use ?? undefined to ensure it's string | undefined.
-          response = await getAllGyms(token ?? undefined, userFilters);
-          const sortedGyms = sortGymsByRole(response.data, user);
-          setUnpaginatedGyms(sortedGyms);
-          setTotalItems(sortedGyms.length);
-        }
+    const timeoutId = setTimeout(fetchAdminGyms, 500);
+    return () => clearTimeout(timeoutId);
+  }, [isAdmin, token, searchTerm, currentPage, itemsPerPage, setTotalItems]); // Dependencias estáticas
+
+  // Efecto para obtener los datos de los gimnasios (USER/GUEST) - Carga todo y paginación en cliente
+  // Effect to fetch gym data (USER/GUEST) - Fetch all and client-side pagination
+  useEffect(() => {
+    if (isAdmin) return;
+
+    const fetchUserGyms = async () => {
+      setError(null);
+      setIsLoading(true);
+      try {
+        const commonFilters = { search: searchTerm.trim() || undefined };
+        const userFilters = { ...commonFilters, limit: 1000 }; // Límite alto / High limit
+        const response = await getAllGyms(token ?? undefined, userFilters);
+        const sortedGyms = sortGymsByRole(response.data, user);
+        setUnpaginatedGyms(sortedGyms);
+        setTotalItems(sortedGyms.length);
       } catch (err) {
         const msg = handleApiError(
           err,
@@ -190,10 +148,9 @@ export const ListGymsPage = () => {
       }
     };
 
-    const timeoutId = setTimeout(fetchGyms, 500);
+    const timeoutId = setTimeout(fetchUserGyms, 500);
     return () => clearTimeout(timeoutId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchTerm, user, isAdmin, token, ...(isAdmin ? [currentPage, itemsPerPage] : [])]);
+  }, [isAdmin, token, searchTerm, user, setTotalItems]); // Dependencias estáticas
 
   // Efecto para manejar la paginación en el frontend para no-admins
   // Effect to handle frontend pagination for non-admins
@@ -205,36 +162,48 @@ export const ListGymsPage = () => {
     }
   }, [currentPage, itemsPerPage, unpaginatedGyms, isAdmin]);
 
+  // Manejador de cambio en el campo de búsqueda // Search input change handler
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-    goToPage(1); // Resetear a la primera página con cada nueva búsqueda
+    goToPage(1); // Resetear a la primera página con cada nueva búsqueda // Reset to first page with each new search
   };
 
+  // Abre el modal de confirmación para eliminar un gimnasio // Opens confirmation modal for gym deletion
   const handleDelete = (gym: Gym): void => {
     setGymToDelete(gym);
     setShowDeleteModal(true);
   };
 
+  // Confirma la eliminación del gimnasio // Confirms gym deletion
   const handleDeleteConfirm = async () => {
     if (!gymToDelete || !token) return;
 
     try {
       await deleteGym(gymToDelete.id, token);
-      // Refrescar la lista actual
-      const filters = {
-        search: searchTerm.trim() || undefined,
-        page: currentPage,
-        limit: itemsPerPage,
-      };
-      // El token de useAuth puede ser string | null. Usamos ?? undefined para asegurar que sea string | undefined.
-      // The token from useAuth can be string | null. We use ?? undefined to ensure it's string | undefined.
-      const response = await getAllGyms(token ?? undefined, filters);
-      setGyms(response.data);
-      setTotalItems(response.total);
-
       toast.success(`Gimnasio "${gymToDelete.name}" eliminado con éxito.`);
       setShowDeleteModal(false);
       setGymToDelete(null);
+      // Recargar la lista para reflejar los cambios
+      // Reload the list to reflect changes
+      const commonFilters = { search: searchTerm.trim() || undefined };
+      let response;
+      if (isAdmin) {
+        const adminFilters = {
+          ...commonFilters,
+          page: currentPage,
+          limit: itemsPerPage,
+          orderBy: "name_asc" as const,
+        };
+        response = await getAllGyms(token ?? undefined, adminFilters);
+        setGyms(response.data);
+        setTotalItems(response.total);
+      } else {
+        const userFilters = { ...commonFilters, limit: 1000 };
+        response = await getAllGyms(token ?? undefined, userFilters);
+        const sortedGyms = sortGymsByRole(response.data, user);
+        setUnpaginatedGyms(sortedGyms);
+        setTotalItems(sortedGyms.length);
+      }
     } catch (err) {
       const processedErrorMessage = handleApiError(
         err,
@@ -245,152 +214,234 @@ export const ListGymsPage = () => {
     }
   };
 
+  // Cancela la eliminación del gimnasio // Cancels gym deletion
   const handleDeleteCancel = () => {
     setShowDeleteModal(false);
     setGymToDelete(null);
   };
 
+  // Renderizado del estado de carga // Loading state rendering
   if (isLoading && gyms.length === 0) {
     return (
-      <div style={styles.container}>
-        <p>Cargando gimnasios...</p>
+      <div className={styles.backdrop}> {/* Usar backdrop */}
+        <div className={styles.pageContainer}> {/* Usar pageContainer */}
+          <div className="text-center p-5">
+            <Spinner center size="lg" />
+            <p className="mt-3 text-dark">Cargando gimnasios...</p>
+          </div>
+        </div>
       </div>
     );
   }
 
+  // Renderizado del estado de error // Error state rendering
   if (error) {
     return (
-      <div style={styles.container}>
-        <div style={styles.errorText || { color: "red" }}>{error}</div>
+      <div className={styles.backdrop}> {/* Usar backdrop */}
+        <div className={styles.pageContainer}> {/* Usar pageContainer */}
+          <div className="text-center mt-5">
+            <Alert variant="danger">{error}</Alert>
+          </div>
+        </div>
       </div>
     );
   }
 
+  // Renderizado principal // Main rendering
   return (
-    <div style={styles.container}>
-      <h2>Gimnasios Asociados</h2>
-      <p>Descubre los gimnasios a los que puedes acceder con GymNomads.</p>
+    <div className={styles.backdrop} onClick={handleBackdropClick}>
+      <div className={styles.pageContainer} onClick={handleContainerClick}>
+        {/* Botón de cierre (visible solo en desktop) */}
+        {/* Close button (visible only on desktop) */}
+        <CloseButton
+          onClick={handleBackdropClick}
+          className={styles.closeButton}
+          color="#FFB700" // Color primario para mejor visibilidad
+          ariaLabel="Cerrar página"
+        />
 
-      {user?.role === "admin" && (
-        <Link
-          to="/gyms/add"
-          style={styles.addGymButton}
-          aria-label="Añadir gimnasio">
-          Añadir Gimnasio
-        </Link>
+        {/* === SECCIÓN SUPERIOR (Hero: Título y Subtítulo + Imagen) === */}
+        {/* === TOP SECTION (Hero: Title and Subtitle + Image) === */}
+        <div className={styles.topSection}>
+          {/* Columna de Información (Título y Subtítulo) */}
+          {/* Information Column (Title and Subtitle) */}
+          <div className={styles.infoCol}>
+            <h1 className={styles.title}>Nuestros Gimnasios</h1>
+            <p className={styles.subtitle}>
+              Explora la red de gimnasios asociados a GymNomads.
+            </p>
+          </div>
+
+          {/* Columna de Imagen */}
+          {/* Image Column */}
+          <div className={styles.imageCol}>
+            <img
+              src="/images/list-gyms-page/list-gyms-page.png"
+              alt="Gimnasios GymNomads"
+              className={styles.heroImage}
+            />
+          </div>
+        </div>
+
+        {/* === SECCIÓN DE CONTENIDO (Buscador, Tarjetas de Gimnasios y Paginación) === */}
+        {/* === CONTENT SECTION (Search Bar, Gym Cards, and Pagination) === */}
+        <div className={styles.contentSection}>
+
+      <Row className="justify-content-center mb-5">
+        <Col md={8} lg={6} className="mb-3 mb-md-0 me-md-3">
+          <div className={styles.searchWrapper}>
+            <i
+              className={clsx(
+                `bi bi-search ${styles.searchIcon}`,
+                "text-primary"
+              )}>
+            </i>
+            <FormControl
+              type="text"
+              placeholder="Buscar por Nombre o Ciudad"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className={styles.searchInput}
+              aria-label="Buscar gimnasios"
+            />
+          </div>
+        </Col>
+        {isAdmin && (
+          <Col xs="auto" className="d-flex align-items-center">
+            <Button
+              variant="primary"
+              onClick={() => navigate("/gyms/add")}
+              className="h-100">
+              <i className="bi bi-plus-lg me-2 text-dark"></i>Añadir Gimnasio
+            </Button>
+          </Col>
+        )}
+      </Row>
+
+      <Row xs={1} md={2} lg={3} className="g-4 mb-4">
+        {gyms.length === 0 && !isLoading ? (
+          <Col className="w-100">
+            <Alert
+              variant="light"
+              className="text-center p-5 border-0 shadow-sm">
+              <h4 className="text-muted">No se encontraron resultados</h4>
+              <p className="text-muted">
+                Intenta ajustar los términos de tu búsqueda.
+              </p>
+            </Alert>
+          </Col>
+        ) : (
+          gyms.map((gym) => {
+            const gymImageSrc = gym.main_image_url
+              ? `${backendBaseUrl}/${gym.main_image_url.replace(/\\/g, "/")}`
+              : "/images/gym-image/default-gym-image.jpg";
+
+            const logoSrc = gym.logo_url
+              ? `${backendBaseUrl}/${gym.logo_url.replace(/\\/g, "/")}`
+              : "/images/gym-logo/default-gym-logo.png";
+
+            return (
+              <Col key={gym.id}>
+                <Card
+                  className={`h-100 shadow-sm border-0 ${styles.gymCard}`}
+                  onClick={() => navigate(`/gyms/${gym.id}`)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      navigate(`/gyms/${gym.id}`);
+                    }
+                  }}>
+                  <div className={styles.cardImageWrapper}>
+                    <Card.Img
+                      variant="top"
+                      src={gymImageSrc}
+                      alt={`Imagen de ${gym.name}`}
+                      className={styles.gymImage}
+                    />
+                    <div className={styles.cardOverlay}>
+                      <h5 className="text-primary fw-bold">{gym.name}</h5>
+                    </div>
+                  </div>
+                  <Card.Body className="d-flex justify-content-between align-items-center">
+                    <div className="d-flex flex-column">
+                      <Card.Text className="small text-dark">
+                        <i className="bi bi-geo-alt-fill me-2 text-primary"></i>
+                        <strong>{gym.city}</strong>
+                      </Card.Text>
+                    </div>
+                    <div>
+                      <img
+                        src={logoSrc}
+                        alt={`Logo de ${gym.name}`}
+                        className={styles.cardBodyLogo}
+                      />
+                    </div>
+                  </Card.Body>
+                  {(user?.role === "admin" ||
+                    (user?.role === "manager" &&
+                      user.home_gym_id === gym.id)) && (
+                    <Card.Footer className="bg-white border-top-0">
+                      <div className="d-flex justify-content-end align-items-center gap-2">
+                        <Button
+                          variant="outline-info"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/gyms/edit/${gym.id}`);
+                          }}>
+                          <i className="bi bi-pencil-fill me-2"></i>Editar
+                        </Button>
+                        {isAdmin && (
+                          <>
+                            <Button
+                              variant="outline-danger"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete(gym);
+                              }}>
+                              <i className="bi bi-trash-fill me-2"></i>Borrar
+                            </Button>
+                            {/* TODO: Implement suspend gym functionality */}
+                            <Button
+                              variant="outline-warning"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                // Future suspend logic here
+                              }}>
+                              <i className="bi bi-pause-circle-fill me-2"></i>
+                              Suspender
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </Card.Footer>
+                  )}
+                </Card>
+              </Col>
+            );
+          })
+        )}
+      </Row>
+
+      {/* Controles de paginación solo si hay gimnasios para mostrar */}
+      {/* Pagination controls only if there are gyms to display */}
+      {gyms.length > 0 && totalPages > 1 && (
+        <div className="d-flex justify-content-center">
+          <PaginationControls
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={goToPage}
+            itemsPerPage={itemsPerPage}
+            onItemsPerPageChange={changeItemsPerPage}
+          />
+        </div>
       )}
 
-      <input
-        type="text"
-        placeholder="Buscar por nombre o ciudad..."
-        value={searchTerm}
-        onChange={handleSearchChange}
-        style={styles.searchInput}
-        aria-label="Buscar gimnasios por nombre o ciudad"
-      />
-
-      <div style={styles.gymList}>
-        {gyms.length === 0 && !isLoading && (
-          <p style={styles.noResultsText}>
-            No se encontraron gimnasios que coincidan con tu búsqueda.
-          </p>
-        )}
-
-        {gyms.map((gym) => {
-          const logoSrc = gym.logo_url
-            ? `${backendBaseUrl}/${
-                gym.logo_url.startsWith("/")
-                  ? gym.logo_url.substring(1)
-                  : gym.logo_url
-              }`
-            : "/images/gym-logo/default-gym-logo.png";
-
-          return (
-            <div
-              key={gym.id}
-              style={{
-                ...styles.gymCard,
-                cursor: "pointer",
-                transition: "transform 0.2s, box-shadow 0.2s",
-              }}
-              aria-labelledby={`gym-${gym.id}-name`}
-              onClick={() => navigate(`/gyms/${gym.id}`)}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-5px)";
-                e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
-              role="button"
-              tabIndex={0}
-              onKeyPress={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  navigate(`/gyms/${gym.id}`);
-                }
-              }}>
-              <div>
-                <img
-                  src={logoSrc}
-                  alt={`Logo de ${gym.name}`}
-                  style={styles.gymLogo}
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.onerror = null;
-                    target.src = "/images/gym-logo/default-gym-logo.png";
-                  }}
-                />
-                <div style={styles.cardBody}>
-                  <h3 id={`gym-${gym.id}-name`}>{gym.name}</h3>
-                  <p>
-                    {gym.address}
-                    <br />
-                    {gym.city}
-                  </p>
-                </div>
-              </div>
-
-              {(user?.role === "admin" ||
-                (user?.role === "manager" && user.home_gym_id === gym.id)) && (
-                <div style={styles.cardFooter}>
-                  <button
-                    style={styles.button}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/gyms/edit/${gym.id}`);
-                    }}
-                    aria-label={`Editar gimnasio ${gym.name}`}>
-                    Editar
-                  </button>
-                  {user?.role === "admin" && (
-                    <button
-                      style={styles.deleteButton}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(gym);
-                      }}
-                      aria-label={`Eliminar gimnasio ${gym.name}`}>
-                      Eliminar
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-          );
-        })}
+        </div> {/* Cierre de contentSection */}
       </div>
 
-      {gyms.length > 0 && (
-        <PaginationControls
-          currentPage={currentPage}
-          totalPages={totalPages}
-          itemsPerPage={itemsPerPage}
-          onPageChange={goToPage}
-          onItemsPerPageChange={changeItemsPerPage}
-        />
-      )}
-
+      {/* Modal de confirmación para eliminar gimnasio */}
+      {/* Confirmation modal for deleting a gym */}
       <ConfirmationModal
         isOpen={showDeleteModal && gymToDelete !== null}
         onCancel={handleDeleteCancel}

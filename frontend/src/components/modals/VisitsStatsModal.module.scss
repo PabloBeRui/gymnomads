@@ -1,0 +1,123 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: VisitsStatsModal
+ * STYLES FOR: VisitsStatsModal
+ * =============================================================================
+ *
+ * Descripción: Estilos para el modal que muestra estadísticas de visitas.
+ * Incluye el diseño del overlay, contenido del modal, encabezados,
+ * contenedores de estadísticas, cajas de estadísticas individuales,
+ * stat numbers, etiquetas y mensajes de límite.
+ *
+ * Description: Styles for the modal that displays visit statistics.
+ * Includes the design of the overlay, modal content, headers,
+ * statistics containers, individual stat boxes,
+ * stat numbers, labels, and limit messages.
+ *
+ * =============================================================================
+ */
+@use "../../styles/variables" as *; // Importar variables globales // Import global variables
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); // Fondo semitransparente // Semi-transparent background
+  display: flex;
+  align-items: center; // Centrado vertical // Vertical centering
+  justify-content: center; // Centrado horizontal // Horizontal centering
+  z-index: 1000; // Por encima de otros elementos // Above other elements
+}
+
+.modalContent {
+  background-color: var(--bs-white); // Fondo blanco // White background
+  padding: 30px;
+  border-radius: 8px; // Bordes redondeados // Rounded borders
+  max-width: 600px; // Ancho máximo // Maximum width
+  width: 90%; // Ancho responsivo // Responsive width
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); // Sombra // Shadow
+  position: relative;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between; // Espacio entre elementos // Space between elements
+  align-items: center; // Centrado vertical de elementos // Vertically center elements
+  margin-bottom: 25px;
+}
+
+.modalCloseButton {
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.modalTitle {
+  font-size: 1.5rem;
+  color: $dark; // Color de texto oscuro // Dark text color
+  margin: 0;
+  text-align: center; // Centrar el título del modal // Center the modal title
+}
+
+.statsContainer {
+  display: flex;
+  justify-content: space-around; // Espaciado equitativo // Even spacing
+  gap: 15px; // Espacio entre cajas // Space between boxes
+  flex-wrap: wrap; // Envuelve elementos si no caben // Wraps elements if they don't fit
+}
+
+.statBox {
+  flex: 1; // Crece para ocupar espacio // Grows to occupy space
+  min-width: 120px; // Ancho mínimo // Minimum width
+  padding: 20px;
+  background-color: $light; // Fondo claro // Light background
+  border: 1px solid var(--bs-gray-300); // Borde // Border
+  border-radius: 8px; // Bordes redondeados // Rounded borders
+  text-align: center;
+}
+
+.statNumber {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: $primary; // Color primario // Primary color
+  margin: 0 0 5px 0;
+}
+
+.statNumberError {
+  color: $danger; // Color de peligro // Danger color
+}
+
+.statLabel {
+  font-size: 1rem;
+  color: $dark; // Color de texto oscuro // Dark text color
+  margin: 0;
+}
+
+.limitMessage {
+  font-size: 0.8rem;
+  color: $danger; // Color de peligro // Danger color
+  margin-top: 5px;
+  font-weight: bold;
+}
+
+.loadingText {
+  text-align: center;
+  padding: 30px;
+  color: $secondary; // Color secundario // Secondary color
+  font-size: 1.1rem;
+}
+
+.errorText {
+  text-align: center;
+  padding: 30px;
+  color: $danger; // Color de peligro // Danger color
+  font-size: 1.1rem;
+}
+
+.buttonGroup {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px; // Espacio entre botones // Space between buttons
+}

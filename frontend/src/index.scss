@@ -3,58 +3,305 @@
    MAIN SASS FILE (index.scss)
    ============================================================================= */
 
-/* 1. DEFINIR VARIABLES PRIMERO
-   1. DEFINE YOUR VARIABLES FIRST
+// 1. UTILIZAR VARIABLES GLOBALES (Debe ser lo primero)
+// 1. USE GLOBAL VARIABLES (Must be first)
+@use "./styles/variables" as *;
+@use "sass:color";
+
+/* 2. IMPORTAR FUENTES, ICONOS Y BOOTSTRAP
+   2. IMPORT FONTS, ICONS AND BOOTSTRAP
    ============================================================================= */
+@import "./assets/fonts/Inter/fonts.css";
+@import "./assets/fonts/Orbitron/fonts.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
 
-// redefinir los colores base de Bootstrap ANTES de importarlo.
-// Redefine Bootstrap's base colors HERE *before* importing it so they take effect.
-
-$primary: #0d6efd; // Default blue / Azul por defecto de Bootstrap
-$success: #198754; // Default green / Verde por defecto
-$danger: #dc3545; // Default red / Rojo por defecto
-$warning: #ffc107; // Default yellow / Amarillo por defecto
-$info: #0dcaf0; // Default cyan / Cian por defecto
-$light: #f8f9fa; // Default light gray / Gris claro por defecto
-$dark: #1a202c; // Dark gray used in footer and dark components
-// Gris oscuro usado en el footer y componentes oscuros
-
-// ? sobrescribir otras variables de Bootstrap aquí:
-// ?override other Bootstrap variables here:
-// $font-family-base: 'Roboto', sans-serif;
-// $border-radius: 0.5rem;
-// $enable-shadows: true;
-// $spacer: 1.5rem;
-
-// -----------------------------------------------------------------------------
-// Next step: Import Bootstrap (after variable overrides)
-// Próximo paso: Importar Bootstrap (después de sobrescribir las variables)
-// @import "bootstrap/scss/bootstrap";
-// -----------------------------------------------------------------------------
-
-/* 2. IMPORTAR EL SASS DE BOOTSTRAP
-   2. IMPORTT BOOTSTRAP SASS
-   ============================================================================= */
-// Ahora Bootstrap se "compilará" usando las variables de arriba.
-// Bootstrap will now "compile" using the variables from above.
+// A continuación, se importa Bootstrap para que use nuestras variables personalizadas.
+// Next, import Bootstrap so it uses our custom variables.
 @import "bootstrap/scss/bootstrap";
 
-/* ==========================================================================
-   Leaflet – Estilos base de la librería de mapas interactivos
-   Necesario para que los mapas de OpenStreetMap (y otros proveedores) 
-   se vean correctamente: marcadores, zoom, capas, popups, etc.
-   https://leafletjs.com
-   ========================================================================== */
-
-/* 
-   Leaflet – Base styles for the interactive map library
-   Required so OpenStreetMap maps (and other tile providers) 
-   display correctly: markers, zoom controls, popups, tiles, etc.
-   https://leafletjs.com
-*/
+/* 3. ESTILOS GLOBALES
+   3. GLOBAL STYLES
+   ============================================================================= */
+// Importar estilos de Leaflet para mapas
+// Import Leaflet styles for maps
 @import "leaflet/dist/leaflet.css";
 
+html,
+body {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden; // Prevenir desplazamiento horizontal // Prevent horizontal scrolling
+}
 
-/* ==========================================================================
-   ESTILOS GLOBALES - GLOBAL-STYLES
-   ========================================================================== */
+body {
+  background-color: $light; // Usar el color claro de la paleta // Use light color from palette
+  color: $dark; // Usar el color oscuro de la paleta para el texto // Use dark color from palette for text
+  -webkit-font-smoothing: antialiased; // Mejorar el renderizado de fuentes // Improve font rendering
+  -moz-osx-font-smoothing: grayscale; // Mejorar el renderizado de fuentes // Improve font rendering
+}
+
+/* Estilo de la barra de desplazamiento */
+/* Scrollbar style */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(
+    --bs-gray-300
+  ); // Color de fondo de la pista // Track background color
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $primary; // Color del pulgar al color primario // Thumb color to primary
+  border-radius: 10px;
+  &:hover {
+    background: color.adjust(
+      $primary,
+      $lightness: 10%
+    ); // Un poco más claro al pasar el ratón // Slightly lighter on hover
+  }
+}
+
+#root,
+.d-flex.flex-column.min-vh-100 {
+  min-height: 100vh; // Asegurar que la aplicación ocupa toda la altura de la ventana // Ensure app takes full viewport height
+}
+
+main {
+  flex: 1; // Permitir que el contenido principal ocupe el espacio restante // Allow main content to take remaining space
+  width: 100%;
+  // El padding se manejará a nivel de página para más control
+  // Padding will be handled at page level for more control
+}
+
+// =============================================================================
+// PERSONALIZACIÓN AVANZADA DE BOTONES DE BOOTSTRAP
+// ADVANCED BOOTSTRAP BUTTON CUSTOMIZATION
+// =============================================================================
+// Para anular los estilos de Bootstrap sin usar `!important`, aumentamos la
+// especificidad de nuestras reglas envolviéndolas en `:root`.
+// Esto hace que `:root .btn-primary` sea más "fuerte" que el `.btn-primary`
+// por defecto de Bootstrap. Luego, anulamos las variables CSS de Bootstrap.
+//
+// To override Bootstrap's styles without using `!important`, we increase
+// the specificity of our rules by wrapping them in `:root`. This makes
+// `:root .btn-primary` "stronger" than Bootstrap's default `.btn-primary`.
+// We then override Bootstrap's CSS variables.
+// =============================================================================
+:root {
+  .btn-primary {
+    // --- Variables CSS de Bootstrap para el estado normal del botón ---
+    // --- Bootstrap CSS variables for the button's normal state ---
+    --bs-btn-bg: #{$primary};
+    --bs-btn-border-color: #{$primary};
+    --bs-btn-color: #{$dark};
+
+    // --- Variables para el estado :hover y :focus ---
+    // --- Variables for the :hover and :focus state ---
+    --bs-btn-hover-bg: #{$gold-hover};
+    --bs-btn-hover-border-color: #{$gold-hover};
+    --bs-btn-hover-color: #{$dark};
+    --bs-btn-focus-bg: #{$gold-hover};
+    --bs-btn-focus-border-color: #{$gold-hover};
+    --bs-btn-focus-color: #{$dark};
+
+    // --- Variables para el estado :active (al hacer clic) ---
+    // --- Variables for the :active (on click) state ---
+    --bs-btn-active-bg: #{color.adjust($primary, $lightness: -10%)};
+    --bs-btn-active-border-color: #{color.adjust($primary, $lightness: -12%)};
+    --bs-btn-active-color: #{$dark};
+
+    // --- Sombra para el estado :focus ---
+    // --- Shadow for the :focus state ---
+    --bs-btn-focus-shadow-rgb: #{color.channel($primary, "red")},
+      #{color.channel($primary, "green")}, #{color.channel($primary, "blue")};
+  }
+
+  .btn-secondary {
+    // --- Anulación de variables para el botón secundario ---
+    // --- Variable overrides for the secondary button ---
+    --bs-btn-bg: #{$secondary};
+    --bs-btn-border-color: #{$secondary};
+    --bs-btn-color: #{$light};
+
+    --bs-btn-hover-bg: #{color.adjust($secondary, $lightness: 5%)};
+    --bs-btn-hover-border-color: #{color.adjust($secondary, $lightness: 5%)};
+    --bs-btn-hover-color: #{$light};
+
+    --bs-btn-focus-bg: #{color.adjust($secondary, $lightness: 5%)};
+    --bs-btn-focus-border-color: #{color.adjust($secondary, $lightness: 5%)};
+    --bs-btn-focus-color: #{$light};
+
+    --bs-btn-active-bg: #{color.adjust($secondary, $lightness: -10%)};
+    --bs-btn-active-border-color: #{color.adjust($secondary, $lightness: -12%)};
+    --bs-btn-active-color: #{$light};
+
+    --bs-btn-focus-shadow-rgb: #{color.channel($secondary, "red")},
+      #{color.channel($secondary, "green")},
+      #{color.channel($secondary, "blue")};
+  }
+}
+
+// Sobrescribir estilos de componentes globales de Bootstrap
+// Override global Bootstrap component styles
+.card {
+  border: none; // Eliminar bordes predeterminados de las tarjetas // Remove default card borders
+  box-shadow: $box-shadow-sm; // Aplicar sombra suave a las tarjetas // Apply soft shadow to cards
+}
+
+.btn {
+  transition: all 0.2s ease-in-out; // Transición suave para todos los botones // Smooth transition for all buttons
+  border-radius: $border-radius; // Aplicar radio de borde consistente // Apply consistent border radius
+  font-weight: 700; // Hacer que todos los botones usen texto en negrita // Make all buttons use bold text
+}
+
+.btn-primary {
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $box-shadow;
+  }
+  &:active {
+    transform: translateY(0);
+    box-shadow: $box-shadow-sm;
+  }
+}
+
+.btn-secondary {
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $box-shadow;
+  }
+  &:active {
+    transform: translateY(0);
+    box-shadow: $box-shadow-sm;
+  }
+}
+
+.text-primary {
+  color: $primary !important; // Forzar el uso del color primario // Force primary color usage
+}
+
+.bg-primary {
+  background-color: $primary !important; // Forzar el uso del color primario // Force primary color usage
+}
+
+.text-secondary {
+  color: $secondary !important; // Forzar el uso del color secundario // Force secondary color usage
+}
+
+.bg-secondary {
+  background-color: $secondary !important; // Forzar el uso del color secundario // Force secondary color usage
+}
+
+.text-accent-gold {
+  color: $accent-gold !important; // Forzar el uso del color dorado de acento // Force accent gold color usage
+}
+
+// Estilos para el video de fondo en LandingPage
+// Styles for background video in LandingPage
+.video-bg {
+  position: fixed; // Video fijo en el fondo // Fixed video in the background
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  z-index: -2; // Detrás de todo // Behind everything
+  transform: translateX(-50%) translateY(-50%);
+  background-size: cover;
+  overflow: hidden;
+}
+
+// Estilo para el overlay general
+// Style for general overlay
+.overlay-bg {
+  background-color: $bg-overlay;
+  position: fixed; // Overlay fijo en el fondo // Fixed overlay in the background
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; // Encima del video, detrás del contenido // On top of video, behind content
+}
+
+// Clase para aplicar el efecto glassmorphism al contenido principal
+// Class to apply glassmorphism effect to the main content
+.main-content-glass {
+  background-color: $glass-bg;
+  backdrop-filter: blur(12px);
+}
+
+// =============================================================================
+// OVERRIDE DE LA VARIABLE CSS PARA EL ICONO DEL MENÚ HAMBURGUESA
+// CSS VARIABLE OVERRIDE FOR HAMBURGER MENU ICON
+// =============================================================================
+// Se anula la variable CSS de Bootstrap para el color del icono del alternador.
+// Esta es una forma más directa de asegurar que el color se aplique.
+// Overriding Bootstrap's CSS variable for the toggler icon color.
+// This is a more direct way to ensure the color is applied.
+:root {
+  --bs-navbar-toggler-icon-bg: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke='#{$primary}' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg>");
+}
+
+/* Ocultar barra de desplazamiento en móviles */
+/* Hide scrollbar on mobile */
+@media (max-width: 767.98px) {
+  body::-webkit-scrollbar {
+    display: none; /* Para Chrome, Safari y Opera */
+  }
+  body {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}
+
+// =============================================================================
+// PERSONALIZACIÓN DE SONNER TOASTS (Iconos SVG)
+// SONNER TOASTS CUSTOMIZATION (SVG Icons)
+// =============================================================================
+// Forzamos el color de los iconos SVG dentro de los toasts de Sonner
+// basándonos en el atributo data-type. Esto es necesario porque Sonner
+// puede no heredar correctamente el color del texto en el SVG interno.
+//
+// We force the color of SVG icons inside Sonner toasts based on the
+// data-type attribute. This is necessary because Sonner might not
+// correctly inherit text color in the internal SVG.
+// =============================================================================
+
+// Success
+[data-sonner-toast][data-type="success"] [data-icon],
+[data-sonner-toast][data-type="success"] svg {
+  color: $success !important;
+  stroke: $success !important; // Asegurar que el trazo también cambie
+}
+
+// Error
+[data-sonner-toast][data-type="error"] [data-icon],
+[data-sonner-toast][data-type="error"] svg {
+  color: $danger !important;
+  stroke: $danger !important;
+}
+
+// Warning
+[data-sonner-toast][data-type="warning"] [data-icon],
+[data-sonner-toast][data-type="warning"] svg {
+  color: $warning !important;
+  stroke: $warning !important;
+}
+
+// Info
+[data-sonner-toast][data-type="info"] [data-icon],
+[data-sonner-toast][data-type="info"] svg {
+  color: $info !important;
+  stroke: $info !important;
+}
+
+// Default
+[data-sonner-toast][data-type="default"] [data-icon],
+[data-sonner-toast][data-type="default"] svg {
+  color: $primary !important;
+  stroke: $primary !important;
+}

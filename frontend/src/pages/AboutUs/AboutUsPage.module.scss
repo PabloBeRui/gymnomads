@@ -1,0 +1,195 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: AboutUsPage
+ * STYLES FOR: AboutUsPage
+ * =============================================================================
+ *
+ * Descripción: Estilos para la página "Sobre Nosotros".
+ * Sigue el mismo patrón de diseño "Split Layout" y "Card/Modal" que RegisterUserPage
+ * y GymContactPage, adaptado para contenido secuencial.
+ *
+ * Description: Styles for the "About Us" page.
+ * Follows the same "Split Layout" and "Card/Modal" design pattern as RegisterUserPage
+ * and GymContactPage, adapted for sequential content.
+ *
+ * =============================================================================
+ */
+@use "../../styles/variables" as *;
+
+// Fondo global para el efecto modal/backdrop
+.backdrop {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; // Permite scroll
+  padding: 2rem 1rem;
+  cursor: pointer; // Clic fuera cierra
+}
+
+.pageContainer {
+  position: relative;
+  max-width: 1100px;
+  width: 100%;
+  background-color: var(--bs-white);
+  border-radius: $border-radius-lg;
+  box-shadow: $box-shadow-lg;
+  overflow: hidden;
+  cursor: default; // Evitar cerrar al clicar dentro
+  display: flex;
+  flex-direction: column;
+
+  // Ajuste para móvil
+  @media (max-width: 768px) {
+    width: 98%;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.headerSection {
+  padding: 3rem 2rem 1rem 2rem;
+  text-align: center;
+  position: relative;
+
+  @media (max-width: 768px) {
+    padding: 2rem 1.5rem 1rem 1.5rem;
+  }
+}
+
+.title {
+  color: $primary;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  font-size: 2.5rem;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba($dark, 0.1);
+}
+
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 20;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+// Contenedor de las secciones alternas
+.contentWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.sectionRow {
+  display: flex;
+  flex-direction: column; // Móvil: Columna
+  border-bottom: 1px solid rgba($dark, 0.05);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  @media (min-width: 992px) {
+    flex-direction: row; // Escritorio: Fila
+    min-height: 400px; // Altura mínima por sección
+
+    // Alternar orden imagen/texto en filas pares
+    &.reversed {
+      flex-direction: row-reverse;
+    }
+  }
+}
+
+.imageCol {
+  flex: 1;
+  position: relative;
+  min-height: 250px;
+  overflow: hidden;
+
+  @media (min-width: 992px) {
+    max-width: 50%;
+  }
+}
+
+.sectionImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.textCol {
+  flex: 1;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: var(--bs-white);
+
+  @media (max-width: 768px) {
+    padding: 2rem 1.5rem;
+  }
+
+  h2 {
+    color: $secondary;
+    font-weight: 700;
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    
+    // Pequeña línea decorativa debajo del título
+    &::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 4px;
+      background-color: $primary;
+      margin-top: 0.5rem;
+      border-radius: 2px;
+    }
+  }
+
+  p, li {
+    color: $dark;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+  }
+
+  ol {
+    padding-left: 1.2rem;
+    
+    li {
+      margin-bottom: 0.8rem;
+      
+      strong {
+        color: $primary; // Resaltar palabras clave
+        font-weight: 700;
+      }
+    }
+  }
+}
+
+.disclaimer {
+  padding: 1.5rem;
+  background-color: rgba($light, 0.5);
+  text-align: center;
+  font-size: 0.9rem;
+  color: rgba($dark, 0.6);
+  border-top: 1px solid rgba($dark, 0.05);
+  font-style: italic;
+  
+  strong {
+    color: $secondary;
+    font-style: normal;
+  }
+}

@@ -1,0 +1,98 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: HeroSlide
+ * STYLES FOR: HeroSlide
+ * =============================================================================
+ *
+ * Descripción: Estilos para la primera diapositiva (Hero) de la landing page.
+ * Incluye el nombre de la marca y el lema animado.
+ *
+ * Description: Styles for the first slide (Hero) of the landing page.
+ * Includes the brand name and animated tagline.
+ *
+ * =============================================================================
+ */
+@use "../../styles/variables" as *;
+
+.slide {
+  height: 100vh; // Ocupa toda la altura de la ventana // Occupies full viewport height
+  width: 100%; // Ocupa todo el ancho // Occupies full width
+  scroll-snap-align: start; // Permite el "snap" de scroll // Enables scroll snapping
+  display: flex;
+  flex-direction: column;
+  justify-content: center; // Centra el contenido verticalmente // Vertically centers content
+  align-items: center; // Centra el contenido horizontalmente // Horizontally centers content
+  padding: 2rem;
+  box-sizing: border-box;
+  text-align: center;
+  position: relative; // Para el z-index del contenido // For content z-index
+  z-index: 2; // Contenido por encima del video y overlay // Content above video and overlay
+  background-color: $dark; // Fallback por si el video no carga // Fallback if video fails to load
+}
+
+.transparent {
+  background-color: transparent; // Fondo transparente // Transparent background
+}
+
+.brandName {
+  font-size: clamp(
+    3.5rem,
+    8vw,
+    6rem
+  ); // Tamaño de fuente responsivo // Responsive font size
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); // Sombra de texto // Text shadow
+  font-family: "Orbitron", sans-serif;
+
+  @media (max-width: 765px) {
+    // Media query para dispositivos móviles // Media query for mobile devices
+    font-size: clamp(
+      3.15rem,
+      7.2vw,
+      5.4rem
+    ); // Aproximadamente un 10% más pequeño // Approximately 10% smaller
+  }
+}
+
+.gym {
+  color: #fff; // Color inicial
+  transition: color 1s ease-in-out;
+}
+.gymAnimated {
+  color: $primary;
+}
+.nomads {
+  color: #fff;
+}
+
+.taglineContainer {
+  display: flex;
+  font-size: clamp(
+    1.5rem,
+    4vw,
+    2.5rem
+  ); // Tamaño de fuente responsivo // Responsive font size
+  color: rgba(
+    255,
+    255,
+    255,
+    0.8
+  ); // Color blanco semitransparente // Semi-transparent white color
+  margin-top: 1rem;
+  gap: 1rem; // Espacio entre palabras // Space between words
+  height: 60px;
+  align-items: center; // Centra los elementos horizontalmente // Horizontally centers elements
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5); // Sombra de texto // Text shadow
+}
+
+.taglineWord {
+  opacity: 0; // Inicialmente invisible // Initially invisible
+  transform: translateY(20px); // Desplazado hacia abajo // Shifted downwards
+  transition: opacity 1s ease, transform 1s ease; // Transición 25% más lenta
+}
+
+.taglineWordVisible {
+  opacity: 1; // Visible // Visible
+  transform: translateY(0); // Posición original // Original position
+}

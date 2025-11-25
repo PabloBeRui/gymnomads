@@ -1,0 +1,50 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: ImageUploadPreview
+ * STYLES FOR: ImageUploadPreview
+ * =============================================================================
+ *
+ * Descripción: Estilos para el componente ImageUploadPreview, que muestra una
+ * previsualización de imagen con opciones de forma y funcionalidad de clic.
+ *
+ * Description: Styles for the ImageUploadPreview component, which displays an
+ * image preview with shape options and click functionality.
+ *
+ * =============================================================================
+ */
+@use "../styles/variables" as *; // Importar variables globales // Import global variables
+
+.container {
+  display: inline-block;
+  text-align: center;
+}
+
+.image {
+  object-fit: cover; // Asegura que la imagen cubra el área // Ensures image covers area
+  border: 2px solid var(--bs-gray-300); // Borde predeterminado // Default border
+  transition: all 0.3s ease; // Transición suave para cambios // Smooth transition for changes
+}
+
+.image.circle {
+  border-radius: 50%; // Forma circular // Circular shape
+}
+
+.image.square {
+  border-radius: 8px; // Bordes cuadrados redondeados // Rounded square borders
+}
+
+.image.clickable {
+  cursor: pointer; // Cursor de puntero para indicar interactividad // Pointer cursor to indicate interactivity
+}
+
+.image.clickable:hover {
+  border-color: $primary; // Borde de color primario al pasar el ratón // Primary color border on hover
+  box-shadow: 0 0 0 0.25rem rgba($primary, 0.25); // Sombra de color primario al pasar el ratón // Primary color shadow on hover
+}
+
+.helpText {
+  margin-top: 8px;
+  font-size: 0.9em;
+  color: var(--bs-gray-600); // Color de texto gris tenue // Subtle grey text color
+  font-style: italic;
+}

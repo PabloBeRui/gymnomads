@@ -1,6 +1,23 @@
+/**
+ * =============================================================================
+ * COMPONENTE: ProtectedRoute
+ * COMPONENT:  ProtectedRoute
+ * =============================================================================
+ *
+ * Descripción: Componente de guarda de ruta que protege rutas basándose en la
+ * autenticación del usuario y, opcionalmente, en sus roles.
+ * Redirige a /login si no está autenticado o a /unauthorized si el rol no es permitido.
+ *
+ * Description: Route guard component that protects routes based on user
+ * authentication and, optionally, their roles.
+ * Redirects to /login if not authenticated or to /unauthorized if the role is not allowed.
+ *
+ * =============================================================================
+ */
 import { Navigate, Outlet } from "react-router-dom";
 // Importar el hook de autenticación / Import the authentication hook
 import { useAuth } from "../context/AuthContext";
+import Spinner from "../components/ui/Spinner";
 
 // Definir las props  / Define props
 interface ProtectedRouteProps {
@@ -17,7 +34,7 @@ export const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
   if (isLoading) {
     // esperar a que termine la carga inicial antes de decidir.
     //  wait for the initial load to finish before deciding.
-    return <div>Verificando autenticación...</div>; // TODO Spinner
+    return <Spinner center size="lg" />;
   }
 
   // Comprobar si hay token después de la carga inicial.

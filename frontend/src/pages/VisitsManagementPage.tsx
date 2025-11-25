@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../context/AuthContext";
 import {
   getAllVisits,
@@ -17,141 +17,50 @@ import { Avatar } from "../components/Avatar";
 import { VisitsDetailsModal } from "../components/modals/VisitsDetailsModal";
 import { VisitsStatsModal } from "../components/modals/VisitsStatsModal";
 import { usePagination } from "../hooks/usePagination";
+import { useMediaQuery } from "../hooks/useMediaQuery";
 import { PaginationControls } from "../components/ui/PaginationControls";
 import { FilterInput } from "../components/forms/FilterInput";
 import {
   SortableTable,
   type ColumnDefinition,
 } from "../components/ui/SortableTable";
+import {
+  Container,
+  Row,
+  Col,
+  Form,
+  Button,
+  Card,
+  Alert,
+} from "react-bootstrap";
+import Spinner from "../components/ui/Spinner";
 
-/* =============================================================================
-    ESTILOS (inline)
-    STYLES (inline)
-    ============================================================================= */
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    padding: "20px",
-    maxWidth: "1400px",
-    margin: "0 auto",
-  },
-  header: {
-    marginBottom: "30px",
-  },
-  title: {
-    fontSize: "2rem",
-    marginBottom: "10px",
-    color: "#333",
-  },
-  subtitle: {
-    fontSize: "1rem",
-    color: "#666",
-  },
-  filtersContainer: {
-    display: "flex",
-    gap: "15px",
-    marginBottom: "30px",
-    flexWrap: "wrap",
-    alignItems: "flex-end",
-  },
-  filterGroup: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "5px",
-  },
-  label: {
-    fontSize: "0.9rem",
-    fontWeight: "bold",
-    color: "#495057",
-  },
-  input: {
-    padding: "10px",
-    fontSize: "1rem",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    minWidth: "200px",
-  },
-  select: {
-    padding: "10px",
-    fontSize: "1rem",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    minWidth: "200px",
-    backgroundColor: "white",
-  },
-  clearButton: {
-    padding: "10px 20px",
-    fontSize: "1rem",
-    backgroundColor: "#6c757d",
-    color: "white",
-    border: "none",
-    borderRadius: "4px",
-    cursor: "pointer",
-  },
-  loadingContainer: {
-    padding: "40px",
-    textAlign: "center",
-  },
-  errorText: {
-    color: "red",
-    padding: "20px",
-    textAlign: "center",
-  },
-  emptyState: {
-    padding: "40px",
-    textAlign: "center",
-    color: "#6c757d",
-    fontSize: "1.1rem",
-  },
-  statsContainer: {
-    display: "flex",
-    gap: "20px",
-    marginBottom: "30px",
-    flexWrap: "wrap",
-  },
-  statCard: {
-    flex: "1 1 200px",
-    padding: "20px",
-    backgroundColor: "#f8f9fa",
-    borderRadius: "8px",
-    border: "1px solid #dee2e6",
-    cursor: "pointer",
-    transition: "box-shadow 0.2s",
-  },
-  statNumber: {
-    fontSize: "2rem",
-    fontWeight: "bold",
-    color: "#007bff",
-  },
-  statLabel: {
-    fontSize: "0.9rem",
-    color: "#6c757d",
-    marginTop: "5px",
-  },
-  gymSearchInput: {
-    padding: "8px",
-    fontSize: "0.9rem",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    minWidth: "200px",
-    marginBottom: "5px",
-  },
-  noResultsText: {
-    color: "#dc3545",
-    fontSize: "0.85rem",
-    marginTop: "5px",
-  },
-};
+import styles from "./VisitsManagementPage.module.scss";
+import clsx from "clsx";
 
-/* =============================================================================
-    COMPONENTE: VisitsManagementPage
-    COMPONENT: VisitsManagementPage
-    ============================================================================= */
+/**
+ * =============================================================================
+ * COMPONENTE: VisitsManagementPage
+ * COMPONENT:  VisitsManagementPage
+ * =============================================================================
+ *
+ * Descripción: Página para la gestión de visitas. Permite a los administradores
+ * ver todas las visitas, y a los gerentes ver las visitas recibidas en su
+ * gimnasio o las enviadas por sus usuarios. Incluye filtros, paginación y
+ * estadísticas.
+ *
+ * Description: Page for managing visits. It allows administrators to view all
+ * visits, and managers to view visits received at their gym or those sent by
+ * their users. It includes filters, pagination, and statistics.
+ *
+ * =============================================================================
+ */
 export const VisitsManagementPage = () => {
   const { user, token } = useAuth();
   const isAdmin = user?.role === "admin";
   const isManager = user?.role === "manager";
 
-  // States del componente / Component states
+  // Estados del componente // Component states
   const [visits, setVisits] = useState<VisitWithDetails[]>([]);
   const [gyms, setGyms] = useState<Gym[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -160,7 +69,7 @@ export const VisitsManagementPage = () => {
     "received"
   );
 
-  // Hook de paginación / Pagination hook
+  // Hook de paginación // Pagination hook
   const {
     currentPage,
     itemsPerPage,
@@ -171,21 +80,22 @@ export const VisitsManagementPage = () => {
     changeItemsPerPage,
   } = usePagination();
 
-  // States de filtros / Filter states
+  // Estados de filtros // Filter states
   const [selectedGymId, setSelectedGymId] = useState<string>("");
   const [userSearch, setUserSearch] = useState<string>("");
   const [gymSearchTerm, setGymSearchTerm] = useState<string>("");
 
-  // States para el modal de detalles
-  // States for details modal
+  // Estados para el modal de detalles // States for details modal
   const [showDetailModal, setShowDetailModal] = useState<boolean>(false);
   const [selectedVisit, setSelectedVisit] = useState<VisitWithDetails | null>(
     null
   );
-
   const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
 
-  // Cargar gimnasios (solo para admin) / Load gyms (admin only)
+  // Hook para responsividad / Hook for responsiveness
+  const isLargeScreen = useMediaQuery("(min-width: 768px)");
+
+  // Cargar gimnasios (solo para admin) // Load gyms (admin only)
   useEffect(() => {
     if (!isAdmin || !token) return;
 
@@ -213,7 +123,7 @@ export const VisitsManagementPage = () => {
       gym.city.toLowerCase().includes(gymSearchTerm.toLowerCase())
   );
 
-  // Cargar visitas / Load visits
+  // Cargar visitas // Load visits
   const fetchVisits = async () => {
     if (!token) {
       setError("No estás autenticado.");
@@ -246,8 +156,6 @@ export const VisitsManagementPage = () => {
         if (managerVisitView === "received") {
           response = await getManagerGymVisits(token, baseFilters);
         } else {
-          // Asumiendo que getManagerOutgoingVisits existe y está importado
-          // Assuming getManagerOutgoingVisits exists and is imported
           response = await getManagerOutgoingVisits(token, baseFilters);
         }
       } else {
@@ -270,6 +178,7 @@ export const VisitsManagementPage = () => {
     }
   };
 
+  // Efecto para debounce en la búsqueda // Effect for search debounce
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       fetchVisits();
@@ -279,133 +188,126 @@ export const VisitsManagementPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedGymId, userSearch, currentPage, itemsPerPage, managerVisitView]);
 
-  const handleClearFilters = () => {
-    setSelectedGymId("");
-    setUserSearch("");
-    setGymSearchTerm("");
-    goToPage(1);
-  };
-
+  // Maneja el clic en una fila de la tabla // Handles a click on a table row
   const handleRowClick = (visit: VisitWithDetails) => {
     setSelectedVisit(visit);
     setShowDetailModal(true);
   };
+
+  // Cierra el modal de detalles // Closes the details modal
   const handleCloseModal = () => {
     setShowDetailModal(false);
     setSelectedVisit(null);
   };
 
-  // --- Definición de columnas para la tabla ---
-  // --- Column definitions for the table ---
-  const visitColumns: ColumnDefinition<VisitWithDetails>[] = [
-    {
-      key: "user_name",
-      header: "Usuario",
-      render: (visit) => (
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <Avatar
-            src={visit.user_profile_picture}
-            firstName={visit.user_name || "Usuario"}
-            lastName={""}
-            size={35}
-          />
-          <span>{visit.user_name || "N/A"}</span>
-        </div>
-      ),
-    },
-    // Columna de gimnasio de origen (para admin y manager en vista de recibidas)
-    // Origin gym column (for admin and manager in received view)
-    ...(isManager && managerVisitView === "received"
-      ? [
-          {
-            key: "origin_gym_name" as keyof VisitWithDetails,
-            header: "Gimnasio de Origen",
-            render: (visit: VisitWithDetails) => (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                }}>
-                <Avatar
-                  src={visit.origin_gym_logo_url}
-                  firstName={visit.origin_gym_name || "Gimnasio"}
-                  lastName={""}
-                  size={35}
-                />
-                <span>
-                  {visit.origin_gym_name || "N/A"}
-                  {/* No hay is_deleted para gimnasio de origen en este contexto */}
-                  {/* No is_deleted for origin gym in this context */}
-                </span>
-              </div>
-            ),
-          },
-        ]
-      : []),
-    // Columna de gimnasio de destino (para admin y manager en vista de enviadas)
-    // Destination gym column (for admin and manager in sent view)
-    ...(isAdmin || (isManager && managerVisitView === "sent")
-      ? [
-          {
-            key: "destination_gym_name" as keyof VisitWithDetails,
-            header: isAdmin ? "Gimnasio Visitado" : "Gimnasio de Destino",
-            render: (visit: VisitWithDetails) => (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                }}>
-                <Avatar
-                  src={isAdmin ? visit.gym_logo_url : visit.destination_gym_logo_url}
-                  firstName={isAdmin ? visit.gym_name || "Gimnasio" : visit.destination_gym_name || "Gimnasio"}
-                  lastName={""}
-                  size={35}
-                />
-                <span>
-                  {isAdmin ? visit.gym_name || "N/A" : visit.destination_gym_name || "N/A"}
-                  {/* is_gym_deleted se refiere al gimnasio de destino */}
-                  {/* is_gym_deleted refers to the destination gym */}
-                  {visit.is_gym_deleted && " (Eliminado)"}
-                </span>
-              </div>
-            ),
-          },
-        ]
-      : []),
-    {
-      key: "visit_date",
-      header: "Fecha de Visita",
-      render: (visit) =>
-        new Date(visit.visit_date).toLocaleDateString("es-ES", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "2-digit",
-        }),
-    },
-  ];
+  // Definición de columnas para la tabla // Column definitions for the table
+  const visitColumns: ColumnDefinition<VisitWithDetails>[] = useMemo(() => {
+    const baseColumns: ColumnDefinition<VisitWithDetails>[] = [
+      {
+        key: "user_name",
+        header: "Usuario",
+        render: (visit) => (
+          <div className={styles.avatarCell}>
+            <Avatar
+              src={visit.user_profile_picture}
+              firstName={visit.user_name || "Usuario"}
+              size={35}
+            />
+            <span className="text-dark">
+              {isLargeScreen
+                ? visit.user_name || "N/A"
+                : visit.user_name?.split(" ")[0] || "N/A"}
+            </span>
+          </div>
+        ),
+      },
+    ];
 
+    if (isManager && managerVisitView === "received") {
+      baseColumns.push({
+        key: "origin_gym_name",
+        header: "Gimnasio de Origen",
+        render: (visit: VisitWithDetails) => (
+          <div className={styles.avatarCell}>
+            <Avatar
+              src={visit.origin_gym_logo_url}
+              firstName={visit.origin_gym_name || "Gimnasio"}
+              size={35}
+            />
+            <span className="text-dark">{visit.origin_gym_name || "N/A"}</span>
+          </div>
+        ),
+      });
+    }
+
+    if (isAdmin || (isManager && managerVisitView === "sent")) {
+      baseColumns.push({
+        key: "destination_gym_name",
+        header: isAdmin ? "Gimnasio Visitado" : "Gimnasio de Destino",
+        render: (visit: VisitWithDetails) => (
+          <div className={styles.avatarCell}>
+            <Avatar
+              src={
+                isAdmin ? visit.gym_logo_url : visit.destination_gym_logo_url
+              }
+              firstName={
+                isAdmin
+                  ? visit.gym_name || "Gimnasio"
+                  : visit.destination_gym_name || "Gimnasio"
+              }
+              size={35}
+            />
+            <div>
+              <span
+                className={clsx({
+                  "text-dark": !visit.is_gym_deleted,
+                  [styles.deletedGym]: visit.is_gym_deleted,
+                })}
+                title={visit.is_gym_deleted ? "Gimnasio Eliminado" : ""}>
+                {isAdmin
+                  ? visit.gym_name || "N/A"
+                  : visit.destination_gym_name || "N/A"}
+              </span>
+            </div>
+          </div>
+        ),
+      });
+    }
+
+    if (isLargeScreen) {
+      baseColumns.push({
+        key: "visit_date",
+        header: "Fecha de Visita",
+        render: (visit) =>
+          new Date(visit.visit_date).toLocaleDateString("es-ES", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "2-digit",
+          }),
+      });
+    }
+
+    return baseColumns;
+  }, [isLargeScreen, isAdmin, isManager, managerVisitView]);
+
+  // Muestra el spinner mientras carga y no hay datos // Shows spinner while loading and there is no data
   if (isLoading && visits.length === 0) {
-    return (
-      <div style={styles.loadingContainer}>
-        <p>Cargando visitas...</p>
-      </div>
-    );
+    return <Spinner center size="lg" className="vh-100" />;
   }
 
+  // Muestra el error si no hay datos // Shows error if there is no data
   if (error && visits.length === 0) {
     return (
-      <div style={styles.container}>
-        <div style={styles.errorText}>{error}</div>
-      </div>
+      <Container className="text-center mt-5">
+        <Alert variant="danger">{error}</Alert>
+      </Container>
     );
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>
+    <Container fluid="xl" className="py-4">
+      <header className="mb-4 text-center">
+        <h1 className="h2 text-primary">
           {isAdmin
             ? "Gestión de Visitas"
             : isManager
@@ -414,7 +316,7 @@ export const VisitsManagementPage = () => {
               : "Visitas Enviadas por mis Usuarios"
             : "Visitas a mi Gimnasio"}
         </h1>
-        <p style={styles.subtitle}>
+        <p className="text-light">
           {isAdmin
             ? "Visualiza y filtra todas las visitas de todos los gimnasios."
             : isManager
@@ -423,123 +325,104 @@ export const VisitsManagementPage = () => {
               : "Visualiza y filtra las visitas que tus usuarios han realizado a otros gimnasios."
             : "Visualiza y filtra las visitas a tu gimnasio."}
         </p>
-      </div>
+      </header>
 
-      {isManager && (
-        <div style={{ marginBottom: "20px", display: "flex", gap: "10px" }}>
-          <button
-            onClick={() => setManagerVisitView("received")}
-            style={{
-              ...styles.clearButton,
-              backgroundColor:
-                managerVisitView === "received" ? "#007bff" : "#6c757d",
-            }}>
-            Visitas Recibidas
-          </button>
-          <button
-            onClick={() => setManagerVisitView("sent")}
-            style={{
-              ...styles.clearButton,
-              backgroundColor:
-                managerVisitView === "sent" ? "#007bff" : "#6c757d",
-            }}>
-            Visitas Enviadas
-          </button>
-        </div>
-      )}
+      <Card className="mb-4">
+        <Card.Header as="h5" className="bg-secondary text-white text-center">
+          Filtros y Métricas
+        </Card.Header>
+        <Card.Body>
+          {isManager && (
+            <div className="mb-3 d-flex gap-2">
+              <Button
+                variant={
+                  managerVisitView === "received" ? "primary" : "secondary"
+                }
+                onClick={() => setManagerVisitView("received")}>
+                Visitas Recibidas
+              </Button>
+              <Button
+                variant={managerVisitView === "sent" ? "primary" : "secondary"}
+                onClick={() => setManagerVisitView("sent")}>
+                Visitas Enviadas
+              </Button>
+            </div>
+          )}
+          <Row className="align-items-end">
+            <Col md={4} lg={3} className="mb-3 text-center">
+              <Card
+                className={styles.statCard}
+                onClick={() => setIsStatsModalOpen(true)}
+                title="Ver estadísticas detalladas">
+                <Card.Body>
+                  <div className="text-dark mb-0 small">
+                    {isLoading ? (
+                      <Spinner size="sm" />
+                    ) : isManager ? (
+                      managerVisitView === "received" ? (
+                        "Total Recibidas"
+                      ) : (
+                        "Total Enviadas"
+                      )
+                    ) : (
+                      "Total de Visitas"
+                    )}
+                  </div>
+                  <h2 className="fw-bold text-primary">{totalItems}</h2>{" "}
+                </Card.Body>
+              </Card>
+            </Col>
 
-      <div style={styles.statsContainer}>
-        <div
-          style={styles.statCard}
-          onClick={() => setIsStatsModalOpen(true)}
-          title="Ver estadísticas detalladas"
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)")
-          }
-          onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}>
-          <div style={styles.statNumber}>{totalItems}</div>
-          <div style={styles.statLabel}>
-            {isLoading
-              ? "Cargando..."
-              : isManager
-              ? managerVisitView === "received"
-                ? "Total de Visitas Recibidas"
-                : "Total de Visitas Enviadas"
-              : "Total de Visitas"}
-          </div>
-        </div>
-      </div>
-
-      <div style={styles.filtersContainer}>
-        {isAdmin && (
-          <div style={styles.filterGroup}>
-            <label htmlFor="gymFilter" style={styles.label}></label>
-            <FilterInput
-              label="Buscar Gimnasio"
-              type="text"
-              placeholder="🔍 Buscar por nombre o ciudad..."
-              value={gymSearchTerm}
-              onChange={(e) => setGymSearchTerm(e.target.value)}
-              id="gymSearchFilter" // Añadir un ID explícito para este input
-            />
-            <select
-              id="gymFilter"
-              value={selectedGymId}
-              onChange={(e) => setSelectedGymId(e.target.value)}
-              style={styles.select}>
-              <option value="">A Todos los Gimnasios</option>
-              <option
-                value="deleted"
-                style={{ backgroundColor: "#ffebee", color: "#c62828" }}>
-                A Gimnasios Eliminados
-              </option>
-              {filteredGyms.map((gym) => (
-                <option key={gym.id} value={gym.id}>
-                  {gym.name} - {gym.city}
-                </option>
-              ))}
-            </select>
-            {gymSearchTerm && filteredGyms.length === 0 && (
-              <small style={styles.noResultsText}>
-                No se encontraron gimnasios
-              </small>
+            {isAdmin && (
+              <Col md={8} lg={5} className="mb-3">
+                <FilterInput
+                  label="Buscar Gimnasio"
+                  icon={<i className="bi bi-search"></i>}
+                  placeholder="Nombre o ciudad..."
+                  value={gymSearchTerm}
+                  onChange={(e) => setGymSearchTerm(e.target.value)}
+                  onClear={() => setGymSearchTerm("")}
+                  id="gymSearchFilter"
+                />
+                <Form.Select
+                  value={selectedGymId}
+                  onChange={(e) => setSelectedGymId(e.target.value)}
+                  aria-label="Filtrar por gimnasio"
+                  className="mt-2">
+                  <option value="">A Todos los Gimnasios</option>
+                  <option value="deleted" className={styles.deletedOption}>
+                    A Gimnasios Eliminados
+                  </option>
+                  {filteredGyms.map((gym) => (
+                    <option key={gym.id} value={gym.id}>
+                      {gym.name} - {gym.city}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Col>
             )}
-          </div>
-        )}
 
-        <FilterInput
-          label="Buscar por Usuario"
-          value={userSearch}
-          onChange={(e) => setUserSearch(e.target.value)}
-          placeholder="Nombre o email..."
-        />
-
-        <button
-          onClick={handleClearFilters}
-          style={styles.clearButton}
-          disabled={isLoading}>
-          Limpiar
-        </button>
-      </div>
+            <Col md={4} lg={4} className="mb-3">
+              <FilterInput
+                label="Buscar por Usuario"
+                icon={<i className="bi bi-search"></i>}
+                value={userSearch}
+                onChange={(e) => setUserSearch(e.target.value)}
+                onClear={() => setUserSearch("")}
+                placeholder="Nombre o email..."
+              />
+            </Col>
+          </Row>
+        </Card.Body>
+      </Card>
 
       {visits.length === 0 ? (
-        <div style={styles.emptyState}>
-          {userSearch || selectedGymId ? (
-            <>
-              <p>🔍 No se encontraron visitas con los filtros aplicados.</p>
-              <button
-                onClick={handleClearFilters}
-                style={{
-                  ...styles.clearButton,
-                  marginTop: "15px",
-                  cursor: "pointer",
-                }}>
-                Limpiar filtros
-              </button>
-            </>
-          ) : (
-            <p>📭 Aún no hay visitas registradas.</p>
-          )}
+        <div className="text-center p-5 bg-light rounded">
+          <h5 className="text-dark">
+            {userSearch || selectedGymId
+              ? "🔍 No se encontraron visitas con los filtros aplicados."
+              : "📭 Aún no hay visitas registradas."}
+          </h5>
         </div>
       ) : (
         <>
@@ -572,6 +455,6 @@ export const VisitsManagementPage = () => {
         onClose={() => setIsStatsModalOpen(false)}
         viewMode={isAdmin ? "admin" : "manager"}
       />
-    </div>
+    </Container>
   );
 };

@@ -1,0 +1,151 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: Footer
+ * STYLES FOR: Footer
+ * =============================================================================
+ *
+ * Descripción: Define los estilos para el pie de página de la aplicación.
+ * Cuenta con un diseño glassmorphism permanente.
+ *
+ * Description: Defines styles for the application footer.
+ * Features a permanent glassmorphism design.
+ *
+ * =============================================================================
+ */
+@use "../../styles/variables" as *; // Importar variables globales // Import global variables
+
+.footer {
+  background-color: $glass-bg; // Usar el color de glassmorphism definido // Use defined glassmorphism color
+  backdrop-filter: blur(
+    12px
+  ); // Aplicar desenfoque para efecto glassmorphism // Apply blur for glassmorphism effect
+  color: $light; // Color de texto claro para el footer // Light text color for footer
+  padding: 4rem 1rem 2rem 1rem; // Padding aumentado para más aire // Increased padding for more air
+  border-top: 1px solid rgba($light, 0.1); // Borde superior sutil // Subtle top border
+  margin-top: auto; // Asegura que se pegue al fondo en el layout flex de App.tsx // Ensures it sticks to the bottom in App.tsx's flex layout
+  position: relative; // Necesario para que el z-index funcione correctamente // Required for z-index to work correctly
+  z-index: 1000; // Asegurar que el footer esté sobre otros elementos si es necesario // Ensure footer is above other elements if necessary
+}
+
+.column {
+  margin-bottom: 2.5rem;
+  text-align: center; // Centrado por defecto en móvil // Centered by default on mobile
+
+  @media (min-width: 992px) {
+    // Breakpoint lg
+    text-align: left; // Alineado a la izquierda en escritorio // Left aligned on desktop
+    padding-left: 2rem; // Un poco de indentación // Some indentation
+  }
+}
+
+.title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase; // Mayúsculas para encabezados // Uppercase for headers
+  letter-spacing: 1px;
+  color: $primary; // Color primario para destacar // Primary color to highlight
+  position: relative;
+  display: inline-block; // Para que el subrayado se ajuste al texto // So underline fits text
+
+  // Subrayado decorativo
+  // Decorative underline
+  &::after {
+    content: "";
+    display: block;
+    width: 40px;
+    height: 3px;
+    background-color: $secondary; // Contraste secundario // Secondary contrast
+    margin-top: 8px;
+    border-radius: 2px;
+
+    // Centrar subrayado en móvil
+    // Center underline on mobile
+    @media (max-width: 991.98px) {
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+}
+
+.link {
+  color: rgba($light, 0.8); // Color de enlace claro // Light link color
+  text-decoration: none;
+  margin-bottom: 0.85rem;
+  transition: all 0.3s ease;
+  display: block; // Asegura que los links ocupen su propio espacio // Ensures links take their own space
+  font-size: 0.95rem;
+
+  &:hover {
+    color: $primary !important; // Color primario en hover
+    transform: translateX(
+      5px
+    ); // Desplazamiento sutil a la derecha // Subtle shift right
+    text-shadow: 0 0 10px rgba($primary, 0.5); // Brillo sutil // Subtle glow
+  }
+
+  // En móvil, no desplazar lateralmente, quizás solo color
+  @media (max-width: 991.98px) {
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+.socialContainer {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center; // Centrar en móvil
+  margin-top: 1rem;
+
+  @media (min-width: 992px) {
+    justify-content: center;
+  }
+}
+
+.socialIcon {
+  font-size: 1.5rem;
+  color: $light; // Color de icono social claro // Light social icon color
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); // Transición elástica // Elastic transition
+  background-color: rgba($secondary, 0.5);
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%; // Circular
+  border: 1px solid rgba($light, 0.1);
+
+  &:hover {
+    color: $dark;
+    background-color: $primary; // Fondo primario en hover
+    transform: translateY(-5px); // Elevar
+    box-shadow: 0 5px 15px rgba($primary, 0.4);
+    border-color: $primary;
+  }
+}
+
+.copyright {
+  border-top: 1px solid rgba($light, 0.1); // Borde superior claro // Light top border
+  padding-top: 2rem;
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: rgba($light, 0.5); // Color de copyright claro // Light copyright color
+
+  a {
+    color: $primary; // Enlace en color primario
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease-in-out;
+
+    &:hover {
+      color: $light; // Blanco en hover
+      text-decoration: underline;
+    }
+  }
+}
+
+.columnsContainer {
+  width: 100%;
+}

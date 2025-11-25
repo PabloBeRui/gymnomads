@@ -1,0 +1,158 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: InfoSlide
+ * STYLES FOR: InfoSlide
+ * =============================================================================
+ *
+ * Descripción: Estilos para el componente InfoSlide, que presenta secciones
+ * informativas con un título, texto y contenido opcional.
+ *
+ * Description: Styles for the InfoSlide component, which presents informational
+ * sections with a title, text, and optional content.
+ *
+ * =============================================================================
+ */
+
+@use "../../styles/variables" as *;
+
+.slide {
+  height: 100vh; // Ocupar toda la altura del viewport / Occupy full viewport height
+  width: 100%;
+  scroll-snap-align: start; // Clave para el scroll-snapping / Key for scroll-snapping
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; // Centra el contenido horizontalmente // Horizontally centers content
+  padding: 2rem;
+  box-sizing: border-box; // Asegurar que el padding no desborde // Ensure padding does not overflow
+  text-align: center;
+  transition: background-color 0.5s ease; // Transición suave de color / Smooth color transition
+  position: relative; // Necesario para los pseudo-elementos // Needed for pseudo-elements
+
+  // Gradiente superior e inferior para suavizar la transición entre slides
+  // Top and bottom gradient to smooth the transition between slides
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 15%; // Altura del desvanecimiento (ajustable) // Fade height (adjustable)
+    z-index: 3; // Encima del contenido y overlay // Above content and overlay
+    pointer-events: none; // Permitir clics a través del gradiente // Allow clicks through the gradient
+  }
+
+  // Gradiente superior (desvanece hacia abajo)
+  // Top gradient (fades downwards)
+  &::before {
+    top: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+  }
+
+  // Gradiente inferior (desvanece hacia arriba)
+  // Bottom gradient (fades upwards)
+  &::after {
+    bottom: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  }
+}
+
+.title {
+  font-size: clamp(
+    2.5rem,
+    5vw,
+    4rem
+  ); // Tamaño de fuente responsive / Responsive font size
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #fff; // Color blanco inicial (reemplaza text-light) / Initial white color (replaces text-light)
+  transition: color 1s ease-in-out; // Animación suave de color / Smooth color animation
+  font-family: "Orbitron", sans-serif;
+}
+
+.titleAnimated {
+  color: $primary; // Color primario al animar / Primary color on animation
+}
+
+.text {
+  font-size: clamp(
+    1rem,
+    2.5vw,
+    1.25rem
+  ); // Tamaño de fuente responsive / Responsive font size
+  color: var(
+    --bs-secondary
+  ); // Color de texto secundario // Secondary text color
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+.childrenContainer {
+  margin-top: 2.5rem; // Margen superior para el contenedor de elementos hijos // Top margin for children elements container
+
+  // Estilos para los botones/enlaces hijos directos
+  // Styles for direct child buttons/links
+  > :global(a),
+  > :global(button) {
+    // Estado INICIAL: Transparente, sin borde y ligeramente desplazado/invisible
+    // INITIAL STATE: Transparent, no border and slightly offset/invisible
+    background-color: transparent !important;
+    border: none !important; // Sin borde inicial // No initial border
+    color: transparent !important; // Texto transparente // Transparent text
+    opacity: 0 !important; // Invisible // Invisible
+    transform: translateY(20px) !important; // Desplazado hacia abajo // Shifted downwards
+    // Transición de 1s para coincidir con el título y las palabras del lema
+    // 1s transition to match title and tagline words
+    transition: background-color 1s ease-in-out, border-color 1s ease-in-out,
+      color 1s ease-in-out, opacity 1s ease-in-out, transform 1s ease-in-out !important;
+  }
+}
+
+.childrenAnimated {
+  // Estado FINAL: Color primario (animado)
+  // FINAL STATE: Primary color (animated)
+  > :global(a),
+  > :global(button) {
+    background-color: $primary !important;
+    border: 2px solid $primary !important; // Borde primario // Primary border
+    color: $dark !important;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+
+    // Mantener efecto hover una vez animado
+    // Keep hover effect once animated
+    &:hover {
+      background-color: $gold-hover !important;
+      border-color: $gold-hover !important;
+      color: $dark !important;
+      transform: scale(1.05);
+    }
+  }
+}
+
+.backgroundOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.4
+  ); // Overlay oscuro semitransparente // Semi-transparent dark overlay
+  z-index: 1; // Asegurar que esté debajo del contenido // Ensure it's below the content
+}
+
+.contentWrapper {
+  position: relative;
+  z-index: 2; // Asegurar que el contenido esté encima del overlay // Ensure content is above the overlay
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 100%; // Ocupar toda la altura del slide // Occupy full height of the slide
+  width: 100%; // Ocupar todo el ancho del slide // Occupy full width of the slide
+}

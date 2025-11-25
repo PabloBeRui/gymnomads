@@ -6,87 +6,30 @@
  *
  * Descripción: Página con un formulario para que los gimnasios interesados
  * puedan contactar para unirse a la red Gymnomads.
+ * Refactorizado para usar React-Bootstrap y SASS Modules.
  *
- * Detailed description: Page with a form for interested gyms to contact
+ * Description: Page with a form for interested gyms to contact
  * to join the Gymnomads network.
+ * Refactored to use React-Bootstrap and SASS Modules.
  *
  * =============================================================================
  */
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { CloseButton } from "../../components/ui/CloseButton";
+import { useNavigate } from "react-router-dom";
 
-/* =============================================================================
-    ESTILOS (inline)
-    STYLES (inline)
-    ============================================================================= */
-const styles: { [key: string]: React.CSSProperties } = {
-  pageContainer: {
-    maxWidth: "600px",
-    margin: "40px auto",
-    padding: "30px",
-    position: "relative",
-    backgroundColor: "#fff",
-    borderRadius: "8px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-    textAlign: "center",
-  },
-  title: {
-    fontSize: "2rem",
-    color: "#333",
-    marginBottom: "15px",
-  },
-  subtitle: {
-    fontSize: "1rem",
-    color: "#555",
-    lineHeight: 1.6,
-    marginBottom: "30px",
-  },
-  formInput: {
-    width: "100%",
-    padding: "10px",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    boxSizing: "border-box",
-    marginBottom: "15px",
-    fontSize: "1rem",
-  },
-  formTextarea: {
-    width: "100%",
-    padding: "10px",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    boxSizing: "border-box",
-    minHeight: "100px",
-    marginBottom: "15px",
-    fontSize: "1rem",
-  },
-  formLabel: {
-    display: "block",
-    textAlign: "left",
-    marginBottom: "5px",
-    fontWeight: "600",
-    color: "#333",
-  },
-  submitButton: {
-    width: "100%",
-    padding: "12px 25px",
-    fontSize: "1.1rem",
-    fontWeight: "600",
-    color: "#fff",
-    backgroundColor: "rgb(0, 123, 255)", 
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-    transition: "background-color 0.2s",
-  },
-  submitButtonDisabled: {
-    backgroundColor: "#6c757d",
-    cursor: "not-allowed",
-  },
-};
+// Importar componentes de React-Bootstrap
+// Import React-Bootstrap components
+import { Form, Button, Spinner } from "react-bootstrap";
+
+// Importar el módulo SCSS
+// Import the SCSS module
+import styles from "./GymContactPage.module.scss";
+import clsx from "clsx";
 
 export const GymContactPage = () => {
+  const navigate = useNavigate();
   const [gymName, setGymName] = useState("");
   const [address, setAddress] = useState("");
   const [email, setEmail] = useState("");
@@ -94,20 +37,18 @@ export const GymContactPage = () => {
   const [observations, setObservations] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Manejar el envío del formulario
+  // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-       setIsSubmitting(true);
-
-    // Simulación de envío a un API
-    // API submission simulation
+    // Simulación de envío
+    // Submission simulation
     setTimeout(() => {
       toast.success(
         "¡Gracias por tu interés! Hemos recibido tus datos y te contactaremos pronto."
       );
-
-      // Resetear formulario y estado
-      // Reset form and state
       setGymName("");
       setAddress("");
       setEmail("");
@@ -117,88 +58,147 @@ export const GymContactPage = () => {
     }, 1500);
   };
 
+  // Navegar hacia atrás al hacer clic en el fondo
+  // Navigate back on backdrop click
+  const handleBackdropClick = () => {
+    navigate(-1);
+  };
+
+  // Evitar propagación del clic en el contenedor
+  // Prevent click propagation on container
+  const handleContainerClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   return (
-    <div style={styles.pageContainer}>
-      <CloseButton navigateTo="/" />
-      <h1 style={styles.title}>Contacta con Nosotros</h1>
-      <p style={styles.subtitle}>
-        ¿Eres un gimnasio y quieres unirte a nuestra red? Rellena el siguiente
-        formulario y nos pondremos en contacto contigo.
-      </p>
-      <form onSubmit={handleSubmit} style={{ textAlign: "left" }}>
-        <div>
-          <label style={styles.formLabel} htmlFor="gymName">
-            Nombre del Gimnasio
-          </label>
-          <input
-            id="gymName"
-            type="text"
-            value={gymName}
-            onChange={(e) => setGymName(e.target.value)}
-            style={styles.formInput}
-            required
-          />
+    <div className={styles.backdrop} onClick={handleBackdropClick}>
+      <div className={styles.pageContainer} onClick={handleContainerClick}>
+        <CloseButton 
+          onClick={() => navigate(-1)} 
+          className={styles.closeButton} 
+          color="#FFB700" 
+          ariaLabel="Cerrar formulario"
+        />
+        <div className={styles.splitLayout}>
+          {/* Sección Izquierda: Imagen e Inspiración */}
+          <div className={styles.imageSection}>
+            <img
+              src="/images/gym-contact-page/gym-contact-page.png"
+              alt="Gimnasio moderno GymNomads"
+              className={styles.contactImage}
+            />
+            <div className={styles.imageOverlay}>
+              <h2>Expande tu Negocio</h2>
+              <p>Únete a la red de gimnasios más flexible de España.</p>
+            </div>
+          </div>
+
+                    {/* Sección Derecha: Formulario */}
+                    <div className={styles.formSection}>
+                      
+                      <h1 className={styles.title}>Contacta con Nosotros</h1>            <p className={styles.subtitle}>
+              Rellena el formulario para unirte a nuestra red exclusiva y en en
+              poco tiempo contactaremos contigo.
+            </p>
+
+            <Form onSubmit={handleSubmit}>
+              <Form.Group className="mb-3" controlId="gymName">
+                <Form.Label className={styles.formLabel}>
+                  Nombre del Gimnasio
+                </Form.Label>
+                <Form.Control
+                  type="text"
+                  value={gymName}
+                  onChange={(e) => setGymName(e.target.value)}
+                  required
+                  className={styles.formControl}
+                  placeholder="Ej: Iron Temple Gym"
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3" controlId="address">
+                <Form.Label className={styles.formLabel}>Dirección</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  required
+                  className={styles.formControl}
+                  placeholder="Calle Principal, 123, Madrid"
+                />
+              </Form.Group>
+
+              <div className="row">
+                <div className="col-md-6">
+                  <Form.Group className="mb-3" controlId="email">
+                    <Form.Label className={styles.formLabel}>
+                      Email Profesional
+                    </Form.Label>
+                    <Form.Control
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className={styles.formControl}
+                      placeholder="contacto@tugimnasio.com"
+                    />
+                  </Form.Group>
+                </div>
+                <div className="col-md-6">
+                  <Form.Group className="mb-3" controlId="phone">
+                    <Form.Label className={styles.formLabel}>
+                      Teléfono
+                    </Form.Label>
+                    <Form.Control
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      required
+                      className={styles.formControl}
+                      placeholder="+34 600 000 000"
+                    />
+                  </Form.Group>
+                </div>
+              </div>
+
+              <Form.Group className="mb-4" controlId="observations">
+                <Form.Label className={styles.formLabel}>
+                  Observaciones (Opcional)
+                </Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  value={observations}
+                  onChange={(e) => setObservations(e.target.value)}
+                  className={styles.formControl}
+                  placeholder="Cuéntanos un poco sobre tus instalaciones..."
+                />
+              </Form.Group>
+
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className={clsx(styles.submitButton, "w-100")}>
+                {isSubmitting ? (
+                  <>
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                      className="me-2"
+                    />
+                    Enviando...
+                  </>
+                ) : (
+                  "Enviar Solicitud"
+                )}
+              </Button>
+            </Form>
+          </div>
         </div>
-        <div>
-          <label style={styles.formLabel} htmlFor="address">
-            Dirección
-          </label>
-          <input
-            id="address"
-            type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            style={styles.formInput}
-            required
-          />
-        </div>
-        <div>
-          <label style={styles.formLabel} htmlFor="email">
-            Email de Contacto
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={styles.formInput}
-            required
-          />
-        </div>
-        <div>
-          <label style={styles.formLabel} htmlFor="phone">
-            Teléfono de Contacto
-          </label>
-          <input
-            id="phone"
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            style={styles.formInput}
-            required
-          />
-        </div>
-        <div>
-          <label style={styles.formLabel} htmlFor="observations">
-            Observaciones o Dudas (Opcional)
-          </label>
-          <textarea
-            id="observations"
-            value={observations}
-            onChange={(e) => setObservations(e.target.value)}
-            style={styles.formTextarea}
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          style={{
-            ...styles.submitButton,
-            ...(isSubmitting ? styles.submitButtonDisabled : {}),
-          }}>
-          {isSubmitting ? "Enviando..." : "Enviar Solicitud"}
-        </button>
-      </form>
+      </div>
     </div>
   );
 };

@@ -26,6 +26,10 @@ import L from "leaflet";
 import iconUrl from "leaflet/dist/images/marker-icon.png";
 import iconShadowUrl from "leaflet/dist/images/marker-shadow.png";
 
+// Importar el módulo SCSS / Import the SCSS module
+import styles from "./GymMap.module.scss";
+// import clsx from "clsx"; // Importar clsx / Import clsx
+
 // Configuración del ícono por defecto de Leaflet
 // Leaflet default icon setup
 const DefaultIcon = L.icon({
@@ -47,40 +51,6 @@ interface GymMapProps {
 }
 
 /* =============================================================================
-    ESTILOS (inline)
-    STYLES (inline)
-    ============================================================================= */
-const styles: { [key: string]: React.CSSProperties } = {
-  mapContainer: {
-    height: "300px", // Altura fija para el contenedor del mapa / Fixed height for the map container
-    width: "100%",
-    borderRadius: "8px",
-    border: "1px solid #ccc",
-    boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-    zIndex: 0, // Asegura que el mapa esté en el flujo normal / Ensures map is in normal flow
-  },
-  popupWrapper: {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px", // Espacio entre logo y texto / Space between logo and text
-    margin: 0,
-    padding: 0,
-  },
-  popupLogo: {
-    width: "24px",
-    height: "24px",
-    objectFit: "contain",
-    borderRadius: "4px",
-    flexShrink: 0, // Evita que el logo se encoja / Prevents logo from shrinking
-  },
-  popupText: {
-    margin: 0,
-    fontWeight: 600,
-    textAlign: "left",
-  },
-};
-
-/* =============================================================================
     COMPONENTE
     COMPONENT
     ============================================================================= */
@@ -96,7 +66,7 @@ export const GymMap: React.FC<GymMapProps> = ({
     <MapContainer
       center={position}
       zoom={15} // Zoom inicial (15 es bueno para nivel de calle) / Initial zoom (15 is good for street level)
-      style={styles.mapContainer}>
+      className={styles.mapContainer}>
       {/* Capa de teselas (el mapa base de OpenStreetMap) */}
       {/* Tile layer (the base map from OpenStreetMap) */}
       <TileLayer
@@ -110,15 +80,15 @@ export const GymMap: React.FC<GymMapProps> = ({
         <Popup>
           {/* Contenido del Popup con logo y nombre */}
           {/* Popup content with logo and name */}
-          <div style={styles.popupWrapper}>
+          <div className={styles.popupWrapper}>
             {logoUrl && (
               <img
                 src={logoUrl}
                 alt={`${gymName} logo`}
-                style={styles.popupLogo}
+                className={styles.popupLogo}
               />
             )}
-            <p style={styles.popupText}>{gymName}</p>
+            <p className={styles.popupText}>{gymName}</p>
           </div>
         </Popup>
       </Marker>

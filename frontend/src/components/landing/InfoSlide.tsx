@@ -6,10 +6,11 @@
  *
  * Descripción: Componente reutilizable que representa una "diapositiva" de
  * pantalla completa para la landing page. Está diseñado para usarse con
- * scroll-snapping.
+ * scroll-snapping. Refactorizado con SASS Modules.
  *
  * Description: Reusable component representing a full-screen "slide"
  * for the landing page. Designed to be used with scroll-snapping.
+ * Refactored with SASS Modules.
  *
  * Props:
  * - title: El título principal de la diapositiva. / The main title of the slide.
@@ -20,7 +21,10 @@
  * =============================================================================
  */
 
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { Container } from "react-bootstrap"; // Importar componentes de React-Bootstrap / Import React-Bootstrap components
+import styles from "./InfoSlide.module.scss"; // Importar el módulo SCSS / Import the SCSS module
+import clsx from "clsx"; // Importar clsx / Import clsx
 
 /* =============================================================================
     INTERFACES
@@ -28,46 +32,10 @@ import React from "react";
 interface InfoSlideProps {
   title: string;
   text: string;
-  backgroundColor: string;
-  children?: React.ReactNode; // Para el botón en la última slide
+  backgroundColor?: string; // Hacer que el color de fondo sea opcional / Make background color optional
+  backgroundImage?: string; // Ruta de la imagen de fondo / Background image path
+  children?: React.ReactNode; // Para el botón en la última slide / For the button on the last slide
 }
-
-/* =============================================================================
-    ESTILOS (inline)
-    STYLES (inline)
-    ============================================================================= */
-const styles: { [key: string]: React.CSSProperties } = {
-  slide: {
-    height: "100vh", // Ocupar toda la altura del viewport
-    width: "100%",
-    scrollSnapAlign: "start", // Clave para el scroll-snapping
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: "2rem",
-    boxSizing: "border-box", // Asegurar que el padding no desborde
-    textAlign: "center",
-    transition: "background-color 0.5s ease", // Transición suave de color
-  },
-  title: {
-    fontSize: "clamp(2.5rem, 5vw, 4rem)", // Tamaño de fuente responsive
-    fontWeight: "bold",
-    marginBottom: "1rem",
-    color: "#222", // Color de texto oscuro por defecto
-  },
-  text: {
-    fontSize: "clamp(1rem, 2.5vw, 1.25rem)", // Tamaño de fuente responsive
-    color: "#444",
-    maxWidth: "600px",
-    lineHeight: 1.6,
-  },
-  // Estilo para el contenedor del botón (opcional)
-  // Style for the (optional) button container
-  childrenContainer: {
-    marginTop: "2.5rem",
-  },
-};
 
 /* =============================================================================
     COMPONENTE: InfoSlide
@@ -77,18 +45,100 @@ export const InfoSlide: React.FC<InfoSlideProps> = ({
   title,
   text,
   backgroundColor,
+  backgroundImage,
   children,
 }) => {
-  return (
-    // Aplicar el color de fondo dinámicamente
-    // Apply the background color dynamically
-    <div style={{ ...styles.slide, backgroundColor }}>
-      <h2 style={styles.title}>{title}</h2>
-      <p style={styles.text}>{text}</p>
+  // Refs y Estados para la animación
+  // Refs and States for animation
+  const slideRef = useRef<HTMLDivElement>(null);
+  const [isAnimated, setIsAnimated] = useState(false);
 
-      {/* Renderizar contenido extra (como el botón CTA) si existe */}
-      {/* Render extra content (like the CTA button) if it exists */}
-      {children && <div style={styles.childrenContainer}>{children}</div>}
-    </div>
+  useEffect(() => {
+    const currentSlideRef = slideRef.current; // Capturar el valor actual del ref // Capture the current ref value
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          // Cuando el slide es visible al 50%
+          // When the slide is 50% visible
+          if (entry.isIntersecting) {
+            // Esperar 500ms para iniciar la animación (similar a HeroSlide)
+            // Wait 500ms to start animation (similar a HeroSlide)
+            setTimeout(() => {
+              setIsAnimated(true);
+            }, 500);
+
+            // Desconectar el observador para que solo anime una vez
+            // Disconnect observer so it only animates once
+            if (currentSlideRef) {
+              // Usar el valor capturado // Use the captured value
+              observer.unobserve(currentSlideRef);
+            }
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    if (currentSlideRef) {
+      // Usar el valor capturado // Use the captured value
+      observer.observe(currentSlideRef);
+    }
+
+    return () => {
+      if (currentSlideRef) {
+        // Usar el valor capturado // Use the captured value
+        observer.unobserve(currentSlideRef);
+      }
+    };
+  }, []);
+
+  // Estilos dinámicos para el contenedor / Dynamic styles for the container
+  const containerStyle: React.CSSProperties = {
+    backgroundColor: !backgroundImage ? backgroundColor : "transparent", // Usar color si no hay imagen
+    backgroundImage: backgroundImage ? `url(${backgroundImage})` : "none",
+    backgroundSize: backgroundImage ? "cover" : "auto",
+    backgroundPosition: backgroundImage ? "center" : "auto",
+    backgroundRepeat: backgroundImage ? "no-repeat" : "initial",
+    position: "relative", // Necesario para posicionar el overlay / Needed for overlay positioning
+  };
+
+  return (
+    // Aplicar los estilos dinámicamente / Apply dynamic styles
+    <Container
+      fluid
+      className={clsx(
+        styles.slide,
+        "d-flex flex-column justify-content-center align-items-center p-4"
+      )}
+      style={containerStyle}
+      ref={slideRef} // Asignar ref al contenedor / Assign ref to container
+    >
+      {backgroundImage && <div className={styles.backgroundOverlay}></div>}{" "}
+      {/* Overlay para legibilidad */}
+      <div className={styles.contentWrapper}>
+        {" "}
+        {/* Wrapper para el contenido */}
+        <h2
+          className={clsx(styles.title, {
+            [styles.titleAnimated]: isAnimated,
+          })}>
+          {title}
+        </h2>{" "}
+        {/* Título animado / Animated title */}
+        <p className={clsx(styles.text, "text-light")}>{text}</p>{" "}
+        {/* Cambiar a text-light para contraste */}
+        {/* Renderizar contenido extra (como el botón CTA) si existe */}
+        {/* Render extra content (like the CTA button) if it exists */}
+        {children && (
+          <div
+            className={clsx(styles.childrenContainer, {
+              [styles.childrenAnimated]: isAnimated,
+            })}>
+            {children}
+          </div>
+        )}
+      </div>
+    </Container>
   );
 };

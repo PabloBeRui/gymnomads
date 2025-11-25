@@ -1,21 +1,29 @@
 /**
  * =============================================================================
  * COMPONENTE: SortableTable
+ * COMPONENT: SortableTable
  * =============================================================================
  *
  * Componente de tabla reutilizable y genérico que incluye lógica de ordenación.
  * Utiliza el hook `useSorting` para manejar el estado de la ordenación.
  * Recibe `data` y `columns` como props para renderizar la tabla.
+ * Refactorizado para usar React-Bootstrap y SASS Modules.
  *
  * Reusable and generic table component that includes sorting logic.
  * It uses the `useSorting` hook to manage the sorting state.
  * It receives `data` and `columns` as props to render the table.
+ * Refactored to use React-Bootstrap and SASS Modules.
  *
  * =============================================================================
  */
 
 import React from "react";
 import { useSorting } from "../../hooks/useSorting";
+
+// Importar componentes de React-Bootstrap / Import React-Bootstrap components
+import { Table } from "react-bootstrap";
+import styles from "./SortableTable.module.scss"; // Importar el módulo SCSS / Import the SCSS module
+import clsx from "clsx"; // Importar clsx / Import clsx
 
 // Interfaz para la definición de las columnas.
 // Interface for column definitions.
@@ -40,44 +48,6 @@ interface SortableTableProps<T> {
   onRowClick?: (item: T) => void;
 }
 
-// Estilos para la tabla 
-// Styles for the table 
-const styles: { [key: string]: React.CSSProperties } = {
-  tableContainer: {
-    overflowX: "auto",
-    backgroundColor: "white",
-    borderRadius: "8px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-  },
-  th: {
-    padding: "15px",
-    textAlign: "left",
-    backgroundColor: "#f8f9fa",
-    borderBottom: "2px solid #dee2e6",
-    fontWeight: "bold",
-    color: "#495057",
-    cursor: "pointer",
-    userSelect: "none",
-    transition: "background-color 0.2s",
-  },
-  td: {
-    padding: "12px 15px",
-    borderBottom: "1px solid #dee2e6",
-  },
-  clickableRow: {
-    cursor: "pointer",
-    transition: "background-color 0.2s",
-  },
-  sortIndicator: {
-    marginLeft: "8px",
-    fontSize: "0.9em",
-  },
-};
-
 /**
  * Componente genérico para renderizar una tabla con ordenación.
  * Generic component to render a table with sorting.
@@ -101,28 +71,25 @@ export const SortableTable = <T extends { id: number | string }>({
     if (!sortConfig || sortConfig.key !== key) {
       return null;
     }
-    return sortConfig.direction === "ascending" ? "🔼" : "🔽";
+    if (sortConfig.direction === "ascending") {
+      return <i className="bi bi-arrow-up"></i>;
+    }
+    return <i className="bi bi-arrow-down"></i>;
   };
 
   return (
-    <div style={styles.tableContainer}>
-      <table style={styles.table}>
+    <div className={styles.tableContainer}>
+      <Table hover responsive className={styles.table}>
         <thead>
           <tr>
             {columns.map((col) => (
               <th
                 key={col.key as string}
-                style={styles.th}
+                className={styles.th}
                 onClick={() => requestSort(col.key)}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#e9ecef")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#f8f9fa")
-                }
                 title={`Ordenar por ${col.header}`}>
                 {col.header}
-                <span style={styles.sortIndicator}>
+                <span className={styles.sortIndicator}>
                   {getSortIndicator(col.key)}
                 </span>
               </th>
@@ -133,18 +100,10 @@ export const SortableTable = <T extends { id: number | string }>({
           {sortedItems.map((item) => (
             <tr
               key={item.id}
-              style={onRowClick ? styles.clickableRow : {}}
-              onClick={() => onRowClick?.(item)}
-              onMouseEnter={(e) => {
-                if (onRowClick)
-                  e.currentTarget.style.backgroundColor = "#f8f9fa";
-              }}
-              onMouseLeave={(e) => {
-                if (onRowClick)
-                  e.currentTarget.style.backgroundColor = "transparent";
-              }}>
+              className={clsx({ [styles.clickableRow]: onRowClick })}
+              onClick={() => onRowClick?.(item)}>
               {columns.map((col) => (
-                <td key={`${item.id}-${col.key as string}`} style={styles.td}>
+                <td key={`${item.id}-${col.key as string}`} className={styles.td}>
                   {/* Usar la función de renderizado si existe, si no, mostrar el valor directamente. */}
                   {/* Use the render function if it exists, otherwise display the value directly. */}
                   {col.render
@@ -155,7 +114,7 @@ export const SortableTable = <T extends { id: number | string }>({
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 };

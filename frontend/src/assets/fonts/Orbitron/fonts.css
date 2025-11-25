@@ -1,0 +1,8 @@
+/* Orbitron Variable Font (Weights 400-900) */
+@font-face {
+  font-family: 'Orbitron';
+  font-style: normal;
+  font-weight: 400 900; /* Rango de pesos soportados por la fuente variable */
+  font-display: swap;
+  src: url('/src/assets/fonts/Orbitron/orbitron-variable.woff2') format('woff2');
+}

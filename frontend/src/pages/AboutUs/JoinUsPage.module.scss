@@ -1,0 +1,135 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: JoinUsPage
+ * STYLES FOR: JoinUsPage
+ * =============================================================================
+ *
+ * Descripción: Estilos para la página "Únete a Gymnomads".
+ * Incluye el diseño del contenedor principal de la página, el título,
+ * las tarjetas de llamada a la acción (CTA) con sus efectos de hover,
+ * imágenes de tarjetas, títulos y texto.
+ *
+ * Description: Styles for the "Join Us" page.
+ * Includes the design of the main page container, title,
+ * call-to-action (CTA) cards with their hover effects,
+ * card images, titles, and text.
+ *
+ * =============================================================================
+ */
+@use "../../styles/variables" as *; // Importar variables globales // Import global variables
+
+// Envoltura para detectar clics fuera del contenido
+// Wrapper to detect clicks outside the content
+.backdrop {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; // Alinear arriba para permitir scroll natural // Align top to allow natural scroll
+  padding: 1rem; // Padding alrededor del contenedor principal // Padding around main container
+  cursor: pointer; // Indicar que es clicable (para cerrar) // Indicate clickable (to close)
+}
+
+.pageContainer {
+  max-width: 900px; // Ancho máximo del contenedor // Maximum width of container
+  width: 100%; // Asegurar que use el 100% del espacio disponible hasta max-width // Ensure it uses 100% of available space up to max-width
+  margin: 60px auto; // Margen superior/inferior y centrado horizontal // Top/bottom margin and horizontal centering
+  padding: 60px 40px 40px 40px; // Aumentar padding superior // Increase top padding
+  position: relative;
+  background-color: transparent; // Fondo transparente para que se vea el fondo global // Transparent background to show global background
+  backdrop-filter: blur(10px); // Efecto glass // Glass effect
+  border-radius: $border-radius-lg; // Bordes redondeados // Rounded borders
+  box-shadow: $box_shadow_lg; // Sombra sutil // Subtle shadow
+  border: 1px solid rgba($dark, 0.05);
+  cursor: default; // Evitar que el cursor pointer del wrapper se herede // Prevent pointer cursor inheritance from wrapper
+
+  // Ajustes para móviles // Mobile adjustments
+  @media (max-width: 768px) {
+    width: 98%; // Ligeramente más ancho en móvil // Slightly wider on mobile
+    margin: 1.5rem auto; // Reducir margen vertical // Reduce vertical margin
+    padding: 1.5rem; // Reducir padding interno // Reduce inner padding
+  }
+}
+
+.title {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: $primary; // Color primario // Primary color
+  margin-bottom: 40px;
+  text-transform: none; // Asegurar que no herede mayúsculas // Ensure no uppercase inheritance
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba($dark, 0.1);
+}
+
+.ctaCard {
+  flex: 1;
+  min-width: 300px; // Ancho mínimo de la tarjeta CTA // Minimum width of CTA card
+  border: none; // Sin borde visible inicial // No visible border initially
+  border-radius: $border-radius-lg; // Bordes redondeados // Rounded borders
+  text-decoration: none; // Sin subrayado // No underline
+  color: inherit; // Hereda el color del texto // Inherits text color
+  background-color: $light; // Fondo blanco // White background
+  transition: all 0.3s ease-in-out; // Transiciones suaves // Smooth transitions
+  height: 100%;
+  overflow: hidden; // Para que la imagen respete el borde redondeado // So image respects rounded border
+  box-shadow: $box-shadow; // Sombra base // Base shadow
+
+  &:hover {
+    transform: translateY(
+      -10px
+    ); // Elevación al pasar el ratón // Lift on hover
+    box-shadow: $box-shadow-lg; // Sombra al pasar el ratón // Shadow on hover
+    // border-color: $primary; // (Opcional) Borde primario en hover // Primary border on hover
+  }
+}
+
+.cardImageWrapper {
+  height: 250px; // Altura aumentada para la imagen // Increased height for image
+  width: 100%;
+  overflow: hidden;
+}
+
+.cardImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; // Recortar imagen para llenar el contenedor // Crop image to fill container
+  transition: transform 0.5s ease; // Transición suave para zoom // Smooth zoom transition
+
+  .ctaCard:hover & {
+    transform: scale(1.05); // Zoom suave al hover // Smooth zoom on hover
+  }
+}
+
+.cardTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: $dark; // Color de texto oscuro // Dark text color
+  margin-bottom: 15px;
+  margin-top: 10px;
+}
+
+.cardText {
+  font-size: 1rem;
+  color: rgba($dark, 0.7); // Color de texto secundario // Secondary text color
+  line-height: 1.6;
+  margin-bottom: 25px;
+  flex-grow: 1; // Para empujar el botón al fondo si el texto es corto // Push button to bottom if text is short
+}
+
+.cardButton {
+  width: 100%; // Botón de ancho completo // Full width button
+  padding: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+// Estilo para posicionar el nuevo botón de cierre animado.
+// Style to position the new animated close button.
+.closeButton {
+  position: absolute;
+  top: 5px; // Sube un poco // Move up a bit
+  right: 5px; // Mueve a la derecha un poco // Move right a bit
+  left: auto; // Asegurarse de que el botón se alinee a la derecha // Ensure the button aligns to the right
+  z-index: 10;
+}

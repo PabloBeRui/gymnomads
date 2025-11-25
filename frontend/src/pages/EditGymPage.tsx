@@ -4,7 +4,10 @@
  * =============================================================================
  *
  * Página para editar gimnasios existentes.
+ * Refactorizado para usar React-Bootstrap y SASS Modules.
+ *
  * Page to edit existing gyms.
+ * Refactored to use React-Bootstrap and SASS Modules.
  *
  * Permisos / Permissions:
  * - Admin: puede editar SOLO datos de texto (nombre, dirección, coordenadas)
@@ -45,6 +48,7 @@ import { useImageUpload } from "../hooks/useImageUpload";
 
 // Componentes UI / UI components
 import { ImageUploadPreview } from "../components/ImageUploadPreview";
+import { CloseButton } from "../components/ui/CloseButton"; // Importar el botón de cierre // Import the close button
 
 // Servicios API / API services
 import {
@@ -60,46 +64,13 @@ import type { Gym } from "../interfaces/gym-interfaces";
 // Utilidades / Utilities
 import { handleApiError } from "../utils/error-handler";
 
-/* =============================================================================
-   ESTILOS / Inline styles
-   ============================================================================= */
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    padding: "20px",
-    maxWidth: "800px",
-    margin: "20px auto",
-    border: "1px solid #ccc",
-    borderRadius: "8px",
-  },
-  formGroup: { marginBottom: "15px" },
-  label: { display: "block", marginBottom: "5px", fontWeight: "bold" },
-  input: {
-    width: "100%",
-    padding: "8px",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    boxSizing: "border-box",
-  },
-  disabledInput: { backgroundColor: "#e9ecef", cursor: "not-allowed" },
-  button: {
-    padding: "10px 15px",
-    backgroundColor: "#28a745",
-    color: "white",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-    marginTop: "10px",
-  },
-  cancelButton: { backgroundColor: "#6c757d", marginLeft: "10px" },
-  errorText: { color: "red", fontSize: "0.9em", marginTop: "10px" },
-  previewImage: {
-    maxWidth: "200px",
-    maxHeight: "150px",
-    marginTop: "10px",
-    display: "block",
-    border: "1px solid #eee",
-  },
-};
+// Importar componentes de React-Bootstrap / Import React-Bootstrap components
+import { Container, Form, Button, Alert } from "react-bootstrap";
+import Spinner from "../components/ui/Spinner";
+
+// Importar el módulo SCSS / Import the SCSS module
+import styles from "./EditGymPage.module.scss";
+import clsx from "clsx"; // Importar clsx / Import clsx
 
 /* =============================================================================
    COMPONENTE: EditGymPage
@@ -125,15 +96,21 @@ export const EditGymPage = () => {
   const [formError, setFormError] = useState<string | null>(null);
 
   // Load gym data
-  const { loading: isLoading, error: loadError, execute: executeLoadGym } =
-    useApiCall<Gym>("Error al cargar los datos del gimnasio.");
+  const {
+    loading: isLoading,
+    error: loadError,
+    execute: executeLoadGym,
+  } = useApiCall<Gym>("Error al cargar los datos del gimnasio.");
 
   /* ===========================================================================
      Image hooks (typed)
      - UploadArgs = [gymId, token]
      - UploadResult = { message, filePath }
      =========================================================================== */
-  const logoUpload = useImageUpload<[number | string, string], { message: string; filePath: string }>(
+  const logoUpload = useImageUpload<
+    [number | string, string],
+    { message: string; filePath: string }
+  >(
     {
       maxSizeMB: 5,
       allowedTypes: ["image/png", "image/jpeg", "image/jpg", "image/webp"],
@@ -146,7 +123,10 @@ export const EditGymPage = () => {
       await updateGymLogo(gymId, file, tokenArg)
   );
 
-  const mainImageUpload = useImageUpload<[number | string, string], { message: string; filePath: string }>(
+  const mainImageUpload = useImageUpload<
+    [number | string, string],
+    { message: string; filePath: string }
+  >(
     {
       maxSizeMB: 5,
       allowedTypes: ["image/png", "image/jpeg", "image/jpg", "image/webp"],
@@ -160,7 +140,8 @@ export const EditGymPage = () => {
   );
 
   // Disable submit while uploading images
-  const anyImageUploading = logoUpload.isUploading || mainImageUpload.isUploading;
+  const anyImageUploading =
+    logoUpload.isUploading || mainImageUpload.isUploading;
 
   // Role helper
   const isManagerEditing = user?.role === "manager";
@@ -198,19 +179,31 @@ export const EditGymPage = () => {
         setLongitude(data.longitude?.toString() || "");
 
         // Build preview URLs if backend provides paths
-        const backendBaseUrl = import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:3000";
+        const backendBaseUrl =
+          import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:3000";
 
         if (data.logo_url) {
-          const logoUrl = `${backendBaseUrl}/${data.logo_url.startsWith("/") ? data.logo_url.substring(1) : data.logo_url}`;
+          const logoUrl = `${backendBaseUrl}/${
+            data.logo_url.startsWith("/")
+              ? data.logo_url.substring(1)
+              : data.logo_url
+          }`;
           logoUpload.setPreviewUrl(logoUrl);
         }
 
         if (data.main_image_url) {
-          const mainImageUrl = `${backendBaseUrl}/${data.main_image_url.startsWith("/") ? data.main_image_url.substring(1) : data.main_image_url}`;
+          const mainImageUrl = `${backendBaseUrl}/${
+            data.main_image_url.startsWith("/")
+              ? data.main_image_url.substring(1)
+              : data.main_image_url
+          }`;
           mainImageUpload.setPreviewUrl(mainImageUrl);
         }
       } catch (err) {
-        const processed = handleApiError(err, "Error al cargar los datos del gimnasio.");
+        const processed = handleApiError(
+          err,
+          "Error al cargar los datos del gimnasio."
+        );
         setFormError(processed);
         toast.error(processed);
       }
@@ -224,7 +217,9 @@ export const EditGymPage = () => {
   /* ===========================================================================
      HANDLERS
      =========================================================================== */
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ): void => {
     if (isManagerEditing) return;
 
     const { name: field, value } = e.target;
@@ -249,7 +244,9 @@ export const EditGymPage = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
     setFormError(null);
     setIsSubmitting(true);
@@ -303,12 +300,21 @@ export const EditGymPage = () => {
       }
 
       try {
-        const gymDetails: Partial<Gym> = { name, address, city, latitude: latNum, longitude: lonNum };
+        const gymDetails: Partial<Gym> = {
+          name,
+          address,
+          city,
+          latitude: latNum,
+          longitude: lonNum,
+        };
         await updateGymDetails(id, gymDetails, token);
         toast.success("Gimnasio actualizado con éxito.");
         navigate("/gyms");
       } catch (err) {
-        const processed = handleApiError(err, "Error al actualizar el gimnasio.");
+        const processed = handleApiError(
+          err,
+          "Error al actualizar el gimnasio."
+        );
         setFormError(processed);
         toast.error(processed);
       } finally {
@@ -318,8 +324,10 @@ export const EditGymPage = () => {
       // Image uploads only
       const promises: Promise<unknown>[] = [];
 
-      if (logoUpload.selectedFile) promises.push(logoUpload.uploadImage(id, token));
-      if (mainImageUpload.selectedFile) promises.push(mainImageUpload.uploadImage(id, token));
+      if (logoUpload.selectedFile)
+        promises.push(logoUpload.uploadImage(id, token));
+      if (mainImageUpload.selectedFile)
+        promises.push(mainImageUpload.uploadImage(id, token));
 
       if (promises.length === 0) {
         toast.info("No seleccionaste nuevas imágenes para guardar.");
@@ -332,7 +340,10 @@ export const EditGymPage = () => {
         toast.success("Imágenes del gimnasio actualizadas.");
         navigate("/gyms");
       } catch (err) {
-        const processed = handleApiError(err, "Error al actualizar las imágenes.");
+        const processed = handleApiError(
+          err,
+          "Error al actualizar las imágenes."
+        );
         setFormError(processed);
         toast.error(processed);
       } finally {
@@ -347,118 +358,120 @@ export const EditGymPage = () => {
   /* ===========================================================================
      RENDER
      =========================================================================== */
-  if (isLoading) return <div style={styles.container}>Cargando...</div>;
+  if (isLoading)
+    return (
+      <Container className="text-center mt-5">
+        <Spinner center size="lg" />
+      </Container>
+    );
 
   const displayError = loadError || formError;
 
   if (displayError || !originalGymData) {
     return (
-      <div style={styles.container}>
-        <p style={styles.errorText}>{displayError || "No se encontró el gimnasio."}</p>
-        <button onClick={() => navigate("/gyms")} style={styles.button}>
+      <Container className={styles.container}>
+        <Alert variant="danger">
+          {displayError || "No se encontró el gimnasio."}
+        </Alert>
+        <Button onClick={() => navigate("/gyms")} variant="primary">
           Volver a la lista
-        </button>
-      </div>
+        </Button>
+      </Container>
     );
   }
 
   return (
-    <div style={styles.container}>
-      <h2>
+    <Container className={clsx(styles.container, "py-5", "position-relative")}>
+      {" "}
+      {/* Añadir position-relative para el posicionamiento absoluto del botón */}
+      <CloseButton
+        onClick={() => navigate(-1)}
+        className={styles.closeButton}
+        color="#FFB700"
+        ariaLabel="Volver a la página anterior"
+      />
+      <h2 className="text-primary mb-4 text-center">
         Editar Gimnasio: {originalGymData.name} (ID: {id})
       </h2>
-
-      <form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit}>
         {/* TEXT FIELDS (Admin only) / CAMPOS DE TEXTO (solo Admin) */}
-        <div style={styles.formGroup}>
-          <label htmlFor="name" style={styles.label}>
-            Nombre:
-          </label>
-          <input
+        <Form.Group className="mb-3">
+          <Form.Label className="text-dark">Nombre:</Form.Label>
+          <Form.Control
             id="name"
             name="name"
             type="text"
             value={name}
             onChange={handleChange}
-            style={isManagerEditing ? { ...styles.input, ...styles.disabledInput } : styles.input}
+            className={clsx({ [styles.disabledInput]: isManagerEditing })}
             disabled={isManagerEditing}
             required
           />
-        </div>
+        </Form.Group>
 
-        <div style={styles.formGroup}>
-          <label htmlFor="address" style={styles.label}>
-            Dirección:
-          </label>
-          <input
+        <Form.Group className="mb-3">
+          <Form.Label className="text-dark">Dirección:</Form.Label>
+          <Form.Control
             id="address"
             name="address"
             type="text"
             value={address}
             onChange={handleChange}
-            style={isManagerEditing ? { ...styles.input, ...styles.disabledInput } : styles.input}
+            className={clsx({ [styles.disabledInput]: isManagerEditing })}
             disabled={isManagerEditing}
             required
           />
-        </div>
+        </Form.Group>
 
-        <div style={styles.formGroup}>
-          <label htmlFor="city" style={styles.label}>
-            Ciudad:
-          </label>
-          <input
+        <Form.Group className="mb-3">
+          <Form.Label className="text-dark">Ciudad:</Form.Label>
+          <Form.Control
             id="city"
             name="city"
             type="text"
             value={city}
             onChange={handleChange}
-            style={isManagerEditing ? { ...styles.input, ...styles.disabledInput } : styles.input}
+            className={clsx({ [styles.disabledInput]: isManagerEditing })}
             disabled={isManagerEditing}
             required
           />
-        </div>
+        </Form.Group>
 
-        <div style={styles.formGroup}>
-          <label htmlFor="latitude" style={styles.label}>
-            Latitud:
-          </label>
-          <input
+        <Form.Group className="mb-3">
+          <Form.Label className="text-dark">Latitud:</Form.Label>
+          <Form.Control
             id="latitude"
             name="latitude"
             type="number"
             step="any"
             value={latitude}
             onChange={handleChange}
-            style={isManagerEditing ? { ...styles.input, ...styles.disabledInput } : styles.input}
+            className={clsx({ [styles.disabledInput]: isManagerEditing })}
             disabled={isManagerEditing}
             required
           />
-        </div>
+        </Form.Group>
 
-        <div style={styles.formGroup}>
-          <label htmlFor="longitude" style={styles.label}>
-            Longitud:
-          </label>
-          <input
+        <Form.Group className="mb-3">
+          <Form.Label className="text-dark">Longitud:</Form.Label>
+          <Form.Control
             id="longitude"
             name="longitude"
             type="number"
             step="any"
             value={longitude}
             onChange={handleChange}
-            style={isManagerEditing ? { ...styles.input, ...styles.disabledInput } : styles.input}
+            className={clsx({ [styles.disabledInput]: isManagerEditing })}
             disabled={isManagerEditing}
             required
           />
-        </div>
+        </Form.Group>
 
         {/* IMAGES SECTION (Manager edits, Admin sees read-only previews) */}
-        <div style={styles.formGroup}>
+        <Form.Group className="mb-3">
           {isManagerEditing ? (
             <>
-              <label htmlFor="logoFile" style={styles.label}>
-                Logo
-              </label>
+              <Form.Label className="text-dark">Logo</Form.Label>
               <input
                 id="logoFile"
                 type="file"
@@ -479,16 +492,20 @@ export const EditGymPage = () => {
               />
             </>
           ) : (
-            logoUpload.previewUrl && <img src={logoUpload.previewUrl} alt="Logo actual" style={styles.previewImage} />
+            logoUpload.previewUrl && (
+              <img
+                src={logoUpload.previewUrl}
+                alt="Logo actual"
+                className={styles.previewImage}
+              />
+            )
           )}
-        </div>
+        </Form.Group>
 
-        <div style={styles.formGroup}>
+        <Form.Group className="mb-3">
           {isManagerEditing ? (
             <>
-              <label htmlFor="mainImageFile" style={styles.label}>
-                Imagen Principal
-              </label>
+              <Form.Label className="text-dark">Imagen Principal</Form.Label>
               <input
                 id="mainImageFile"
                 type="file"
@@ -509,21 +526,43 @@ export const EditGymPage = () => {
               />
             </>
           ) : (
-            mainImageUpload.previewUrl && <img src={mainImageUpload.previewUrl} alt="Imagen principal actual" style={styles.previewImage} />
+            mainImageUpload.previewUrl && (
+              <img
+                src={mainImageUpload.previewUrl}
+                alt="Imagen principal actual"
+                className={styles.previewImage}
+              />
+            )
           )}
-        </div>
+        </Form.Group>
 
         {/* ERROR MESSAGE & BUTTONS */}
-        {displayError && <p style={styles.errorText}>{displayError}</p>}
+        {displayError && <Alert variant="danger">{displayError}</Alert>}
 
-        <button type="submit" style={styles.button} disabled={isSubmitting || anyImageUploading}>
-          {isSubmitting || anyImageUploading ? "Guardando..." : isManagerEditing ? "Guardar Imágenes" : "Guardar Cambios"}
-        </button>
+        <Button
+          type="submit"
+          variant="primary"
+          disabled={isSubmitting || anyImageUploading}>
+          {isSubmitting || anyImageUploading ? (
+            <>
+              <Spinner size="sm" variant="light" className="me-2" />
+              Guardando...
+            </>
+          ) : isManagerEditing ? (
+            "Guardar Imágenes"
+          ) : (
+            "Guardar Cambios"
+          )}
+        </Button>
 
-        <button type="button" onClick={() => navigate("/gyms")} style={{ ...styles.button, ...styles.cancelButton }}>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => navigate("/gyms")}
+          className="ms-2">
           Cancelar
-        </button>
-      </form>
-    </div>
+        </Button>
+      </Form>
+    </Container>
   );
 };

@@ -1,0 +1,195 @@
+/**
+ * =============================================================================
+ * ESTILOS PARA: GymPage
+ * STYLES FOR: GymPage
+ * =============================================================================
+ *
+ * Descripción: Estilos para la página de detalles de un gimnasio específico.
+ * Incluye el diseño del contenedor de la página, el contenedor de contenido
+ * principal, la imagen hero y su overlay, y el logo del gimnasio pequeño.
+ *
+ * Description: Styles for the specific gym details page.
+ * Includes the design of the page wrapper, main content container,
+ * hero image and its overlay, and the small gym logo.
+ *
+ * =============================================================================
+ */
+@use "../styles/variables" as *; // Importar variables globales // Import global variables
+
+.pageWrapper {
+  background-color: transparent; // Fondo transparente
+  min-height: 100vh; // Altura mínima de la página // Minimum page height
+  padding: 2rem 1rem;
+  display: flex;
+  justify-content: center; // Centrado horizontal // Horizontal centering
+  align-items: flex-start; // Alineación al inicio vertical // Vertical alignment to start
+  cursor: pointer; // Indica que el fondo es clickeable // Indicates background is clickable
+
+  // En pantallas pequeñas, aumentar el padding para crear áreas clickeables
+  // On small screens, increase padding to create clickable areas
+  @media (max-width: 767.98px) {
+    padding: 1rem 0.5rem; // Restaurar padding para dejar bordes libres y maximizar espacio vertical
+  }
+}
+
+.contentContainer {
+  background-color: var(--bs-white); // Fondo blanco para el contenido // White background for content
+  border-radius: var(--bs-border-radius-xl); // Bordes redondeados grandes // Large rounded borders
+  padding: 2rem;
+  box-shadow: var(--bs-box-shadow-lg); // Sombra grande // Large shadow
+  max-width: 1100px; // Ancho máximo del contenedor de contenido // Maximum width of content container
+  width: 100%;
+  cursor: default; // El cursor vuelve a la normalidad sobre el contenido // Cursor returns to normal over content
+
+  @media (max-width: 767.98px) {
+    width: 85%; // Reducir un poco más el ancho para móvil // Reduce width a bit more for mobile
+    margin: 0.5rem auto; // Centrar y añadir margen superior/inferior para separación
+    padding: 0.5rem; // Reducir padding interno para maximizar contenido
+    border-radius: $border-radius-lg; // Restaurar border-radius
+  }
+}
+
+.heroImageWrapper {
+    position: relative;
+    height: 350px; // Altura fija para la imagen hero // Fixed height for hero image
+    overflow: hidden;
+    border-radius: var(--bs-border-radius-lg); // Bordes redondeados // Rounded borders
+    box-shadow: var(--bs-box-shadow); // Sombra // Shadow
+
+    @media (max-width: 767.98px) {
+      height: 280px; // Reducir altura en un 20% para móvil
+    }
+}
+
+.heroImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; // La imagen cubre el contenedor // Image covers container
+}
+
+.heroOverlay {
+    position: absolute;
+    top: 0; // Se adhiere a la parte superior
+    left: 0;
+    right: 0;
+    height: 100%; // Ocupa toda la altura
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%); // Degradado oscuro // Dark gradient
+    color: white; // Texto blanco // White text
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; // Espacio entre el nombre (arriba) y la ciudad (abajo)
+
+    h1 {
+        // En móvil, aumentar el tamaño del nombre del gimnasio
+        @media (max-width: 767.98px) {
+            font-size: 1.625rem; // 1.25rem * 1.3
+        }
+    }
+}
+
+// Estilos específicos para la cabecera móvil
+// Specific styles for the mobile header
+.mobileHeaderRow {
+  position: relative; // Para posicionar el botón de cierre absoluto
+  background-color: var(--bs-white); // Un fondo para que se vea el logo y el título
+  border-bottom: 1px solid var(--bs-gray-300);
+  justify-content: space-between; // Logo a la derecha, nombre a la izquierda
+
+  // Estilos específicos para móvil
+  // Mobile specific styles
+  @media (max-width: 767.98px) {
+    width: 90%; // Igualar al contentContainer
+    margin: 0 auto 0.5rem auto; // Centrar y añadir margen inferior, quitar superior
+    padding-top: 1rem; // Padding superior
+    padding-bottom: 1rem; // Padding inferior
+    border-radius: $border-radius-lg; // Bordes redondeados
+  }
+
+  .mobileGymTitle {
+    color: $primary; // Color primario para el nombre del gimnasio
+    font-weight: 800;
+    font-size: 1.5rem;
+    line-height: 1.2;
+    margin: 0;
+    text-shadow: 0 1px 2px rgba($dark, 0.1);
+    
+    // Espacio reducido a la derecha para móvil
+    // Reduced space to the right for mobile
+    @media (max-width: 767.98px) {
+      margin-right: 0.35rem; // 30% menos que 0.5rem
+      color: $primary; // Asegurar color primario explícitamente en móvil
+    }
+  }
+}
+
+.mobileGymCity {
+  font-size: 1.1rem;
+  color: $secondary;
+  text-align: center;
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
+
+.gymLogoSmall {
+    width: 60px; // Ligeramente más grande // Slightly larger
+    height: 60px;
+    object-fit: contain; // Contiene la imagen // Contains image
+    background-color: rgba($light, 0.1); // Fondo semitransparente claro // Semi-transparent light background
+    border-radius: var(--bs-border-radius-lg); // Bordes redondeados // Rounded borders
+    padding: 5px;
+    border: 1px solid rgba($light, 0.2); // Borde claro // Light border
+}
+
+// =============================================================================
+// ANIMACIÓN DEL BOTÓN DE VISITA
+// VISIT BUTTON ANIMATION
+// =============================================================================
+
+.visitButton {
+  position: relative;
+  overflow: hidden; // Importante para que el icono "entre" desde fuera // Important so the icon "enters" from outside
+  transition: all 0.3s ease;
+  
+  // Estado base del icono
+  // Icon base state
+  .visitIcon {
+    display: inline-block; // Asegurar que min-width funcione // Ensure min-width works
+    min-width: 1.2em; // Ancho fijo para evitar que el texto se mueva // Fixed width to prevent text shift
+    text-align: center; // Centrar el icono dentro de su min-width // Center icon within its min-width
+    transition: transform 0.3s ease;
+  }
+
+  // CLASE QUE ACTIVA LA ANIMACIÓN
+  // CLASS THAT ACTIVATES THE ANIMATION
+  &.animating {
+    // 1. Animación de colores invertidos (Fondo Oscuro -> Fondo Amarillo)
+    // 1. Inverted colors animation (Dark Background -> Yellow Background)
+    animation: colorRestore 3s ease-out forwards; // Aumentado a 3s para coincidir con el icono // Increased to 3s to match icon
+    
+  }
+}
+
+// KEYFRAMES
+
+// Transición de colores: Empieza invertido y termina en el estilo normal del btn-primary
+// Color transition: Starts inverted and ends in normal btn-primary style
+@keyframes colorRestore {
+  0% {
+    background-color: $dark; // Fondo invertido // Inverted background
+    color: $primary;         // Texto invertido // Inverted text
+    border-color: $dark;
+  }
+  80% {
+     // Mantiene el color invertido la mayor parte del tiempo
+     // Keeps inverted color most of the time
+    background-color: $dark; 
+    color: $primary;
+    border-color: $dark;
+  }
+  100% {
+    background-color: $primary; // Vuelve al amarillo original // Returns to original yellow
+    color: $dark;               // Vuelve al texto oscuro // Returns to dark text
+    border-color: $primary;
+  }
+}

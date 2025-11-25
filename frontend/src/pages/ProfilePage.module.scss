@@ -1,0 +1,59 @@
+/* =============================================================================
+   ESTILOS: ProfilePage
+   STYLES:  ProfilePage
+   =============================================================================
+ *
+ * Descripción: Estilos para la página de perfil del usuario.
+ * Incluye el diseño para el texto de ayuda bajo el avatar,
+ * los controles de formulario deshabilitados/solo lectura y el logo del gimnasio.
+ *
+ * Description: Styles for the user profile page.
+ * Includes the design for the helper text below the avatar,
+ * disabled/read-only form controls, and the gym logo.
+ *
+ * =============================================================================
+ */
+@use "../styles/variables" as *; // Importar variables globales // Import global variables
+
+// Texto de ayuda debajo del avatar
+// Helper text below the avatar
+.smallHelp {
+  font-size: 0.85rem; // Ligeramente más pequeño // Slightly smaller
+  color: $secondary; // Color secundario // Secondary color
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+// Estilo para FormControl deshabilitados/solo lectura
+// Style for disabled/read-only FormControls
+.disabledFormControl {
+  background-color: $light; // Fondo más claro // Lighter background
+  color: $dark; // Texto más oscuro // Darker text
+  border-color: var(--bs-gray-300); // Borde más suave // Softer border
+  &:focus {
+    box-shadow: none; // Remover sombra de foco en deshabilitados // Remove focus shadow on disabled
+    border-color: var(--bs-gray-300); // Mantener borde // Keep border
+  }
+}
+
+// Logo del gimnasio dentro del campo de texto (si se mantiene)
+// Gym logo inside the text field (if kept)
+.gymLogo {
+  height: 24px;
+  width: 24px;
+  margin-right: 0.5rem;
+  object-fit: contain;
+}
+
+// Estilo para posicionar el nuevo botón de cierre animado.
+// Style to position the new animated close button.
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
