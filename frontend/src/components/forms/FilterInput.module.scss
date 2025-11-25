@@ -34,6 +34,23 @@
   opacity: 0.6;
   pointer-events: none; // No interferir con el clic del input
   z-index: 3; // Asegurar que esté por encima del input
+  
+  // Animación de pulso al cargar
+  // Pulse animation on load
+  animation: pulseSearch 2s ease-in-out 2;
+}
+
+// Animación para el icono de búsqueda
+// Animation for search icon
+@keyframes pulseSearch {
+  0%, 100% {
+    color: $secondary;
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    color: $primary; // Color primario
+    transform: translateY(-50%) scale(1.3); // Aumentar tamaño
+  }
 }
 
 .clearButton {
