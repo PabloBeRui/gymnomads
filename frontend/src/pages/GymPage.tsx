@@ -225,7 +225,7 @@ export const GymPage = () => {
           <Col lg={11}>
             {/* --- CABECERA MÓVIL (Nombre y Logo) --- */}
             {/* --- MOBILE HEADER (Name and Logo) --- */}
-            <Row className={clsx("d-md-none", styles.mobileHeaderRow, "justify-content-between align-items-center mb-3")}>
+            <Row className={clsx("d-md-none", styles.mobileHeaderRow, "justify-content-between align-items-center mb-3 gx-0")}>
               <Col xs="auto" className="d-flex align-items-center">
                 <h1 className={clsx(styles.mobileGymTitle, "me-2")}>{gym.name}</h1>
               </Col>
