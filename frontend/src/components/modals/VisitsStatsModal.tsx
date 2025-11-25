@@ -100,12 +100,12 @@ export const VisitsStatsModal: React.FC<VisitsStatsModalProps> = ({
   const getTitle = () => {
     switch (viewMode) {
       case "admin":
-        return "📈 Estadísticas Globales";
+        return "Estadísticas Globales";
       case "manager":
-        return "📈 Estadísticas de Visitas (Mi Gimnasio)";
+        return "Estadísticas de Visitas (Mi Gimnasio)";
       case "user":
       default:
-        return "📈 Tus Estadísticas de Visita";
+        return "Tus Estadísticas de Visita";
     }
   };
 

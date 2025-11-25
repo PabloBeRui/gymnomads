@@ -135,7 +135,7 @@ export const VisitsDetailsModal = ({
     <Modal show={isOpen} onHide={handleClose} centered size="lg">
       <Modal.Header className={styles.modalHeader}>
         <Modal.Title className={clsx(styles.modalTitle, "text-primary")}>
-          🎟️ Detalle de la Visita
+          Detalle de la Visita
           {(viewMode === "admin" || viewMode === "manager") &&
             ` (ID: ${visit.id})`}
         </Modal.Title>
