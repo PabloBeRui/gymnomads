@@ -11,9 +11,9 @@
 /* 2. IMPORTAR FUENTES, ICONOS Y BOOTSTRAP
    2. IMPORT FONTS, ICONS AND BOOTSTRAP
    ============================================================================= */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import "./assets/fonts/Inter/fonts.css";
 @import "./assets/fonts/Orbitron/fonts.css";
-@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css');
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
 
 // A continuación, se importa Bootstrap para que use nuestras variables personalizadas.
 // Next, import Bootstrap so it uses our custom variables.
@@ -26,7 +26,8 @@
 // Import Leaflet styles for maps
 @import "leaflet/dist/leaflet.css";
 
-html, body {
+html,
+body {
   height: 100%;
   width: 100%;
   overflow-x: hidden; // Prevenir desplazamiento horizontal // Prevent horizontal scrolling
@@ -46,7 +47,9 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bs-gray-300); // Color de fondo de la pista // Track background color
+  background: var(
+    --bs-gray-300
+  ); // Color de fondo de la pista // Track background color
   border-radius: 10px;
 }
 
@@ -54,11 +57,15 @@ body {
   background: $primary; // Color del pulgar al color primario // Thumb color to primary
   border-radius: 10px;
   &:hover {
-    background: color.adjust($primary, $lightness: 10%); // Un poco más claro al pasar el ratón // Slightly lighter on hover
+    background: color.adjust(
+      $primary,
+      $lightness: 10%
+    ); // Un poco más claro al pasar el ratón // Slightly lighter on hover
   }
 }
 
-#root, .d-flex.flex-column.min-vh-100 {
+#root,
+.d-flex.flex-column.min-vh-100 {
   min-height: 100vh; // Asegurar que la aplicación ocupa toda la altura de la ventana // Ensure app takes full viewport height
 }
 
@@ -87,50 +94,53 @@ main {
   .btn-primary {
     // --- Variables CSS de Bootstrap para el estado normal del botón ---
     // --- Bootstrap CSS variables for the button's normal state ---
-    --bs-btn-bg: #{$primary} ;
-    --bs-btn-border-color: #{$primary} ;
-    --bs-btn-color: #{$dark} ;
-    
+    --bs-btn-bg: #{$primary};
+    --bs-btn-border-color: #{$primary};
+    --bs-btn-color: #{$dark};
+
     // --- Variables para el estado :hover y :focus ---
     // --- Variables for the :hover and :focus state ---
-    --bs-btn-hover-bg: #{$gold-hover} ;
-    --bs-btn-hover-border-color: #{$gold-hover} ;
-    --bs-btn-hover-color: #{$dark} ;
-    --bs-btn-focus-bg: #{$gold-hover} ;
-    --bs-btn-focus-border-color: #{$gold-hover} ;
-    --bs-btn-focus-color: #{$dark} ;
+    --bs-btn-hover-bg: #{$gold-hover};
+    --bs-btn-hover-border-color: #{$gold-hover};
+    --bs-btn-hover-color: #{$dark};
+    --bs-btn-focus-bg: #{$gold-hover};
+    --bs-btn-focus-border-color: #{$gold-hover};
+    --bs-btn-focus-color: #{$dark};
 
     // --- Variables para el estado :active (al hacer clic) ---
     // --- Variables for the :active (on click) state ---
-    --bs-btn-active-bg: #{color.adjust($primary, $lightness: -10%)} ;
-    --bs-btn-active-border-color: #{color.adjust($primary, $lightness: -12%)} ;
-    --bs-btn-active-color: #{$dark} ;
-    
+    --bs-btn-active-bg: #{color.adjust($primary, $lightness: -10%)};
+    --bs-btn-active-border-color: #{color.adjust($primary, $lightness: -12%)};
+    --bs-btn-active-color: #{$dark};
+
     // --- Sombra para el estado :focus ---
     // --- Shadow for the :focus state ---
-    --bs-btn-focus-shadow-rgb: #{color.channel($primary, 'red')}, #{color.channel($primary, 'green')}, #{color.channel($primary, 'blue')} ;
+    --bs-btn-focus-shadow-rgb: #{color.channel($primary, "red")},
+      #{color.channel($primary, "green")}, #{color.channel($primary, "blue")};
   }
 
   .btn-secondary {
     // --- Anulación de variables para el botón secundario ---
     // --- Variable overrides for the secondary button ---
-    --bs-btn-bg: #{$secondary} ;
-    --bs-btn-border-color: #{$secondary} ;
-    --bs-btn-color: #{$light} ;
-    
-    --bs-btn-hover-bg: #{color.adjust($secondary, $lightness: 5%)} ;
-    --bs-btn-hover-border-color: #{color.adjust($secondary, $lightness: 5%)} ;
-    --bs-btn-hover-color: #{$light} ;
-    
-    --bs-btn-focus-bg: #{color.adjust($secondary, $lightness: 5%)} ;
-    --bs-btn-focus-border-color: #{color.adjust($secondary, $lightness: 5%)} ;
-    --bs-btn-focus-color: #{$light} ;
-    
-    --bs-btn-active-bg: #{color.adjust($secondary, $lightness: -10%)} ;
-    --bs-btn-active-border-color: #{color.adjust($secondary, $lightness: -12%)} ;
-    --bs-btn-active-color: #{$light} ;
+    --bs-btn-bg: #{$secondary};
+    --bs-btn-border-color: #{$secondary};
+    --bs-btn-color: #{$light};
 
-    --bs-btn-focus-shadow-rgb: #{color.channel($secondary, 'red')}, #{color.channel($secondary, 'green')}, #{color.channel($secondary, 'blue')} ;
+    --bs-btn-hover-bg: #{color.adjust($secondary, $lightness: 5%)};
+    --bs-btn-hover-border-color: #{color.adjust($secondary, $lightness: 5%)};
+    --bs-btn-hover-color: #{$light};
+
+    --bs-btn-focus-bg: #{color.adjust($secondary, $lightness: 5%)};
+    --bs-btn-focus-border-color: #{color.adjust($secondary, $lightness: 5%)};
+    --bs-btn-focus-color: #{$light};
+
+    --bs-btn-active-bg: #{color.adjust($secondary, $lightness: -10%)};
+    --bs-btn-active-border-color: #{color.adjust($secondary, $lightness: -12%)};
+    --bs-btn-active-color: #{$light};
+
+    --bs-btn-focus-shadow-rgb: #{color.channel($secondary, "red")},
+      #{color.channel($secondary, "green")},
+      #{color.channel($secondary, "blue")};
   }
 }
 
@@ -159,12 +169,12 @@ main {
 
 .btn-secondary {
   &:hover {
-      transform: translateY(-2px);
-      box-shadow: $box-shadow;
+    transform: translateY(-2px);
+    box-shadow: $box-shadow;
   }
   &:active {
-      transform: translateY(0);
-      box-shadow: $box-shadow-sm;
+    transform: translateY(0);
+    box-shadow: $box-shadow-sm;
   }
 }
 
@@ -242,8 +252,8 @@ main {
     display: none; /* Para Chrome, Safari y Opera */
   }
   body {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
 }
 
