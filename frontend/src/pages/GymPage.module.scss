@@ -100,9 +100,26 @@
   // Mobile specific styles
   @media (max-width: 767.98px) {
     width: 90%; // Igualar al contentContainer
-    margin: 0.5rem auto; // Centrar y añadir margen
-    padding-block: 1rem; // Padding vertical para móvil
+    margin: 0 auto 0.5rem auto; // Centrar y añadir margen inferior, quitar superior
+    padding-top: 1rem; // Padding superior
+    padding-bottom: 1rem; // Padding inferior
     border-radius: $border-radius-lg; // Bordes redondeados
+  }
+
+  .mobileGymTitle {
+    color: $primary; // Color primario para el nombre del gimnasio
+    font-weight: 800;
+    font-size: 1.5rem;
+    line-height: 1.2;
+    margin: 0;
+    text-shadow: 0 1px 2px rgba($dark, 0.1);
+    
+    // Espacio reducido a la derecha para móvil
+    // Reduced space to the right for mobile
+    @media (max-width: 767.98px) {
+      margin-right: 0.35rem; // 30% menos que 0.5rem
+      color: $primary; // Asegurar color primario explícitamente en móvil
+    }
   }
 }
 
