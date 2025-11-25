@@ -93,7 +93,10 @@ export const ListGymsPage = () => {
         setGyms(response.data);
         setTotalItems(response.total);
       } catch (err) {
-        const msg = handleApiError(err, "Hubo un problema al cargar los gimnasios.");
+        const msg = handleApiError(
+          err,
+          "Hubo un problema al cargar los gimnasios."
+        );
         setError(msg);
         toast.error(msg);
         setGyms([]);
@@ -122,7 +125,10 @@ export const ListGymsPage = () => {
         setUnpaginatedGyms(sortedGyms);
         setTotalItems(sortedGyms.length);
       } catch (err) {
-        const msg = handleApiError(err, "Hubo un problema al cargar los gimnasios.");
+        const msg = handleApiError(
+          err,
+          "Hubo un problema al cargar los gimnasios."
+        );
         setError(msg);
         toast.error(msg);
         setGyms([]);
@@ -243,7 +249,7 @@ export const ListGymsPage = () => {
               )}></i>
             <FormControl
               type="text"
-              placeholder="Buscar por nombre, ciudad o servicios..."
+              placeholder="Buscar por Nombre o Ciudad"
               value={searchTerm}
               onChange={handleSearchChange}
               className={styles.searchInput}
