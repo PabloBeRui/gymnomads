@@ -140,37 +140,6 @@ function App() {
               description: 'text-gray-300', // Descripción en gris claro
               closeButton: 'bg-white hover:bg-gray-200', // Botón de cierre en blanco
             },
-            // Estilos por tipo de toast
-            success: {
-              style: { borderLeft: '5px solid #2A9D8F' }, // Color $success
-              classNames: {
-                icon: 'text-success', // Color del icono
-              },
-            },
-            error: {
-              style: { borderLeft: '5px solid #DC3545' }, // Color $danger
-              classNames: {
-                icon: 'text-danger', // Color del icono
-              },
-            },
-            warning: {
-              style: { borderLeft: '5px solid #E6B800' }, // Color $warning
-              classNames: {
-                icon: 'text-warning', // Color del icono
-              },
-            },
-            info: {
-              style: { borderLeft: '5px solid #0077B6' }, // Color $info
-              classNames: {
-                icon: 'text-info', // Color del icono
-              },
-            },
-            default: { // Para el toast sin tipo explícito
-              style: { borderLeft: '5px solid #FFB700' }, // Color $primary
-              classNames: {
-                icon: 'text-primary', // Color del icono
-              },
-            },
           }}
         />
         <NavbarComponent />
