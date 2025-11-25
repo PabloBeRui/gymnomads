@@ -63,9 +63,12 @@
   font-size: 1.5rem;
   color: $dark; // Color de texto oscuro // Dark text color
   margin: 0;
+  text-align: center; // Centrar el título del modal para manager // Center modal title for manager
+  width: 100%; // Asegurar ancho completo para centrado // Ensure full width for centering
   
   @media (max-width: 767.98px) {
-    padding-right: 3rem; // Dejar espacio para el botón de cierre // Leave space for the close button
+    text-align: left; // Revertir a izquierda en móvil si es necesario, o mantener centrado si se prefiere consistencia. El usuario pidió "texto de detalle de la visita... centrado", asumo general. Pero si hay botón de cierre en móvil (que ya no hay), el título podría chocar. Como no hay botón en móvil, centrado está bien o izquierda con padding. El usuario dijo "unicamente en version NO movil quiero que el div... este tambien centrado". Lo del título parece general.
+    padding-right: 0; // Resetear padding
   }
 }
 
@@ -85,14 +88,37 @@
   margin-bottom: 30px;
   padding-bottom: 20px;
   border-bottom: 1px solid var(--bs-gray-200); // Borde inferior // Bottom border
+  justify-content: center; // Centrar todo el grid horizontalmente en el contenedor // Center the whole grid horizontally
+  justify-items: center; // Centrar los items dentro de sus celdas (para el avatar y textos si ocupan toda la celda) // Center items within cells
 
-  // Áreas por defecto (Escritorio)
-  // Default Areas (Desktop)
+  // Áreas por defecto (Escritorio) - Ajustadas para centrado
+  // Default Areas (Desktop) - Adjusted for centering
   grid-template-areas:
     "avatar name"
     "avatar email";
+  
+  // Ajuste para que el texto no se centre "raro" si es grid. 
+  // Mejor enfoque para centrar el bloque conjunto avatar+texto en escritorio:
+  // Usar flexbox o mantener grid pero con contenido centrado.
+  // Si usamos 'justify-content: center', el bloque entero se centra.
+  
+  @media (min-width: 768px) {
+      // En escritorio, queremos que el CONTENIDO (avatar + info) esté centrado visualmente.
+      // La estructura grid actual "avatar name" / "avatar email" es buena, pero por defecto se estira o pega a la izquierda.
+      // Al poner justify-content: center, todo el bloque se va al centro.
+      grid-template-columns: auto auto; // Ajustar columnas al contenido para que se centren juntas
+      text-align: left; // El texto dentro del bloque (nombre, email) se lee mejor a la izquierda del avatar, o alineado a la izquierda respecto a sí mismo.
+      // Pero el usuario pidió "el div que contiene avatar nombre y mail este tambien centrado".
+      // Si el bloque está centrado, el texto debería alinearse a la izquierda del bloque (junto al avatar).
+      justify-items: start; // Los elementos dentro del grid (nombre, email) alineados al inicio de su celda
+  }
 
   @media (max-width: 767.98px) {
+    // Restaurar alineación para móvil (izquierda/start)
+    justify-content: start; 
+    justify-items: start;
+    grid-template-columns: auto 1fr; // Volver a columnas expandibles
+
     // Áreas Móvil: Avatar y Nombre arriba, Email ocupa todo abajo
     // Mobile Areas: Avatar and Name top, Email takes full bottom
     grid-template-areas:
