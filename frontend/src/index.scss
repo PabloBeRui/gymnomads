@@ -154,6 +154,7 @@ main {
 .btn {
   transition: all 0.2s ease-in-out; // Transición suave para todos los botones // Smooth transition for all buttons
   border-radius: $border-radius; // Aplicar radio de borde consistente // Apply consistent border radius
+  font-weight: 700; // Hacer que todos los botones usen texto en negrita // Make all buttons use bold text
 }
 
 .btn-primary {
