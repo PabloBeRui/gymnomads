@@ -28,7 +28,7 @@
   // En pantallas pequeñas, aumentar el padding para crear áreas clickeables
   // On small screens, increase padding to create clickable areas
   @media (max-width: 767.98px) {
-    padding: 1rem 0.5rem; // Reducir padding horizontal para móviles
+    padding: 1rem 0.5rem; // Restaurar padding para dejar bordes libres y maximizar espacio vertical
   }
 }
 
@@ -42,7 +42,10 @@
   cursor: default; // El cursor vuelve a la normalidad sobre el contenido // Cursor returns to normal over content
 
   @media (max-width: 767.98px) {
-    padding: 1rem; // Reducir padding en móvil
+    width: 90%; // Ocupar el 90% del ancho
+    margin: 0.5rem auto; // Centrar y añadir margen superior/inferior para separación
+    padding: 0.5rem; // Reducir padding interno para maximizar contenido
+    border-radius: $border-radius-lg; // Restaurar border-radius
   }
 }
 
@@ -88,7 +91,7 @@
   background-color: var(--bs-white); // Un fondo para que se vea el logo y el título
   padding: 1rem 0;
   border-bottom: 1px solid var(--bs-gray-300);
-  justify-content: start; // Ajustar a start ya que no hay CloseButton
+  justify-content: space-between; // Logo a la derecha, nombre a la izquierda
 
   .mobileGymTitle {
     color: $primary;
