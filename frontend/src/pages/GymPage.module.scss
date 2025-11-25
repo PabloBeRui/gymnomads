@@ -28,7 +28,7 @@
   // En pantallas pequeñas, aumentar el padding para crear áreas clickeables
   // On small screens, increase padding to create clickable areas
   @media (max-width: 767.98px) {
-    padding: 1.5rem;
+    padding: 1rem 0.5rem; // Reducir padding horizontal para móviles
   }
 }
 
@@ -40,6 +40,10 @@
   max-width: 1100px; // Ancho máximo del contenedor de contenido // Maximum width of content container
   width: 100%;
   cursor: default; // El cursor vuelve a la normalidad sobre el contenido // Cursor returns to normal over content
+
+  @media (max-width: 767.98px) {
+    padding: 1rem; // Reducir padding en móvil
+  }
 }
 
 .heroImageWrapper {
