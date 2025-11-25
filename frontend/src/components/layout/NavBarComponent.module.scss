@@ -75,7 +75,8 @@
 
 .navbarToggle {
   border-color: transparent !important; // Borde transparente para el toggle // Transparent border for toggle
-  &:focus, &:active {
+  &:focus,
+  &:active {
     outline: none !important;
     box-shadow: none !important;
   }
@@ -83,7 +84,7 @@
 
 .navAvatar {
   --avatar-size: 40px;
-  border: 2px solid rgba($light, 0.5); // Borde claro para el avatar // Light border for avatar
+  // border: 2px solid rgba($light, 0.5); // ELIMINADO: Dejar que el componente Avatar maneje su propio borde // REMOVED: Let Avatar component handle its own border
 }
 
 .avatarDropdown {
@@ -121,7 +122,7 @@
   :global(.dropdown-divider) {
     border-top: 1px solid rgba($light, 0.1); // Divisor claro // Light divider
   }
-  
+
   // Color del caret del dropdown
   :global(.dropdown-toggle::after) {
     border-top-color: $light;
