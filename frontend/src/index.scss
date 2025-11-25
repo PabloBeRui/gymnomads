@@ -241,7 +241,55 @@ main {
     display: none; /* Para Chrome, Safari y Opera */
   }
   body {
-    -ms-overflow-style: none;  /* IE y Edge */
+    -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
   }
+}
+
+// =============================================================================
+// PERSONALIZACIÓN DE SONNER TOASTS (Iconos SVG)
+// SONNER TOASTS CUSTOMIZATION (SVG Icons)
+// =============================================================================
+// Forzamos el color de los iconos SVG dentro de los toasts de Sonner
+// basándonos en el atributo data-type. Esto es necesario porque Sonner
+// puede no heredar correctamente el color del texto en el SVG interno.
+//
+// We force the color of SVG icons inside Sonner toasts based on the
+// data-type attribute. This is necessary because Sonner might not
+// correctly inherit text color in the internal SVG.
+// =============================================================================
+
+// Success
+[data-sonner-toast][data-type="success"] [data-icon],
+[data-sonner-toast][data-type="success"] svg {
+  color: $success !important;
+  stroke: $success !important; // Asegurar que el trazo también cambie
+}
+
+// Error
+[data-sonner-toast][data-type="error"] [data-icon],
+[data-sonner-toast][data-type="error"] svg {
+  color: $danger !important;
+  stroke: $danger !important;
+}
+
+// Warning
+[data-sonner-toast][data-type="warning"] [data-icon],
+[data-sonner-toast][data-type="warning"] svg {
+  color: $warning !important;
+  stroke: $warning !important;
+}
+
+// Info
+[data-sonner-toast][data-type="info"] [data-icon],
+[data-sonner-toast][data-type="info"] svg {
+  color: $info !important;
+  stroke: $info !important;
+}
+
+// Default
+[data-sonner-toast][data-type="default"] [data-icon],
+[data-sonner-toast][data-type="default"] svg {
+  color: $primary !important;
+  stroke: $primary !important;
 }
