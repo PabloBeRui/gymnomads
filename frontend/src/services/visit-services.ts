@@ -124,6 +124,45 @@ export const getMyVisits = async (
 };
 
 /* ========================================
+ * API CALL: Obtener una visita por ID
+ * API CALL: Get a visit by ID
+ * ======================================== */
+
+export const getVisitById = async (
+  visitId: number,
+  token: string
+): Promise<VisitWithDetails> => {
+  if (!visitId) {
+    throw new Error("Se requiere un ID de visita válido.");
+  }
+
+  try {
+    // Realizar petición GET al endpoint de visitas con el ID.
+    // Perform GET request to the visits endpoint with the ID.
+    const response = await axios.get<VisitWithDetails>(
+      `${API_URL}/visits/${visitId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    // Devolver los datos de la visita.
+    // Return the visit data.
+    return response.data;
+  } catch (error) {
+    // Usar el manejador centralizado.
+    // Use the centralized handler.
+    const errorMessage = handleApiError(
+      error,
+      "No se pudo obtener la visita."
+    );
+    throw new Error(errorMessage);
+  }
+};
+
+/* ========================================
  * API CALL: Obtener todas las visitas (Admin)
  * API CALL: Get all visits (Admin)
  * ======================================== */

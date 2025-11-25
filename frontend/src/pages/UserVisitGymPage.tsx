@@ -18,6 +18,8 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { QRCodeComponent } from "../components/QRCodeComponent";
+import { getVisitById } from "../services/visit-services"; // Importar servicio de visitas
+import { useAuth } from "../context/AuthContext"; // Importar contexto de autenticación
 import { handleApiError } from "../utils/error-handler";
 import { toast } from "sonner";
 import {
@@ -63,6 +65,7 @@ export const UserVisitGymPage = () => {
   // Obtener el ID de la visita desde los parámetros de la URL // Get the visit ID from URL parameters
   const { visitId } = useParams<{ visitId: string }>();
   const navigate = useNavigate();
+  const { token } = useAuth(); // Obtener el token de autenticación
 
   // Estados del componente // Component states
   const [visitDetails, setVisitDetails] = useState<VisitDetails | null>(null);
@@ -73,8 +76,8 @@ export const UserVisitGymPage = () => {
   // Cargar detalles de la visita al montar // Load visit details on mount
   useEffect(() => {
     const fetchVisitDetails = async () => {
-      if (!visitId) {
-        setError("ID de visita no proporcionado.");
+      if (!visitId || !token) {
+        setError("ID de visita o token no proporcionado.");
         setIsLoading(false);
         return;
       }
@@ -83,22 +86,8 @@ export const UserVisitGymPage = () => {
       setIsLoading(true);
 
       try {
-        // TODO: Reemplazar con llamada real al backend cuando el endpoint esté listo
-        // TODO: Replace with a real backend call when the endpoint is ready
-        // const data = await getVisitById(Number(visitId), token);
-
-        // Datos mock temporales para demostración // Temporary mock data for demonstration
-        await new Promise((resolve) => setTimeout(resolve, 500)); // Simular carga / Simulate loading
-
-        const mockData: VisitDetails = {
-          id: Number(visitId),
-          gym_name: "Gimnasio Forja de Titanes",
-          gym_address: "Avenida del Músculo, 42, Metrópolis",
-          visit_date: new Date().toISOString(),
-          user_name: "Alex ",
-        };
-
-        setVisitDetails(mockData);
+        const data = await getVisitById(Number(visitId), token);
+        setVisitDetails(data as unknown as VisitDetails); // Asumimos que la respuesta coincide o hacemos casting si es necesario
       } catch (err) {
         const msg = handleApiError(
           err,
@@ -113,7 +102,7 @@ export const UserVisitGymPage = () => {
     };
 
     fetchVisitDetails();
-  }, [visitId]);
+  }, [visitId, token]);
 
   // Formatear fecha para mostrar // Format date for display
   const formatDate = (dateString: string): string => {

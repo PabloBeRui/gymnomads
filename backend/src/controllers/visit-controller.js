@@ -301,6 +301,91 @@ const getMyVisits = async (req, res) => {
 };
 
 /* ========================================
+ * Obtener detalles de una visita por ID
+ * Get visit details by ID
+ * ======================================== */
+const getVisitById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.userId;
+    const userRole = req.user.role;
+
+    // Consulta para obtener detalles de la visita
+    // Query to get visit details
+    const query = `
+      SELECT 
+        v.id, 
+        v.visited_at AS visit_date,
+        v.user_id,
+        v.gym_id,
+        g.name AS gym_name, 
+        g.address AS gym_address, 
+        g.city AS gym_city,
+        u.first_name, 
+        u.last_name
+      FROM visits v
+      JOIN gyms g ON v.gym_id = g.id
+      JOIN users u ON v.user_id = u.id
+      WHERE v.id = ?
+    `;
+
+    const [result] = await db.query(query, [id]);
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Visita no encontrada" });
+    }
+
+    const visit = result[0];
+
+    // Validar permisos:
+    // - Admin: Puede ver todo
+    // - User: Solo puede ver sus propias visitas
+    // - Manager: Solo puede ver visitas a su gimnasio O visitas realizadas por sus usuarios
+    
+    let hasAccess = false;
+
+    if (userRole === 'admin') {
+      hasAccess = true;
+    } else if (userRole === 'user') {
+      if (visit.user_id === userId) {
+        hasAccess = true;
+      }
+    } else if (userRole === 'manager') {
+      // El manager puede ver si la visita fue a su gimnasio
+      if (visit.gym_id === req.user.home_gym_id) {
+        hasAccess = true;
+      } 
+      // O si el usuario que visitó pertenece a su gimnasio (necesitamos saber el home_gym_id del usuario)
+      else {
+        const [userResult] = await db.query("SELECT home_gym_id FROM users WHERE id = ?", [visit.user_id]);
+        if (userResult.length > 0 && userResult[0].home_gym_id === req.user.home_gym_id) {
+          hasAccess = true;
+        }
+      }
+    }
+
+    if (!hasAccess) {
+      return res.status(403).json({ message: "No tienes permiso para ver esta visita." });
+    }
+
+    // Formatear nombre de usuario
+    const visitData = {
+      id: visit.id,
+      gym_name: visit.gym_name,
+      gym_address: `${visit.gym_address}, ${visit.gym_city}`,
+      visit_date: visit.visit_date,
+      user_name: `${visit.first_name} ${visit.last_name}`
+    };
+
+    res.status(200).json(visitData);
+
+  } catch (error) {
+    console.error("Error al obtener la visita:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+/* ========================================
  * Obtener todas las visitas con filtros opcionales (Admin)
  * Get all visits with optional filters (Admin)
  * ======================================== */
@@ -640,6 +725,7 @@ const getVisitsStats = async (req, res) => {
 
 module.exports = {
   createVisit,
+  getVisitById, // Añadido getVisitById
   getVisitsByUser,
   getVisitsByGym,
   getAllVisits,

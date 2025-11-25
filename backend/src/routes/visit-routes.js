@@ -5,6 +5,7 @@ const { Router } = require("express");
 // Import controllers and auth middleware
 const {
   createVisit,
+  getVisitById, // Importar getVisitById
   getVisitsByGym,
   getVisitsByUser,
   getAllVisits,
@@ -47,5 +48,8 @@ router.get("/gym/:gymId", authMiddleware, getVisitsByGym);
 
 // GET /api/visits/stats - Obtener estadísticas de visitas (para todos los roles) / Get visit statistics (for all roles)
 router.get("/stats", authMiddleware, getVisitsStats);
+
+// GET /api/visits/:id - Obtener detalles de una visita por ID / Get visit details by ID
+router.get("/:id", authMiddleware, getVisitById);
 
 module.exports = router;
