@@ -136,8 +136,9 @@ export const VisitsDetailsModal = ({
       <Modal.Header className={styles.modalHeader}>
         <Modal.Title className={clsx(styles.modalTitle, "text-primary")}>
           Detalle de la Visita
-          {(viewMode === "admin" || viewMode === "manager") &&
-            ` (ID: ${visit.id})`}
+          {(viewMode === "admin" || viewMode === "manager") && (
+            <span className="text-secondary" style={{ fontSize: '0.8em' }}>{` (id: ${visit.id})`}</span>
+          )}
         </Modal.Title>
         <CloseButton
           onClick={handleClose}
