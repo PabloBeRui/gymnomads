@@ -590,7 +590,7 @@ export const EditGymPage = () => {
         {/* ERROR MESSAGE & BUTTONS */}
         {displayError && <Alert variant="danger">{displayError}</Alert>}
 
-        <div className="d-flex justify-content-end gap-2 mt-3">
+        <div className="d-flex justify-content-end gap-2 mt-5">
           <Button
             type="submit"
             variant="primary"
