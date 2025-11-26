@@ -402,7 +402,7 @@ export const EditGymPage = () => {
           ariaLabel="Volver a la página anterior"
         />
         <h2 className="text-primary mb-4 text-center">
-          Editar Gimnasio: {originalGymData.name} (ID: {id})
+          Editar Gimnasio:<br /> <span className="text-secondary">{originalGymData.name}</span> <span style={{ fontSize: '0.6em' }}>(id: {id})</span>
         </h2>
         <Form onSubmit={handleSubmit}>
         {/* TEXT FIELDS (Admin only) / CAMPOS DE TEXTO (solo Admin) */}
@@ -569,29 +569,30 @@ export const EditGymPage = () => {
         {/* ERROR MESSAGE & BUTTONS */}
         {displayError && <Alert variant="danger">{displayError}</Alert>}
 
-        <Button
-          type="submit"
-          variant="primary"
-          disabled={isSubmitting || anyImageUploading}>
-          {isSubmitting || anyImageUploading ? (
-            <>
-              <Spinner size="sm" variant="light" className="me-2" />
-              Guardando...
-            </>
-          ) : isManagerEditing ? (
-            "Guardar Imágenes"
-          ) : (
-            "Guardar Cambios"
-          )}
-        </Button>
+        <div className="d-flex justify-content-end gap-2 mt-3">
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={isSubmitting || anyImageUploading}>
+            {isSubmitting || anyImageUploading ? (
+              <>
+                <Spinner size="sm" variant="light" className="me-2" />
+                Guardando...
+              </>
+            ) : isManagerEditing ? (
+              "Guardar Imágenes"
+            ) : (
+              "Guardar Cambios"
+            )}
+          </Button>
 
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={() => navigate("/gyms")}
-          className="ms-2">
-          Cancelar
-        </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => navigate("/gyms")}>
+            Cancelar
+          </Button>
+        </div>
       </Form>
     </Container>
     </div>
