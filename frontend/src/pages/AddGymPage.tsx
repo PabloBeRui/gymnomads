@@ -338,7 +338,7 @@ export const AddGymPage = () => {
             value={name}
             onChange={handleChange}
             required
-            placeholder="Ej: CrossFit Madrid Centro"
+            placeholder="Ej: María Píta fitness"
           />
         </Form.Group>
 
@@ -353,7 +353,7 @@ export const AddGymPage = () => {
             value={address}
             onChange={handleChange}
             required
-            placeholder="Ej: Calle Gran Vía 123"
+            placeholder="Ej: Calle Paseo de ronda 1"
           />
         </Form.Group>
 
@@ -368,7 +368,7 @@ export const AddGymPage = () => {
             value={city}
             onChange={handleChange}
             required
-            placeholder="Ej: Madrid"
+            placeholder="Ej: La Coruña"
           />
         </Form.Group>
 
@@ -384,7 +384,7 @@ export const AddGymPage = () => {
             value={latitude}
             onChange={handleChange}
             required
-            placeholder="Ej: 40.416775"
+            placeholder="Ej: 43.371222"
             min={-90}
             max={90}
           />
@@ -405,7 +405,7 @@ export const AddGymPage = () => {
             value={longitude}
             onChange={handleChange}
             required
-            placeholder="Ej: -3.70379"
+            placeholder="Ej: -8.396111"
             min={-180}
             max={180}
           />
@@ -425,7 +425,7 @@ export const AddGymPage = () => {
             rows={3}
             value={gymHours}
             onChange={handleChange}
-            placeholder="Ej: L-V: 07:00 - 23:00&#10;S: 09:00 - 14:00&#10;D: Cerrado"
+            placeholder="Ej: L-V: 07:00 - 23:00 S: 09:00 - 14:00 D: Cerrado"
           />
           <Form.Text className={clsx(styles.helperText, "text-dark")}>
             Introduce el horario de apertura del gimnasio. Los saltos de línea se respetarán.
@@ -482,7 +482,7 @@ export const AddGymPage = () => {
               value={managerLastName}
               onChange={handleChange}
               required
-              placeholder="Ej: Bernabéu Ruiz"
+              placeholder="Ej: Bellón Ruibal"
               minLength={2}
             />
           </Form.Group>
