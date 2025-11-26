@@ -376,31 +376,35 @@ export const EditGymPage = () => {
 
   if (displayError || !originalGymData) {
     return (
-      <Container className={styles.container}>
-        <Alert variant="danger">
-          {displayError || "No se encontró el gimnasio."}
-        </Alert>
-        <Button onClick={() => navigate("/gyms")} variant="primary">
-          Volver a la lista
-        </Button>
-      </Container>
+      <div className={styles.pageWrapper} onClick={() => navigate(-1)}>
+        <Container className={styles.container} onClick={(e) => e.stopPropagation()}>
+          <Alert variant="danger">
+            {displayError || "No se encontró el gimnasio."}
+          </Alert>
+          <Button onClick={() => navigate("/gyms")} variant="primary">
+            Volver a la lista
+          </Button>
+        </Container>
+      </div>
     );
   }
 
   return (
-    <Container className={clsx(styles.container, "py-5", "position-relative")}>
-      {" "}
-      {/* Añadir position-relative para el posicionamiento absoluto del botón */}
-      <CloseButton
-        onClick={() => navigate(-1)}
-        className={styles.closeButton}
-        color="#FFB700"
-        ariaLabel="Volver a la página anterior"
-      />
-      <h2 className="text-primary mb-4 text-center">
-        Editar Gimnasio: {originalGymData.name} (ID: {id})
-      </h2>
-      <Form onSubmit={handleSubmit}>
+    <div className={styles.pageWrapper} onClick={() => navigate(-1)}>
+      <Container
+        className={clsx(styles.container, "py-5", "position-relative")}
+        onClick={(e) => e.stopPropagation()}>
+        {/* Añadir position-relative para el posicionamiento absoluto del botón */}
+        <CloseButton
+          onClick={() => navigate(-1)}
+          className={styles.closeButton}
+          color="#FFB700"
+          ariaLabel="Volver a la página anterior"
+        />
+        <h2 className="text-primary mb-4 text-center">
+          Editar Gimnasio: {originalGymData.name} (ID: {id})
+        </h2>
+        <Form onSubmit={handleSubmit}>
         {/* TEXT FIELDS (Admin only) / CAMPOS DE TEXTO (solo Admin) */}
         <Form.Group className="mb-3">
           <Form.Label className="text-light fw-bold">Nombre:</Form.Label>
@@ -590,5 +594,6 @@ export const EditGymPage = () => {
         </Button>
       </Form>
     </Container>
+    </div>
   );
 };

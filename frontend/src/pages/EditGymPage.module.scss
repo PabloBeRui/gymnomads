@@ -5,12 +5,32 @@
  * =============================================================================
  */
 
+.pageWrapper {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-top: 20px; // Espacio superior // Top spacing
+  padding-bottom: 20px; // Espacio inferior // Bottom spacing
+  cursor: pointer; // Indicar que es clicable // Indicate it's clickable
+}
+
 .container {
   padding: 20px;
   max-width: 800px;
-  margin: 20px auto;
+  // margin: 20px auto; // Eliminamos margen automático vertical, lo maneja el wrapper // Remove vertical auto margin, handled by wrapper
+  margin: 0; // Reseteamos margenes // Reset margins
   border: 1px solid var(--bs-gray-300);
   border-radius: 8px;
+  background-color: var(--bs-body-bg); // Asegurar fondo opaco // Ensure opaque background
+  cursor: default; // Evitar cursor de mano dentro del formulario // Avoid hand cursor inside the form
+  position: relative; // Para posicionar el botón de cierre // To position the close button
+
+  // En móvil, reducimos el ancho para dejar espacio lateral clicable
+  // On mobile, reduce width to leave clickable side space
+  @media (max-width: 768px) {
+    max-width: 90%;
+  }
 }
 
 .disabledInput {
