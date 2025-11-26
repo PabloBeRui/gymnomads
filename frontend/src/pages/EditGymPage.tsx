@@ -90,6 +90,7 @@ export const EditGymPage = () => {
   const [city, setCity] = useState<string>("");
   const [latitude, setLatitude] = useState<string>("");
   const [longitude, setLongitude] = useState<string>("");
+  const [gymHours, setGymHours] = useState<string>(""); // NUEVO: Estado para el horario del gimnasio
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   // Local error
@@ -177,6 +178,7 @@ export const EditGymPage = () => {
         setCity(data.city || "");
         setLatitude(data.latitude?.toString() || "");
         setLongitude(data.longitude?.toString() || "");
+        setGymHours(data.gym_hours || ""); // NUEVO: Inicializar gymHours
 
         // Build preview URLs if backend provides paths
         const backendBaseUrl =
@@ -239,6 +241,9 @@ export const EditGymPage = () => {
       case "longitude":
         setLongitude(value);
         break;
+      case "gymHours": // NUEVO: Manejar el estado del horario
+        setGymHours(value);
+        break;
       default:
         break;
     }
@@ -291,7 +296,8 @@ export const EditGymPage = () => {
         address !== originalGymData?.address ||
         city !== originalGymData?.city ||
         latNum !== originalGymData?.latitude ||
-        lonNum !== originalGymData?.longitude;
+        lonNum !== originalGymData?.longitude ||
+        gymHours !== originalGymData?.gym_hours; // NUEVO: Comparar gymHours
 
       if (!textDataChanged) {
         toast.info("No se detectaron cambios para guardar.");
@@ -306,6 +312,7 @@ export const EditGymPage = () => {
           city,
           latitude: latNum,
           longitude: lonNum,
+          gym_hours: gymHours, // NUEVO: Añadir gym_hours
         };
         await updateGymDetails(id, gymDetails, token);
         toast.success("Gimnasio actualizado con éxito.");
@@ -465,6 +472,25 @@ export const EditGymPage = () => {
             disabled={isManagerEditing}
             required
           />
+        </Form.Group>
+
+        {/* Horario del Gimnasio (Admin only) / Gym Hours (Admin only) */}
+        <Form.Group className="mb-3">
+          <Form.Label className="text-dark">Horario:</Form.Label>
+          <Form.Control
+            id="gymHours"
+            name="gymHours"
+            as="textarea"
+            rows={3}
+            value={gymHours}
+            onChange={handleChange}
+            className={clsx({ [styles.disabledInput]: isManagerEditing })}
+            disabled={isManagerEditing}
+            placeholder="Ej: L-V: 07:00 - 23:00&#10;S: 09:00 - 14:00&#10;D: Cerrado"
+          />
+          <Form.Text className={clsx(styles.helperText, "text-dark")}>
+            Introduce el horario de apertura del gimnasio. Los saltos de línea se respetarán.
+          </Form.Text>
         </Form.Group>
 
         {/* IMAGES SECTION (Manager edits, Admin sees read-only previews) */}

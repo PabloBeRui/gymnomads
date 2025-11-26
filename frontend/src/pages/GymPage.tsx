@@ -375,6 +375,12 @@ export const GymPage = () => {
               <Col lg={12} className="mb-4">
                 <Card className="h-100 shadow-sm border-0">
                   <Card.Body>
+                    {/* Horario del gimnasio (opcional) / Gym hours (optional) */}
+                    <h4 className="fw-bold mb-3 text-primary">Horario</h4>
+                    <p className="text-secondary mb-3" style={{whiteSpace: 'pre-line'}}>
+                      <i className="bi bi-clock me-2 text-info"></i>
+                      {gym.gym_hours || "Consultar horario"}
+                    </p>
                     <h4 className="fw-bold mb-3 text-primary">Ubicación</h4>
                     {gym.latitude && gym.longitude ? (
                       <GymMap

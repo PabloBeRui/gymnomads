@@ -139,6 +139,7 @@ const createGym = async (req, res) => {
       city,
       latitude,
       longitude,
+      gym_hours, // Añadido campo de horario / Added gym hours field
       manager_first_name,
       manager_last_name,
       manager_phone,
@@ -199,8 +200,8 @@ const createGym = async (req, res) => {
     // (Se crea con is_deleted = 0 por el valor DEFAULT del schema)
     // (It is created with is_deleted = 0 by the schema DEFAULT value)
     const [gymResult] = await db.query(
-      "INSERT INTO gyms (name, address, city, latitude, longitude) VALUES (?, ?, ?, ?, ?)",
-      [name, address, city, lat, lon]
+      "INSERT INTO gyms (name, address, city, latitude, longitude, gym_hours) VALUES (?, ?, ?, ?, ?, ?)",
+      [name, address, city, lat, lon, gym_hours || null] // Añadido gym_hours
     );
 
     const gymId = gymResult.insertId;
@@ -265,6 +266,7 @@ const createGym = async (req, res) => {
         city,
         latitude: lat,
         longitude: lon,
+        gym_hours: gym_hours || null, // Añadido gym_hours
       },
       newManager: {
         id: managerResult.insertId,
@@ -295,7 +297,7 @@ const updateGym = async (req, res) => {
 
     // 2. Obtener los nuevos datos del cuerpo de la petición
     // 2. Get the new data from the request body
-    const { name, address, city, latitude, longitude } = req.body;
+    const { name, address, city, latitude, longitude, gym_hours } = req.body; // Añadido gym_hours
 
     // 3. Validar que todos los campos necesarios estén presentes
     // 3. Validate that all required fields are present
@@ -310,8 +312,8 @@ const updateGym = async (req, res) => {
     // (Solo actualiza gimnasios que no estén borrados)
     // (Only updates gyms that are not deleted)
     const [result] = await db.query(
-      "UPDATE gyms SET name = ?, address = ?, city = ?, latitude = ?, longitude = ? WHERE id = ? AND is_deleted = 0",
-      [name, address, city, latitude, longitude, id]
+      "UPDATE gyms SET name = ?, address = ?, city = ?, latitude = ?, longitude = ?, gym_hours = ? WHERE id = ? AND is_deleted = 0",
+      [name, address, city, latitude, longitude, gym_hours || null, id] // Añadido gym_hours
     );
 
     // 5. Comprobar si alguna fila fue actualizada

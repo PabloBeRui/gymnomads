@@ -8,6 +8,7 @@ export interface Gym {
   address: string;
   city: string;
   is_suspended: number; // 0 = activo, 1 = suspendido // 0 = active, 1 = suspended
+  gym_hours?: string | null; // Horario de apertura del gimnasio // Gym opening hours
   logo_url?: string | null;
   latitude?: number | null;
   longitude?: number | null;

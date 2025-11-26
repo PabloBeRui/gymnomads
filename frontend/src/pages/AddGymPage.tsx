@@ -73,6 +73,7 @@ export const AddGymPage = () => {
   const [city, setCity] = useState<string>("");
   const [latitude, setLatitude] = useState<string>("");
   const [longitude, setLongitude] = useState<string>("");
+  const [gymHours, setGymHours] = useState<string>(""); // NUEVO: Estado para el horario del gimnasio
 
   // --- Estados del Manager / Manager States ---
   const [managerFirstName, setManagerFirstName] = useState<string>("");
@@ -131,7 +132,7 @@ export const AddGymPage = () => {
   };
 
   // --- Manejadores / Handlers ---
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => { // Actualizado para incluir HTMLTextAreaElement
     const { name, value } = e.target;
     switch (name) {
       case "name":
@@ -148,6 +149,9 @@ export const AddGymPage = () => {
         break;
       case "longitude":
         setLongitude(value);
+        break;
+      case "gymHours": // NUEVO: Manejar el estado del horario
+        setGymHours(value);
         break;
       case "managerFirstName":
         setManagerFirstName(value);
@@ -269,6 +273,7 @@ export const AddGymPage = () => {
     formData.append("city", city);
     formData.append("latitude", String(latNum));
     formData.append("longitude", String(lonNum));
+    if (gymHours) formData.append("gym_hours", gymHours); // NUEVO: Añadir gym_hours si existe
     formData.append("manager_first_name", managerFirstName);
     formData.append("manager_last_name", managerLastName);
     formData.append("manager_password", managerPassword);
@@ -405,6 +410,24 @@ export const AddGymPage = () => {
           />
           <Form.Text className={clsx(styles.helperText, "text-dark")}>
             Debe estar entre -180 y 180
+          </Form.Text>
+        </Form.Group>
+
+        {/* Horario del Gimnasio / Gym Hours */}
+        <Form.Group className="mb-3" controlId="gymHours">
+          <Form.Label className="text-dark">
+            Horario: <span className="text-secondary">(opcional)</span>
+          </Form.Label>
+          <Form.Control
+            name="gymHours"
+            as="textarea"
+            rows={3}
+            value={gymHours}
+            onChange={handleChange}
+            placeholder="Ej: L-V: 07:00 - 23:00&#10;S: 09:00 - 14:00&#10;D: Cerrado"
+          />
+          <Form.Text className={clsx(styles.helperText, "text-dark")}>
+            Introduce el horario de apertura del gimnasio. Los saltos de línea se respetarán.
           </Form.Text>
         </Form.Group>
 
