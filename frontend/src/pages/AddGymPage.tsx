@@ -328,7 +328,7 @@ export const AddGymPage = () => {
 
         {/* Nombre del Gimnasio / Gym Name */}
         <Form.Group className="mb-3" controlId="name">
-          <Form.Label className="text-dark">
+          <Form.Label className="text-primary fw-bold">
             Nombre del Gimnasio: <span className="text-danger">*</span>
           </Form.Label>
           <Form.Control
@@ -343,7 +343,7 @@ export const AddGymPage = () => {
 
         {/* Dirección / Address */}
         <Form.Group className="mb-3" controlId="address">
-          <Form.Label className="text-dark">
+          <Form.Label className="text-primary fw-bold">
             Dirección: <span className="text-danger">*</span>
           </Form.Label>
           <Form.Control
@@ -358,7 +358,7 @@ export const AddGymPage = () => {
 
         {/* Ciudad / City */}
         <Form.Group className="mb-3" controlId="city">
-          <Form.Label className="text-dark">
+          <Form.Label className="text-primary fw-bold">
             Ciudad: <span className="text-danger">*</span>
           </Form.Label>
           <Form.Control
@@ -373,7 +373,7 @@ export const AddGymPage = () => {
 
         {/* Latitud / Latitude */}
         <Form.Group className="mb-3" controlId="latitude">
-          <Form.Label className="text-dark">
+          <Form.Label className="text-primary fw-bold">
             Latitud: <span className="text-danger">*</span>
           </Form.Label>
           <Form.Control
@@ -394,7 +394,7 @@ export const AddGymPage = () => {
 
         {/* Longitud / Longitude */}
         <Form.Group className="mb-3" controlId="longitude">
-          <Form.Label className="text-dark">
+          <Form.Label className="text-primary fw-bold">
             Longitud: <span className="text-danger">*</span>
           </Form.Label>
           <Form.Control
@@ -415,8 +415,8 @@ export const AddGymPage = () => {
 
         {/* Horario del Gimnasio / Gym Hours */}
         <Form.Group className="mb-3" controlId="gymHours">
-          <Form.Label className="text-dark">
-            Horario: <span className="text-secondary">(opcional)</span>
+          <Form.Label className="text-primary fw-bold">
+            Horario: <span className="text-secondary fw-normal">(opcional)</span>
           </Form.Label>
           <Form.Control
             name="gymHours"
@@ -443,7 +443,7 @@ export const AddGymPage = () => {
 
           {/* Nombre del Manager / Manager First Name */}
           <Form.Group className="mb-3" controlId="managerFirstName">
-            <Form.Label className="text-dark">
+            <Form.Label className="text-dark fw-bold">
               Nombre: <span className="text-danger">*</span>
             </Form.Label>
             <Form.Control
@@ -462,7 +462,7 @@ export const AddGymPage = () => {
 
           {/* Apellidos del Manager / Manager Last Name */}
           <Form.Group className="mb-3" controlId="managerLastName">
-            <Form.Label className="text-dark">
+            <Form.Label className="text-dark fw-bold">
               Apellidos: <span className="text-danger">*</span>
             </Form.Label>
             <Form.Control
@@ -478,7 +478,7 @@ export const AddGymPage = () => {
 
           {/* Teléfono del Manager (Opcional) / Manager Phone (Optional) */}
           <Form.Group className="mb-3" controlId="managerPhone">
-            <Form.Label className="text-dark">Teléfono(opcional):</Form.Label>
+            <Form.Label className="text-dark fw-bold">Teléfono(opcional):</Form.Label>
             <Form.Control
               name="managerPhone"
               type="tel"
@@ -490,7 +490,7 @@ export const AddGymPage = () => {
 
           {/* Contraseña del Manager / Manager Password */}
           <Form.Group className="mb-3" controlId="managerPassword">
-            <Form.Label className="text-dark">
+            <Form.Label className="text-dark fw-bold">
               Contraseña: <span className="text-danger">*</span>
             </Form.Label>
             <Form.Control
@@ -510,7 +510,7 @@ export const AddGymPage = () => {
 
           {/* Confirmar Contraseña del Manager / Confirm Manager Password (← NUEVO) */}
           <Form.Group className="mb-3" controlId="managerPasswordConfirm">
-            <Form.Label className="text-dark">
+            <Form.Label className="text-dark fw-bold">
               Confirmar Contraseña: <span className="text-danger">*</span>
             </Form.Label>
             <Form.Control
