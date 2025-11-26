@@ -18,12 +18,24 @@
  */
 @use "../styles/variables" as *; // Importar variables globales // Import global variables
 
+.pageWrapper {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-top: 20px; // Espacio superior // Top spacing
+  padding-bottom: 20px; // Espacio inferior // Bottom spacing
+  cursor: pointer; // Indicar que es clicable // Indicate it's clickable
+}
+
 .container {
     max-width: 800px;
     position: relative; // Necesario para posicionar el botón de cierre // Needed to position the close button
     border: 1px solid var(--bs-gray-300);
     border-radius: 8px;
     background-color: var(--bs-body-bg); // Asegurar fondo opaco // Ensure opaque background
+    margin: 0; // Centrado lo maneja el pageWrapper
+    cursor: default; // Evitar cursor de mano dentro del formulario
 }
 
 // Estilo para posicionar el nuevo botón de cierre animado.

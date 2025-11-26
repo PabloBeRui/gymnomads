@@ -305,14 +305,15 @@ export const AddGymPage = () => {
   };
 
   return (
-    <Container className={clsx(styles.container, "py-5")}>
-      <CloseButton
-        onClick={() => navigate(-1)}
-        className={styles.closeButton}
-        color="#FFB700"
-        ariaLabel="Volver a la página anterior"
-      />
-      <h2 className="text-secondary mb-4 text-center">Añadir Nuevo Gimnasio</h2>
+    <div className={styles.pageWrapper} onClick={() => navigate(-1)}>
+      <Container className={clsx(styles.container)} onClick={(e) => e.stopPropagation()}>
+        <CloseButton
+          onClick={() => navigate(-1)}
+          className={styles.closeButton}
+          color="#FFB700"
+          ariaLabel="Volver a la página anterior"
+        />
+        <h2 className="text-primary pt-3 mb-4 text-center">Añadir Nuevo Gimnasio</h2>
 
       <Alert variant="warning" className="mb-4">
         <strong>Importante:</strong> Al crear el gimnasio, automáticamente se
@@ -324,7 +325,7 @@ export const AddGymPage = () => {
       <Form onSubmit={handleSubmit}>
         {/* ===== SECCIÓN: Datos del Gimnasio ===== */}
         {/* ===== SECTION: Gym Data ===== */}
-        <h3 className="text-secondary mb-3">Datos del Gimnasio</h3>
+        <h3 className="text-primary mb-3">Datos del Gimnasio</h3>
 
         {/* Nombre del Gimnasio / Gym Name */}
         <Form.Group className="mb-3" controlId="name">
@@ -434,8 +435,8 @@ export const AddGymPage = () => {
         {/* ===== SECCIÓN: Datos del Manager Responsable ===== */}
         {/* ===== SECTION: Responsible Manager Data ===== */}
         <div className={clsx(styles.managerSection, "mt-4")}>
-          <h3 className={clsx(styles.sectionTitle, "text-secondary", "mb-3")}>
-            👤 Datos del Manager Responsable
+          <h3 className={clsx(styles.sectionTitle, "text-primary", "mb-3")}>
+             Datos del Manager Responsable
           </h3>
           <p className={clsx(styles.emailPreview, "text-dark")}>
             Email: <strong className="text-primary">{generateManagerEmail(name)}</strong>
@@ -542,7 +543,7 @@ export const AddGymPage = () => {
         <div className="d-flex justify-content-center mt-3">
           {/* Botón de envío / Submit button */}
           <Button
-            variant="success"
+            variant="primary"
             type="submit"
             disabled={isSubmitting}>
             {isSubmitting ? "Creando gimnasio y manager..." : "Crear Gimnasio"}
@@ -557,5 +558,6 @@ export const AddGymPage = () => {
         una vez creado el gimnasio.
       </Alert>
     </Container>
+    </div>
   );
 };
