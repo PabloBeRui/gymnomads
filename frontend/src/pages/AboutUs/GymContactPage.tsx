@@ -6,11 +6,11 @@
  *
  * Descripción: Página con un formulario para que los gimnasios interesados
  * puedan contactar para unirse a la red Gymnomads.
- * Refactorizado para usar React-Bootstrap y SASS Modules.
+ * Refactorizado para usar el hook personalizado useEmail y el CloseButton animado.
  *
  * Description: Page with a form for interested gyms to contact
  * to join the Gymnomads network.
- * Refactored to use React-Bootstrap and SASS Modules.
+ * Refactored to use the custom useEmail hook and animated CloseButton.
  *
  * =============================================================================
  */
@@ -18,54 +18,74 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 import { CloseButton } from "../../components/ui/CloseButton";
 import { useNavigate } from "react-router-dom";
+import { useEmail } from "../../hooks/useEmail"; // Importar el hook personalizado
 
 // Importar componentes de React-Bootstrap
-// Import React-Bootstrap components
-import { Form, Button, Spinner } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
+import Spinner from "../../components/ui/Spinner";
 
 // Importar el módulo SCSS
-// Import the SCSS module
 import styles from "./GymContactPage.module.scss";
 import clsx from "clsx";
 
 export const GymContactPage = () => {
   const navigate = useNavigate();
+
+  // Utilizar el hook useEmail para manejar la lógica de envío
+  const { sendEmail, isSending } = useEmail();
+
+  // Estados locales del formulario
   const [gymName, setGymName] = useState("");
   const [address, setAddress] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [observations, setObservations] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Manejar el envío del formulario
-  // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
-    // Simulación de envío
-    // Submission simulation
-    setTimeout(() => {
+    // Validación básica
+    if (!gymName || !address || !email || !phone) {
+      toast.error("Por favor, rellena todos los campos obligatorios.");
+      return;
+    }
+
+    // Preparar los parámetros para la plantilla de correo
+    const templateParams = {
+      gym_name: gymName,
+      address: address,
+      email: email,
+      phone: phone,
+      observations: observations,
+    };
+
+    // Ejecutar el envío usando el hook
+    const success = await sendEmail(templateParams);
+
+    if (success) {
       toast.success(
         "¡Gracias por tu interés! Hemos recibido tus datos y te contactaremos pronto."
       );
+      // Limpiar formulario tras éxito
       setGymName("");
       setAddress("");
       setEmail("");
       setPhone("");
       setObservations("");
-      setIsSubmitting(false);
-    }, 1500);
+    } else {
+      toast.error(
+        "Hubo un error al enviar la solicitud. Por favor, inténtalo de nuevo."
+      );
+    }
   };
 
   // Navegar hacia atrás al hacer clic en el fondo
-  // Navigate back on backdrop click
   const handleBackdropClick = () => {
     navigate(-1);
   };
 
   // Evitar propagación del clic en el contenedor
-  // Prevent click propagation on container
   const handleContainerClick = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
@@ -73,10 +93,11 @@ export const GymContactPage = () => {
   return (
     <div className={styles.backdrop} onClick={handleBackdropClick}>
       <div className={styles.pageContainer} onClick={handleContainerClick}>
-        <CloseButton 
-          onClick={() => navigate(-1)} 
-          className={styles.closeButton} 
-          color="#FFB700" 
+        {/* CORRECCIÓN: Adaptado a la API del nuevo CloseButton animado */}
+        <CloseButton
+          onClick={() => navigate(-1)}
+          className={styles.closeButton}
+          color="#FFB700" // Usamos 'color' en lugar de 'colorVariant'
           ariaLabel="Cerrar formulario"
         />
         <div className={styles.splitLayout}>
@@ -93,11 +114,11 @@ export const GymContactPage = () => {
             </div>
           </div>
 
-                    {/* Sección Derecha: Formulario */}
-                    <div className={styles.formSection}>
-                      
-                      <h1 className={styles.title}>Contacta con Nosotros</h1>            <p className={styles.subtitle}>
-              Rellena el formulario para unirte a nuestra red exclusiva y en en
+          {/* Sección Derecha: Formulario */}
+          <div className={styles.formSection}>
+            <h1 className={styles.title}>Contacta con Nosotros</h1>
+            <p className={styles.subtitle}>
+              Rellena el formulario para unirte a nuestra red exclusiva y en
               poco tiempo contactaremos contigo.
             </p>
 
@@ -108,6 +129,7 @@ export const GymContactPage = () => {
                 </Form.Label>
                 <Form.Control
                   type="text"
+                  name="gym_name"
                   value={gymName}
                   onChange={(e) => setGymName(e.target.value)}
                   required
@@ -120,11 +142,12 @@ export const GymContactPage = () => {
                 <Form.Label className={styles.formLabel}>Dirección</Form.Label>
                 <Form.Control
                   type="text"
+                  name="address"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   required
                   className={styles.formControl}
-                  placeholder="Calle Principal, 123, Madrid"
+                  placeholder="Calle Principal, 123, Cádiz"
                 />
               </Form.Group>
 
@@ -136,6 +159,7 @@ export const GymContactPage = () => {
                     </Form.Label>
                     <Form.Control
                       type="email"
+                      name="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -151,6 +175,7 @@ export const GymContactPage = () => {
                     </Form.Label>
                     <Form.Control
                       type="tel"
+                      name="phone"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       required
@@ -167,6 +192,7 @@ export const GymContactPage = () => {
                 </Form.Label>
                 <Form.Control
                   as="textarea"
+                  name="observations"
                   rows={3}
                   value={observations}
                   onChange={(e) => setObservations(e.target.value)}
@@ -177,18 +203,11 @@ export const GymContactPage = () => {
 
               <Button
                 type="submit"
-                disabled={isSubmitting}
-                className={clsx(styles.submitButton, "w-100")}>
-                {isSubmitting ? (
+                disabled={isSending}
+                className={clsx(styles.submitButton, "w-100 btn-primary")}>
+                {isSending ? (
                   <>
-                    <Spinner
-                      as="span"
-                      animation="border"
-                      size="sm"
-                      role="status"
-                      aria-hidden="true"
-                      className="me-2"
-                    />
+                    <Spinner size="sm" variant="dark" className="me-2" />
                     Enviando...
                   </>
                 ) : (
