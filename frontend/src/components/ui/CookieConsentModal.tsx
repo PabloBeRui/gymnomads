@@ -22,7 +22,7 @@ import React, { useState, useEffect } from "react";
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
 import { Modal, Button } from "react-bootstrap";
 import styles from "./CookieConsentModal.module.scss"; // Importar el módulo SCSS / Import the SCSS module
-import clsx from "clsx"; // Importar clsx / Import clsx
+// import clsx from "clsx"; // Importar clsx / Import clsx
 
 export const CookieConsentModal: React.FC = () => {
   // Definir estado para la visibilidad del modal / Define state for modal visibility

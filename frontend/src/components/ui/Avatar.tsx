@@ -1,5 +1,5 @@
 import React from "react";
-import { getInitials, getColorFromString } from "../utils/avatar-utils";
+import { getInitials, getColorFromString } from "../../utils/avatar-utils";
 import styles from "./Avatar.module.scss";
 import clsx from "clsx";
 

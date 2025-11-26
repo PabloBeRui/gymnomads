@@ -67,7 +67,7 @@ import { ProtectedRoute } from "./router/ProtectedRoute";
 
 // Importar componente para scroll automático al inicio
 // Import component for automatic scroll to top
-import ScrollToTop from "./components/ScrollToTop";
+import ScrollToTop from "./components/layout/ScrollToTop";
 
 function App() {
   const location = useLocation();

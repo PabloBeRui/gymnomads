@@ -47,7 +47,7 @@ import { useApiCall } from "../hooks/useApiCall";
 import { useImageUpload } from "../hooks/useImageUpload";
 
 // Componentes UI / UI components
-import { ImageUploadPreview } from "../components/ImageUploadPreview";
+import { ImageUploadPreview } from "../components/ui/ImageUploadPreview";
 import { CloseButton } from "../components/ui/CloseButton"; // Importar el botón de cierre // Import the close button
 
 // Servicios API / API services

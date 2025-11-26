@@ -23,7 +23,7 @@ import type { VisitWithDetails } from "../interfaces/visit-interfaces";
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
 import { VisitsDetailsModal } from "../components/modals/VisitsDetailsModal";
-import { Avatar } from "../components/Avatar";
+import { Avatar } from "../components/ui/Avatar";
 import { VisitsStatsModal } from "../components/modals/VisitsStatsModal";
 import { usePagination } from "../hooks/usePagination";
 import { PaginationControls } from "../components/ui/PaginationControls";

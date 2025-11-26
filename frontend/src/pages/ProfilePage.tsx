@@ -32,7 +32,7 @@ import { useImageUpload } from "../hooks/useImageUpload";
 
 // Importar componentes
 // Import components
-import { Avatar } from "../components/Avatar";
+import { Avatar } from "../components/ui/Avatar";
 import { ChangePasswordModal } from "../components/modals/ChangePasswordModal";
 import { CloseButton } from "../components/ui/CloseButton"; // Importar el botón de cierre // Import the close button
 

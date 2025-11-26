@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import { useAuth } from "../context/AuthContext";
 import { useApiCall } from "../hooks/useApiCall";
 import { useImageUpload } from "../hooks/useImageUpload";
-import { ImageUploadPreview } from "../components/ImageUploadPreview";
+import { ImageUploadPreview } from "../components/ui/ImageUploadPreview";
 import {
   registerUser,
   getUserProfile,

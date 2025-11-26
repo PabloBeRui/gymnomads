@@ -12,7 +12,7 @@ import type { UserWithGym, GymUser } from "../interfaces/user-interfaces";
 import type { Gym } from "../interfaces/gym-interfaces";
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
-import { Avatar } from "../components/Avatar";
+import { Avatar } from "../components/ui/Avatar";
 import { UserDetailModal } from "../components/modals/UserDetailModal";
 import { usePagination } from "../hooks/usePagination";
 import { useMediaQuery } from "../hooks/useMediaQuery"; // Importar el nuevo hook

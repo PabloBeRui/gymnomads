@@ -39,7 +39,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import type { ManagerWithGym } from "../../interfaces/user-interfaces";
-import { Avatar } from "../Avatar";
+import { Avatar } from "../ui/Avatar";
 import { CloseButton } from "../ui/CloseButton"; // Importar el nuevo componente / Import the new component
 import { useMediaQuery } from "../../hooks/useMediaQuery"; // Importar hook de media query / Import media query hook
 

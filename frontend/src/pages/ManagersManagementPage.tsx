@@ -24,7 +24,7 @@ import type {
 import { toast } from "sonner";
 import { handleApiError } from "../utils/error-handler";
 import { ManagerDetailsModal } from "../components/modals/ManagerDetailsModal";
-import { Avatar } from "../components/Avatar";
+import { Avatar } from "../components/ui/Avatar";
 import { usePagination } from "../hooks/usePagination";
 import { useMediaQuery } from "../hooks/useMediaQuery"; // Importar el nuevo hook
 import { PaginationControls } from "../components/ui/PaginationControls";

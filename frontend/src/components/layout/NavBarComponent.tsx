@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { Avatar } from "../Avatar";
+import { Avatar } from "../ui/Avatar";
 import { Navbar, Nav, Container, NavDropdown, Button } from "react-bootstrap";
 import styles from "./NavBarComponent.module.scss";
 import clsx from "clsx";

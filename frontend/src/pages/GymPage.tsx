@@ -34,7 +34,7 @@ import { CloseButton } from "../components/ui/CloseButton"; // Importar el botó
 import { WeatherWidget } from "../components/widgets/WeatherWidget";
 
 // --- Componente de Mapa / Map Component ---
-import { GymMap } from "../components/GymMap";
+import { GymMap } from "../components/widgets/GymMap";
 
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
 import { Container, Button, Alert, Col, Card, Row } from "react-bootstrap";
