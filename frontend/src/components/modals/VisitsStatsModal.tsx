@@ -203,7 +203,7 @@ export const VisitsStatsModal: React.FC<VisitsStatsModalProps> = ({
                 <div className={styles.statBox}>
                   <p className={clsx(styles.statNumber, { [styles.statNumberError]: (stats.thisMonth ?? 0) >= 10 }, "text-primary")}>{stats.thisMonth ?? 0}</p>
                   <p className={styles.statLabel}>Visitas este Mes</p>
-                  {(stats.thisMonth ?? 0) >= 10 && (
+                  {(stats.thisMonth ?? 0) >= 10 && viewMode === 'user' && (
                     <p className={clsx(styles.limitMessage, "text-danger")}>Máximo de visitas mensuales completado</p>
                   )}
                 </div>
