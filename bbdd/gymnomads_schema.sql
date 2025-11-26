@@ -12,6 +12,29 @@ CREATE TABLE `gyms` (
   `main_image_url` VARCHAR(255) NULL,
   
   -- ==================================================================
+  -- NUEVO CAMPO PARA SUSPENSIÓN (ESTADO ACTIVO/INACTIVO)
+  -- NEW FIELD FOR SUSPENSION (ACTIVE/INACTIVE STATE)
+  -- Esta columna indica si el gimnasio está temporalmente suspendido.
+  -- A diferencia de 'is_deleted', el gimnasio sigue existiendo pero
+  -- no es visible para los usuarios regulares.
+  -- 0 = Activo (default), 1 = Suspendido
+  --
+  -- This column indicates if the gym is temporarily suspended.
+  -- Unlike 'is_deleted', the gym still exists but is not visible
+  -- to regular users.
+  -- 0 = Active (default), 1 = Suspended
+  `is_suspended` TINYINT(1) NOT NULL DEFAULT 0,
+  -- ==================================================================
+
+  -- ==================================================================
+  -- NUEVO CAMPO PARA HORARIOS
+  -- NEW FIELD FOR OPENING HOURS
+  -- Campo de texto libre para describir el horario de apertura.
+  -- Free text field to describe opening hours.
+  `gym_hours` VARCHAR(255) DEFAULT NULL,
+  -- ==================================================================
+  
+  -- ==================================================================
   -- MODIFICACIÓN PARA "SOFT DELETE" (BORRADO LÓGICO)
   -- MODIFICATION FOR "SOFT DELETE" (LOGICAL DELETION)
   -- Esta columna se usa para marcar gimnasios como "borrados" (1) 
