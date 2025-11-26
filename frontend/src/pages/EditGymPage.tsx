@@ -407,7 +407,7 @@ export const EditGymPage = () => {
         <Form onSubmit={handleSubmit}>
         {/* TEXT FIELDS (Admin only) / CAMPOS DE TEXTO (solo Admin) */}
         <Form.Group className="mb-3">
-          <Form.Label className="text-light fw-bold">Nombre:</Form.Label>
+          <Form.Label className="text-secondary fw-bold">Nombre:</Form.Label>
           <Form.Control
             id="name"
             name="name"
@@ -421,7 +421,7 @@ export const EditGymPage = () => {
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label className="text-light fw-bold">Dirección:</Form.Label>
+          <Form.Label className="text-secondary fw-bold">Dirección:</Form.Label>
           <Form.Control
             id="address"
             name="address"
@@ -435,7 +435,7 @@ export const EditGymPage = () => {
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label className="text-light fw-bold">Ciudad:</Form.Label>
+          <Form.Label className="text-secondary fw-bold">Ciudad:</Form.Label>
           <Form.Control
             id="city"
             name="city"
@@ -449,7 +449,7 @@ export const EditGymPage = () => {
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label className="text-light fw-bold">Latitud:</Form.Label>
+          <Form.Label className="text-secondary fw-bold">Latitud:</Form.Label>
           <Form.Control
             id="latitude"
             name="latitude"
@@ -464,7 +464,7 @@ export const EditGymPage = () => {
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label className="text-light fw-bold">Longitud:</Form.Label>
+          <Form.Label className="text-secondary fw-bold">Longitud:</Form.Label>
           <Form.Control
             id="longitude"
             name="longitude"
@@ -480,7 +480,7 @@ export const EditGymPage = () => {
 
         {/* Horario del Gimnasio (Admin only) / Gym Hours (Admin only) */}
         <Form.Group className="mb-3">
-          <Form.Label className="text-light fw-bold">Horario:</Form.Label>
+          <Form.Label className="text-secondary fw-bold">Horario:</Form.Label>
           <Form.Control
             id="gymHours"
             name="gymHours"
@@ -501,7 +501,7 @@ export const EditGymPage = () => {
         <Form.Group className="mb-3">
           {isManagerEditing ? (
             <>
-              <Form.Label className="text-light fw-bold">Logo</Form.Label>
+              <Form.Label className="text-secondary fw-bold">Logo</Form.Label>
               <input
                 id="logoFile"
                 type="file"
@@ -535,7 +535,7 @@ export const EditGymPage = () => {
         <Form.Group className="mb-3">
           {isManagerEditing ? (
             <>
-              <Form.Label className="text-light fw-bold">Imagen Principal</Form.Label>
+              <Form.Label className="text-secondary fw-bold">Imagen Principal</Form.Label>
               <input
                 id="mainImageFile"
                 type="file"
