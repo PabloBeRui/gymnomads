@@ -21,6 +21,9 @@
 .container {
     max-width: 800px;
     position: relative; // Necesario para posicionar el botón de cierre // Needed to position the close button
+    border: 1px solid var(--bs-gray-300);
+    border-radius: 8px;
+    background-color: var(--bs-body-bg); // Asegurar fondo opaco // Ensure opaque background
 }
 
 // Estilo para posicionar el nuevo botón de cierre animado.

@@ -312,7 +312,7 @@ export const AddGymPage = () => {
         color="#FFB700"
         ariaLabel="Volver a la página anterior"
       />
-      <h2 className="text-primary mb-4 text-center">Añadir Nuevo Gimnasio</h2>
+      <h2 className="text-secondary mb-4 text-center">Añadir Nuevo Gimnasio</h2>
 
       <Alert variant="warning" className="mb-4">
         <strong>Importante:</strong> Al crear el gimnasio, automáticamente se
@@ -324,11 +324,11 @@ export const AddGymPage = () => {
       <Form onSubmit={handleSubmit}>
         {/* ===== SECCIÓN: Datos del Gimnasio ===== */}
         {/* ===== SECTION: Gym Data ===== */}
-        <h3 className="text-primary mb-3">Datos del Gimnasio</h3>
+        <h3 className="text-secondary mb-3">Datos del Gimnasio</h3>
 
         {/* Nombre del Gimnasio / Gym Name */}
         <Form.Group className="mb-3" controlId="name">
-          <Form.Label className="text-primary fw-bold">
+          <Form.Label className="text-secondary fw-bold">
             Nombre del Gimnasio: <span className="text-danger">*</span>
           </Form.Label>
           <Form.Control
@@ -343,7 +343,7 @@ export const AddGymPage = () => {
 
         {/* Dirección / Address */}
         <Form.Group className="mb-3" controlId="address">
-          <Form.Label className="text-primary fw-bold">
+          <Form.Label className="text-secondary fw-bold">
             Dirección: <span className="text-danger">*</span>
           </Form.Label>
           <Form.Control
@@ -358,7 +358,7 @@ export const AddGymPage = () => {
 
         {/* Ciudad / City */}
         <Form.Group className="mb-3" controlId="city">
-          <Form.Label className="text-primary fw-bold">
+          <Form.Label className="text-secondary fw-bold">
             Ciudad: <span className="text-danger">*</span>
           </Form.Label>
           <Form.Control
@@ -373,7 +373,7 @@ export const AddGymPage = () => {
 
         {/* Latitud / Latitude */}
         <Form.Group className="mb-3" controlId="latitude">
-          <Form.Label className="text-primary fw-bold">
+          <Form.Label className="text-secondary fw-bold">
             Latitud: <span className="text-danger">*</span>
           </Form.Label>
           <Form.Control
@@ -394,7 +394,7 @@ export const AddGymPage = () => {
 
         {/* Longitud / Longitude */}
         <Form.Group className="mb-3" controlId="longitude">
-          <Form.Label className="text-primary fw-bold">
+          <Form.Label className="text-secondary fw-bold">
             Longitud: <span className="text-danger">*</span>
           </Form.Label>
           <Form.Control
@@ -415,7 +415,7 @@ export const AddGymPage = () => {
 
         {/* Horario del Gimnasio / Gym Hours */}
         <Form.Group className="mb-3" controlId="gymHours">
-          <Form.Label className="text-primary fw-bold">
+          <Form.Label className="text-secondary fw-bold">
             Horario: <span className="text-secondary fw-normal">(opcional)</span>
           </Form.Label>
           <Form.Control
@@ -434,7 +434,7 @@ export const AddGymPage = () => {
         {/* ===== SECCIÓN: Datos del Manager Responsable ===== */}
         {/* ===== SECTION: Responsible Manager Data ===== */}
         <div className={clsx(styles.managerSection, "mt-4")}>
-          <h3 className={clsx(styles.sectionTitle, "text-primary", "mb-3")}>
+          <h3 className={clsx(styles.sectionTitle, "text-secondary", "mb-3")}>
             👤 Datos del Manager Responsable
           </h3>
           <p className={clsx(styles.emailPreview, "text-dark")}>
@@ -443,7 +443,7 @@ export const AddGymPage = () => {
 
           {/* Nombre del Manager / Manager First Name */}
           <Form.Group className="mb-3" controlId="managerFirstName">
-            <Form.Label className="text-dark fw-bold">
+            <Form.Label className="text-secondary fw-bold">
               Nombre: <span className="text-danger">*</span>
             </Form.Label>
             <Form.Control
@@ -462,7 +462,7 @@ export const AddGymPage = () => {
 
           {/* Apellidos del Manager / Manager Last Name */}
           <Form.Group className="mb-3" controlId="managerLastName">
-            <Form.Label className="text-dark fw-bold">
+            <Form.Label className="text-secondary fw-bold">
               Apellidos: <span className="text-danger">*</span>
             </Form.Label>
             <Form.Control
@@ -478,7 +478,7 @@ export const AddGymPage = () => {
 
           {/* Teléfono del Manager (Opcional) / Manager Phone (Optional) */}
           <Form.Group className="mb-3" controlId="managerPhone">
-            <Form.Label className="text-dark fw-bold">Teléfono(opcional):</Form.Label>
+            <Form.Label className="text-secondary fw-bold">Teléfono(opcional):</Form.Label>
             <Form.Control
               name="managerPhone"
               type="tel"
@@ -490,7 +490,7 @@ export const AddGymPage = () => {
 
           {/* Contraseña del Manager / Manager Password */}
           <Form.Group className="mb-3" controlId="managerPassword">
-            <Form.Label className="text-dark fw-bold">
+            <Form.Label className="text-secondary fw-bold">
               Contraseña: <span className="text-danger">*</span>
             </Form.Label>
             <Form.Control
@@ -510,7 +510,7 @@ export const AddGymPage = () => {
 
           {/* Confirmar Contraseña del Manager / Confirm Manager Password (← NUEVO) */}
           <Form.Group className="mb-3" controlId="managerPasswordConfirm">
-            <Form.Label className="text-dark fw-bold">
+            <Form.Label className="text-secondary fw-bold">
               Confirmar Contraseña: <span className="text-danger">*</span>
             </Form.Label>
             <Form.Control
@@ -539,14 +539,15 @@ export const AddGymPage = () => {
         {/* Mostrar error si existe / Show error if exists */}
         {error && <Alert variant="danger">{error}</Alert>}
 
-        {/* Botón de envío / Submit button */}
-        <Button
-          variant="success"
-          type="submit"
-          disabled={isSubmitting}
-          className="mt-3">
-          {isSubmitting ? "Creando gimnasio y manager..." : "Crear Gimnasio"}
-        </Button>
+        <div className="d-flex justify-content-center mt-3">
+          {/* Botón de envío / Submit button */}
+          <Button
+            variant="success"
+            type="submit"
+            disabled={isSubmitting}>
+            {isSubmitting ? "Creando gimnasio y manager..." : "Crear Gimnasio"}
+          </Button>
+        </div>
       </Form>
 
       {/* Nota informativa / Informative note */}
