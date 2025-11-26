@@ -436,11 +436,21 @@ export const AddGymPage = () => {
         {/* ===== SECTION: Responsible Manager Data ===== */}
         <div className={clsx(styles.managerSection, "mt-4")}>
           <h3 className={clsx(styles.sectionTitle, "text-primary", "mb-3")}>
-             Datos del Manager Responsable
+            Manager Responsable
           </h3>
-          <p className={clsx(styles.emailPreview, "text-dark")}>
-            Email: <strong className="text-primary">{generateManagerEmail(name)}</strong>
-          </p>
+          
+          {/* Tarjeta de Email Generado / Generated Email Card */}
+          <div className={styles.emailCard}>
+            <div className={styles.emailIconContainer}>
+              <i className="bi bi-envelope-at"></i>
+            </div>
+            <div>
+              <span className={styles.emailLabel}>Email de Acceso (Autogenerado)</span>
+              <div className={styles.generatedEmail}>
+                {generateManagerEmail(name)}
+              </div>
+            </div>
+          </div>
 
           {/* Nombre del Manager / Manager First Name */}
           <Form.Group className="mb-3" controlId="managerFirstName">
