@@ -498,73 +498,94 @@ export const EditGymPage = () => {
         </Form.Group>
 
         {/* IMAGES SECTION (Manager edits, Admin sees read-only previews) */}
-        <Form.Group className="mb-3">
-          {isManagerEditing ? (
-            <>
-              <Form.Label className="text-secondary fw-bold">Logo</Form.Label>
-              <input
-                id="logoFile"
-                type="file"
-                ref={logoUpload.fileInputRef}
-                onChange={logoUpload.handleFileChange}
-                style={{ display: "none" }}
-                accept="image/png, image/jpeg, image/webp, image/jpg"
-              />
-              <ImageUploadPreview
-                previewUrl={logoUpload.previewUrl}
-                defaultImage="/images/gym-logo/default-gym-logo.png"
-                onClick={logoUpload.handleImageClick}
-                altText="Logo del gimnasio"
-                shape="square"
-                size={200}
-                showHelpText
-                helpText="Haz clic para cambiar el logo"
-              />
-            </>
-          ) : (
-            logoUpload.previewUrl && (
-              <img
-                src={logoUpload.previewUrl}
-                alt="Logo actual"
-                className={styles.previewImage}
-              />
-            )
-          )}
-        </Form.Group>
+        {isManagerEditing ? (
+          <div className="mt-5 pt-4 border-top border-secondary-subtle">
+            <h5 className="text-primary mb-4 text-center text-md-start">Gestión de Imágenes</h5>
+            <div className="row">
+              <div className="col-12 col-md-6 mb-4 mb-md-0">
+                <Form.Group className="d-flex flex-column align-items-center">
+                  <Form.Label className="text-secondary fw-bold mb-2">Logo</Form.Label>
+                  <input
+                    id="logoFile"
+                    type="file"
+                    ref={logoUpload.fileInputRef}
+                    onChange={logoUpload.handleFileChange}
+                    style={{ display: "none" }}
+                    accept="image/png, image/jpeg, image/webp, image/jpg"
+                  />
+                  <div className="mb-2">
+                    <ImageUploadPreview
+                      previewUrl={logoUpload.previewUrl}
+                      defaultImage="/images/gym-logo/default-gym-logo.png"
+                      onClick={logoUpload.handleImageClick}
+                      altText="Logo del gimnasio"
+                      shape="square"
+                      size={150}
+                    />
+                  </div>
+                  <Form.Text className={clsx(styles.helperText, "text-dark text-center")}>
+                    Haz clic para cambiar el logo
+                  </Form.Text>
+                </Form.Group>
+              </div>
 
-        <Form.Group className="mb-3">
-          {isManagerEditing ? (
-            <>
-              <Form.Label className="text-secondary fw-bold">Imagen Principal</Form.Label>
-              <input
-                id="mainImageFile"
-                type="file"
-                ref={mainImageUpload.fileInputRef}
-                onChange={mainImageUpload.handleFileChange}
-                style={{ display: "none" }}
-                accept="image/png, image/jpeg, image/webp, image/jpg"
-              />
-              <ImageUploadPreview
-                previewUrl={mainImageUpload.previewUrl}
-                defaultImage="/images/gym-image/default-gym-image.jpg"
-                onClick={mainImageUpload.handleImageClick}
-                altText="Imagen principal del gimnasio"
-                shape="square"
-                size={200}
-                showHelpText
-                helpText="Haz clic para cambiar la imagen principal"
-              />
-            </>
-          ) : (
-            mainImageUpload.previewUrl && (
-              <img
-                src={mainImageUpload.previewUrl}
-                alt="Imagen principal actual"
-                className={styles.previewImage}
-              />
-            )
-          )}
-        </Form.Group>
+              <div className="col-12 col-md-6">
+                <Form.Group className="d-flex flex-column align-items-center">
+                  <Form.Label className="text-secondary fw-bold mb-2">Imagen Principal</Form.Label>
+                  <input
+                    id="mainImageFile"
+                    type="file"
+                    ref={mainImageUpload.fileInputRef}
+                    onChange={mainImageUpload.handleFileChange}
+                    style={{ display: "none" }}
+                    accept="image/png, image/jpeg, image/webp, image/jpg"
+                  />
+                  <div className="mb-2">
+                    <ImageUploadPreview
+                      previewUrl={mainImageUpload.previewUrl}
+                      defaultImage="/images/gym-image/default-gym-image.jpg"
+                      onClick={mainImageUpload.handleImageClick}
+                      altText="Imagen principal del gimnasio"
+                      shape="square"
+                      size={150}
+                    />
+                  </div>
+                  <Form.Text className={clsx(styles.helperText, "text-dark text-center")}>
+                    Haz clic para cambiar la imagen
+                  </Form.Text>
+                </Form.Group>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
+            <Form.Group className="mb-3">
+              {logoUpload.previewUrl && (
+                <>
+                  <Form.Label className="text-secondary fw-bold">Logo</Form.Label>
+                  <img
+                    src={logoUpload.previewUrl}
+                    alt="Logo actual"
+                    className={styles.previewImage}
+                  />
+                </>
+              )}
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              {mainImageUpload.previewUrl && (
+                <>
+                  <Form.Label className="text-secondary fw-bold">Imagen Principal</Form.Label>
+                  <img
+                    src={mainImageUpload.previewUrl}
+                    alt="Imagen principal actual"
+                    className={styles.previewImage}
+                  />
+                </>
+              )}
+            </Form.Group>
+          </>
+        )}
 
         {/* ERROR MESSAGE & BUTTONS */}
         {displayError && <Alert variant="danger">{displayError}</Alert>}
