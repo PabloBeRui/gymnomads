@@ -128,6 +128,55 @@
     background-color: transparent; // Fondo transparente
 }
 
+// Estilo para tarjetas de gimnasios suspendidos
+// Style for suspended gym cards
+.suspendedGym {
+    position: relative; // Necesario para posicionar el pseudo-elemento / Necessary for positioning pseudo-element
+    opacity: 0.7; // Reducir opacidad para indicar inactividad / Reduce opacity to indicate inactivity
+    filter: grayscale(80%); // Aplicar filtro de escala de grises / Apply grayscale filter
+    transition: all 0.3s ease-in-out; // Transición para suavizar cambios / Transition to smooth changes
+    pointer-events: none; // Deshabilita interacciones de ratón en la tarjeta suspendida / Disable mouse interactions on suspended card
+
+    // Anular el efecto hover para gimnasios suspendidos
+    // Override hover effect for suspended gyms
+    &:hover {
+        transform: none;
+        box-shadow: $box-shadow-sm; // Mantener la sombra básica
+    }
+
+    .gymImage {
+        filter: grayscale(80%); // Aplicar filtro de escala de grises a la imagen directamente / Apply grayscale filter to image directly
+    }
+
+    // Overlay de texto "SUSPENDIDO"
+    // "SUSPENDED" text overlay
+    &::before {
+        content: "SUSPENDIDO";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-25deg); // Centrar y rotar / Center and rotate
+        z-index: 10;
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: $danger; // Color rojo para advertencia / Red color for warning
+        background-color: rgba(255, 255, 255, 0.7); // Fondo semi-transparente para legibilidad / Semi-transparent background for readability
+        padding: 0.5rem 1rem;
+        border-radius: $border-radius-sm;
+        border: 2px solid $danger;
+        pointer-events: none; // Asegura que el texto no interfiera con otros eventos / Ensures text doesn't interfere with other events
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    // Reactivar eventos de puntero para los botones del footer
+    // Re-enable pointer events for footer buttons
+    :global(.card-footer) {
+        pointer-events: auto;
+        position: relative;
+        z-index: 11; // Asegurar que esté por encima del overlay / Ensure it's above the overlay
+    }
+}
+
 // =============================================================================
 // ESTILOS ADICIONALES PARA EL NUEVO DISEÑO DE PÁGINA (HERO SECTION)
 // ADDITIONAL STYLES FOR THE NEW PAGE DESIGN (HERO SECTION)

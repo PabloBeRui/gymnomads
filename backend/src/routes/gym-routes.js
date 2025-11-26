@@ -9,6 +9,7 @@ const {
   getUsersByGym,
   uploadLogo,
   uploadMainImage,
+  toggleSuspension, // Importar la nueva función / Import the new function
 } = require("../controllers/gym-controller");
 
 // Importar middlewares de seguridad
@@ -41,6 +42,8 @@ const router = Router();
    ============================================================================= */
 
 // GET /api/gyms - Obtener todos los gimnasios / Get all gyms
+// La autenticación es opcional y se gestiona dentro del controlador getAllGyms.
+// Authentication is optional and handled within the getAllGyms controller.
 router.get("/", getAllGyms);
 
 // GET /api/gyms/:id - Obtener un gimnasio por ID / Get a gym by ID
@@ -75,6 +78,16 @@ router.delete(
   adminMiddleware, // 2. ¿Eres admin? / Are you admin?
   deleteGym // 3. Si sí a ambas, ejecuta la acción / If yes to both, execute action
 );
+
+// PATCH /api/gyms/:id/suspend - Cambiar estado de suspensión de un gimnasio (admin)
+// PATCH /api/gyms/:id/suspend - Toggle suspension status of a gym (admin)
+router.patch(
+  "/:id/suspend",
+  authMiddleware, // 1. ¿Estás logueado? / Are you logged in?
+  adminMiddleware, // 2. ¿Eres admin? / Are you admin?
+  toggleSuspension // 3. Si sí a ambas, ejecuta la acción / If yes to both, execute action
+);
+
 
 /* =============================================================================
    RUTAS PROTEGIDAS (admin o manager del gimnasio)

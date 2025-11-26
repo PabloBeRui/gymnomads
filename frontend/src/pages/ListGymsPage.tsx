@@ -20,7 +20,7 @@
  */
 
 import { useState, useEffect } from "react";
-import { getAllGyms, deleteGym } from "../services/gym-services";
+import { getAllGyms, deleteGym, toggleGymSuspension } from "../services/gym-services";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import type { Gym } from "../interfaces/gym-interfaces";
@@ -65,7 +65,7 @@ export const ListGymsPage = () => {
     changeItemsPerPage,
   } = usePagination({ initialItemsPerPage: 6 });
 
-  // Estados para modal de eliminación // States for delete modal
+  // Estados para modal de eliminación y suspensión // States for delete and suspend modal
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [gymToDelete, setGymToDelete] = useState<Gym | null>(null);
 
@@ -219,6 +219,42 @@ export const ListGymsPage = () => {
     setShowDeleteModal(false);
     setGymToDelete(null);
   };
+  
+  // Manejador para suspender/reactivar un gimnasio // Handler to suspend/reactivate a gym
+  const handleToggleSuspension = async (gymId: number, currentStatus: number) => {
+    if (!token) {
+      toast.error("No autorizado para realizar esta acción.");
+      return;
+    }
+    const action = currentStatus === 0 ? "suspender" : "reactivar"; // 'suspender' o 'reactivar' // 'suspend' or 'reactivate'
+    try {
+      const response = await toggleGymSuspension(gymId, token);
+      toast.success(response.message);
+
+      // Actualización optimista de la UI // Optimistic UI update
+      setGyms((prevGyms) =>
+        prevGyms.map((gym) =>
+          gym.id === gymId ? { ...gym, is_suspended: response.is_suspended } : gym
+        )
+      );
+      // Si no es admin, actualiza también la lista sin paginar // If not admin, update unpaginated list too
+      if (!isAdmin) {
+        setUnpaginatedGyms((prevUnpaginated) =>
+          prevUnpaginated.map((gym) =>
+            gym.id === gymId ? { ...gym, is_suspended: response.is_suspended } : gym
+          )
+        );
+      }
+    } catch (err) {
+      const processedErrorMessage = handleApiError(
+        err,
+        `No se pudo ${action} el gimnasio.`
+      );
+      toast.error(processedErrorMessage);
+      if (import.meta.env.DEV) console.error("Error toggling suspension:", err);
+    }
+  };
+
 
   // Renderizado del estado de carga // Loading state rendering
   if (isLoading && gyms.length === 0) {
@@ -343,7 +379,11 @@ export const ListGymsPage = () => {
             return (
               <Col key={gym.id}>
                 <Card
-                  className={`h-100 shadow-sm border-0 ${styles.gymCard}`}
+                  className={clsx(
+                    "h-100 shadow-sm border-0",
+                    styles.gymCard,
+                    { [styles.suspendedGym]: gym.is_suspended === 1 } // Clase condicional para gimnasios suspendidos
+                  )}
                   onClick={() => navigate(`/gyms/${gym.id}`)}
                   role="button"
                   tabIndex={0}
@@ -401,15 +441,23 @@ export const ListGymsPage = () => {
                               }}>
                               <i className="bi bi-trash-fill me-2"></i>Borrar
                             </Button>
-                            {/* TODO: Implement suspend gym functionality */}
                             <Button
-                              variant="outline-warning"
+                              variant={
+                                gym.is_suspended === 1
+                                  ? "outline-success" // Si está suspendido, botón verde para reactivar
+                                  : "outline-warning" // Si está activo, botón amarillo para suspender
+                              }
                               onClick={(e) => {
                                 e.stopPropagation();
-                                // Future suspend logic here
+                                handleToggleSuspension(gym.id, gym.is_suspended);
                               }}>
-                              <i className="bi bi-pause-circle-fill me-2"></i>
-                              Suspender
+                              <i
+                                className={clsx("bi me-2", {
+                                  "bi-play-circle-fill": gym.is_suspended === 1, // Icono de play si está suspendido
+                                  "bi-pause-circle-fill": gym.is_suspended === 0, // Icono de pausa si está activo
+                                })}
+                              ></i>
+                              {gym.is_suspended === 1 ? "Reactivar" : "Suspender"}
                             </Button>
                           </>
                         )}

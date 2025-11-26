@@ -303,3 +303,33 @@ export const updateGymMainImage = async (
     throw new Error(errorMessage);
   }
 };
+
+/* ========================================
+ * API CALL: Cambiar estado de suspensión de un gimnasio (Admin)
+ * API CALL: Toggle suspension status of a gym (Admin)
+ * ======================================== */
+export const toggleGymSuspension = async (
+  gymId: number | string,
+  token: string
+): Promise<{ message: string; is_suspended: number }> => {
+  try {
+    const response = await axios.patch<{ message: string; is_suspended: number }>(
+      `${API_URL}/gyms/${gymId}/suspend`,
+      {}, // Las peticiones PATCH a menudo envían un cuerpo vacío si la acción es solo un toggle
+      // PATCH requests often send an empty body if the action is just a toggle
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    const errorMessage = handleApiError(
+      error,
+      "No se pudo cambiar el estado de suspensión del gimnasio."
+    );
+    throw new Error(errorMessage);
+  }
+};
+

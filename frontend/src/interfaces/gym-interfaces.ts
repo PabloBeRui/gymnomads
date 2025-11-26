@@ -7,12 +7,12 @@ export interface Gym {
   name: string;
   address: string;
   city: string;
+  is_suspended: number; // 0 = activo, 1 = suspendido // 0 = active, 1 = suspended
   logo_url?: string | null;
   latitude?: number | null;
   longitude?: number | null;
-  main_image_url?: string | null; 
+  main_image_url?: string | null;
 }
-
 
 /* ========================================
  * Interfaz para Respuesta de Subida de Imagen

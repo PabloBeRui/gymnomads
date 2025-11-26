@@ -1,6 +1,7 @@
 const db = require("../../config/db");
 const bcrypt = require("bcrypt");
 const fs = require("fs/promises");
+const jwt = require("jsonwebtoken");
 
 /* ========================================
  * Obtener todos los gimnasios con filtros y paginación
@@ -13,14 +14,46 @@ const getAllGyms = async (req, res) => {
     const { city, search, page = 1, limit = 10 } = req.query;
     const offset = (page - 1) * limit;
 
-    // 2. Construir query base y de conteo
-    // 2. Build base and count query
+    // 2. Intentar autenticar opcionalmente al usuario
+    // 2. Attempt to optionally authenticate the user
+    let user = null;
+    let userRole = "guest"; // Rol por defecto / Default role
+    let homeGymId = null;
+
+    const authHeader = req.header("Authorization");
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.split(" ")[1];
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        user = decoded; // Contiene { id, role, home_gym_id } / Contains { id, role, home_gym_id }
+        userRole = user.role;
+        homeGymId = user.home_gym_id;
+      } catch (error) {
+        // El token es inválido o ha expirado, proceder como invitado.
+        // Token is invalid or expired, proceed as guest.
+        console.warn("getAllGyms: Token inválido o expirado. Procediendo como invitado.");
+      }
+    }
+
+    // 3. Construir query base y de conteo
+    // 3. Build base and count query
     let baseQuery = "FROM gyms WHERE id != 1 AND is_deleted = 0";
     const params = [];
     let filterClause = "";
 
-    // 3. Aplicar filtros
-    // 3. Apply filters
+    // 4. Aplicar filtros de suspensión basados en el rol
+    // 4. Apply suspension filters based on role
+    if (userRole === "guest" || userRole === "user") {
+      baseQuery += " AND is_suspended = 0";
+    } else if (userRole === "manager") {
+      baseQuery += ` AND (is_suspended = 0 OR id = ?)`;
+      params.push(homeGymId);
+    }
+    // Para 'admin', no se añade filtro de is_suspended, ya ven todos los que no estén eliminados.
+    // For 'admin', no is_suspended filter is added, they see all non-deleted gyms.
+
+    // 5. Aplicar filtros de ciudad y búsqueda (ya existentes)
+    // 5. Apply city and search filters (existing)
     if (city) {
       filterClause += " AND city = ?";
       params.push(city);
@@ -34,18 +67,18 @@ const getAllGyms = async (req, res) => {
 
     baseQuery += filterClause;
 
-    // 4. Ejecutar query de conteo
-    // 4. Execute count query
+    // 6. Ejecutar query de conteo
+    // 6. Execute count query
     const [totalResult] = await db.query(`SELECT COUNT(*) as total ${baseQuery}`, params);
     const total = totalResult[0].total;
 
-    // 5. Construir y ejecutar query de datos paginados
-    // 5. Build and execute paginated data query
-    const dataQuery = `SELECT * ${baseQuery} ORDER BY name ASC LIMIT ? OFFSET ?`;
+    // 7. Construir y ejecutar query de datos paginados
+    // 7. Build and execute paginated data query
+    const dataQuery = `SELECT *, is_suspended ${baseQuery} ORDER BY name ASC LIMIT ? OFFSET ?`;
     const [rows] = await db.query(dataQuery, [...params, parseInt(limit), parseInt(offset)]);
 
-    // 6. Devolver resultados paginados
-    // 6. Return paginated results
+    // 8. Devolver resultados paginados
+    // 8. Return paginated results
     res.status(200).json({
       data: rows,
       total,
@@ -512,6 +545,55 @@ const uploadMainImage = (req, res) => {
   updateGymImage(req, res, "main_image_url");
 };
 
+/* ========================================
+ * Cambiar estado de suspensión de un gimnasio (Admin)
+ * Toggle suspension status of a gym (Admin)
+ * ======================================== */
+const toggleSuspension = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // 1. Validar que el ID del gimnasio no sea el de administración (ID = 1)
+    // 1. Validate that the gym ID is not the administration one (ID = 1)
+    if (Number(id) === 1) {
+      return res.status(403).json({
+        message: "No se puede suspender/reactivar el gimnasio de administración del sistema.",
+      });
+    }
+
+    // 2. Obtener el estado actual de is_suspended del gimnasio
+    // 2. Get the current is_suspended status of the gym
+    const [gyms] = await db.query(
+      "SELECT is_suspended FROM gyms WHERE id = ? AND is_deleted = 0",
+      [id]
+    );
+
+    if (gyms.length === 0) {
+      return res.status(404).json({ message: "Gimnasio no encontrado o ya eliminado." });
+    }
+
+    const currentStatus = gyms[0].is_suspended;
+    const newStatus = currentStatus === 0 ? 1 : 0; // Invertir el estado / Invert the status
+
+    // 3. Actualizar el estado is_suspended en la base de datos
+    // 3. Update the is_suspended status in the database
+    await db.query("UPDATE gyms SET is_suspended = ? WHERE id = ?", [
+      newStatus,
+      id,
+    ]);
+
+    // 4. Enviar respuesta de éxito
+    // 4. Send success response
+    res.status(200).json({
+      message: `Gimnasio ${newStatus === 1 ? "suspendido" : "reactivado"} con éxito.`,
+      is_suspended: newStatus,
+    });
+  } catch (error) {
+    console.error(`Error al cambiar el estado de suspensión del gimnasio: ${error}`);
+    res.status(500).json({ message: "Error interno del servidor." });
+  }
+};
+
 module.exports = {
   getAllGyms,
   getGymById,
@@ -521,4 +603,5 @@ module.exports = {
   getUsersByGym,
   uploadLogo,
   uploadMainImage,
+  toggleSuspension,
 };
