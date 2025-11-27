@@ -242,7 +242,7 @@ export const VisitsManagementPage = () => {
 
     if (isAdmin || (isManager && managerVisitView === "sent")) {
       baseColumns.push({
-        key: "destination_gym_name",
+        key: isAdmin ? "gym_name" : "destination_gym_name",
         header: isAdmin ? "Gimnasio Visitado" : "Gimnasio de Destino",
         render: (visit: VisitWithDetails) => (
           <div className={styles.avatarCell}>
