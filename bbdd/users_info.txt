@@ -1,0 +1,79 @@
+=============================================================================
+INFORMACIÓN DE USUARIOS DE PRUEBA - GYMNOMADS (Entorno Desarrollo)
+TEST USER INFORMATION - GYMNOMADS (Development Environment)
+=============================================================================
+
+CONTRASEÑAS / PASSWORDS:
+-----------------------
+Admin:   admin123
+Manager: manager123
+User:    user123
+
+=============================================================================
+1. ADMINISTRADOR (Total Access)
+=============================================================================
+ID: 38 | Email: admin@gymnomads.dev
+Nombre: Administrador Sistema
+
+=============================================================================
+2. MANAGERS (Gestores de Gimnasio)
+=============================================================================
+Cada manager gestiona su gimnasio correspondiente (ID 1 al 12).
+
+| ID | Nombre           | Email                   | Gym ID | Gym Name         | Notas Especiales            |
+|----|------------------|-------------------------|--------|------------------|-----------------------------|
+| 1  | Carlos Gómez     | manager20@gymnomads.dev | 1      | Spartan Gym      |                             |
+| 2  | Laura Fernández  | manager21@gymnomads.dev | 2      | Hercules Fitness |                             |
+| 3  | Javier Martínez  | manager22@gymnomads.dev | 3      | Olympus Center   |                             |
+| 4  | Ana López        | manager23@gymnomads.dev | 4      | Titan Arena      |                             |
+| 5  | Miguel Sánchez   | manager24@gymnomads.dev | 5      | Iron House       |                             |
+| 6  | Elena Ruiz       | manager25@gymnomads.dev | 6      | CrossFit Z       |                             |
+| 7  | David Jiménez    | manager26@gymnomads.dev | 7      | Power Zone       |                             |
+| 8  | Sofía Díaz       | manager27@gymnomads.dev | 8      | Urban Fit        |                             |
+| 9  | Pablo Moreno     | manager28@gymnomads.dev | 9      | Nomad Strength   |                             |
+| 10 | Carmen Muñoz     | manager29@gymnomads.dev | 10     | Global Gym       |                             |
+| 11 | Antonio Álvarez  | manager30@gymnomads.dev | 11     | No Logo Gym      | Gym SIN Logo. Manager SIN Foto |
+| 12 | Isabel Romero    | manager31@gymnomads.dev | 12     | Deleted Gym      | Gym SIN Foto & BORRADO. Manager SIN Foto |
+
+=============================================================================
+3. USUARIOS ESPECIALES (Casos de Prueba)
+=============================================================================
+
+A) LÍMITE DE VISITAS ALCANZADO (10/10 Visitas este mes)
+Estos usuarios NO deberían poder registrar nuevas visitas a otros gimnasios este mes.
+----------------------------------------------------------------------------------
+| ID | Nombre             | Email                | Home Gym      |
+|----|--------------------|----------------------|---------------|
+| 13 | Roberto García     | user20@gymnomads.dev | Spartan Gym   |
+| 14 | Lucía Navarro      | user21@gymnomads.dev | Spartan Gym   |
+| 15 | Manuel Torres      | user22@gymnomads.dev | Hercules Fit. |
+| 16 | Patricia Domínguez | user23@gymnomads.dev | Hercules Fit. |
+| 17 | Francisco Vázquez  | user24@gymnomads.dev | Olympus Ctr.  |
+
+B) USUARIOS SIN FOTO DE PERFIL
+Para probar el avatar con iniciales (Fallback).
+----------------------------------------------------------------------------------
+| ID | Nombre        | Email                | Home Gym    |
+|----|---------------|----------------------|-------------|
+| 18 | Adrián Ramos  | user25@gymnomads.dev | Olympus Ctr.|
+| 19 | Beatriz Gil   | user26@gymnomads.dev | Titan Arena |
+| 20 | Diego Serrano | user27@gymnomads.dev | Titan Arena |
+| 21 | Clara Molina  | user28@gymnomads.dev | Iron House  |
+
+C) USUARIOS DE GIMNASIO BORRADO (Deleted Gym - ID 12)
+Para probar comportamiento cuando el gimnasio origen no existe/está inactivo.
+----------------------------------------------------------------------------------
+| ID | Nombre          | Email                | Notas                      |
+|----|-----------------|----------------------|----------------------------|
+| 33 | Marina Santos   | user40@gymnomads.dev | Tiene visitas recientes    |
+| 34 | Óscar Lozano    | user41@gymnomads.dev | Tiene visitas recientes    |
+| 35 | Teresa Guerrero | user42@gymnomads.dev | Tiene visitas recientes    |
+| 36 | Hugo Prieto     | user43@gymnomads.dev | Tiene visitas recientes    |
+| 37 | Paula Méndez    | user44@gymnomads.dev | Tiene visitas recientes    |
+
+=============================================================================
+4. USUARIOS NORMALES (Para pruebas generales)
+=============================================================================
+Email: user29@gymnomads.dev ... hasta ... user39@gymnomads.dev
+Nombres: Alberto Blanco, Raquel Castro, Fernando Ortega, Sara Delgado...
+Tienen historial de visitas variado pero NO han alcanzado el límite.
