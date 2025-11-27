@@ -1,9 +1,16 @@
+/// <reference types="vitest" />
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/tests/setup.ts',
+    css: true,
+  },
   server: {
     host: true, // This makes Vite listen on all local IPs, enabling mobile access
     port: 5173, // Ensure the port is 5173
