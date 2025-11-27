@@ -26,13 +26,13 @@ INSERT INTO gyms (name, address, city, latitude, longitude, logo_url, main_image
 
 -- NOTA: Las contraseñas se insertan ya hasheadas con bcrypt. / NOTE: Passwords are inserted already hashed with bcrypt.
 
--- La contraseña para 'admin@gymnomads.com' es 'admin123' / The password for 'admin@gymnomads.com' is 'admin123'
--- La contraseña para 'user@gymnomads.com' es 'user123' / The password for 'user@gymnomads.com' is 'user123'
--- La contraseña para 'manager@gymnomads.com' es 'manager123' / The password for 'manager@gymnomads.com' is 'manager123'
+-- La contraseña para 'admin@gymnomads.dev' es 'admin123' / The password for 'admin@gymnomads.dev' is 'admin123'
+-- La contraseña para 'user@gymnomads.dev' es 'user123' / The password for 'user@gymnomads.dev' is 'user123'
+-- La contraseña para 'manager@gymnomads.dev' es 'manager123' / The password for 'manager@gymnomads.dev' is 'manager123'
 
 INSERT INTO users (first_name, last_name, email, password, home_gym_id, role) VALUES
-('Admin', 'GymNomads', 'admin@gymnomads.com', '$2b$10$HADUOtIlZejOSCzXE8/JVupFmOgVUuqUBDAwVpRLT/ay4NFZ1Pawi', 1, 'admin');
+('Admin', 'GymNomads', 'admin@gymnomads.dev', '$2b$10$HADUOtIlZejOSCzXE8/JVupFmOgVUuqUBDAwVpRLT/ay4NFZ1Pawi', 1, 'admin');
 
 -- Ejemplos adicionales (descomentar para usar):
--- ('Luis', 'Breogan Rivas', 'user@gymnomads.com', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', 2, 'user'),
--- ('Manager', 'CostaFit', 'manager@gymnomads.com', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', 2, 'manager');
+-- ('Luis', 'Breogan Rivas', 'user@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', 2, 'user'),
+-- ('Manager', 'CostaFit', 'manager@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', 2, 'manager');
