@@ -33,7 +33,7 @@ Cada manager gestiona su gimnasio correspondiente (ID 1 al 12).
 | 9  | Pablo Moreno     | manager28@gymnomads.dev | 9      | Nomad Strength   |                             |
 | 10 | Carmen Muñoz     | manager29@gymnomads.dev | 10     | Global Gym       |                             |
 | 11 | Antonio Álvarez  | manager30@gymnomads.dev | 11     | No Logo Gym      | Gym SIN Logo. Manager SIN Foto |
-| 12 | Isabel Romero    | manager31@gymnomads.dev | 12     | Deleted Gym      | Gym SIN Foto & BORRADO. Manager SIN Foto |
+| 12 | Isabel Romero    | manager31@gymnomads.dev | 12     | Old School Gym   | Gym SIN Foto & BORRADO. Manager SIN Foto |
 
 =============================================================================
 3. USUARIOS ESPECIALES (Casos de Prueba)

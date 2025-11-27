@@ -24,7 +24,7 @@ INSERT INTO gyms (id, name, address, city, latitude, longitude, logo_url, main_i
 (9, 'Nomad Strength', 'Rua do Franco 50', 'Santiago', 42.8782, -8.5448, 'uploads/gym_logos/gym_logo9.png', 'uploads/gym_images/gym_photo9.png', 0, '08:30 - 22:00', 0),
 (10, 'Global Gym', 'Calle San Francisco 4', 'Alicante', 38.3452, -0.4810, 'uploads/gym_logos/gym_logo10.png', 'uploads/gym_images/gym_photo10.png', 0, '06:00 - 23:00', 0),
 (11, 'No Logo Gym', 'Calle Sin Nombre 1', 'Murcia', 37.9922, -1.1307, NULL, 'uploads/gym_images/gym_photo11.png', 0, '09:00 - 20:00', 0),
-(12, 'Deleted Gym', 'Calle Fantasma 666', 'Vigo', 42.2406, -8.7207, 'uploads/gym_logos/gym_logo11.png', NULL, 0, 'Cerrado', 1);
+(12, 'Old School Gym', 'Calle Fantasma 666', 'Vigo', 42.2406, -8.7207, 'uploads/gym_logos/gym_logo11.png', NULL, 0, 'Cerrado', 1);
 
 -- =======================================================================================
 -- 2. USUARIOS: MANAGERS (12 en total, IDs 1-12)
