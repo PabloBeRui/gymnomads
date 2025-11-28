@@ -16,8 +16,8 @@
  */
 import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { getVisitsStats } from "../../services/visit-services"; // <-- Usamos tu servicio / We use your service
-import type { VisitStats } from "../../interfaces/visit-interfaces"; // <-- Usamos tu interfaz / We use your interface
+import { getVisitsStats } from "../../services"; // <-- Usamos tu servicio / We use your service
+import type { VisitStats } from "../../interfaces"; // <-- Usamos tu interfaz / We use your interface
 import { CloseButton } from "../ui/CloseButton"; // Importar el nuevo componente / Import the new component
 
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components

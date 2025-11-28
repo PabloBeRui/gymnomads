@@ -12,9 +12,8 @@
  */
 
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { sortGymsByRole } from '../../utils/gym-sorter';
-import type { Gym } from '../../interfaces/gym-interfaces';
-import type { User } from '../../interfaces/user-interfaces';
+import { sortGymsByRole } from '../../utils';
+import type { Gym, User } from '../../interfaces';
 
 // Mock Data
 const mockGyms: Gym[] = [

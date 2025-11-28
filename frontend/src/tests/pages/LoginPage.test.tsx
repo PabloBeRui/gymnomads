@@ -15,7 +15,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from 'vitest';
 import { LoginPage } from '../../pages/LoginPage';
 import { useAuth } from '../../context/AuthContext';
-import { useApiCall } from '../../hooks/useApiCall';
+import { useApiCall } from '../../hooks';
 import { toast } from 'sonner';
 
 // Mocks

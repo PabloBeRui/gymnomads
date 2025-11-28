@@ -19,7 +19,7 @@ import type {
   UserWithGym,
   UpdateManagerData,
   ChangePasswordData,
-} from "../interfaces/user-interfaces";
+} from "../interfaces";
 
 // Definir la URL base de la API.
 // Define the base API URL.

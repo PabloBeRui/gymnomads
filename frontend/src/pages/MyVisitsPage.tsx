@@ -18,10 +18,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { getMyVisits } from "../services/visit-services";
-import type { VisitWithDetails } from "../interfaces/visit-interfaces";
+import { getMyVisits } from "../services";
+import type { VisitWithDetails } from "../interfaces";
 import { toast } from "sonner";
-import { handleApiError } from "../utils/error-handler";
+import { handleApiError } from "../utils";
 import { VisitsDetailsModal } from "../components/modals/VisitsDetailsModal";
 import { Avatar } from "../components/ui/Avatar";
 import { VisitsStatsModal } from "../components/modals/VisitsStatsModal";

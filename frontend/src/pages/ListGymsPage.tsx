@@ -20,16 +20,15 @@
  */
 
 import { useState, useEffect } from "react";
-import { getAllGyms, deleteGym, toggleGymSuspension } from "../services/gym-services";
+import { getAllGyms, deleteGym, toggleGymSuspension } from "../services";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import type { Gym } from "../interfaces/gym-interfaces";
+import type { Gym } from "../interfaces";
 import { toast } from "sonner";
-import { handleApiError } from "../utils/error-handler";
+import { handleApiError, sortGymsByRole } from "../utils";
 import { ConfirmationModal } from "../components/modals/ConfirmationModal";
-import { usePagination } from "../hooks/usePagination";
+import { usePagination } from "../hooks";
 import { PaginationControls } from "../components/ui/PaginationControls";
-import { sortGymsByRole } from "../utils/gym-sorter";
 import {
   Row,
   Col,
@@ -304,7 +303,7 @@ export const ListGymsPage = () => {
           <div className={styles.infoCol}>
             <h1 className={styles.title}>Nuestros Gimnasios</h1>
             <p className={styles.subtitle}>
-              Explora la red de gimnasios asociados a GymNomads.
+              <strong>Explora la red de gimnasios asociados a GymNomads.</strong>
             </p>
           </div>
 

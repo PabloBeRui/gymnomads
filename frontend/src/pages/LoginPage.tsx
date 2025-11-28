@@ -20,13 +20,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useApiCall } from "../hooks/useApiCall";
-import { loginUser } from "../services/user-services";
+import { useApiCall } from "../hooks";
+import { loginUser } from "../services";
 import { toast } from "sonner";
-import { handleApiError } from "../utils/error-handler";
+import { handleApiError } from "../utils";
 
 // Types
-import type { LoginData, LoginResponse } from "../interfaces/user-interfaces";
+import type { LoginData, LoginResponse } from "../interfaces";
 
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
 import { Container, Form, Button, Alert, Card } from "react-bootstrap";

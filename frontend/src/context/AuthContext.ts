@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react";
 
 // Importar la interfaz User / Import the User interface
-import type { User } from "../interfaces/user-interfaces"; //
+import type { User } from "../interfaces"; //
 
 // Definir la forma/estructura de los datos que contendrá el contexto.
 // Define the shape/structure of the data the context will hold.

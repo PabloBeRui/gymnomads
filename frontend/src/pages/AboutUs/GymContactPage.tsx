@@ -18,7 +18,7 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 import { CloseButton } from "../../components/ui/CloseButton";
 import { useNavigate } from "react-router-dom";
-import { useEmail } from "../../hooks/useEmail"; // Importar el hook personalizado
+import { useEmail } from "../../hooks"; // Importar el hook personalizado
 
 // Importar componentes de React-Bootstrap
 import { Form, Button } from "react-bootstrap";

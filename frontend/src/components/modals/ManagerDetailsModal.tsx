@@ -38,10 +38,10 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
-import type { ManagerWithGym } from "../../interfaces/user-interfaces";
+import type { ManagerWithGym } from "../../interfaces";
 import { Avatar } from "../ui/Avatar";
 import { CloseButton } from "../ui/CloseButton"; // Importar el nuevo componente / Import the new component
-import { useMediaQuery } from "../../hooks/useMediaQuery"; // Importar hook de media query / Import media query hook
+import { useMediaQuery } from "../../hooks"; // Importar hook de media query / Import media query hook
 
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
 import { Modal, Form, Button, Row, Col } from "react-bootstrap";

@@ -21,27 +21,26 @@ import { useNavigate } from "react-router-dom"; // Importar useNavigate // Impor
 // Importar componentes de Bootstrap
 // Import Bootstrap components
 import { Container, Form, Button, Row, Col, Card } from "react-bootstrap";
-import Spinner from "../components/ui/Spinner";
+import { Spinner } from "../components/ui";
 
 // Importar contexto / Import context
 import { useAuth } from "../context/AuthContext";
 
 // Importar hooks personalizados / Import custom hooks
-import { useApiCall } from "../hooks/useApiCall";
-import { useImageUpload } from "../hooks/useImageUpload";
+import { useApiCall, useImageUpload } from "../hooks";
 
 // Importar componentes
 // Import components
-import { Avatar } from "../components/ui/Avatar";
-import { ChangePasswordModal } from "../components/modals/ChangePasswordModal";
-import { CloseButton } from "../components/ui/CloseButton"; // Importar el botón de cierre // Import the close button
+import { Avatar } from "../components/ui";
+import { ChangePasswordModal } from "../components/modals";
+import { CloseButton } from "../components/ui";
 
 // Importar servicios / Import services
-import { getGymById } from "../services/gym-services";
 import {
+  getGymById,
   updateUserProfile,
   uploadProfilePicture,
-} from "../services/user-services";
+} from "../services";
 
 // Importar interfaces / Import interfaces
 import type {
@@ -49,10 +48,10 @@ import type {
   User,
   UploadProfilePictureResponse,
   UpdateProfileResponse,
-} from "../interfaces/user-interfaces";
+} from "../interfaces";
 
 // Importar utilidades / Import utilities
-import { handleApiError } from "../utils/error-handler";
+import { handleApiError } from "../utils";
 
 // Importar estilos
 // Import styles

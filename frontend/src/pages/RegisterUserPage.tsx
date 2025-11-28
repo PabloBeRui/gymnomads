@@ -18,27 +18,26 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "../context/AuthContext";
-import { useApiCall } from "../hooks/useApiCall";
-import { useImageUpload } from "../hooks/useImageUpload";
-import { ImageUploadPreview } from "../components/ui/ImageUploadPreview";
+import { useApiCall, useImageUpload } from "../hooks";
+import { ImageUploadPreview } from "../components/ui";
 import {
   registerUser,
   getUserProfile,
   uploadProfilePicture,
-} from "../services/user-services";
-import { getAllGyms } from "../services/gym-services";
+  getAllGyms,
+} from "../services";
 import type {
   RegisterData,
   UploadProfilePictureResponse,
-} from "../interfaces/user-interfaces";
-import type { Gym } from "../interfaces/gym-interfaces";
+  Gym,
+} from "../interfaces";
 import { Form, Button, Spinner } from "react-bootstrap";
 
 // Importar el módulo SCSS para mantener la consistencia, aunque esté vacío.
 // Import the SCSS module for consistency, even if it's empty.
 import styles from "./RegisterUserPage.module.scss";
 import clsx from "clsx"; // Importar clsx / Import clsx
-import { CloseButton } from "../components/ui/CloseButton"; // Importar el botón de cierre // Import the close button
+import { CloseButton } from "../components/ui";
 
 export const RegisterUserPage: React.FC = () => {
   // Hooks de navegación y contexto de autenticación.

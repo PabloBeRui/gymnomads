@@ -43,12 +43,11 @@ import { toast } from "sonner";
 import { useAuth } from "../context/AuthContext";
 
 // Hooks reutilizables / Reusable hooks
-import { useApiCall } from "../hooks/useApiCall";
-import { useImageUpload } from "../hooks/useImageUpload";
+import { useApiCall, useImageUpload } from "../hooks";
 
 // Componentes UI / UI components
-import { ImageUploadPreview } from "../components/ui/ImageUploadPreview";
-import { CloseButton } from "../components/ui/CloseButton"; // Importar el botón de cierre // Import the close button
+import { ImageUploadPreview } from "../components/ui";
+import { CloseButton } from "../components/ui";
 
 // Servicios API / API services
 import {
@@ -56,17 +55,17 @@ import {
   updateGymDetails,
   updateGymLogo,
   updateGymMainImage,
-} from "../services/gym-services";
+} from "../services";
 
 // Tipos / Types
-import type { Gym } from "../interfaces/gym-interfaces";
+import type { Gym } from "../interfaces";
 
 // Utilidades / Utilities
-import { handleApiError } from "../utils/error-handler";
+import { handleApiError } from "../utils";
 
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
 import { Container, Form, Button, Alert } from "react-bootstrap";
-import Spinner from "../components/ui/Spinner";
+import { Spinner } from "../components/ui";
 
 // Importar el módulo SCSS / Import the SCSS module
 import styles from "./EditGymPage.module.scss";

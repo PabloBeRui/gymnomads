@@ -19,7 +19,7 @@
  * =============================================================================
  */
 
-import type { UserWithGym } from "../../interfaces/user-interfaces";
+import type { UserWithGym } from "../../interfaces";
 import { Avatar } from "../ui/Avatar";
 import { ConfirmationModal } from "../modals/ConfirmationModal"; // Reutilizamos el modal de confirmación / Reuse confirmation modal
 import { useAuth } from "../../context/AuthContext";

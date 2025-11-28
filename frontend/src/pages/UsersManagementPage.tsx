@@ -6,24 +6,22 @@ import {
   deleteUser,
   type GetAllUsersFilters,
   type GetUsersByGymFilters,
-} from "../services/user-services";
-import { getAllGyms } from "../services/gym-services";
-import type { UserWithGym, GymUser } from "../interfaces/user-interfaces";
-import type { Gym } from "../interfaces/gym-interfaces";
+  getAllGyms,
+} from "../services";
+import type { UserWithGym, GymUser, Gym } from "../interfaces";
 import { toast } from "sonner";
-import { handleApiError } from "../utils/error-handler";
-import { Avatar } from "../components/ui/Avatar";
-import { UserDetailModal } from "../components/modals/UserDetailModal";
-import { usePagination } from "../hooks/usePagination";
-import { useMediaQuery } from "../hooks/useMediaQuery"; // Importar el nuevo hook
-import { PaginationControls } from "../components/ui/PaginationControls";
-import { FilterInput } from "../components/forms/FilterInput";
+import { handleApiError } from "../utils";
+import { Avatar } from "../components/ui";
+import { UserDetailModal } from "../components/modals";
+import { usePagination, useMediaQuery } from "../hooks";
+import { PaginationControls } from "../components/ui";
+import { FilterInput } from "../components/forms";
 import {
   SortableTable,
   type ColumnDefinition,
-} from "../components/ui/SortableTable";
+} from "../components/ui";
 import { Container, Row, Col, Form, Card, Alert } from "react-bootstrap";
-import Spinner from "../components/ui/Spinner";
+import { Spinner } from "../components/ui";
 import styles from "./UsersManagementPage.module.scss";
 import clsx from "clsx";
 

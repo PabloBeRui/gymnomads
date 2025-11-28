@@ -19,13 +19,11 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getGymById } from "../services/gym-services";
-import { createVisit, getVisitsStats } from "../services/visit-services";
+import { getGymById, createVisit, getVisitsStats } from "../services";
 import { useAuth } from "../context/AuthContext";
-import type { Gym } from "../interfaces/gym-interfaces";
-import type { VisitStats } from "../interfaces/visit-interfaces";
+import type { Gym, VisitStats } from "../interfaces";
 import { toast } from "sonner";
-import { handleApiError } from "../utils/error-handler";
+import { handleApiError } from "../utils";
 // modal de confirmación / confirmation modal
 import { ConfirmationModal } from "../components/modals/ConfirmationModal";
 import { CloseButton } from "../components/ui/CloseButton"; // Importar el botón de cierre

@@ -4,26 +4,24 @@ import {
   getAllVisits,
   getManagerGymVisits,
   getManagerOutgoingVisits,
-} from "../services/visit-services";
-import { getAllGyms } from "../services/gym-services";
+  getAllGyms,
+} from "../services";
 import type {
   VisitWithDetails,
   VisitsFilters,
-} from "../interfaces/visit-interfaces";
-import type { Gym } from "../interfaces/gym-interfaces";
+  Gym,
+} from "../interfaces";
 import { toast } from "sonner";
-import { handleApiError } from "../utils/error-handler";
-import { Avatar } from "../components/ui/Avatar";
-import { VisitsDetailsModal } from "../components/modals/VisitsDetailsModal";
-import { VisitsStatsModal } from "../components/modals/VisitsStatsModal";
-import { usePagination } from "../hooks/usePagination";
-import { useMediaQuery } from "../hooks/useMediaQuery";
-import { PaginationControls } from "../components/ui/PaginationControls";
-import { FilterInput } from "../components/forms/FilterInput";
+import { handleApiError } from "../utils";
+import { Avatar } from "../components/ui";
+import { VisitsDetailsModal, VisitsStatsModal } from "../components/modals";
+import { usePagination, useMediaQuery } from "../hooks";
+import { PaginationControls } from "../components/ui";
+import { FilterInput } from "../components/forms";
 import {
   SortableTable,
   type ColumnDefinition,
-} from "../components/ui/SortableTable";
+} from "../components/ui";
 import {
   Container,
   Row,
@@ -33,7 +31,7 @@ import {
   Card,
   Alert,
 } from "react-bootstrap";
-import Spinner from "../components/ui/Spinner";
+import { Spinner } from "../components/ui";
 
 import styles from "./VisitsManagementPage.module.scss";
 import clsx from "clsx";

@@ -17,8 +17,8 @@ import { useEffect, useState } from "react";
 
 // Interfaz Gym
 // Gym interface
-import type { Gym } from "../interfaces/gym-interfaces";
-import { getAllGyms } from "../services/gym-services";
+import type { Gym } from "../interfaces";
+import { getAllGyms } from "../services";
 
 export const ApiTest = () => {
   // Crear useState para almacenar la lista de gimnasios.

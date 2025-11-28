@@ -16,27 +16,26 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../context/AuthContext";
-import { getAllManagers, updateManager } from "../services/user-services";
+import { getAllManagers, updateManager } from "../services";
 import type {
   ManagerWithGym,
   UpdateManagerData,
-} from "../interfaces/user-interfaces";
+} from "../interfaces";
 import { toast } from "sonner";
-import { handleApiError } from "../utils/error-handler";
-import { ManagerDetailsModal } from "../components/modals/ManagerDetailsModal";
-import { Avatar } from "../components/ui/Avatar";
-import { usePagination } from "../hooks/usePagination";
-import { useMediaQuery } from "../hooks/useMediaQuery"; // Importar el nuevo hook
-import { PaginationControls } from "../components/ui/PaginationControls";
-import { FilterInput } from "../components/forms/FilterInput";
+import { handleApiError } from "../utils";
+import { ManagerDetailsModal } from "../components/modals";
+import { Avatar } from "../components/ui";
+import { usePagination, useMediaQuery } from "../hooks";
+import { PaginationControls } from "../components/ui";
+import { FilterInput } from "../components/forms";
 import {
   SortableTable,
   type ColumnDefinition,
-} from "../components/ui/SortableTable";
+} from "../components/ui";
 
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
 import { Container, Row, Col, Card, Alert } from "react-bootstrap";
-import Spinner from "../components/ui/Spinner";
+import { Spinner } from "../components/ui";
 
 // Importar el módulo SCSS / Import the SCSS module
 import styles from "./ManagersManagementPage.module.scss";

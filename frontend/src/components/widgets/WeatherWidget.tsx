@@ -25,7 +25,7 @@
 
 import React, { useState, useEffect } from "react";
 // Importar nuestro traductor de iconos / Import our icon translator
-import { getWeatherIcon } from "../../utils/weather-utils";
+import { getWeatherIcon } from "../../utils";
 import Spinner from "../ui/Spinner";
 
 // Importar el módulo SCSS / Import the SCSS module

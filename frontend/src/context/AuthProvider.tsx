@@ -8,17 +8,17 @@ import { useNavigate } from "react-router-dom"; //
 // Import the context from the separate file.
 import { AuthContext } from "./AuthContext";
 // Importar la interfaz User / Import the User interface
-import type { User } from "../interfaces/user-interfaces";
+import type { User } from "../interfaces";
 
 // Notificaciones / Notifications
 import { toast } from "sonner";
 
 //Importar la función del servicio para obtener el profile / Import service function to get profile
-import { getUserProfile } from "../services/user-services";
+import { getUserProfile } from "../services";
 
 // Importar la utilidad centralizada para manejar errores de API.
 // Import the centralized utility for handling API errors.
-import { handleApiError } from "../utils/error-handler";
+import { handleApiError } from "../utils";
 
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
 import Spinner from "../components/ui/Spinner";

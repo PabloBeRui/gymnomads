@@ -18,9 +18,9 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { QRCodeComponent } from "../components/ui/QRCodeComponent";
-import { getVisitById } from "../services/visit-services"; // Importar servicio de visitas
+import { getVisitById } from "../services"; // Importar servicio de visitas
 import { useAuth } from "../context/AuthContext"; // Importar contexto de autenticación
-import { handleApiError } from "../utils/error-handler";
+import { handleApiError } from "../utils";
 import { toast } from "sonner";
 import {
   Container,

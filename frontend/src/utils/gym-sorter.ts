@@ -13,8 +13,7 @@
  * =============================================================================
  */
 
-import type { Gym } from "../interfaces/gym-interfaces";
-import type { User } from "../interfaces/user-interfaces";
+import type { Gym, User } from "../interfaces";
 
 /**
  * Algoritmo de ordenación aleatoria Fisher-Yates.

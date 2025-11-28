@@ -20,15 +20,15 @@ import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 // Importar hook y servicio necesarios / Import necessary hooks and services
-import { useApiCall } from "../../hooks/useApiCall";
-import { changePassword } from "../../services/user-services";
+import { useApiCall } from "../../hooks";
+import { changePassword } from "../../services";
 import { useAuth } from "../../context/AuthContext";
 
 // Importar interfaces / Import interfaces
-import type { ChangePasswordData } from "../../interfaces/user-interfaces";
+import type { ChangePasswordData } from "../../interfaces";
 
 // Importar manejador de errores / Import error handler
-import { handleApiError } from "../../utils/error-handler";
+import { handleApiError } from "../../utils";
 import { CloseButton } from "../ui/CloseButton"; // Importar el nuevo componente / Import the new component
 
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components

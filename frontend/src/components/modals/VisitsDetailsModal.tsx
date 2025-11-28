@@ -20,7 +20,7 @@
  */
 
 import React, { useEffect, useCallback } from "react"; // <--- React importado
-import type { VisitWithDetails } from "../../interfaces/visit-interfaces";
+import type { VisitWithDetails } from "../../interfaces";
 import { Avatar } from "../ui/Avatar";
 import { CloseButton } from "../ui/CloseButton";
 // --- NUEVO: Importar icono de flecha --- / --- NEW: Import arrow icon ---

@@ -12,7 +12,7 @@ import { handleApiError } from "../utils/error-handler";
 import type {
   Gym,
   CreateGymManagerResponse,
-} from "../interfaces/gym-interfaces";
+} from "../interfaces";
 
 // Definir la URL base de la API para evitar repetirla.
 // Define the base API URL to avoid repetition.

@@ -18,7 +18,7 @@
  */
 
 import React from "react";
-import { useSorting } from "../../hooks/useSorting";
+import { useSorting } from "../../hooks";
 
 // Importar componentes de React-Bootstrap / Import React-Bootstrap components
 import { Table } from "react-bootstrap";
