@@ -1,38 +1,11 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useAuth } from "../context/AuthContext";
-import {
-  getAllVisits,
-  getManagerGymVisits,
-  getManagerOutgoingVisits,
-  getAllGyms,
-} from "../services";
-import type {
-  VisitWithDetails,
-  VisitsFilters,
-  Gym,
-} from "../interfaces";
-import { toast } from "sonner";
-import { handleApiError } from "../utils";
-import { Avatar } from "../components/ui";
+import type { VisitWithDetails } from "../interfaces";
+import { Avatar, PaginationControls, SortableTable, type ColumnDefinition, Spinner } from "../components/ui";
 import { VisitsDetailsModal, VisitsStatsModal } from "../components/modals";
-import { usePagination, useMediaQuery } from "../hooks";
-import { PaginationControls } from "../components/ui";
 import { FilterInput } from "../components/forms";
-import {
-  SortableTable,
-  type ColumnDefinition,
-} from "../components/ui";
-import {
-  Container,
-  Row,
-  Col,
-  Form,
-  Button,
-  Card,
-  Alert,
-} from "react-bootstrap";
-import { Spinner } from "../components/ui";
-
+import { useVisitsManagement, useMediaQuery } from "../hooks";
+import { Container, Row, Col, Form, Button, Card, Alert } from "react-bootstrap";
 import styles from "./VisitsManagementPage.module.scss";
 import clsx from "clsx";
 
@@ -44,161 +17,61 @@ import clsx from "clsx";
  *
  * Descripción: Página para la gestión de visitas. Permite a los administradores
  * ver todas las visitas, y a los gerentes ver las visitas recibidas en su
- * gimnasio o las enviadas por sus usuarios. Incluye filtros, paginación y
- * estadísticas.
- *
- * Description: Page for managing visits. It allows administrators to view all
- * visits, and managers to view visits received at their gym or those sent by
- * their users. It includes filters, pagination, and statistics.
+ * gimnasio o las enviadas por sus usuarios.
+ * 
+ * Refactorizado para usar el hook useVisitsManagement.
  *
  * =============================================================================
  */
 export const VisitsManagementPage = () => {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const isManager = user?.role === "manager";
 
-  // Estados del componente // Component states
-  const [visits, setVisits] = useState<VisitWithDetails[]>([]);
-  const [gyms, setGyms] = useState<Gym[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [managerVisitView, setManagerVisitView] = useState<"received" | "sent">(
-    "received"
-  );
-
-  // Hook de paginación // Pagination hook
+  // Custom Hook
   const {
-    currentPage,
-    itemsPerPage,
-    totalItems,
-    totalPages,
-    setTotalItems,
-    goToPage,
-    changeItemsPerPage,
-  } = usePagination();
+    visits,
+    gyms,
+    isLoading,
+    error,
+    managerVisitView,
+    selectedGymId,
+    userSearch,
+    gymSearchTerm,
+    setManagerVisitView,
+    setSelectedGymId,
+    setUserSearch,
+    setGymSearchTerm,
+    pagination: {
+      currentPage,
+      itemsPerPage,
+      totalItems,
+      totalPages,
+      goToPage,
+      changeItemsPerPage,
+    },
+  } = useVisitsManagement();
 
-  // Estados de filtros // Filter states
-  const [selectedGymId, setSelectedGymId] = useState<string>("");
-  const [userSearch, setUserSearch] = useState<string>("");
-  const [gymSearchTerm, setGymSearchTerm] = useState<string>("");
-
-  // Estados para el modal de detalles // States for details modal
+  // Local UI States
   const [showDetailModal, setShowDetailModal] = useState<boolean>(false);
-  const [selectedVisit, setSelectedVisit] = useState<VisitWithDetails | null>(
-    null
-  );
+  const [selectedVisit, setSelectedVisit] = useState<VisitWithDetails | null>(null);
   const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
 
-  // Hook para responsividad / Hook for responsiveness
+  // Responsive Hook
   const isLargeScreen = useMediaQuery("(min-width: 768px)");
 
-  // Cargar gimnasios (solo para admin) // Load gyms (admin only)
-  useEffect(() => {
-    if (!isAdmin || !token) return;
-
-    const fetchGyms = async () => {
-      try {
-        const gymsData = await getAllGyms(token, { limit: 1000 });
-        const validGyms = Array.isArray(gymsData.data) ? gymsData.data : [];
-        setGyms(validGyms);
-      } catch (err) {
-        const msg = handleApiError(err, "Error al cargar gimnasios.");
-        toast.error("No se pudieron cargar los gimnasios.");
-        setGyms([]);
-        if (import.meta.env.DEV) {
-          console.error("Error al cargar gimnasios:", msg);
-        }
-      }
-    };
-
-    fetchGyms();
-  }, [isAdmin, token]);
-
-  const filteredGyms = gyms.filter(
-    (gym) =>
-      gym.name.toLowerCase().includes(gymSearchTerm.toLowerCase()) ||
-      gym.city.toLowerCase().includes(gymSearchTerm.toLowerCase())
-  );
-
-  // Cargar visitas // Load visits
-  const fetchVisits = async () => {
-    if (!token) {
-      setError("No estás autenticado.");
-      setIsLoading(false);
-      return;
-    }
-
-    setError(null);
-    setIsLoading(true);
-    try {
-      let response;
-      const baseFilters: VisitsFilters = {
-        page: currentPage,
-        limit: itemsPerPage,
-        user_search: userSearch.trim() || undefined,
-      };
-
-      if (isAdmin) {
-        const gymIdAsNumber = Number(selectedGymId);
-        const adminFilters: VisitsFilters = { ...baseFilters };
-
-        if (selectedGymId === "deleted") {
-          adminFilters.gym_status = "deleted";
-        } else if (gymIdAsNumber > 0) {
-          adminFilters.gym_id = gymIdAsNumber;
-          adminFilters.gym_status = "active";
-        }
-        response = await getAllVisits(token, adminFilters);
-      } else if (isManager) {
-        if (managerVisitView === "received") {
-          response = await getManagerGymVisits(token, baseFilters);
-        } else {
-          response = await getManagerOutgoingVisits(token, baseFilters);
-        }
-      } else {
-        throw new Error("No tienes permisos para ver esta página.");
-      }
-
-      const validVisits = Array.isArray(response.data) ? response.data : [];
-      setVisits(validVisits);
-      setTotalItems(response.total || 0);
-    } catch (err) {
-      const msg = handleApiError(err, "Error al cargar las visitas.");
-      setError(msg);
-      toast.error("No se pudieron cargar las visitas.");
-      setVisits([]);
-      if (import.meta.env.DEV) {
-        console.error("Error al cargar visitas:", msg);
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Efecto para debounce en la búsqueda // Effect for search debounce
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      fetchVisits();
-    }, 500);
-
-    return () => clearTimeout(timeoutId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedGymId, userSearch, currentPage, itemsPerPage, managerVisitView]);
-
-  // Maneja el clic en una fila de la tabla // Handles a click on a table row
+  // Handlers
   const handleRowClick = (visit: VisitWithDetails) => {
     setSelectedVisit(visit);
     setShowDetailModal(true);
   };
 
-  // Cierra el modal de detalles // Closes the details modal
   const handleCloseModal = () => {
     setShowDetailModal(false);
     setSelectedVisit(null);
   };
 
-  // Definición de columnas para la tabla // Column definitions for the table
+  // Table Columns Definition
   const visitColumns: ColumnDefinition<VisitWithDetails>[] = useMemo(() => {
     const baseColumns: ColumnDefinition<VisitWithDetails>[] = [
       {
@@ -288,12 +161,12 @@ export const VisitsManagementPage = () => {
     return baseColumns;
   }, [isLargeScreen, isAdmin, isManager, managerVisitView]);
 
-  // Muestra el spinner mientras carga y no hay datos // Shows spinner while loading and there is no data
+  // Render Loading
   if (isLoading && visits.length === 0) {
     return <Spinner center size="lg" className="vh-100" />;
   }
 
-  // Muestra el error si no hay datos // Shows error if there is no data
+  // Render Error
   if (error && visits.length === 0) {
     return (
       <Container className="text-center mt-5">
@@ -391,7 +264,7 @@ export const VisitsManagementPage = () => {
                   <option value="deleted" className={styles.deletedOption}>
                     A Gimnasios Eliminados
                   </option>
-                  {filteredGyms.map((gym) => (
+                  {gyms.map((gym) => (
                     <option key={gym.id} value={gym.id}>
                       {gym.name} - {gym.city}
                     </option>
