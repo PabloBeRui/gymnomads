@@ -13,7 +13,7 @@
 
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { FilterInput } from '../../../components/forms/FilterInput';
+import { FilterInput } from '../../../components/forms';
 
 describe('FilterInput Component', () => {
     const mockOnChange = vi.fn();

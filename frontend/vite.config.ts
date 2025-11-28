@@ -1,14 +1,21 @@
 /// <reference types="vitest" />
 import { defineConfig } from "vite";
+import type { UserConfig } from "vite";
+import type { InlineConfig } from "vitest/node";
 import react from "@vitejs/plugin-react-swc";
+import path from "path";
+
+interface VitestConfigExport extends UserConfig {
+  test: InlineConfig;
+}
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   test: {
     globals: true,
-    environment: 'jsdom',
-    setupFiles: './src/tests/setup.ts',
+    environment: "jsdom",
+    setupFiles: "./src/tests/setup.ts",
     css: true,
   },
   server: {
@@ -22,4 +29,9 @@ export default defineConfig({
       },
     },
   },
-});
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+} as VitestConfigExport);

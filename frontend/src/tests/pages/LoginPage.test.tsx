@@ -27,8 +27,13 @@ vi.mock('../../context/AuthContext', () => ({
     useAuth: vi.fn(),
 }));
 
-vi.mock('../../hooks/useApiCall', () => ({
+vi.mock('../../hooks', () => ({
     useApiCall: vi.fn(),
+    useEmail: vi.fn(), // Añadir otros hooks si se usan en la página, aunque no estén mockeados aquí
+    useImageUpload: vi.fn(),
+    useMediaQuery: vi.fn(),
+    usePagination: vi.fn(),
+    useSorting: vi.fn(),
 }));
 
 vi.mock('sonner', () => ({
