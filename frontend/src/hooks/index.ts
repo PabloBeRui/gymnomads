@@ -16,3 +16,4 @@ export * from './useImageUpload';
 export * from './useMediaQuery';
 export * from './usePagination';
 export * from './useSorting';
+export * from './useGymsList';
