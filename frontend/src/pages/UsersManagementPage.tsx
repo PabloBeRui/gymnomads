@@ -189,7 +189,7 @@ export const UsersManagementPage = () => {
           <Row className="align-items-end">
             <Col md={4} lg={3} className="mb-3 text-center">
               <div className="text-dark mb-0 small">
-                {isLoading ? <Spinner size="sm" /> : "Total de Usuarios"}
+                {isLoading ? <Spinner size="sm" /> : <strong>Total de Usuarios</strong>}
               </div>
               <h2 className="fw-bold text-primary">{totalItems}</h2>
             </Col>

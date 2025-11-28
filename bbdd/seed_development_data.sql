@@ -53,9 +53,9 @@ INSERT INTO users (id, first_name, last_name, email, password, phone, profile_pi
 INSERT INTO users (id, first_name, last_name, email, password, phone, profile_picture, home_gym_id, role) VALUES
 -- Usuarios MAX VISITAS (13-17)
 (13, 'Roberto', 'García', 'user20@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000040', 'uploads/profile_pictures/user_profile11.png', 1, 'user'),
-(14, 'Lucía', 'Navarro', 'user21@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000041', 'uploads/profile_pictures/user_profile12.png', 1, 'user'),
-(15, 'Manuel', 'Torres', 'user22@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000042', 'uploads/profile_pictures/user_profile13.png', 2, 'user'),
-(16, 'Patricia', 'Domínguez', 'user23@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000043', 'uploads/profile_pictures/user_profile14.png', 2, 'user'),
+(14, 'Francisco', 'Navarro', 'user21@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000041', 'uploads/profile_pictures/user_profile12.png', 1, 'user'),
+(15, 'Aitana', 'Torres', 'user22@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000042', 'uploads/profile_pictures/user_profile13.png', 2, 'user'),
+(16, 'Alberto', 'Domínguez', 'user23@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000043', 'uploads/profile_pictures/user_profile14.png', 2, 'user'),
 (17, 'Francisco', 'Vázquez', 'user24@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000044', 'uploads/profile_pictures/user_profile15.png', 3, 'user'),
 
 -- Usuarios Sin Foto (IDs 18-21)
@@ -66,31 +66,31 @@ INSERT INTO users (id, first_name, last_name, email, password, phone, profile_pi
 
 -- Resto de usuarios normales
 (22, 'Alberto', 'Blanco', 'user29@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000049', 'uploads/profile_pictures/user_profile16.png', 5, 'user'),
-(23, 'Raquel', 'Castro', 'user30@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000050', 'uploads/profile_pictures/user_profile17.png', 6, 'user'),
+(23, 'Brais', 'Castro', 'user30@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000050', 'uploads/profile_pictures/user_profile17.png', 6, 'user'),
 (24, 'Fernando', 'Ortega', 'user31@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000051', 'uploads/profile_pictures/user_profile18.png', 6, 'user'),
 (25, 'Sara', 'Delgado', 'user32@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000052', 'uploads/profile_pictures/user_profile19.png', 7, 'user'),
-(26, 'Victor', 'Morales', 'user33@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000053', 'uploads/profile_pictures/user_profile20.png', 7, 'user'),
+(26, 'Estrella', 'Morales', 'user33@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000053', 'uploads/profile_pictures/user_profile20.png', 7, 'user'),
 (27, 'Cristina', 'Rubio', 'user34@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000054', 'uploads/profile_pictures/user_profile21.png', 8, 'user'),
-(28, 'Rubén', 'Marín', 'user35@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000055', 'uploads/profile_pictures/user_profile22.png', 8, 'user'),
+(28, 'Carolina', 'Marín', 'user35@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000055', 'uploads/profile_pictures/user_profile22.png', 8, 'user'),
 (29, 'Natalia', 'Iglesias', 'user36@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000056', 'uploads/profile_pictures/user_profile23.png', 9, 'user'),
 (30, 'Andrés', 'Garrido', 'user37@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000057', 'uploads/profile_pictures/user_profile24.png', 9, 'user'),
 (31, 'Eva', 'Cortés', 'user38@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000058', 'uploads/profile_pictures/user_profile25.png', 10, 'user'),
-(32, 'Jorge', 'Cano', 'user39@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000059', 'uploads/profile_pictures/user_profile26.png', 10, 'user'),
+(32, 'Maria', 'Cano', 'user39@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000059', 'uploads/profile_pictures/user_profile26.png', 10, 'user'),
 
 -- Usuarios en Gimnasio Borrado (IDs 33-37) -> Home Gym ID 12
-(33, 'Marina', 'Santos', 'user40@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000060', 'uploads/profile_pictures/user_profile27.png', 12, 'user'),
-(34, 'Óscar', 'Lozano', 'user41@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000061', 'uploads/profile_pictures/user_profile28.png', 12, 'user'),
+(33, 'Jorge', 'Santos', 'user40@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000060', 'uploads/profile_pictures/user_profile27.png', 12, 'user'),
+(34, 'Iria', 'Lozano', 'user41@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000061', 'uploads/profile_pictures/user_profile28.png', 12, 'user'),
 (35, 'Teresa', 'Guerrero', 'user42@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000062', 'uploads/profile_pictures/user_profile29.png', 12, 'user'),
 (36, 'Hugo', 'Prieto', 'user43@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000063', 'uploads/profile_pictures/user_profile30.png', 12, 'user'),
 (37, 'Paula', 'Méndez', 'user44@gymnomads.dev', '$2b$10$ERnZnvId06PKuQ.r0xUyCu48x0kqDIQha9He.91y8B4Sd6R4d8DeO', '600000064', 'uploads/profile_pictures/user_profile1.png', 12, 'user'),
 
 -- Admin extra para pruebas (ID 38)
-(38, 'Administrador', 'Sistema', 'admin@gymnomads.dev', '$2b$10$HADUOtIlZejOSCzXE8/JVupFmOgVUuqUBDAwVpRLT/ay4NFZ1Pawi', '600999999', NULL, 1, 'admin');
-
+(38, 'Administrador', 'Sistema', 'admin@gymnomads.dev', '$2b$10$HADUOtIlZejOSCzXE8/JVupFqDAwVpRLT/ay4NFZ1Pawi', '600999999', NULL, 1, 'admin');
 
 -- =======================================================================================
 -- 4. VISITAS / VISITS
 -- =======================================================================================
+
 
 -- A) 5 Usuarios con LIMITE ALCANZADO (IDs 13-17)
 INSERT INTO visits (user_id, gym_id, visited_at) VALUES
