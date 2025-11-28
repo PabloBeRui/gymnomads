@@ -4,11 +4,13 @@
  * PAGE:     ProfilePage
  * =============================================================================
  *
- * Página de perfil del usuario con modo visualización/edición.
- * Permite ver datos, editar información básica, cambiar foto de perfil y contraseña.
+ * Página contenedora del perfil del usuario. Gestiona el estado global del perfil,
+ * la carga de datos adicionales (gimnasio), y alterna entre la vista de lectura
+ * (ProfileView) y la vista de edición (ProfileEditForm).
  *
- * User profile page with view/edit mode.
- * Allows viewing data, editing basic info, changing profile picture, and password.
+ * Container page for user profile. Manages global profile state,
+ * additional data fetching (gym), and switches between read-only view (ProfileView)
+ * and edit view (ProfileEditForm).
  *
  * =============================================================================
  */
@@ -16,33 +18,30 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import clsx from "clsx";
-import { useNavigate } from "react-router-dom"; // Importar useNavigate // Import useNavigate
+import { useNavigate } from "react-router-dom";
 
 // Importar componentes de Bootstrap
-// Import Bootstrap components
-import { Container, Form, Button, Row, Col, Card } from "react-bootstrap";
-import { Spinner } from "../components/ui";
+import { Container, Row, Col } from "react-bootstrap";
 
-// Importar contexto / Import context
+// Importar contexto
 import { useAuth } from "../context/AuthContext";
 
-// Importar hooks personalizados / Import custom hooks
+// Importar hooks personalizados
 import { useApiCall, useImageUpload } from "../hooks";
 
 // Importar componentes
-// Import components
-import { Avatar } from "../components/ui";
 import { ChangePasswordModal } from "../components/modals";
 import { CloseButton } from "../components/ui";
+import { ProfileView, ProfileEditForm } from "../components/profile"; // Nuevos componentes
 
-// Importar servicios / Import services
+// Importar servicios
 import {
   getGymById,
   updateUserProfile,
   uploadProfilePicture,
 } from "../services";
 
-// Importar interfaces / Import interfaces
+// Importar interfaces
 import type {
   UpdateUserData,
   User,
@@ -50,38 +49,32 @@ import type {
   UpdateProfileResponse,
 } from "../interfaces";
 
-// Importar utilidades / Import utilities
+// Importar utilidades
 import { handleApiError } from "../utils";
 
 // Importar estilos
-// Import styles
 import styles from "./ProfilePage.module.scss";
 
-/* =============================================================================
-   COMPONENTE: ProfilePage
-   COMPONENT:  ProfilePage
-   ============================================================================= */
 export const ProfilePage: React.FC = () => {
   // --- Context / Auth ---
   const { user, token, setUser } = useAuth();
-  const navigate = useNavigate(); // Inicializar navigate
+  const navigate = useNavigate();
 
-  // --- Local state / Estados locales ---
+  // --- Estados locales para datos de Gimnasio ---
   const [gymName, setGymName] = useState<string | null>(null);
   const [gymLogoUrl, setGymLogoUrl] = useState<string | null>(null);
   const [gymFetchError, setGymFetchError] = useState<string | null>(null);
 
+  // --- Estados locales para Edición ---
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editFirstName, setEditFirstName] = useState<string>("");
   const [editLastName, setEditLastName] = useState<string>("");
   const [editPhone, setEditPhone] = useState<string>("");
 
-  // --- Estado para el modal de contraseña / State for the password modal ---
-  const [isPasswordModalOpen, setIsPasswordModalOpen] =
-    useState<boolean>(false);
+  // --- Estado para el modal de contraseña ---
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState<boolean>(false);
 
-  // Hook para acciones de guardado/actualización (gestiona loading y errores)
-  // Hook for save/update actions (handles loading + errors)
+  // Hook para acciones de guardado/actualización
   const {
     loading: isSaving,
     error: editError,
@@ -99,17 +92,14 @@ export const ProfilePage: React.FC = () => {
   });
 
   // Fallback de la URL base del backend
-  // Fallback for the backend base URL
   const backendBaseUrl =
     import.meta.env.VITE_BACKEND_BASE_URL || window.location.origin;
 
   /* ===========================================================================
      Efectos (Sincronización de datos)
-     Effects (Data synchronization)
      =========================================================================== */
 
   // Sincronizar campos editables cuando cambian los datos del usuario
-  // Sync editable fields when user data changes
   useEffect(() => {
     if (user) {
       setEditFirstName(user.first_name || "");
@@ -119,7 +109,6 @@ export const ProfilePage: React.FC = () => {
   }, [user]);
 
   // Obtener el nombre del gimnasio si el usuario tiene home_gym_id
-  // Fetch gym name if user has a home_gym_id
   useEffect(() => {
     const fetchGym = async () => {
       if (!user?.home_gym_id) return;
@@ -141,8 +130,7 @@ export const ProfilePage: React.FC = () => {
     fetchGym();
   }, [user?.home_gym_id]);
 
-  // Inicializar preview desde user.profile_picture (si está disponible)
-  // Initialize preview from user.profile_picture (if available)
+  // Inicializar preview de imagen
   useEffect(() => {
     if (!user?.profile_picture) return;
 
@@ -158,54 +146,48 @@ export const ProfilePage: React.FC = () => {
 
   /* ===========================================================================
      Manejadores: editar, cancelar, guardar
-     Handlers: edit, cancel, save
      =========================================================================== */
   const handleEditClick = () => {
     setEditFirstName(user?.first_name || "");
     setEditLastName(user?.last_name || "");
     setEditPhone(user?.phone || "");
     setIsEditing(true);
-
-    // Limpiar archivo seleccionado anteriormente y asegurar que el preview muestre la imagen actual
-    // Clear any previous selected file and ensure preview shows current image
+    
+    // Reiniciar imagen
     profileImageUpload.clearImage();
     if (user?.profile_picture) {
-      const pic = user.profile_picture;
-      const normalized =
-        typeof pic === "string" && !/^https?:\/\//i.test(pic)
-          ? `${backendBaseUrl}/${pic.replace(/^\/+/, "")}`
-          : pic;
-      profileImageUpload.setPreviewUrl(normalized);
+        // Re-setear preview original si existe
+        const pic = user.profile_picture;
+            const normalized =
+              typeof pic === "string" && !/^https?:\/\//i.test(pic)
+            ? `${backendBaseUrl}/${pic.replace(/^\/+/, "")}`
+            : pic;
+        profileImageUpload.setPreviewUrl(normalized);
     }
   };
 
   const handleCancelClick = () => {
     setIsEditing(false);
-    // Restaurar preview y limpiar archivo seleccionado
-    // Restore preview and clear selected file
     profileImageUpload.clearImage();
+    // Restaurar preview original
     if (user?.profile_picture) {
-      const pic = user.profile_picture;
-      const normalized =
-        typeof pic === "string" && !/^https?:\/\//i.test(pic)
-          ? `${backendBaseUrl}/${pic.replace(/^\/+/, "")}`
-          : pic;
-      profileImageUpload.setPreviewUrl(normalized);
+        const pic = user.profile_picture;
+        const normalized = typeof pic === "string" && !/^https?:\/\//i.test(pic)
+            ? `${backendBaseUrl}/${pic.replace(/^\/+/, "")}`
+            : pic;
+        profileImageUpload.setPreviewUrl(normalized);
     }
-    // Restaurar campos a los valores actuales del usuario
-    // Reset fields to current user values
+    // Restaurar campos
     setEditFirstName(user?.first_name || "");
     setEditLastName(user?.last_name || "");
     setEditPhone(user?.phone || "");
   };
 
   const handleSaveClick = async () => {
-    // Validación básica / Basic validation
     if (!editFirstName || !editLastName) {
       toast.error("El nombre y los apellidos son obligatorios.");
       return;
     }
-
     if (!token) {
       toast.error("No autenticado.");
       return;
@@ -214,41 +196,31 @@ export const ProfilePage: React.FC = () => {
     let newImageUrl: string | null = user?.profile_picture || null;
 
     try {
-      // 1) Subir imagen si se seleccionó
-      // 1) Upload image if selected
+      // 1) Subir imagen si existe
       if (profileImageUpload.selectedFile) {
         const uploadResp = await execute<UploadProfilePictureResponse>(() =>
           uploadProfilePicture(token, profileImageUpload.selectedFile!)
         );
-
-        const path = (uploadResp.filePath || "")
-          .replace(/\\/g, "/")
-          .replace(/^\/+/, "");
+        const path = (uploadResp.filePath || "").replace(/\\/g, "/").replace(/^\/+/, "");
         newImageUrl = `${backendBaseUrl}/${path}`;
-
         toast.success(uploadResp.message || "Foto de perfil actualizada.");
       }
 
-      // 2) Actualizar campos de texto
-      // 2) Update text fields
+      // 2) Actualizar perfil
       const payload: UpdateUserData = {
         first_name: editFirstName,
         last_name: editLastName,
         phone: editPhone || null,
       };
-
       const updateResp = await execute<UpdateProfileResponse>(() =>
         updateUserProfile(token, payload)
       );
 
-      // Mostrar success si solo se cambiaron textos
-      // Show success when only text changed
       if (!profileImageUpload.selectedFile) {
         toast.success(updateResp.message || "Perfil actualizado con éxito.");
       }
 
-      // 3) Actualizar el usuario en el contexto
-      // 3) Update the user in the context
+      // 3) Actualizar contexto
       const updatedUser: User = {
         ...user!,
         first_name: editFirstName,
@@ -258,22 +230,19 @@ export const ProfilePage: React.FC = () => {
       };
       setUser(updatedUser);
 
-      // 4) Limpieza final
-      // 4) Cleanup
+      // 4) Finalizar
       setIsEditing(false);
       profileImageUpload.clearImage();
-
       if (newImageUrl) profileImageUpload.setPreviewUrl(newImageUrl);
+
     } catch (err) {
       const msg = handleApiError(err, "Error al guardar el perfil.");
       toast.error(msg);
-      if (import.meta.env.DEV) console.error("Error saving profile:", err);
     }
   };
 
   /* ===========================================================================
-     Render
-     Renderizado
+     Render Principal
      =========================================================================== */
   if (!user) {
     return (
@@ -287,8 +256,6 @@ export const ProfilePage: React.FC = () => {
 
   return (
     <Container className={clsx("py-5", "position-relative")}>
-      {" "}
-      {/* Añadir position-relative para el posicionamiento absoluto del botón */}
       <CloseButton
         onClick={() => navigate(-1)}
         className={styles.closeButton}
@@ -299,263 +266,49 @@ export const ProfilePage: React.FC = () => {
         <Col md={10} lg={8} xl={7}>
           <h2 className="text-center mb-5 fw-bold text-primary">Mi Perfil</h2>
 
-          {/* --- Sección de Imagen de Perfil y Datos Principales ---
-           * --- Profile Image and Main Data Section ---
-           */}
-          <Card className="mb-4 shadow-sm border-0">
-            <Card.Body className="d-flex flex-column align-items-center p-4">
-              {/* Controles para la subida de imagen de perfil */}
-              {/* Controls for profile picture upload */}
-              <input
-                id="profile-file"
-                type="file"
-                ref={profileImageUpload.fileInputRef}
-                onChange={profileImageUpload.handleFileChange}
-                accept="image/png, image/jpeg, image/webp, image/jpg"
-                style={{ display: "none" }}
-              />
-
-              {/* Componente Avatar */}
-              {/* Avatar Component */}
-              <Avatar
-                src={profileImageUpload.previewUrl}
-                firstName={user.first_name || ""}
-                lastName={user.last_name || ""}
-                size={150} // Tamaño un poco más grande
-                onClick={
-                  isEditing ? profileImageUpload.handleImageClick : undefined
-                }
-                className={clsx("mb-3", {
-                  "cursor-pointer shadow-sm": isEditing,
-                })}
-              />
-
-              {isEditing && (
-                <small className="text-center mb-3 text-dark">
-                  {profileImageUpload.selectedFile
-                    ? `Archivo: ${profileImageUpload.selectedFile.name}`
-                    : "Haz clic en el avatar para cambiar la foto."}
-                  <br />
-                  (PNG/JPG/WEBP, max 5MB. Opcional)
-                </small>
-              )}
-
-              <Form className="w-100">
-                {/* CAMPOS NO EDITABLES / NON-EDITABLE FIELDS */}
-                <Form.Group className="mb-3">
-                  <Form.Label className="fw-bold text-dark">Email:</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={user.email}
-                    disabled
-                    readOnly
-                    className={styles.disabledFormControl}
-                  />
-                </Form.Group>
-
-                {/* Mostrar Rol solo para Admin y Manager */}
-                {/* Show Role only for Admin and Manager */}
-                {(user.role === "admin" || user.role === "manager") && (
-                  <Form.Group className="mb-3">
-                    <Form.Label className="fw-bold text-dark">Rol:</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={user.role}
-                      disabled
-                      readOnly
-                      className={styles.disabledFormControl}
-                    />
-                  </Form.Group>
-                )}
-                {user.role !== "admin" && (
-                  <Form.Group className="mb-3">
-                    <Form.Label className="fw-bold text-dark">
-                      Gimnasio:
-                    </Form.Label>
-                    <div
-                      className={`${styles.disabledFormControl} d-flex align-items-center`}>
-                      {gymFetchError ? (
-                        <span className="text-danger">{gymFetchError}</span>
-                      ) : gymName ? (
-                        <>
-                          <img
-                            src={
-                              gymLogoUrl
-                                ? `${backendBaseUrl}/${gymLogoUrl.replace(
-                                    /^\/+/,
-                                    ""
-                                  )}`
-                                : "/images/gym-logo/default-gym-logo.png"
-                            }
-                            alt={`Logo de ${gymName}`}
-                            className={styles.gymLogo}
-                          />
-                          <span>{gymName}</span>
-                        </>
-                      ) : (
-                        <span className="text-dark">
-                          <Spinner size="sm" />
-                        </span>
-                      )}
-                    </div>
-                  </Form.Group>
-                )}
-              </Form>
-            </Card.Body>
-          </Card>
-
-          {/* --- Sección de Información Personal y Edición ---
-           * --- Personal Information and Edit Section ---
-           */}
-          <Card className="mb-4 shadow-sm border-0">
-            <Card.Body className="p-4">
-              <h4 className="mb-4 fw-bold text-primary">
-                Información Personal
-              </h4>
-              <Form>
-                {user.role !== "admin" ? (
-                  !isEditing ? (
-                    // --- Modo Visualización / View Mode ---
-                    <>
-                      <Form.Group className="mb-3">
-                        <Form.Label className="fw-bold text-dark">
-                          Nombre Completo:
-                        </Form.Label>
-                        <Form.Control
-                          type="text"
-                          value={`${user.first_name} ${user.last_name}`}
-                          disabled
-                          readOnly
-                          className={styles.disabledFormControl}
-                        />
-                      </Form.Group>
-                      <Form.Group className="mb-3">
-                        <Form.Label className="fw-bold text-dark">
-                          Teléfono:
-                        </Form.Label>
-                        <Form.Control
-                          type="text"
-                          value={user.phone || "No especificado"}
-                          disabled
-                          readOnly
-                          className={styles.disabledFormControl}
-                        />
-                      </Form.Group>
-                    </>
-                  ) : (
-                    // --- Modo Edición / Edit Mode ---
-                    <>
-                      <Row>
-                        <Col md={6}>
-                          <Form.Group
-                            className="mb-3"
-                            controlId="edit-first-name">
-                            <Form.Label className="fw-bold text-dark">
-                              Nombre:
-                            </Form.Label>
-                            <Form.Control
-                              type="text"
-                              value={editFirstName}
-                              onChange={(e) => setEditFirstName(e.target.value)}
-                              className={styles.formControl}
-                            />
-                          </Form.Group>
-                        </Col>
-                        <Col md={6}>
-                          <Form.Group
-                            className="mb-3"
-                            controlId="edit-last-name">
-                            <Form.Label className="fw-bold text-dark">
-                              Apellidos:
-                            </Form.Label>
-                            <Form.Control
-                              type="text"
-                              value={editLastName}
-                              onChange={(e) => setEditLastName(e.target.value)}
-                              className={styles.formControl}
-                            />
-                          </Form.Group>
-                        </Col>
-                      </Row>
-                      <Form.Group className="mb-3" controlId="edit-phone">
-                        <Form.Label className="fw-bold text-dark">
-                          Teléfono:
-                        </Form.Label>
-                        <Form.Control
-                          type="tel"
-                          value={editPhone}
-                          onChange={(e) => setEditPhone(e.target.value)}
-                          placeholder="Opcional"
-                          className={styles.formControl}
-                        />
-                      </Form.Group>
-                    </>
-                  )
-                ) : null}
-
-                {/* Botones de Acción */}
-                {/* Action Buttons */}
-                <div className="d-flex justify-content-end gap-3 mt-4">
-                  {!isEditing ? (
-                    <>
-                      <Button
-                        variant="primary"
-                        onClick={handleEditClick}
-                        aria-label="Editar perfil">
-                        <i className="bi bi-pencil-fill me-2 text-dark"></i>
-                        Editar Perfil
-                      </Button>
-                      {user.role !== "admin" && (
-                        <Button
-                          variant="outline-primary" // Usar outline para el cambio de contraseña
-                          onClick={() => setIsPasswordModalOpen(true)}
-                          aria-label="Cambiar contraseña">
-                          <i className="bi bi-key-fill me-2 text-primary"></i>
-                          Cambiar Contraseña
-                        </Button>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      <Button
-                        variant="secondary"
-                        onClick={handleCancelClick}
-                        disabled={isSaving}>
-                        Cancelar
-                      </Button>
-                      <Button
-                        variant="primary"
-                        onClick={handleSaveClick}
-                        disabled={isSaving}>
-                        {isSaving ? (
-                          <>
-                            <Spinner
-                              size="sm"
-                              variant="light"
-                              className="me-2"
-                            />
-                            Guardando...
-                          </>
-                        ) : (
-                          "Guardar Cambios"
-                        )}
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </Form>
-            </Card.Body>
-          </Card>
+          {!isEditing ? (
+            <ProfileView
+              user={user}
+              gymName={gymName}
+              gymLogoUrl={gymLogoUrl}
+              gymFetchError={gymFetchError}
+              backendBaseUrl={backendBaseUrl}
+              onEditClick={handleEditClick}
+              onChangePasswordClick={() => setIsPasswordModalOpen(true)}
+            />
+          ) : (
+            <ProfileEditForm
+              user={user}
+              firstName={editFirstName}
+              setFirstName={setEditFirstName}
+              lastName={editLastName}
+              setLastName={setEditLastName}
+              phone={editPhone}
+              setPhone={setEditPhone}
+              // Image props
+              previewUrl={profileImageUpload.previewUrl}
+              fileInputRef={profileImageUpload.fileInputRef}
+              handleFileChange={profileImageUpload.handleFileChange}
+              handleImageClick={profileImageUpload.handleImageClick}
+              selectedFile={profileImageUpload.selectedFile}
+              // Control props
+              isSaving={isSaving}
+              onSave={handleSaveClick}
+              onCancel={handleCancelClick}
+            />
+          )
+          }
         </Col>
       </Row>
-      {/* MENSAJES DE ESTADO / STATUS MESSAGES */}
+
+      {/* Mensajes de error de edición */}
       {isEditing && editError && (
         <div className="alert alert-danger mt-3" role="alert">
           {editError}
         </div>
       )}
+
       {/* Modal de Contraseña */}
-      {/* Password Modal */}
       <ChangePasswordModal
         isOpen={isPasswordModalOpen}
         onClose={() => setIsPasswordModalOpen(false)}
