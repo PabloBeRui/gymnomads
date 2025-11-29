@@ -4,9 +4,9 @@
   "description": "Backend server for the GymNomads project",
   "main": "index.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=test jest --testTimeout=10000 --coverage",
-    "test:watch": "cross-env NODE_ENV=test jest --watch",
-    "test:coverage": "cross-env NODE_ENV=test jest --coverage",
+    "test": "cross-env NODE_ENV=test jest --runInBand --testTimeout=10000 --coverage",
+    "test:watch": "cross-env NODE_ENV=test jest --runInBand --watch",
+    "test:coverage": "cross-env NODE_ENV=test jest --runInBand --coverage",
     "db:test:create": "mysql -u root -p < ../bbdd/create_test_db.sql",
     "dev": "nodemon index.js",
     "test:connection": "node scripts/db-connection-test.js"
