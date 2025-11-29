@@ -4,7 +4,10 @@
   "description": "Backend server for the GymNomads project",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "cross-env NODE_ENV=test jest --testTimeout=10000 --coverage",
+    "test:watch": "cross-env NODE_ENV=test jest --watch",
+    "test:coverage": "cross-env NODE_ENV=test jest --coverage",
+    "db:test:create": "mysql -u root -p < ../bbdd/create_test_db.sql",
     "dev": "nodemon index.js",
     "test:connection": "node scripts/db-connection-test.js"
   },
@@ -21,6 +24,9 @@
     "mysql2": "^3.15.2"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "cross-env": "^10.1.0",
+    "jest": "^30.2.0",
+    "nodemon": "^3.1.10",
+    "supertest": "^7.1.4"
   }
 }

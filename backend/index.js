@@ -60,9 +60,13 @@ app.use("/api/users", userRoutes);
 
 app.use("/api/visits", visitRoutes);
 
-// Start the server and listen for requests on the defined port
-// Iniciar el servidor y escuchar peticiones en el puerto definido
+// Iniciar el servidor / Start server
+// Solo iniciar si no estamos en modo test (para evitar puertos ocupados durante los tests)
+// Only start if we are not in test mode (to avoid busy ports during tests)
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`Servidor corriendo en / Server running on: http://localhost:${PORT}`);
+  });
+}
 
-app.listen(PORT, () => {
-  console.log(`ILERNA: Servidor con puerto ${PORT} funcionando`);
-});
+module.exports = app;
