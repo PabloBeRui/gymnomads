@@ -1,3 +1,10 @@
+-- Crear la base de datos 'gymnomads' si no existe
+-- Create the 'gymnomads' database if it doesn't exist
+
+DROP DATABASE IF EXISTS gymnomads;
+CREATE DATABASE gymnomads CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE gymnomads;
+
 -- Crear la tabla para los gimnasios
 -- Create table for gyms
 
