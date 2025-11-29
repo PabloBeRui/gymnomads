@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">25% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>2/8</span>
+                <span class='fraction'>6/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>6/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">25% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>2/8</span>
+                <span class='fraction'>6/8</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -97,20 +97,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -118,18 +108,28 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">5x</span></td><td class="text"><pre class="prettyprint lang-js">/* ========================================
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span></td><td class="text"><pre class="prettyprint lang-js">/* ========================================
  * Middleware para verificar si el usuario es Admin o Manager
  * Middleware to verify if the user is Admin or Manager
  * ======================================== */
 &nbsp;
-const adminOrManagerMiddleware = <span class="fstat-no" title="function not covered" >(r</span>eq, res, next) =&gt; {
+const adminOrManagerMiddleware = (req, res, next) =&gt; {
   // 1. Verificar que el rol existe en el token (añadido por authMiddleware)
   // 1. Verify that the role exists in the token (added by authMiddleware)
-<span class="cstat-no" title="statement not covered" >  if (!req.user || !req.user.role) {</span>
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (!req.user || !req.user.role) {
 <span class="cstat-no" title="statement not covered" >    return res.status(401).json({</span>
       message: "No se pudo verificar el rol del usuario.",
     });
@@ -137,9 +137,9 @@ const adminOrManagerMiddleware = <span class="fstat-no" title="function not cove
 &nbsp;
   // 2. Verificar si el usuario es admin o manager
   // 2. Verify if the user is admin or manager
-  const userRole = <span class="cstat-no" title="statement not covered" >req.user.role;</span>
+  const userRole = req.user.role;
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  if (userRole !== "admin" &amp;&amp; userRole !== "manager") {</span>
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (userRole !== "admin" &amp;&amp; userRole !== "manager") {
 <span class="cstat-no" title="statement not covered" >    return res.status(403).json({</span>
       message: "Acceso denegado. Se requiere rol de administrador o manager.",
     });
@@ -147,7 +147,7 @@ const adminOrManagerMiddleware = <span class="fstat-no" title="function not cove
 &nbsp;
   // 3. Si es admin o manager, permitir el acceso
   // 3. If admin or manager, allow access
-<span class="cstat-no" title="statement not covered" >  next();</span>
+  next();
 };
 &nbsp;
 module.exports = adminOrManagerMiddleware;</pre></td></tr></table></pre>
@@ -157,7 +157,7 @@ module.exports = adminOrManagerMiddleware;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-29T11:06:16.168Z
+                at 2025-11-29T11:09:41.433Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
