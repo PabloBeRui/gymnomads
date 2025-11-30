@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import type { VisitWithDetails } from "../interfaces";
 import { Avatar, PaginationControls, SortableTable, type ColumnDefinition, Spinner } from "../components/ui";
@@ -8,6 +8,7 @@ import { useVisitsManagement, useMediaQuery } from "../hooks";
 import { Container, Row, Col, Form, Button, Card, Alert } from "react-bootstrap";
 import styles from "./VisitsManagementPage.module.scss";
 import clsx from "clsx";
+import { getGymById } from "../services";
 
 /**
  * =============================================================================
@@ -56,9 +57,26 @@ export const VisitsManagementPage = () => {
   const [showDetailModal, setShowDetailModal] = useState<boolean>(false);
   const [selectedVisit, setSelectedVisit] = useState<VisitWithDetails | null>(null);
   const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
+  const [managerGymName, setManagerGymName] = useState<string>("");
 
   // Responsive Hook
   const isLargeScreen = useMediaQuery("(min-width: 768px)");
+
+  // Obtener el nombre del gimnasio si es manager
+  // Get gym name if manager
+  useEffect(() => {
+    if (isManager && user?.home_gym_id) {
+      const fetchManagerGym = async () => {
+        try {
+          const gym = await getGymById(user.home_gym_id);
+          setManagerGymName(gym.name);
+        } catch (err) {
+          console.error("Error fetching manager gym:", err);
+        }
+      };
+      fetchManagerGym();
+    }
+  }, [isManager, user?.home_gym_id]);
 
   // Handlers
   const handleRowClick = (visit: VisitWithDetails) => {
@@ -325,6 +343,7 @@ export const VisitsManagementPage = () => {
         isOpen={isStatsModalOpen}
         onClose={() => setIsStatsModalOpen(false)}
         viewMode={isAdmin ? "admin" : "manager"}
+        gymName={managerGymName}
       />
     </Container>
   );

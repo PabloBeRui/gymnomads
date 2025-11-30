@@ -36,6 +36,8 @@ interface VisitsStatsModalProps {
   onClose: () => void;
   // Rol del usuario que mira (para adaptar el título) / Role of the viewing user (to adapt the title)
   viewMode: "user" | "manager" | "admin";
+  // Nombre del gimnasio (opcional, para managers) / Gym name (optional, for managers)
+  gymName?: string;
 }
 
 /* =============================================================================
@@ -46,6 +48,7 @@ export const VisitsStatsModal: React.FC<VisitsStatsModalProps> = ({
   isOpen,
   onClose,
   viewMode,
+  gymName,
 }) => {
   const { token } = useAuth();
   const [stats, setStats] = useState<VisitStats | null>(null);
@@ -102,7 +105,9 @@ export const VisitsStatsModal: React.FC<VisitsStatsModalProps> = ({
       case "admin":
         return "Estadísticas Globales";
       case "manager":
-        return "Estadísticas de Visitas (Mi Gimnasio)";
+        return gymName
+          ? `Estadísticas de Visitas ${gymName}`
+          : "Estadísticas de Visitas (Mi Gimnasio)";
       case "user":
       default:
         return "Tus Estadísticas de Visita";
