@@ -17,6 +17,7 @@ El proyecto está dividido en tres componentes principales:
 1.  **📂 bbdd**: Scripts SQL para la creación y poblado de la base de datos MySQL.
 2.  **🚀 backend**: API RESTful construida con Node.js, Express y MySQL.
 3.  **💻 frontend**: Aplicación web SPA construida con React, TypeScript y Vite.
+4.  **📚 docs**: Manuales de usuario, manager y administrador en múltiples idiomas (español, inglés, catalán, gallego y euskera).
 
 ---
 
@@ -35,6 +36,10 @@ Instala las dependencias, configura el archivo `.env` y arranca el servidor (Pue
 ### 3. Frontend (`/frontend`)
 Instala las dependencias, configura el archivo `.env` y arranca el cliente de desarrollo (Puerto 5173).
 👉 [Ver instrucciones del Frontend](./frontend/README.md)
+
+### 4. Documentación (`/docs`)
+Explora los manuales de usuario, manager y administrador en los diferentes idiomas disponibles.
+👉 [Ver manuales de Documentación](./docs/README.md)
 
 ---
 
@@ -66,6 +71,7 @@ The project is divided into three main components:
 1.  **📂 bbdd**: SQL scripts for creating and seeding the MySQL database.
 2.  **🚀 backend**: RESTful API built with Node.js, Express, and MySQL.
 3.  **💻 frontend**: SPA web application built with React, TypeScript, and Vite.
+4.  **📚 docs**: User, manager, and admin manuals in multiple languages (Spanish, English, Catalan, Galician, and Basque).
 
 ---
 
@@ -84,6 +90,10 @@ Install dependencies, configure the `.env` file, and start the server (Port 3000
 ### 3. Frontend (`/frontend`)
 Install dependencies, configure the `.env` file, and start the development client (Port 5173).
 👉 [See Frontend instructions](./frontend/README.md)
+
+### 4. Documentation (`/docs`)
+Explore the user, manager, and administrator manuals in the different available languages.
+👉 [See Documentation manuals](./docs/README.md)
 
 ---
 
