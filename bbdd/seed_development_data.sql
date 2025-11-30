@@ -40,18 +40,18 @@ INSERT INTO gyms (id, name, address, city, latitude, longitude, logo_url, main_i
 -- Password for all: 'manager123' (hashed)
 
 INSERT INTO users (id, first_name, last_name, email, password, phone, profile_picture, home_gym_id, role) VALUES
-(2, 'Carlos', 'Gómez', 'manager20@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000020', 'uploads/profile_pictures/user_profile1.png', 2, 'manager'),
-(3, 'Laura', 'Fernández', 'manager21@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000021', 'uploads/profile_pictures/user_profile2.png', 3, 'manager'),
-(4, 'Javier', 'Martínez', 'manager22@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000022', 'uploads/profile_pictures/user_profile3.png', 4, 'manager'),
-(5, 'Ana', 'López', 'manager23@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000023', 'uploads/profile_pictures/user_profile4.png', 5, 'manager'),
-(6, 'Miguel', 'Sánchez', 'manager24@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000024', 'uploads/profile_pictures/user_profile5.png', 6, 'manager'),
-(7, 'Elena', 'Ruiz', 'manager25@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000025', 'uploads/profile_pictures/user_profile6.png', 7, 'manager'),
-(8, 'David', 'Jiménez', 'manager26@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000026', 'uploads/profile_pictures/user_profile7.png', 8, 'manager'),
-(9, 'Sofía', 'Díaz', 'manager27@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000027', 'uploads/profile_pictures/user_profile8.png', 9, 'manager'),
-(10, 'Pablo', 'Moreno', 'manager28@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000028', 'uploads/profile_pictures/user_profile9.png', 10, 'manager'),
-(11, 'Carmen', 'Muñoz', 'manager29@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000029', 'uploads/profile_pictures/user_profile10.png', 11, 'manager'),
-(12, 'Antonio', 'Álvarez', 'manager30@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000030', NULL, 12, 'manager'),
-(13, 'Isabel', 'Romero', 'manager31@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000031', NULL, 13, 'manager');
+(2, 'Carlos', 'Gómez', 'spartangym@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000020', 'uploads/profile_pictures/user_profile1.png', 2, 'manager'),
+(3, 'Laura', 'Fernández', 'herculesfitness@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000021', 'uploads/profile_pictures/user_profile2.png', 3, 'manager'),
+(4, 'Javier', 'Martínez', 'olympuscenter@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000022', 'uploads/profile_pictures/user_profile3.png', 4, 'manager'),
+(5, 'Ana', 'López', 'titanarena@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000023', 'uploads/profile_pictures/user_profile4.png', 5, 'manager'),
+(6, 'Miguel', 'Sánchez', 'ironhouse@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000024', 'uploads/profile_pictures/user_profile5.png', 6, 'manager'),
+(7, 'Elena', 'Ruiz', 'crossfitz@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000025', 'uploads/profile_pictures/user_profile6.png', 7, 'manager'),
+(8, 'David', 'Jiménez', 'powerzone@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000026', 'uploads/profile_pictures/user_profile7.png', 8, 'manager'),
+(9, 'Sofía', 'Díaz', 'urbanfit@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000027', 'uploads/profile_pictures/user_profile8.png', 9, 'manager'),
+(10, 'Pablo', 'Moreno', 'nomadstrength@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000028', 'uploads/profile_pictures/user_profile9.png', 10, 'manager'),
+(11, 'Carmen', 'Muñoz', 'globalgym@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000029', 'uploads/profile_pictures/user_profile10.png', 11, 'manager'),
+(12, 'Antonio', 'Álvarez', 'nologogym@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000030', NULL, 12, 'manager'),
+(13, 'Isabel', 'Romero', 'oldschoolgym@gymnomads.dev', '$2b$10$INq5/AIYoh.BzDXPOFlRm.o7q.zMvJAtr.o2iwCFGj9NAOa/o5xwq', '600000031', NULL, 13, 'manager');
 
 -- =======================================================================================
 -- 3. USUARIOS: STANDARD (25 en total, IDs 14-38)

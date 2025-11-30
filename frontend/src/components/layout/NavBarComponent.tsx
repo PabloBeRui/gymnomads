@@ -211,7 +211,7 @@ export const NavbarComponent = () => {
                         <>
                             <Nav.Item>
                                 <Nav.Link as={NavLink} to="/login" className={styles.navLink} onClick={() => setExpanded(false)}>
-                                    Login
+                                    Entrar
                                 </Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
