@@ -95,7 +95,7 @@ export const useGymsList = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [isAdmin, token, searchTerm, currentPage, itemsPerPage, setTotalItems, user]);
+  }, [isAdmin, token, searchTerm, setTotalItems, user, isAdmin ? currentPage : 0, isAdmin ? itemsPerPage : 0]);
 
   // Efecto para disparar la carga de gimnasios con debounce / Effect to trigger gym loading with debounce
   useEffect(() => {
