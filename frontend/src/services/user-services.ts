@@ -260,6 +260,30 @@ export const uploadProfilePicture = async (
 };
 
 /* ========================================
+ * API CALL: Eliminar cuenta del usuario autenticado
+ * API CALL: Delete authenticated user account
+ * ======================================== */
+export const deleteOwnProfile = async (token: string): Promise<void> => {
+  if (!token) {
+    throw new Error("No se proporcionó token de autenticación.");
+  }
+
+  try {
+    await axios.delete(`${API_URL}/users/profile`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch (error) {
+    const errorMessage = handleApiError(
+      error,
+      "Error al eliminar tu cuenta."
+    );
+    throw new Error(errorMessage);
+  }
+};
+
+/* ========================================
  * FUNCIONES PARA GESTIÓN DE USUARIOS (Admin/Manager)
  * FUNCTIONS FOR USER MANAGEMENT (Admin/Manager)
  * ======================================== */

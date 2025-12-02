@@ -30,7 +30,7 @@ import { useAuth } from "../context/AuthContext";
 import { useApiCall, useImageUpload } from "../hooks";
 
 // Importar componentes
-import { ChangePasswordModal } from "../components/modals";
+import { ChangePasswordModal, ConfirmationModal } from "../components/modals";
 import { CloseButton } from "../components/ui";
 import { ProfileView, ProfileEditForm } from "../components/profile"; // Nuevos componentes
 
@@ -39,6 +39,7 @@ import {
   getGymById,
   updateUserProfile,
   uploadProfilePicture,
+  deleteOwnProfile,
 } from "../services";
 
 // Importar interfaces
@@ -73,6 +74,11 @@ export const ProfilePage: React.FC = () => {
 
   // --- Estado para el modal de contraseña ---
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState<boolean>(false);
+
+  // --- Estado para el modal de eliminación ---
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const { logout } = useAuth(); // Obtener función logout
 
   // Hook para acciones de guardado/actualización
   const {
@@ -242,6 +248,29 @@ export const ProfilePage: React.FC = () => {
   };
 
   /* ===========================================================================
+     Manejadores: Eliminación de Cuenta
+     =========================================================================== */
+  const handleDeleteClick = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!token) return;
+    setIsDeleting(true);
+    try {
+      await deleteOwnProfile(token);
+      toast.success("Tu cuenta ha sido eliminada correctamente.");
+      setIsDeleteModalOpen(false);
+      logout(); // Cerrar sesión
+      navigate("/"); // Redirigir al inicio
+    } catch (err) {
+      const msg = handleApiError(err, "Error al eliminar la cuenta.");
+      toast.error(msg);
+      setIsDeleting(false); // Solo detener carga si hay error
+    }
+  };
+
+  /* ===========================================================================
      Render Principal
      =========================================================================== */
   if (!user) {
@@ -295,6 +324,7 @@ export const ProfilePage: React.FC = () => {
               isSaving={isSaving}
               onSave={handleSaveClick}
               onCancel={handleCancelClick}
+              onDeleteClick={handleDeleteClick}
             />
           )
           }
@@ -312,6 +342,20 @@ export const ProfilePage: React.FC = () => {
       <ChangePasswordModal
         isOpen={isPasswordModalOpen}
         onClose={() => setIsPasswordModalOpen(false)}
+      />
+
+      {/* Modal de Confirmación de Eliminación */}
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onCancel={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="⚠️ Eliminar Cuenta Permanentemente"
+        message="¿Estás seguro de que quieres darte de baja? Esta acción eliminará tu perfil y todo tu historial de visitas."
+        warningMessage="Esta acción NO se puede deshacer."
+        confirmText="Sí, eliminar mi cuenta"
+        cancelText="Cancelar"
+        variant="danger"
+        isLoading={isDeleting}
       />
     </Container>
   );

@@ -39,6 +39,7 @@ interface ProfileEditFormProps {
   isSaving: boolean;
   onSave: () => void;
   onCancel: () => void;
+  onDeleteClick: () => void; // Nuevo prop para manejar la eliminación / New prop to handle deletion
 }
 
 export const ProfileEditForm: React.FC<ProfileEditFormProps> = ({
@@ -57,6 +58,7 @@ export const ProfileEditForm: React.FC<ProfileEditFormProps> = ({
   isSaving,
   onSave,
   onCancel,
+  onDeleteClick,
 }) => {
   return (
     <>
@@ -183,6 +185,30 @@ export const ProfileEditForm: React.FC<ProfileEditFormProps> = ({
               </Button>
             </div>
           </Form>
+        </Card.Body>
+      </Card>
+
+      {/* --- Zona de Peligro (Eliminar Cuenta) --- */}
+      {/* --- Danger Zone (Delete Account) --- */}
+      <Card className="mb-4 shadow-sm border-danger">
+        <Card.Header className="bg-danger text-white fw-bold">
+          Eliminar Cuenta
+        </Card.Header>
+        <Card.Body className="p-4 d-flex flex-column flex-md-row justify-content-between align-items-center">
+          <div className="mb-3 mb-md-0 text-center text-md-start">
+            <p className="text-muted mb-0 small">
+              Esta acción es permanente y no se puede deshacer.
+            </p>
+          </div>
+          <Button 
+            variant="outline-danger" 
+            onClick={onDeleteClick} 
+            disabled={isSaving}
+            className={styles.deleteButtonMobile}
+          >
+            <i className="bi bi-trash-fill me-2"></i>
+            Darse de baja
+          </Button>
         </Card.Body>
       </Card>
     </>

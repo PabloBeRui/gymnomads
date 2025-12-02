@@ -57,3 +57,13 @@
     display: none;
   }
 }
+
+// Botón de eliminar cuenta más pequeño en móvil
+// Smaller delete account button on mobile
+.deleteButtonMobile {
+  @media (max-width: 767.98px) {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    // Optional: reduce icon size too if needed, but font-size usually handles it
+  }
+}
