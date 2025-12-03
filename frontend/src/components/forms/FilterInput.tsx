@@ -1,7 +1,6 @@
 import React from "react";
 import { Form, CloseButton } from "react-bootstrap";
 import styles from "./FilterInput.module.scss";
-import clsx from "clsx";
 
 // Interfaz para las props del componente FilterInput.
 // Interface for FilterInput component props.
@@ -28,7 +27,8 @@ export const FilterInput: React.FC<FilterInputProps> = ({
 }) => {
   // Generar un ID único si no se provee para la accesibilidad.
   // Generate a unique ID if not provided for accessibility.
-  const inputId = id || `filter-input-${label.replace(/\s+/g, "-").toLowerCase()}`;
+  const inputId =
+    id || `filter-input-${label.replace(/\s+/g, "-").toLowerCase()}`;
 
   return (
     <Form.Group className={styles.filterGroup} controlId={inputId}>
