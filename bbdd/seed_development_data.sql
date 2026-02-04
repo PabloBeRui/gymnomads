@@ -22,16 +22,16 @@ SET FOREIGN_KEY_CHECKS = 1;
 INSERT INTO gyms (id, name, address, city, latitude, longitude, logo_url, main_image_url, is_suspended, gym_hours, is_deleted) VALUES
 (2, 'Spartan Gym', 'Calle Mayor 1', 'Madrid', 40.4168, -3.7038, 'uploads/gym_logos/gym_logo1.png', 'uploads/gym_images/gym_photo1.png', 0, '06:00 - 23:00', 0),
 (3, 'Hercules Fitness', 'Av. Diagonal 200', 'Barcelona', 41.3851, 2.1734, 'uploads/gym_logos/gym_logo2.png', 'uploads/gym_images/gym_photo2.png', 0, '24/7', 0),
-(4, 'Olympus Center', 'Calle Colon 5', 'Valencia', 39.4699, -0.3763, 'uploads/gym_logos/gym_logo3.png', 'uploads/gym_images/gym_photo3.png', 0, '07:00 - 22:00', 0),
-(5, 'Titan Arena', 'Calle Sierpes 10', 'Sevilla', 37.3891, -5.9845, 'uploads/gym_logos/gym_logo4.png', 'uploads/gym_images/gym_photo4.png', 0, '08:00 - 23:00', 0),
-(6, 'Iron House', 'Gran Via 30', 'Bilbao', 43.2630, -2.9350, 'uploads/gym_logos/gym_logo5.png', 'uploads/gym_images/gym_photo5.png', 0, '06:00 - 00:00', 0),
+(4, 'Olympus Center', 'Calle Colon 5', 'Valencia', 39.4699, -0.3763, 'uploads/gym_logos/gym_logo4.png', 'uploads/gym_images/gym_photo4.png', 0, '07:00 - 22:00', 0),
+(5, 'Titan Arena', 'Calle Sierpes 10', 'Sevilla', 37.3891, -5.9845, 'uploads/gym_logos/gym_logo5.png', 'uploads/gym_images/gym_photo5.png', 0, '08:00 - 23:00', 0),
+(6, 'Iron House', 'Gran Via 30', 'Bilbao', 43.2630, -2.9350, 'uploads/gym_logos/gym_logo6.png', 'uploads/gym_images/gym_photo6.png', 0, '06:00 - 00:00', 0),
 (7, 'CrossFit Z', 'Calle Larios 15', 'Malaga', 36.7213, -4.4214, 'uploads/gym_logos/gym_logo6.png', 'uploads/gym_images/gym_photo6.png', 0, '09:00 - 21:00', 0),
 (8, 'Power Zone', 'Paseo Maritimo 100', 'Palma', 39.5696, 2.6502, 'uploads/gym_logos/gym_logo7.png', 'uploads/gym_images/gym_photo7.png', 0, '07:00 - 22:30', 0),
-(9, 'Urban Fit', 'Plaza del Pilar 2', 'Zaragoza', 41.6488, -0.8891, 'uploads/gym_logos/gym_logo8.png', 'uploads/gym_images/gym_photo8.png', 0, '24/7', 0),
-(10, 'Nomad Strength', 'Rua do Franco 50', 'Santiago', 42.8782, -8.5448, 'uploads/gym_logos/gym_logo9.png', 'uploads/gym_images/gym_photo9.png', 0, '08:30 - 22:00', 0),
-(11, 'Global Gym', 'Calle San Francisco 4', 'Alicante', 38.3452, -0.4810, 'uploads/gym_logos/gym_logo10.png', 'uploads/gym_images/gym_photo10.png', 0, '06:00 - 23:00', 0),
-(12, 'No Logo Gym', 'Calle Sin Nombre 1', 'Murcia', 37.9922, -1.1307, 'uploads/gym_logos/gym_logo12.png', 'uploads/gym_images/gym_photo11.png', 0, '09:00 - 20:00', 0),
-(13, 'Old School Gym', 'Calle Fantasma 666', 'Vigo', 42.2406, -8.7207, 'uploads/gym_logos/gym_logo11.png', 'uploads/gym_images/gym_photo10.png', 0, 'Cerrado', 1);
+(9, 'Urban Fit', 'Plaza del Pilar 2', 'Zaragoza', 41.6488, -0.8891, 'uploads/gym_logos/gym_logo9.png', 'uploads/gym_images/gym_photo8.png', 0, '24/7', 0),
+(10, 'Nomad Strength', 'Rua do Franco 50', 'Santiago', 42.8782, -8.5448, 'uploads/gym_logos/gym_logo10.png', 'uploads/gym_images/gym_photo9.png', 0, '08:30 - 22:00', 0),
+(11, 'Global Gym', 'Calle San Francisco 4', 'Alicante', 38.3452, -0.4810, 'uploads/gym_logos/gym_logo11.png', 'uploads/gym_images/gym_photo10.png', 0, '06:00 - 23:00', 0),
+(12, 'No Logo Gym', 'Calle Sin Nombre 1', 'Murcia', 37.9922, -1.1307, NULL, 'uploads/gym_images/gym_photo11.png', 0, '09:00 - 20:00', 0),
+(13, 'Old School Gym', 'Calle Fantasma 666', 'Vigo', 42.2406, -8.7207, 'uploads/gym_logos/gym_logo12.png', NULL, 0, 'Cerrado', 1);
 
 -- =======================================================================================
 -- 2. USUARIOS: MANAGERS (12 en total, IDs 2-13)
